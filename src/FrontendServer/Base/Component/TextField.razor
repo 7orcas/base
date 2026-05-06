@@ -1,0 +1,25 @@
+﻿@inherits BaseComponent
+
+@using System.Linq.Expressions
+@using MudBlazor
+@using GC = FrontendServer.GlobalConstants;
+
+<MudTextField Style="@GetStyle(Width)"
+              Label="@label"
+              MaxLength="@MaxLength"
+              Value="@Value"
+              ValueChanged="@ValueChanged"
+              ValueExpression="@ValueExpression"
+              Variant=@MudVariant />
+
+@code {
+    [Parameter] public string LangCode { get; set; }
+    [Parameter] public GC.TextFieldWidth Width { get; set; } = GC.TextFieldWidth.Medium;
+    [Parameter] public int MaxLength { get; set; } = 20;
+    [Parameter] public string Value { get; set; }
+    [Parameter] public EventCallback<string> ValueChanged { get; set; }
+    [Parameter] public Expression<Func<string>> ValueExpression { get; set; }
+
+    private string label = loading;
+    protected override void OnInitialized() => label = GetLabel(LangCode);
+}

@@ -1,0 +1,22 @@
+﻿
+.label-key {
+    display: flex;
+    align-items: center;
+    color: white;
+    font-weight: bold;
+    font-size: 20px;
+    background-color: red;
+}
+
+.label-langcode {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    font-weight: normal;
+    font-size: 10px;
+}
+
+.label-buttons {
+    margin-top: 5px;
+}
+

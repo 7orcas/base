@@ -1,0 +1,413 @@
+﻿@attribute [Route(BaseRoutes.RoleRoute)]
+@inherits BasePage
+@attribute [Authorize]
+
+
+<ConfirmNavigation List="roles" />
+
+<!-- @key Forces a refresh -->
+<Header @key="_stateChangedToggle"
+        TitleKey="Roles"
+        SubTitleKey="RoleSub"
+        PageCode=@BaseRoutes.RolePageCode
+        ToolBarButtonsLeft="toolBarButtonsLeft"
+        ToolBarButtonsRight="toolBarButtonsRight" />
+
+
+@if (_isLoading || _isError || _isSaving)
+{
+    <LoadingWithError IsLoading=@_isLoading
+                      IsSaving=@_isSaving
+                      IsError=@_isError
+                      Message=@_errorMessage>
+        @exception
+    </LoadingWithError>
+    <MudSkeleton Height="100%" Width="100%" />
+}
+else
+{
+    <MudGrid Class="mt-4">
+    
+        <!-- Left Side: List -->
+        @if (showList)
+        {
+            <MudItem xs="2">
+                <MudPaper Elevation="0" Outlined="true">
+                    <MudTable Style="table-layout: fixed;"
+                              Items="@roles"
+                              Height="@tableHeight"
+                              FixedHeader="true"
+                              Hover="true"
+                              Bordered="true"
+                              Striped="true">
+
+                        
+                        <HeaderContent>
+                            <MudTh colspan="2"><Label Key="Role" /></MudTh>
+                            <MudTh><Label Key="Active" /></MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd Style="max-width:px; padding:0px; border-right: none;"
+                                   DataLabel="Error"
+                                   Class="@GetFirstColumnErrorClass(context)"
+                                   @onclick="() => OnItemSelected(context)">
+                                @GetSelectRowPointer(context)
+                            </MudTd>
+                            <MudTd DataLabel="Role"
+                                    Class="@GetSelectRowClass(context)"
+                                    @onclick="() => OnItemSelected(context)">
+                                @if (editRoles || @context.IsNew())
+                                {
+                                    <MudTextField T="string"
+                                                  @bind-Value="context.Code"
+                                                  Immediate="true"
+                                                  MaxLength="@GC.LenCode"
+                                                  Margin="Margin.Dense"
+                                                  Variant="Variant.Text" />
+                                }
+                                else
+                                {
+                                    @context.Code
+                                }
+                            </MudTd>
+                            <MudTd DataLabel="Active">
+                                <MudCheckBox T="bool"
+                                             ReadOnly="@(!_isCrudU)"
+                                             @bind-Value="context.IsActive"/>
+                            </MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                </MudPaper>
+            </MudItem>
+        }
+
+
+        <!-- Right Side: Details -->
+        @if (selections.Count > 0)
+        {
+            <MudItem xs="8">
+                <MudPaper Elevation="0" Outlined="@_debugOutlined">
+                    <div style="max-height: @tableHeight; overflow-y: auto;">
+
+                        <table class="mud-table mud-table-hover mud-table-bordered mud-table-striped full-width-table" style="width: 100%;">
+
+                            <!-- Header -->
+                            <thead class="mud-table-head">
+                                <tr class="mud-table-row">
+                                    <th></th>
+                                    @for (int i = 0; i < selections.Count; i++)
+                                    {
+                                        var index = i;
+                                        <th class="mud-table-cell sticky-header" style="@styleDivLeft" colspan="4">
+                                            <MudPaper Class="border-none pa-4" Elevation="0">
+                                                <MudTextField T="string"
+                                                              @bind-Value="@selections[index].Code"
+                                                              Label="@GetLabel("Role")"
+                                                              Immediate="true"
+                                                              ReadOnly="@(!_isCrudU || @selections[index].IsNew())"
+                                                              MaxLength="@GC.LenCode"
+                                                              Margin="Margin.Dense"
+                                                              Variant="Variant.Text" />
+
+                                                <MudTextField T="string"
+                                                              @bind-Value="@selections[index].Description"
+                                                              Immediate="true"
+                                                              Label="@GetLabel("Desc")"
+                                                              ReadOnly="@(!_isCrudU || @selections[index].IsNew())"
+                                                              MaxLength="@GC.LenDescription"
+                                                              Margin="Margin.Dense"
+                                                              Variant="Variant.Text" />
+
+                                                <div class="d-flex gap-4 mt-2">
+                                                    <MudCheckBox T="bool"
+                                                                 Label="@GetLabel("Active")"
+                                                                 ReadOnly="@(!_isCrudU)"
+                                                                 @bind-Value="@selections[index].IsActive" />
+
+                                                    <MudCheckBox T="bool"
+                                                                 Label="@GetLabel("Delete")"
+                                                                 ReadOnly="@(!_isCrudU)"
+                                                                 @bind-Value="@selections[index].IsDelete" />
+                                                </div>
+                                            </MudPaper>
+                                        </th>
+                                    }
+                                </tr>
+                                <tr class="mud-table-row" style="font-weight:bold;">
+                                    <th class="mud-table-cell sticky-header"><Label Bold Key="Perm" /></th>
+                                    @foreach (var role in selections)
+                                    {
+                                        <th class="mud-table-cell sticky-header" style="@styleDivLeft"><Label Bold Key="Crud.C" /></th>
+                                        <th class="mud-table-cell sticky-header" style="text-align: center;"><Label Bold Key="Crud.R" /></th>
+                                        <th class="mud-table-cell sticky-header" style="text-align: center;"><Label Bold Key="Crud.U" /></th>
+                                        <th class="mud-table-cell sticky-header" style="text-align: center;"><Label Bold Key="Crud.D" /></th>
+                                    }
+                                </tr>
+
+                            </thead>
+                            <tbody class="mud-table-body">
+
+                                @foreach (var permission in selections.First().RolePermissions)
+                                {
+                                    <tr class="mud-table-row">
+
+                                        <td class="mud-table-cell">@permission.Permission</td>
+                                        @foreach (var role in selections)
+                                        {
+                                            var matching = role.RolePermissions.FirstOrDefault(p => p.PermissionNr == permission.PermissionNr);
+                                            <td class="mud-table-cell" style="@styleDivLeft">
+                                                <MudCheckBox T="bool"
+                                                             Style="@styleCB"
+                                                             Value="@IsCrud(matching, GC.CrudCreate)"
+                                                             ValueChanged="@(v => SetCrud(matching, GC.CrudCreate, v))"
+                                                             ReadOnly="@(!_isCrudU)" />
+                                            </td>
+                                            <td class="mud-table-cell">
+                                                <MudCheckBox T="bool"
+                                                             Style="@styleCB"
+                                                             Value="@IsCrud(matching, GC.CrudRead)"
+                                                             ValueChanged="@(v => SetCrud(matching, GC.CrudRead, v))"
+                                                             ReadOnly="@(!_isCrudU)" />
+                                            </td>
+                                            <td class="mud-table-cell">
+                                                <MudCheckBox T="bool"
+                                                             Style="@styleCB"
+                                                             Value="@IsCrud(matching, GC.CrudUpdate)"
+                                                             ValueChanged="@(v => SetCrud(matching, GC.CrudUpdate, v))"
+                                                             ReadOnly="@(!_isCrudU)" />
+                                            </td>
+                                            <td class="mud-table-cell">
+                                                <MudCheckBox T="bool"
+                                                             Style="@styleCB"
+                                                             Value="@IsCrud(matching, GC.CrudDelete)"
+                                                             ValueChanged="@(v => SetCrud(matching, GC.CrudDelete, v))"
+                                                             ReadOnly="@(!_isCrudU)" />
+                                            </td>
+
+                                        }
+                                    </tr>
+                                }
+                            </tbody>
+                        
+                        </table>
+                    </div>
+                </MudPaper>
+            </MudItem>
+        }
+    </MudGrid>
+}
+
+@using System.Net
+@using MudBlazor
+@using FrontendServer.Base.Util
+@using System.Text;
+@using sysJ = System.Text.Json
+@using FrontendServer.Base._Base;
+@using GC = FrontendServer.GlobalConstants;
+
+@using Newtonsoft.Json;  
+
+
+@code {
+    private string tableHeight = "70vh";
+    private int maxSelections = 3;
+    private bool showList = false;
+    private bool editRoles = false;
+    private string styleDivLeft = "text-align: center; border-left-style:double; border-left-width:3px; border-left-style:groove;";
+    private string styleCB = "align-items: center;";
+    private List<PermissionDto> permissions;
+    private List<RoleDto> roles;
+    private List<RoleDto> selections = new List<RoleDto>();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await InitialiseBasePage(GC.PerRole, "Role");
+            _pageCode = BaseRoutes.OrgPageCode;
+
+            await Load();
+            permissions = await GetAsync<List<PermissionDto>>(GC.URL_perm_list);
+
+            showList = roles.Count > 1;
+
+            if (_isCrudU)
+                toolBarButtonsLeft.Add(new ToolBarButton { 
+                    GetLabel = GetLabelRoleEdit,
+                    Action = EditRoles });
+
+            if (_isCrudC)
+                toolBarButtonsLeft.Add(new ToolBarButton { 
+                    LangKey = "RoleA", 
+                    Action = AddRole });
+
+            AddToolbarExport(Export);
+            if (toolBarButtonsLeft.Count>0)
+                AddToolbarSave(SaveAsync);
+
+
+            ForceStateHasChanged();
+        }
+    }
+
+    private async Task Load()
+    {
+        roles = await GetAsync<List<RoleDto>>(GC.URL_role_list);
+
+        //Reselect
+        if (selections.Count > 0)
+        {
+            var x = new List<RoleDto>(selections);
+            selections.Clear();
+            foreach (var r in x)
+            {
+                var s = roles.Find(z => z.Code.Equals(r.Code));
+                if (s != null)
+                    await Select(s, false);
+            }
+        }
+        else if (roles.Count > 0)
+        {
+            await Select(roles[0], true);
+            await Select(roles[3], true); //DELETE ME
+            await Select(roles[4], true); //DELETE ME
+        }
+        
+        StateHasChanged();
+    }
+
+    private async Task OnItemSelected(RoleDto r) 
+    {
+        await Select(r, false);
+        StateHasChanged();
+    }
+
+    private async Task Select(RoleDto dto, bool force)
+    {
+        int index = -1;
+        if (!dto.IsLoaded || force)
+        {
+            var roleDto = await GetAsync<RoleDto>(GC.URL_role + dto.Id, true);
+            roleDto.HashMe();
+            roleDto.IsLoaded = true;
+            index = roles.FindIndex(r => r.Id == dto.Id);
+            roles[index] = roleDto;
+            dto = roleDto;
+        }
+
+        index = selections.FindIndex(r => r.Id == dto.Id);
+
+        //Already selected?
+        if (index >= 0)
+            selections.RemoveAt(index);
+        else 
+        {
+            if (selections.Count >= maxSelections)
+                selections.RemoveAt(0);
+
+            selections.Add(dto);
+        }
+    }
+
+    private string GetSelectRowPointer(RoleDto dto) => GetSelectRowPointer(selections.Contains(dto));
+    private string GetSelectRowClass(RoleDto dto) => GetSelectRowClass(selections.Contains(dto));
+
+    private bool IsCrud(RolePermissionDto p, string crudChar) => !string.IsNullOrEmpty(p.Crud) && p.Crud.Contains(crudChar);
+
+    private void SetCrud(RolePermissionDto? match, string crudChar, bool value)
+    {
+        if (match == null) return;
+
+        var crud = match.Crud ?? "";
+        if (!value)
+            crud = crud.Replace(crudChar, "");
+        else
+            crud += crudChar;
+
+        var crudx = "";
+        if (crud.Contains(GC.CrudCreate)) crudx += GC.CrudCreate;
+        if (crud.Contains(GC.CrudRead)) crudx += GC.CrudRead;
+        if (crud.Contains(GC.CrudUpdate)) crudx += GC.CrudUpdate;
+        if (crud.Contains(GC.CrudDelete)) crudx += GC.CrudDelete;
+        match.Crud = crudx;
+    }
+
+    private async Task EditRoles()
+    {
+        if (!_isCrudU) return;
+        editRoles = !editRoles;
+        await Task.CompletedTask;
+    }
+
+    private string GetLabelRoleEdit() => GetLabel("RoleEN") + ": " + (editRoles ? GetLabel("On") : GetLabel("Off"));
+
+    private async Task SaveAsync()
+    {
+        _isSaving = true;
+
+        var updates = new List<RoleDto>();
+        for (int i = 0; i < roles.Count; i++)
+        {
+            var dto = roles[i];
+            if (dto.IsLoaded && dto.HasChanged())
+                updates.Add(dto);
+        }
+
+        if (updates.Count>0)
+        {
+            var response = await PostAsync<RoleDto>(GC.URL_role_update, updates);
+            if (response.StatusCode == GC.StatusCodeOk)
+            {
+                await Load();
+            }
+        }
+        _isSaving = false;
+    }
+
+
+    private async Task AddRole()
+    {
+        var id = GC.NewRecordId;
+        foreach (var r in roles)
+            id = r.Id < id ? id - 1 : id;
+
+        var role = new RoleDto
+            {
+                Id = id,
+                Code = GetLabel("New").ToUpper(),
+                IsActive = true,
+                Updated = DateTime.Now,
+                IsLoaded = true,
+                RolePermissions = new List<RolePermissionDto>(),
+            };
+
+        //Add permissions 
+        var roleX = roles[0];
+        foreach (var p in permissions)
+            role.RolePermissions.Add(new RolePermissionDto
+            {
+                Id = GC.NewRecordId,
+                RoleId = role.Id,
+                Crud = "",
+                PermissionNr = p.PermissionNr,
+                Permission = p.LangKey,
+                IsActive = true,
+            });
+
+        role.HashMe();
+        roles.Insert(0, role);
+        Select(role, false);
+        await Task.CompletedTask;
+    }
+
+
+    //ToDo
+    private async Task Export()
+    {
+
+    }
+
+    private string Label(string key) => GetLabel(key);
+    protected override async Task OnInitializedAsync() => _isLoading = true;
+
+}

@@ -1,0 +1,65 @@
+﻿@inherits BasePage
+
+@if (@IsLoading || @IsSaving)
+{
+    <div class="loading-overlay">
+        <div class="loading-spinner">
+            <p>...</p>
+        </div>
+    </div>
+}
+else @if (@IsError)
+{
+    @if (StatusCode != GC.StatusCodeNotAuthorised)
+    {
+        <h1>Oops, that's embarrassing...</h1>
+        
+        <div>
+            <h3>An error has occured, please contact your system admin.</h3>
+        </div>
+
+        <div class="error-content">
+            <div class="title">Error detail (copy to your system admin):</div>
+            <div class="message">@Message</div>
+            @ChildContent
+        </div>
+    }
+    else
+    {
+        <h2>@nAuthX</h2>
+        <div class="error-content">
+            <div class="title">@nAuthA</div>
+            <div class="message">@Message</div>
+            @ChildContent
+        </div>
+    }
+}
+
+@using GC = FrontendServer.GlobalConstants;
+
+@code {
+    [Parameter] public bool IsLoading { get; set; }
+    [Parameter] public bool IsSaving { get; set; }
+    [Parameter] public bool IsError { get; set; }
+    [Parameter] public int? StatusCode { get; set; } = -1;
+    [Parameter] public MarkupString? Message { get; set; }
+    [Parameter] public RenderFragment ChildContent { get; set; }
+
+    private string nAuthX;
+    private string nAuthA;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await InitialiseBasePage(GC.PerIgnore);
+            nAuthX = GetLabel("NAuthX");  
+            nAuthA = GetLabel("NAuthA");
+            
+            StateHasChanged();
+        }
+    }
+
+   
+
+}

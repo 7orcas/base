@@ -1,0 +1,105 @@
+﻿.title-container {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center; 
+    padding-left: 16px;
+    gap: 16px;
+}
+
+.title-container-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.page-code {
+    font-size: 0.8rem;
+    color: gray;
+}
+
+.title {
+    font-family: 'Playfair Display' !important;
+    font-weight: bold;
+    font-size: 2.5rem !important;
+}
+
+.title-light {
+    color: var(--button-overlay-light) !important;
+}
+
+.title-dark {
+    color: #F0F0F0 !important;
+}
+
+.subtitle {
+    padding-left: 16px;
+    margin-bottom: 5px;
+    font-size: 0.9rem !important;
+}
+
+.subtitle-light {
+    color: slategrey !important;
+}
+
+.subtitle-dark {
+    color: slategray !important;
+}
+
+/* Light mode */
+.toolbarXX {
+    background-color: var(--toolbar-bg-light);
+}
+
+/* Dark mode overrides */
+@media (prefers-color-scheme: dark) {
+    .toolbar {
+        background-color: var(--toolbar-bg-dark);
+    }
+}
+
+/* Shared button styles */
+.toolbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 16px;
+    border-bottom: 1px solid #ccc;
+}
+
+.toolbar-left,
+.toolbar-right {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px; /* spacing between buttons */
+}
+
+
+
+.toolbar-button {
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    /*transition: background-color 0.2s ease;*/
+    transition: none !important;
+    border-radius: 6px;
+    min-width: 150px;
+    text-transform: none;
+}
+
+    .toolbar-button:hover,
+    .toolbar-button:focus {
+        border: none;
+        outline: none;
+        box-shadow: none;
+        filter: brightness(0.95);
+    }
+
+.toolbar-button-light {
+    background-color: var(--button-overlay-light);
+    color: var(--button-text-color-light);
+}
+
+.toolbar-button-dark {
+    background-color: var(--button-overlay-dark);
+    color: var(--button-text-color-dark);
+}

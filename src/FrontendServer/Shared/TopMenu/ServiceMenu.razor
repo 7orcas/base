@@ -1,0 +1,29 @@
+﻿
+<div style="font-weight:bold; text-decoration:underline">
+    SERVICE MENU
+</div>
+
+<nav class="flex-column">
+    
+    <MudStack Spacing="1" Style="align-items: flex-start;">
+        <NavLink href="" Match="NavLinkMatch.All">Home</NavLink>
+        <NavLink href="permission">Permissions</NavLink>
+        <NavLink href="role">User Roles</NavLink>
+        <NavLink href="audit">Audit</NavLink>
+        <NavLink href="organisation">Organisation</NavLink>
+        <NavLink href="config">Config</NavLink>
+        <NavLink href="" @onclick="Logout">Logout</NavLink>
+    </MudStack>
+</nav>
+
+
+@inject LogoutService LogoutService
+@code {
+    
+
+    private async Task Logout()
+    {
+        LogoutService.LogoutAsync();
+    }
+
+}

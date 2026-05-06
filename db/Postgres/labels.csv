@@ -1,0 +1,163 @@
+username,login,0,User Name,Benutser ID
+pw,login,0,Password,Passwort
+pwAdmin,login,0,Admin Password,
+org,login,0,Organisation,Organisation
+login,login,0,Login,Anmeldung
+lang,login,0,Language,Sprache
+loginT,login,0,Login into Blue,Melden Sie sich bei Blau an
+loginTR,,0,Re-Login into Blue,Re-Login into Blue
+logins,,0,Logins,
+lastLogin,,0,Last Login,
+maxatt,login,0,Max. Login Attempts Exceeded,(D) Max. Login Attempts Exceeded
+loggedIn,,0,Logged In,
+invorg,login,0,No Permission for Organisation,(D) No Permission for Organisation
+invorg1,,0,Inactive or Invalid Organisation,
+invpw,login,0,Invalid Password (%1 of %2 attempts),(D) Invalid Password (%1 of %2 attempts)
+invuid,login,0,Unknown UserID / Password,Unbekannt Benutzer/Passwort
+yes,login,0,Yes,Ja
+no,login,0,No,Nein
+brwver,sys,0,Your browser version has not been tested for this application (minimum requirement is: %1).,Dieses Programm wurde mit Ihrer Browserversion nicht getestet (Mindestanforderungen sind: %1).
+brwupd,sys,0,Please update your browser.,Bitte aktualisieren Sie Ihren Browser.
+passnew,sys,0,New Password,Neues Passwort
+passchg,sys,0,Change Password,Passwort ändern
+passchgd,sys,0,Password Changed,Passwort geändert
+passconf,sys,0,Confirm New Password,Neues Passwort bestätigen
+passcurr,sys,0,Current Password,
+passhide,sys,0,Hide Password,
+passshow,sys,0,Show Password,
+passlen,sys,0,Passwords must contain a minimum of %1 characters.,Neue Passwörter müssen mindestens %1 Zeichen lang sein.
+passinc,sys,0,"They must include at least 1 of each of the following: upper case, lower case, number and special characters %1","Sie müssen folgende Bedingungen erfüllen: mindestens je einen Großbuchstaben, Kleinbuchstaben, eine Ziffer und eines dieser Sonderzeichen %1"
+passforg,login,0,Forgot your password?,Haben Sie Ihr Passwort vergessen?
+passemail,login,0,Please check your emails for a new password (check spam filter if the email is missing),"Bitte überprüfen Sie Ihre E-Mails auf ein neues Passwort (überprüfen Sie den Spamfilter, wenn die E-Mail fehlt)"
+passreset,login,0,Password Reset,Passwort zurücksetzen
+passreset1,login,0,A temporary password will be emailed to this address (valid for 24 hours),
+passerr1,,0,Invalid Current Password (this attempt has been logged),
+passerr2,,0,Invalid New or Confirmed password or passwords don't match,
+passerr3,,0,New password does not meet required standard,
+email,login,0,Email,Email
+emailInv,,0,Invalid Email,
+emailSent,,0,Email Sent,
+stimeout,sys,0,Your session has timed-out due to inactivity. Please re-login.,Die Session ist wegen Inaktivität abgelaufen. Bitte erneut einloggen.
+relogin,sys,0,"Your access has timed out, please relogin",Sitzung abgelaufen. Bitte erneut einloggen.
+logout,sys,0,Logout,Abmelden
+loggedout,sys,0,Logged out,Abgemeldet
+logouts,,0,Logout successful,
+logoutm,sys,0,You are logged out,
+maxLAttemp,,0,Max. Login Attempts,
+cancel,login,0,Cancel,Abbrechen
+commit,login,0,Commit,Verpflichten
+clear,sys,0,Clear,Leeren
+close,sys,0,Close,Schliessen
+delete,sys,0,Delete,Löschen
+desc,sys,0,Description,Bezeichnung
+action,,0,Action,
+help,sys,0,Help,Hilfe
+attempts,,0,Attempts,
+resetAtt,,0,Reset Attempts,
+invalid,,0,Invalid,Ungültig
+std,,0,Standard,Standard
+blank,,0,Blank,Leer
+mandatory,,0,Mandatory,Pflichtfeld
+message,,0,Message,Meldung
+type,,0,Type,Typ
+appname,,0,Blue Planning,(D) Blue Planning
+appname,,1,Blue PlanningX,(D) Blue PlanningX
+planmat,,0,Preplan,
+startmo,,0,Start Molds,
+simus,,0,Simulations,
+mastdat,,0,Master Data,
+styles,,0,Styles,Modelle
+molds,,0,Molds,
+machines,,0,Machines,Maschinen
+shifts,,0,Shifts,Schichten
+fixes,,0,Fixes,
+themeL,,0,Light Theme,
+themeD,,0,Dark Theme,
+editLabels,,0,Edit Labels,
+inarec,,0,Inactive Record,
+plnhorz,,0,Planning horizon,Planungshorizont
+cmpltso,,0,Complete Sales Orders first,Vollständige Aufträge zuerst
+nxtship,,0,Next Shipment,Nächste Lieferung
+nxtshipd,,0,Shipment Date,Lieferung Datum
+nxtshipid,,0,Shipment ID,Lieferung Nummer
+starttime,gen,0,Start Time,Startzeit
+endtime,gen,0,End Time,Endzeit
+capacity,,0,Capacity,Kapazität
+today,gen,0,Today,Heute
+error,,0,Error,Error
+warn,,0,Warning,Warning
+warnchanges,,0,Warning Unsave Changes,
+errunk,login,0,"An error has occurred, please contact your system admin","An error has occurred, please contact your system admin"
+context,,0,Context,Context
+detail,,0,Detail,Detail
+orgnr,excel,0,Organisation Number,Organisation Number
+orgnr-s,,0,OrgNr,Org Nr
+orgs,,0,Org Numbers,
+langkey,excel,0,Label Key,Label Key
+label,excel,0,Label,Label
+id,excel,0,ID,Record ID
+duplabel,excel,0,Column label is duplicated,Column label is duplicated
+invexcel,excel,0,Invalid Excel File,Invalid Excel File
+labels,excel,0,Labels,Labels
+invchanges,,0,Invalid Changes,
+chfile,,0,Choose a File,
+upfile,,0,Upload a File,
+nochanges,,0,There are no changes,
+errstatus,,0,Error Status,
+fileup,,0,File Upload,
+invfile,,0,Invalid File Extension,
+fileup-label,,0,Max. Login Attempts,
+expExcel,,0,Export table to Excel,
+showchange,,0,Show Change,
+labeladmin,,0,Label Admin,
+orgadmin,,0,Organisation Admin,
+inv-id,,0,Invalid Id,
+code,,0,Code,
+active,,0,Active,
+savechanges1,,0,There are unsaved changes.,
+savechanges2,,0,These will be lost if you navigate away from this page.,
+saveError1,,0,There are errors,
+saveErrorFix,,0,These must be fixed before saving,
+permadmin,,0,Permissions Admin,
+addperm,,0,Add Permission,
+role,,0,Role,
+roleadmin,,0,Role Admin,
+addrole,,0,Add Role,
+showperms,,0,Show Permissions,
+showroles,,0,Show Roles,
+userid,,0,User Id,
+user,,0,User,
+useradmin,,0,User Admin,
+url,,0,URL,
+url-c,,0,Code (URL),
+crud,,0,CRUD,
+addsels,,0,Add Selections,
+valErr1,valerr,0,Record not found,
+valErr2,valerr,0,Record has changed,
+valErr3,valerr,0,%1' must have a value,
+valErr4,valerr,0,%1' has an invalid value,
+valErr5,valerr,0,%1' must be unique,
+valErr6,valerr,0,Can't delete '%1' because it is used in %2,
+valErrA1,valerr,0,Reload the page,
+valErrA2,valerr,0,Enter a correct value into '%1',
+valErrA3,valerr,0,Remove '%1' from %2,
+valErrT,valerr,0,Can't save changes due to the following problem(s),
+lastupby,,0,Last updated by,
+lastup,,0,Last update,
+problem,,0,Problem,
+dvalue,,0,Default,
+dvalue-s,,0,Dft,
+loading,,0,Loading...,
+configs,,0,Configurations,
+sessionid,,0,Session Id,
+clientnr,,0,Client Nr,
+lastact,,0,Last Activity,
+notauth,,0,Not Authorised,
+notauth1,,0,You are not authorised,
+seeadmin,,0,Please contact your system admin,
+loginconf,,0,Login Configuration,
+countries,,0,Countries,
+country,,0,Country,
+currs,,0,Currencies,
+curr,,0,Currency,
+sort,,0,Sort,

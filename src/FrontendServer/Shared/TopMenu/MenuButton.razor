@@ -1,0 +1,13 @@
+﻿
+<MudButton Class="custom-menu-button"
+           Link="true"
+           Href="@Link"
+           Color="Color.Inherit"
+           Variant="Variant.Text">
+    <MudText Typo="Typo.h6">@Title</MudText>
+</MudButton>
+
+@code {
+    [Parameter] public string Title { get; set; }
+    [Parameter] public string Link { get; set; }
+}

@@ -1,0 +1,164 @@
+﻿@page "/"
+@using Newtonsoft.Json;
+@using GC = FrontendLogin.GlobalConstants;
+@using Common.DTO.Base;
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@inject IHttpClientFactory HttpClientFactory
+
+<h3>Login</h3>
+<EditForm Model="@loginRequest" OnValidSubmit="@HandleLogin">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div>
+        <label>Username:</label>
+        <InputText @bind-Value="loginRequest.Username" />
+    </div>
+    <div>
+        <label>Password:</label>
+        <InputText @bind-Value="loginRequest.Password" Type="password" />
+    </div>
+    <div>
+        <label>Org:</label>
+        <InputNumber @bind-Value="loginRequest.Org" />
+    </div>
+    <div>
+        <label>Language:</label>
+        <InputText @bind-Value="loginRequest.LangCode" />
+    </div>
+    <button type="submit">Login</button>
+</EditForm>
+
+<p>@successMessage</p>
+<p>@errorMessage</p>
+<p>@tokenkey</p>
+<p>@token</p>
+
+@code {
+    private LoginRequest loginRequest = new LoginRequest
+    {
+        LangCode = "en"    
+    };
+    private string errorMessage = string.Empty;
+    private string successMessage = string.Empty;
+    private string tokenkey;
+    private string token;
+    private bool autoLogin = false;
+    private string autoOpen = string.Empty;
+
+    private async Task HandleLogin()
+    {
+        try
+        {
+            loginRequest.SourceApplication = GC.AppClient;
+            errorMessage = string.Empty;
+            successMessage = string.Empty;
+
+            var client = HttpClientFactory.CreateClient("BackendApi");
+
+            var response = await client.PostAsJsonAsync("api/Login/login", loginRequest);
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadAsStringAsync();
+                var responseDto = JsonConvert.DeserializeObject<_ResponseDto>(result);
+
+                if (responseDto.Valid)
+                {
+                    var login = JsonConvert.DeserializeObject<LoginTokenDto>(responseDto.Result.ToString());
+                    successMessage = responseDto.SuccessMessage;
+                    tokenkey = login.TokenKey;
+                    token = login.Token;
+
+                    //await TestPause();
+
+                    NavigationManager.NavigateTo(login.MainUrl 
+                        + "?tk=" + tokenkey
+                        + (string.IsNullOrEmpty(autoOpen)? "" : "&open=" + autoOpen),
+                        true);
+                }
+                else
+                {
+                    errorMessage = responseDto.ErrorMessage;
+                }
+
+                // Save token, e.g., in localStorage if this were Blazor WebAssembly
+            }
+            else
+            {
+                errorMessage = "Invalid username or password + ";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"An error occurred: {ex.Message}";
+        }
+    }
+
+    private async Task TestPause()
+    {
+        await Task.Delay(3000);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (autoLogin)
+            HandleLogin();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        loginRequest.Org = 1;
+
+        // Parse the URL query string
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
+
+        // Get a specific query parameter value
+        if (query.TryGetValue("u", out var user))
+            loginRequest.Username = user.ToString();
+        if (query.TryGetValue("p", out var pw))
+            loginRequest.Password = pw.ToString();
+        if (query.TryGetValue("o", out var org))
+            loginRequest.Org = int.Parse(org.ToString());
+        if (query.TryGetValue("l", out var langCode))
+            loginRequest.LangCode = langCode.ToString();
+        if (query.TryGetValue("auto", out var autoX))
+            autoLogin = autoX.ToString().Trim().StartsWith("t");
+        if (query.TryGetValue("open", out var openX))
+            autoOpen = openX.ToString();
+
+        if (!loginRequest.IsPopulated())
+            getEnvironmentVariables();
+    }
+
+    /**
+     * Passed in parameters via launchSettings.json
+     * For DEVELOPMENT ONLY
+     */
+    private void getEnvironmentVariables()
+    {
+        var dev = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+        if (string.IsNullOrEmpty(dev)
+            || !dev.Equals("Development"))
+            return;
+
+        var user = Environment.GetEnvironmentVariable("USER");
+        loginRequest.Username = user.ToString();
+
+        var pw = Environment.GetEnvironmentVariable("PASSWORD");
+        loginRequest.Password = pw.ToString();
+
+        var org = Environment.GetEnvironmentVariable("ORG");
+        loginRequest.Org = int.Parse(org.ToString());
+
+        var langCode = Environment.GetEnvironmentVariable("LANGCODE");
+        loginRequest.LangCode = langCode.ToString();
+
+        var autoValue = Environment.GetEnvironmentVariable("AUTO");
+        autoLogin = autoValue?.Trim().ToLower() == "true";
+
+        var openValue = Environment.GetEnvironmentVariable("OPEN");
+        autoOpen = openValue?.ToString();
+    }
+}

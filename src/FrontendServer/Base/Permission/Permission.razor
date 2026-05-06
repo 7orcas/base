@@ -1,0 +1,122 @@
+﻿@attribute [Route(BaseRoutes.PermRoute)]
+@inherits BasePage
+@attribute [Authorize]
+
+<Header @key="_pageCode"
+        TitleKey="UserPerm"
+        SubTitleKey="UserPermSub"
+        PageCode=@_pageCode
+        ToolBarButtonsLeft="toolBarButtons" />
+
+@if (_isLoading || _isError || _isSaving)
+{
+    <LoadingWithError IsLoading=@_isLoading
+                      IsSaving=@_isSaving
+                      IsError=@_isError
+                      Message=@_errorMessage>
+        @exception
+    </LoadingWithError>
+}
+else
+{
+    <p></p>
+    <MudGrid>
+
+        <MudItem xs="8">
+            <MudPaper Elevation="0" Outlined="@_debugOutlined">
+                <MudExpansionPanels MultiExpansion="true">
+                    <MudExpansionPanel Expanded="@_expandFirstPanel">
+                        <TitleContent>
+                            <Label Size="GC.TextSize.Large" Key="PermEff"></Label>
+                            <div class="d-flex">
+                            </div>
+                        </TitleContent>
+                        <ChildContent>
+                            <div style="table-layout: fixed; width: 400px;">
+                                <MudTable Items="@effective">
+                                    <HeaderContent>
+                                        <MudTh><Label Key="PermNr" /></MudTh>
+                                        <MudTh><Label Key="Perm" /></MudTh>
+                                        <MudTh><Label Key="Crud" /></MudTh>
+                                    </HeaderContent>
+                                    <RowTemplate>
+                                        <MudTd DataLabel="Column 1">@context.PermissionNr</MudTd>
+                                        <MudTd DataLabel="Column 2">@context.LangKey</MudTd>
+                                        <MudTd DataLabel="Column 3">@context.Crud</MudTd>
+                                    </RowTemplate>
+                                </MudTable>
+                            </div>
+                        </ChildContent>
+                    </MudExpansionPanel>
+
+                    <MudExpansionPanel>
+                        <TitleContent>
+                            <Label Size="GC.TextSize.Large" Key="PermAll"></Label>
+                        </TitleContent>
+                        <ChildContent>
+                            <div style="table-layout: fixed; width: 600px;">
+                                <MudTable Items="@permissions">
+                                    <HeaderContent>
+                                        <MudTh><Label Key="Role" /></MudTh>
+                                        <MudTh><Label Key="OrgNr" /></MudTh>
+                                        <MudTh><Label Key="PermNr" /></MudTh>
+                                        <MudTh><Label Key="Perm" /></MudTh>
+                                        <MudTh><Label Key="Crud" /></MudTh>
+                                    </HeaderContent>
+                                    <RowTemplate>
+                                        <MudTd DataLabel="Column 1">@context.Role</MudTd>
+                                        <MudTd DataLabel="Column 2">@context.OrgNr</MudTd>
+                                        <MudTd DataLabel="Column 3">@context.PermissionNr</MudTd>
+                                        <MudTd DataLabel="Column 4">@context.LangKey</MudTd>
+                                        <MudTd DataLabel="Column 5">@context.Crud</MudTd>
+                                    </RowTemplate>
+                                </MudTable>
+                             </div>
+                        </ChildContent>
+                    </MudExpansionPanel>
+                </MudExpansionPanels>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+}
+
+@using Newtonsoft.Json;
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using GC = FrontendServer.GlobalConstants;
+
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@inject IHttpClientFactory HttpClientFactory
+@inject ProtectedSessionStorage ProtectedSessionStore
+@inject PermissionService PS
+
+@code {
+    private bool _expandFirstPanel = true;
+    private List<PermissionDto>? effective;
+    private List<UserRolePermissionDto>? permissions;
+    private List<ToolBarButton> toolBarButtons = new List<ToolBarButton>();
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await InitialiseBasePage(GC.PerPerm);
+            _pageCode = BaseRoutes.PermPageCode;
+
+            permissions = PS.AllPermissions;
+            effective = PS.Permissions;
+
+            _isError = effective == null;
+            _isLoading = false;
+
+            toolBarButtons.Add(new ToolBarButton { LangKey = "Export", Action = Export });
+            
+
+            StateHasChanged();
+        }
+    }
+   
+    private async Task Export() { }
+
+}

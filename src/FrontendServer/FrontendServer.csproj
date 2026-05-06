@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Base\Util\LoadingWithError.razor.css" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Base\Util\LoadingWithError.razor.css" />
+  </ItemGroup>
+
+  <ItemGroup>
+	<PackageReference Include="MudBlazor" Version="8.7.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+	<PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
+	<PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Base\Session\" />
+    <Folder Include="Logs\" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,45 @@
+﻿@inherits BasePage
+@typeparam T where T : _BaseDto<T>
+
+<!-- ConfirmExternalNavigation="true" -->
+<NavigationLock OnBeforeInternalNavigation="HandleNavigation" />
+
+@using GC = FrontendServer.GlobalConstants;
+
+@code {
+    [Parameter] public _BaseDto<T> Dto { get; set; }
+    [Parameter] public IEnumerable<_BaseDto<T>> List { get; set; }
+
+    private async Task HandleNavigation(LocationChangingContext context)
+    {
+        var changes = false;
+
+        var list = List?.ToList();
+        for (int i = 0; list != null && i < list.Count; i++)
+        {
+            var dto = list[i];
+            if (dto.IsLoaded && dto.HasChanged())
+                changes = true;
+        }
+
+        if (Dto != null && Dto.HasChanged())
+            changes = true;
+
+        if (changes)
+        {
+            var confirmed = await JS.InvokeAsync<bool>("confirm", GetLabel("UnsavedC"));
+            if (!confirmed)
+                context.PreventNavigation();
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await InitialiseBasePage(GC.PerIgnore);
+            StateHasChanged();
+        }
+    }
+}
+

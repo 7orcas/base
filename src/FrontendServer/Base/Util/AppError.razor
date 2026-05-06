@@ -1,0 +1,20 @@
+﻿<h1>Oops, that's embarrassing...</h1>
+
+<div>
+    <h3>An error has occured, please contact your system admin.</h3>
+</div>
+
+<div class="error-content">
+    <div class="title">Error detail (copy to your system admin):</div>
+    <div class="message">@Message</div>
+    @ChildContent
+</div>
+
+
+@code {
+    [Parameter]
+    public MarkupString? Message { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+}

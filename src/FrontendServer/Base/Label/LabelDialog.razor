@@ -1,0 +1,220 @@
+﻿@inherits BasePage
+
+ 
+@if (_isLoading || _isError)
+{
+    <LoadingWithError 
+        IsLoading=@_isLoading
+        IsError=@_isError
+        Message=@_errorMessage>
+        @exception
+    </LoadingWithError>
+}
+else
+{
+    <MudDialog Style="min-width: 850px; width: 80%;">
+        <DialogContent>
+            <MudGrid>
+                <MudItem xs="12" >
+                    <MudPaper Class="pa-4" style="background-color: #f2f2f2;  border: 1px solid black;">
+                        <MudForm @ref="form" @bind-IsValid="@success">
+                
+                            <div class="label-key">
+                                &nbsp;@GetLabelHighlightNoKey("Code"):&nbsp;
+                                <div>@LangKey</div>
+                            </div>
+                
+                            @if (@IsMultiLanguageView())
+                            {
+                                <MudTable 
+                                    Items="@labels" 
+                                    Hover="true"
+                                    ReadOnly="@ronly"
+                                    CanCancelEdit="@canCancelEdit"
+                                    Striped="true">
+
+                                    <ColGroup>
+                                        <col style="width: 80px;" />
+                                        <col style="width: 300px;" />
+                                        <col style="width: 400px;" />
+                                        <col style="width: 80px;" />
+                                    </ColGroup>
+
+                                    <HeaderContent>
+                                        <MudTh>@lLangCode</MudTh>
+                                        <MudTh>@lLabel</MudTh>
+                                        <MudTh>@lTooltip</MudTh>
+                                        <MudTh>@lVariant</MudTh>
+                                    </HeaderContent>
+                                    <RowTemplate>
+                                        <MudTd DataLabel="LangCode">@context.LangCode</MudTd>
+                                        <MudTd DataLabel="Label">@context.Label</MudTd>
+                                        <MudTd DataLabel="ToolTip">@context.Tooltip</MudTd>
+                                        <MudTd DataLabel="Variant">@context.Variant</MudTd>
+                                    </RowTemplate>
+                                    <RowEditingTemplate>
+                                        <MudTd DataLabel="LangCode">@context.LangCode</MudTd>
+                                        <MudTd DataLabel="Label">
+                                            @if (context.IsUpdateable)
+                                            {
+                                                <MudTextField @bind-Value="context.Label" Required />
+                                            }
+                                            else
+                                            {
+                                                @context.Label
+                                            }
+                                        </MudTd>
+                                        <MudTd DataLabel="ToolTip">
+                                            @if (context.IsUpdateable)
+                                            {
+                                                <MudTextField @bind-Value="context.Tooltip"/>
+                                            }
+                                            else
+                                            {
+                                                @context.Label
+                                            }
+                                        </MudTd>
+                                        <MudTd DataLabel="Nr">
+                                            @if (context.IsUpdateable)
+                                            {
+                                                <MudTextField @bind-Value="context.Variant" />
+                                            }
+                                            else
+                                            {
+                                                @context.Label
+                                            }
+                                        </MudTd>
+                                    </RowEditingTemplate>
+                                </MudTable>
+                            }
+                            else
+                            {
+                                <div class="label-langcode">
+                                    &nbsp;@GetLabelHighlightNoKey("Language"):&nbsp;
+                                    <div>@langCode</div>
+                                </div>
+
+                                <MudTextField T="string" Label="@lLabel" OnBlur="@OnBlu" @ref="labelField" @bind-Value="label" Required="true" RequiredError="Label is required!" />
+                                <MudTextField T="string" Label="@tooltip" OnBlur="@OnBlu" @ref="tooltipField" @bind-Value="tooltip" />
+                                <MudTextField T="int" Label="@lVariant" OnBlur="@OnBlu" @ref="variantField" @bind-Value="variant" />
+                            }
+                
+                            <div class="d-flex align-right label-buttons">
+                                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(!success)" Class="ml-auto" OnClick="Save">@GetLabel("SaveRecord")</MudButton>
+                                    <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="@CloseDialog" style="margin-left: 10px">@GetLabel("Cancel")</MudButton>
+                            </div>
+                
+                        </MudForm>
+                    </MudPaper>
+                </MudItem>
+            </MudGrid>
+        </DialogContent>
+    </MudDialog>
+}
+
+@using GC = FrontendServer.GlobalConstants;
+
+@code {
+    [Parameter] public string LangKey { get; set; }
+    [CascadingParameter] private IMudDialogInstance? MudDialog { get; set; }
+    
+    private AppConfigDto? appConfig;
+    private List<LangLabelDto>? labels;
+
+    //Table parameters
+    private bool ronly = false;
+    private bool canCancelEdit = true;
+
+    //Single label
+    private string? langCode;
+    private string? label;
+    private string? tooltip;
+    private int variant;
+    private bool success  = true;
+
+    //Headings
+    private string? lLangCode;
+    private string? lLabel;
+    private string? lTooltip;
+    private string? lVariant;
+
+    MudForm form;
+    MudTextField<string> labelField;
+    MudTextField<string> tooltipField;
+    MudTextField<int> variantField;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await InitialiseBasePage(GC.PerLang);
+            appConfig = await GetConfig();
+            
+            lLangCode = GetLabelHighlightNoKey("LangCode");
+            lLabel = GetLabelHighlightNoKey("Label");
+            lTooltip = GetLabelHighlightNoKey("Tooltip");
+            lVariant = GetLabelHighlightNoKey("Variant");
+
+            labels = await GetAsync<List<LangLabelDto>>(GC.URL_label_relatedlist + LangKey);
+
+            if (labels != null && labels.Count == 1)
+            {
+                langCode = labels[0].LangCode;
+                label = labels[0].Label;
+                tooltip = labels[0].Tooltip;
+                variant = labels[0].Variant.HasValue ? labels[0].Variant.Value : 0;
+            }
+
+            StateHasChanged();
+        }
+    }
+
+    protected override async Task OnInitializedAsync() => _isLoading = true;
+    private bool IsMultiLanguageView() => appConfig != null && appConfig.Languages.Count() > 1;
+    private void CloseDialog() => MudDialog.Close();
+    
+
+    private void OnBlu()
+    {
+        
+    }
+
+    private async Task Save()
+    {
+        await form.Validate();
+        if (success)
+        {
+            int? variant = null;
+            try
+            {
+                variant = variantField.Value;
+                if (variant == 0) variant = null;
+            }
+            catch
+            {
+                variant = null;
+            }
+
+            var tt = tooltipField.Value;
+            if (string.IsNullOrEmpty(tt))
+                tt = null;
+
+            // LangLabel label = new LangLabel
+            // {
+            //     Id = langLabel != null ? langLabel.Id : 0,
+            //     LangCode = clientState.appConfig.LangCode,
+            //     Code = LangKey,
+            //     Description = labelField.Value,
+            //     Tooltip = tt,
+            //     _orgNr = org
+            // };
+
+            // var result = labelService.SaveLabel(label);
+            // clientState.labelMgr.UpdateLabel(label);
+        }
+        else
+        {
+            Console.WriteLine("Form is invalid.");
+        }   
+    }
+}

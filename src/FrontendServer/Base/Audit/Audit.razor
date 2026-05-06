@@ -1,0 +1,130 @@
+﻿@page "/audit"
+@attribute [Authorize]
+
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@inject IHttpClientFactory HttpClientFactory
+@inject AuditService AuditService
+
+@using GC = FrontendServer.GlobalConstants;
+@using Newtonsoft.Json;
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject ProtectedSessionStorage ProtectedSessionStore
+
+
+<h3>Audit</h3>
+
+@if (_isLoading)
+{
+    <div>loading....</div>
+}
+else if (_isError)
+{
+    <div>@message</div>
+}        
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>orgNr</th>
+                <th>Source</th>
+                <th>Entity Type</th>
+                <th>Entity Id</th>
+                <th>User</th>
+                <th>Created</th>
+                <th>Crud</th>
+                <th>Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var rec in auditList)
+            {
+                <tr>
+                    <td>@rec.Id</td>
+                    <td>@rec.orgNr</td>
+                    <td>@rec.Source</td>
+                    <td>@rec.EntityType</td>
+                    <td>@rec.EntityId</td>
+                    <td>@rec.User</td>
+                    <td>@rec.Created</td>
+                    <td>@rec.Crud</td>
+                    <td>@rec.Details</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+
+@code {
+    private List<AuditDto>? auditList;
+    private bool _isLoading = true;
+    private bool _isError = false;
+    private string message;
+    private string token;
+
+    private void ThrowException()
+    {
+        throw new InvalidOperationException("This is a test exception.");
+    }
+
+    private void Recover()
+    {
+        //        errorBoundary.Recover();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+Console.WriteLine("Role OnInitializedAsync called");
+        /*
+        string token = null;
+        var result = await ProtectedSessionStore.GetAsync<string>("token");
+        if (result.Success)
+        token = result.Value;
+        */
+        // Func<Task> lambda = async () => machines = await MachineService.MachinesAsync(token);
+        // await Run(lambda);
+        // machines = await MachineService.MachinesAsync(token);
+        // _isLoading = false;
+
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var store = await ProtectedSessionStore.GetAsync<string>(GC.TokenCacheKey);
+            if (store.Success)
+                token = store.Value;
+            else
+                NavigationManager.NavigateTo("https://localhost:7289", true);
+
+            var result = await AuditService.AuditListAsync(token);
+            auditList = result.list;
+            message = result.message;
+
+            _isError = !string.IsNullOrEmpty(message);
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    public async Task Run(Func<Task> action)
+    {
+        try
+        {
+            await action();
+        }
+        catch (Exception x)
+        {
+            //exception = x;
+            //_isError = true;
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+}

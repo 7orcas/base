@@ -1,0 +1,89 @@
+﻿
+.label {
+    padding: 0;
+    margin: 0;
+    border: none;
+    background-color: transparent;
+    color: inherit;
+    font: inherit;
+}
+
+.label-link {
+    text-decoration: underline dotted !important;
+    cursor: pointer !important;
+}
+
+.label-no-link {
+    cursor: default !important;
+}
+
+.label-no-key {
+    color: red;
+    padding: 0;
+    margin: 0;
+    border: none;
+    background-color: transparent;
+}
+
+.toolbar-button {
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    /*transition: background-color 0.2s ease;*/
+    transition: none !important;
+    border-radius: 6px;
+    min-width: 150px;
+}
+
+    .toolbar-button:hover {
+        border: none;
+        outline: none;
+        box-shadow: none;
+        filter: brightness(0.95);
+        cursor: pointer !important;
+    }
+ 
+    .toolbar-button:focus {
+        border: none;
+        outline: none;
+        box-shadow: none;
+        filter: brightness(0.95);
+    }
+
+.toolbar-button-light {
+    background-color: var(--button-overlay-light);
+    color: var(--button-text-color-light);
+}
+
+.toolbar-button-dark {
+    background-color: var(--button-overlay-dark);
+    color: var(--button-text-color-dark);
+}
+
+.toolbar-button-highlight-light {
+    background-color: var(--button-highlight-overlay-light);
+    color: var(--button-highlight-text-color-light);
+}
+
+.toolbar-button-highlight-dark {
+    background-color: var(--button-highlight-overlay-dark);
+    color: var(--button-highlight-text-color-dark);
+}
+
+[data-tooltip]:hover::after {
+    display: block;
+    position: absolute;
+    content: attr(data-tooltip);
+    border: 1px solid black;
+    background: #eee;
+    padding: .25em;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+}
+
+[data-tooltip]:hover::after {
+    opacity: 1;
+    visibility: visible;
+}

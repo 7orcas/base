@@ -1,0 +1,15 @@
+﻿
+Authentication
+
+Steps:
+1. Login via FrontendLogin
+2. Backend API creates token, stores in DB and returns id 
+3. FrontendLogin redirects to FrontendServer with id in url
+4. FrontendServer gets token via id from Backend
+5. FrontendServer uses token in url calls
+
+
+JwtBearer:
+  help: https://learn.microsoft.com/en-us/aspnet/core/security/authentication/configure-jwt-bearer-authentication?view=aspnetcore-9.0
+
+

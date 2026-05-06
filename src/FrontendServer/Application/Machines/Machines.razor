@@ -1,0 +1,78 @@
+﻿@attribute [Route(AppRoutes.MachinesRoute)]
+@inherits BasePage
+@attribute [Authorize]
+
+
+<Header @key="_pageCode"
+        TitleKey="Machine"
+        SubTitleKey="MachineSub"
+        PageCode=@_pageCode/>
+
+@if (_isLoading || _isError || _isSaving)
+{
+    <LoadingWithError IsLoading=@_isLoading
+                      IsSaving=@_isSaving
+                      IsError=@_isError
+                      Message=@_errorMessage>
+        @exception
+    </LoadingWithError>
+}
+
+
+<MudGrid Class="mt-4">
+    <MudPaper Elevation="0" Outlined="true">
+
+        <Label Key="AddRecordXX"></Label>
+        <Label Key="AddRecord"></Label>
+        
+        @if (machines != null)
+        {
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th><Label Key="Code"></Label></th>
+                        <th><Label Key="Desc"></Label></th>
+                        <th><Label Key="xDummy"></Label></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var machine in machines)
+                    {
+                        <tr>
+                            <td>@machine.Code</td>
+                            <td>@machine.Description</td>
+                            <td></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        <Label Key="Bottom"></Label>
+    
+     </MudPaper>
+   
+</MudGrid>
+
+@using GC = FrontendServer.GlobalConstants;
+@using Common.DTO.App;
+@code {
+    private List<MachineDto>? machines;
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await InitialiseBasePage(GC.PerMach);
+            _pageCode = AppRoutes.MachinesPageCode;
+            machines = await GetAsync<List<MachineDto>>("api/Machine/list");
+
+            StateHasChanged();
+        }
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        _isLoading = true;
+    }
+
+}

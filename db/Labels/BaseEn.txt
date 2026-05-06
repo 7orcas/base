@@ -1,0 +1,73 @@
+New,New
+Close,Close
+Delete,Delete
+On,On
+Off,Off
+Org,Organisation
+Orgs,Organisations
+Orgs-s,Orgs
+OrgNr,Org Nr
+OrgSub,Configuration of Organisation
+Conf,Configuration
+ConfSub,User Configuration
+PW,Password
+PWs,Passwords
+PWmc,Must be mixed case
+PWNonLet,Must contain non-letter
+PWNum,Must contain a number
+PWAt,Max. number of login attempts
+BConf,Base Configuration
+Lang,Language
+Langs,Languages
+LangCodeV,Language Variant
+Label,Label
+SaveRec,Save
+SaveChg,Save Changes
+Config,Configuration
+ConfigG,General Configuration
+UnsavedC,There are unsaved changes. Leave anyway?
+LenMax,Max Length
+LenMin,Min Length
+Nr,Number
+AdminM,Admin
+Role,Role
+Roles,Roles
+RoleSub,Roles contain permissions. Permissions are cumulative|| i.e.|| they combine to give the user the maximum authorisation.
+RoleA,Add New Role
+RoleEN,Edit Role Names
+MachSub,Machine record
+NAuth,Not Authorised
+NAuthX,You are not authorised to view this page
+NAuthA,Please see you system admin to give you access
+UserPerm,User Permissions
+UserPermSub,User Permissions with respective CRUD (Create|| Read|| Update|| Delete) settings
+Perm,Permission
+Perms,Permissions
+PermNr,Permission Nr
+Crud,CRUD
+Crud.C,Create
+Crud.R,Read
+Crud.U,Update
+Crud.D,Delete
+PermAll,All Permissions
+PermEff,Effective Permissions
+User,User
+UserRs,User Roles
+LDM,Light/Dark Mode
+Logout,Logout
+ChgPw,Change Password
+Audit,Audit
+ValE,Validation Error
+ValT,There are Validation Errors|| Save is unsuccessful.
+ValTs,Please fix the erros and re-save.
+InvR,Invalid Records
+InvO,Invalid Org Nr
+InvF,Field can't be empty
+InvL,Field exceeds maximum length (%%)
+InvCE,Code already exists
+InvCD,Duplicate Code
+InvUD,This record has been changed since it was loaded (%%)
+Entity,Entity
+Field,Field
+Message,Message
+<LAST>,<LAST LINE>

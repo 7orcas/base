@@ -1,0 +1,131 @@
+﻿@inherits BaseComponent
+
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using GC = FrontendServer.GlobalConstants;
+
+@inject IDialogService DialogService
+@inject ProtectedSessionStorage PS
+@inject CacheService CS
+@inject ConfigService ConfS
+@inject LabelService LS
+@inject PermissionService PermS
+@inject HttpService HS
+@inject ThemeService TS
+
+@code {
+    [Inject] protected IJSRuntime JS { get; set; }
+
+    public bool _stateChangedToggle = false;
+    public bool _isLoading = false;
+    public bool _isError = false;
+    public bool _isSaving = false;
+    public bool _isValidationError = false;
+    public bool _isCrudC = false;
+    public bool _isCrudR = false;
+    public bool _isCrudU = false;
+    public bool _isCrudD = false;
+    public bool _isCrudRO = true;
+    public string? _pageCode;
+    public string? _entityLangKey;
+    private string? _token;
+    public MarkupString? _errorMessage;
+    public int? _statusCode;
+    //public ErrorBoundary? errorBoundary;
+    public Exception? exception;
+    private AppConfigDto _config;
+    private Dictionary<string, LangLabelDto> _labels;
+    public List<ToolBarButton> toolBarButtonsLeft = new List<ToolBarButton>();
+    public List<ToolBarButton> toolBarButtonsRight = new List<ToolBarButton>();
+
+
+    //Debugging
+    public bool _debugOutlined = false;
+
+    public async Task InitialiseBasePage(int permissionNr) => await InitialiseBasePage(permissionNr, null);
+
+    public async Task InitialiseBasePage(int permissionNr, string? entityLangKey)
+    {
+        if (!ConfS.IsInitialized)
+        {
+            await ConfS.Initialise();
+            string? t = await ConfS.GetToken();
+            ConfS.SetLoginParameters(null, t);
+        }
+
+        if (!LS.IsInitialized)
+            await LS.Initialise(ConfS.loginParameters);
+
+        _config = ConfS.Config;
+        _labels = LS.Labels;
+        _entityLangKey = entityLangKey;
+
+        if (permissionNr != GC.PerIgnore)
+            SetCrud(permissionNr);
+    }
+
+    //Force an update
+    public void ForceStateHasChanged()
+    {
+        _stateChangedToggle = !_stateChangedToggle;
+        StateHasChanged();
+    }
+
+    //Toolbars
+    public void AddToolbarExport(Func<Task> export) => toolBarButtonsRight.Add(new ToolBarButton 
+        { 
+            LangKey = "Export", 
+            Action = export 
+        });
+    public void AddToolbarSave(Func<Task> save) => toolBarButtonsRight.Add(new ToolBarButton
+        {
+            LangKey = "SaveChg",
+            Action = save,
+            Class = "toolbar-button-highlight"
+        });
+
+
+    //DarkMode
+    protected override void OnInitialized() => TS.OnThemeChanged += OnThemeChanged;
+    private void OnThemeChanged() => InvokeAsync(StateHasChanged);
+    public void Dispose() => TS.OnThemeChanged -= OnThemeChanged;
+
+    //Permissions
+    public void SetCrud (int permissionNr)
+    {
+        if (ConfS.Config.User.IsService)
+        {
+            _isCrudC = _isCrudR = _isCrudU = _isCrudD = true;
+            _isCrudRO = false;
+            return;
+        }
+
+        _isCrudRO = true;
+
+        var p = PermS.GetPermission(permissionNr);
+        if (p == null || 
+            string.IsNullOrEmpty(p.Crud)) return;
+
+        _isCrudC = p.Crud.Contains(GC.CrudCreate);
+        _isCrudR = p.Crud.Contains(GC.CrudRead);
+        _isCrudU = p.Crud.Contains(GC.CrudUpdate);
+        _isCrudD = p.Crud.Contains(GC.CrudDelete);
+        _isCrudRO = !_isCrudC && !_isCrudU && !_isCrudD;
+    }
+
+
+    public MarkupString AppendMarkupString(MarkupString m, string s)
+    {
+        if (string.IsNullOrEmpty(m.ToString()))
+            return new MarkupString(s);
+
+        return new MarkupString(m.ToString() + "<br>" + s);
+    }
+
+    public void PutCacheString(string key, string s) => CS.PutString(key + "-" + _config.UniqueSessionId, s);
+    public string? GetCacheString(string key) => CS.GetString(key + "-" + _config.UniqueSessionId);
+    public string GetListRowOddEvenClass(int i) => (i % 2 == 0 ? " list-odd-row" : " list-even-row") + GetLightDarkClassSuffix();
+    public string GetSelectRowPointer(bool selected) => selected ? "*" : "";
+    public string GetSelectRowClass(bool selected) => selected ? " selected-row" : "";
+    public string GetFirstColumnErrorClass<T>(T dto) where T : _BaseDto<T> => dto.IsError ? "first-colum-error" + GetLightDarkClassSuffix() : "";
+    public string GetLightDarkClassSuffix() => TS.IsDarkMode ? "-dark" : "-light";
+}

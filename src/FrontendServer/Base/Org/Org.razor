@@ -1,0 +1,272 @@
+﻿@attribute [Route(BaseRoutes.OrgRoute)]
+@inherits BasePage
+@attribute [Authorize]
+
+<ConfirmNavigation List="list" />
+
+<Header @key="_pageCode"
+    TitleKey="Org" 
+    SubTitleKey="OrgSub" 
+    PageCode=@_pageCode
+    ToolBarButtonsRight="toolBarButtonsRight" />
+
+@if (_isLoading || _isError || _isSaving)
+{
+    <LoadingWithError IsLoading=@_isLoading
+                        IsSaving=@_isSaving
+                        IsError=@_isError
+                        Message=@_errorMessage>
+        @exception
+    </LoadingWithError>
+}
+
+<MudGrid>
+
+    <!-- Left Side: List -->
+    @if (showList)
+    {
+        <MudItem xs="1">
+            <Label Size="GC.TextSize.Section" Key="Orgs-s"></Label>
+            <MudPaper Elevation="0" Outlined="true">
+                <MudList T="OrgDto">
+                    @for (int i = 0; i < list.Count; i++)
+                    {
+                        var index = i;
+                        <div class="@GetListRowOddEvenClass(i)">
+                        <MudListItem 
+                            Value="@list[i]" 
+                            OnClick="() => OnItemSelected(index)"
+                            Text="@list[i].Code" />
+                        </div>
+                    }
+                </MudList>
+            </MudPaper>
+        </MudItem>
+    }
+
+
+    <!-- Right Side: Details -->
+    @if (orgDto != null)
+    {
+        <MudItem xs="8">
+            <Text Size="GC.TextSize.Section">@orgDto.Description</Text>
+            <MudPaper Elevation="0" Outlined="@_debugOutlined">
+                <MudExpansionPanels MultiExpansion="true">
+                    <MudExpansionPanel>
+                        <TitleContent>
+                            <Label Size="GC.TextSize.Large" Key="ConfigG"></Label>
+                            <div class="d-flex">
+                            </div>
+                        </TitleContent>
+                        <ChildContent>
+                            <div style="display: flex; flex-wrap: wrap; gap: 20px;">
+                                <NumericField Width=GC.TextFieldWidth.Short
+                                              LangCode="Nr"
+                                              ReadOnly="true"
+                                              Value="@orgDto.Id"
+                                              ValueChanged="@((int val) => orgDto.Id = val)"
+                                              ValueExpression="() => orgDto.Id" />
+                                
+                                <TextField Width=GC.TextFieldWidth.Short
+                                           LangCode="Code"
+                                           MaxLength="@GC.LenCode"
+                                           Value="@orgDto.Code"
+                                           ValueChanged="@((string val) => orgDto.Code = val)"
+                                           ValueExpression="() => orgDto.Code" />
+
+                                <TextField Width=GC.TextFieldWidth.Medium
+                                           LangCode="Desc"
+                                           MaxLength="@GC.LenDescription"
+                                           Value="@orgDto.Description"
+                                           ValueChanged="@((string val) => orgDto.Description = val)"
+                                           ValueExpression="() => orgDto.Description" />
+
+                                <CheckboxField Width=GC.TextFieldWidth.Short
+                                               LangCode="Active"
+                                               Value="@orgDto.IsActive"
+                                               ValueChanged="@((bool val) => orgDto.IsActive = val)"
+                                               ValueExpression="() => orgDto.IsActive" />
+                            </div>
+                        </ChildContent>
+                    </MudExpansionPanel>
+
+                    <MudExpansionPanel>
+                        <TitleContent>
+                            <Label Size="GC.TextSize.Large" Key="Langs"></Label>
+                        </TitleContent>
+                        <ChildContent>
+                            <div style="display: flex; flex-wrap: wrap; gap: 20px;">
+                                <TextField Width=GC.TextFieldWidth.Short
+                                           LangCode="LangCode"
+                                           MaxLength="@GC.LenLangCode"
+                                           Value="@orgDto.LangCode"
+                                           ValueChanged="@((string val) => orgDto.LangCode = val)"
+                                           ValueExpression="() => orgDto.LangCode"/>
+                                
+                                <NumericNullField Width=GC.TextFieldWidth.Short
+                                            LangCode="LangCodeV"
+                                            Value="@orgDto.LangLabelVariant"
+                                            ValueChanged="@((int? val) => orgDto.LangLabelVariant = val)"
+                                            ValueExpression="() => orgDto.LangLabelVariant" />
+ 
+                            </div>
+                            <div style="table-layout: fixed; width: 400px;">
+                                <MudTable Items="@orgDto.Languages">
+                                    <HeaderContent>
+                                        <MudTh><Label Key="LangCode"/></MudTh>
+                                        <MudTh><Label Key="Readonly" /></MudTh>
+                                        <MudTh><Label Key="Editable" /></MudTh>
+                                    </HeaderContent>
+                                    <RowTemplate>
+                                        <MudTd DataLabel="Column 1">@context.LangCode</MudTd>
+                                        <MudTd DataLabel="Column 2">@context.IsReadonly</MudTd>
+                                        <MudTd DataLabel="Column 3">@context.IsEditable</MudTd>
+                                    </RowTemplate>
+                                    <RowEditingTemplate>
+                                        <MudTd DataLabel="Column 1">@context.LangCode</MudTd>
+                                        <MudTd DataLabel="Column 2">
+                                            <MudCheckBox @bind-Value="context.IsReadonly" />
+                                        </MudTd>
+                                        <MudTd DataLabel="Column 3">
+                                            <MudCheckBox @bind-Value="context.IsEditable" />
+                                        </MudTd>
+                                    </RowEditingTemplate>
+                                </MudTable>
+                            </div>
+                        </ChildContent>
+                    </MudExpansionPanel>
+
+                    <MudExpansionPanel>
+                        <TitleContent>
+                            <Label Size="GC.TextSize.Large" Key="PWs"></Label>
+                        </TitleContent>
+                        <ChildContent>
+                            <div style="display: flex; flex-wrap: wrap; gap: 20px;">
+                                <NumericField Width=GC.TextFieldWidth.Short
+                                              LangCode="LenMin"
+                                              Value="@orgDto.PasswordRule.MinLength"
+                                              ValueChanged="@((int val) => orgDto.PasswordRule.MinLength = val)"
+                                              ValueExpression="() => orgDto.PasswordRule.MinLength" />
+
+                                <NumericField Width=GC.TextFieldWidth.Short
+                                              LangCode="LenMax"
+                                              Value="@orgDto.PasswordRule.MaxLength"
+                                              ValueChanged="@((int val) => orgDto.PasswordRule.MaxLength = val)"
+                                              ValueExpression="() => orgDto.PasswordRule.MaxLength" />
+                                
+                                <NumericField Width=GC.TextFieldWidth.Short
+                                              LangCode="PWAt"
+                                              Value="@orgDto.PasswordRule.MaxNumberLoginAttempts"
+                                              ValueChanged="@((int val) => orgDto.PasswordRule.MaxNumberLoginAttempts = val)"
+                                              ValueExpression="() => orgDto.PasswordRule.MaxNumberLoginAttempts" />
+
+                            </div>
+                            <CheckboxField LangCode="PWmc"
+                                           Value="@orgDto.PasswordRule.IsMixedCase"
+                                           ValueChanged="@((bool val) => orgDto.PasswordRule.IsMixedCase = val)"
+                                           ValueExpression="() => orgDto.PasswordRule.IsMixedCase" />
+                            <CheckboxField LangCode="PWNonLet"
+                                           Value="@orgDto.PasswordRule.IsNonLetter"
+                                           ValueChanged="@((bool val) => orgDto.PasswordRule.IsNonLetter= val)"
+                                           ValueExpression="() => orgDto.PasswordRule.IsNonLetter" />
+                            <CheckboxField LangCode="PWNum"
+                                           Value="@orgDto.PasswordRule.IsNumber"
+                                           ValueChanged="@((bool val) => orgDto.PasswordRule.IsNumber = val)"
+                                           ValueExpression="() => orgDto.PasswordRule.IsNumber" />
+                            
+                        </ChildContent>
+                    </MudExpansionPanel>
+
+                </MudExpansionPanels>
+            </MudPaper>
+        </MudItem>
+    }
+</MudGrid>
+
+@using System.Net
+@using MudBlazor
+@using FrontendServer.Base.Util
+@using System.Text;
+@using sysJ = System.Text.Json
+@using GC = FrontendServer.GlobalConstants;
+@using FrontendServer.Base._Base;
+
+@code {
+    private bool showList = false;
+    private List<OrgDto> list;
+    private OrgDto? orgDto;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await InitialiseBasePage(GC.PerOrg);
+            _pageCode = BaseRoutes.OrgPageCode;
+
+            list = await GetAsync<List<OrgDto>>(GC.URL_org_list);
+
+            if (list.Count > 0)
+                Load(0, true);
+
+            showList = list.Count > 1;
+               
+            AddToolbarSave(SaveAsync);
+
+            StateHasChanged();
+        }
+    }
+
+    private async void OnItemSelected(int index) => Load(index, false);
+
+    private async void Load(int index, bool force) 
+    {
+        var dto = list[index];
+        if (!dto.IsLoaded || force){
+            orgDto = await GetAsync<OrgDto>(GC.URL_org + dto.Id);
+            orgDto.HashMe();
+            orgDto.IsLoaded = true;
+            list[index] = orgDto;
+        }
+        else
+            orgDto = dto;
+        StateHasChanged();
+    }
+
+    private async Task SaveAsync()
+    {
+        _isSaving = true;
+        var curIndex = orgDto != null? list.FindIndex(d => d.Id == orgDto.Id) : -1;
+        // var client = await SetClient();
+        for (int i = 0; i < list.Count; i++) {
+            var dto = list[i];
+            if (dto.IsLoaded && dto.HasChanged()) {
+
+                // var json = sysJ.JsonSerializer.Serialize(dto);
+                // var content = new StringContent(json, Encoding.UTF8, "application/json");
+                // var response = await client.PostAsync(GC.URL_org_update, content);
+
+                var response = await PostAsync<OrgDto>(GC.URL_org_update, dto);
+
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    var o = await GetAsync<OrgDto>(GC.URL_org + dto.Id);
+                    list[i] = o.HashMe().SetLoaded();
+                }
+            }
+        }
+        _isSaving = false;
+
+        if (curIndex != -1)
+            OnItemSelected(curIndex);
+    }
+
+    //ToDo
+    private async void Export() 
+    {
+
+    }
+
+    private string Label(string key) => GetLabel(key);
+    protected override async Task OnInitializedAsync() => _isLoading = true;
+    
+}

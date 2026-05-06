@@ -1,0 +1,127 @@
+﻿@page "/"
+@inherits BasePage
+
+@if (_isLoading)
+{
+    <Loading />
+}
+else @if (_isError)
+{
+    <AppError Message=@_errorMessage>
+        @exception
+    </AppError>
+}
+else
+{
+    <PageTitle>Index</PageTitle>
+
+    <h1>Welcome to Blue.</h1>
+
+    <p></p>
+    <p></p>
+    <p>
+        <table>
+            <thead>
+                <tr><th></th><th></th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Org:</td><td><b>@ConfS.loginParameters?.org</b></td></tr>
+                <tr><td>LangCode:</td><td><b>@ConfS.loginParameters?.lang</b></td></tr>
+                <tr><td>LangVariant:</td><td><b>@ConfS.loginParameters?.langVariant</b></td></tr>
+                <tr><td>UserId:</td><td><b>@ConfS.loginParameters?.userId</b></td></tr>
+                <tr><td>SessionId:</td><td><b>@ConfS.loginParameters?.sessionId</b></td></tr>
+                <tr><td>Loaded:</td><td><b>@ConfS.loginParameters?.loaded</b></td></tr>
+                <tr><td>Token key:</td><td><b>@ConfS.loginParameters?.tokenkey</b></td></tr>
+                <tr><td>Token:</td><td><b>@ConfS.loginParameters?.token</b></td></tr>
+            </tbody>
+        </table>
+    </p>
+}
+
+@using Newtonsoft.Json;
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using sysJ = System.Text.Json
+@using GC = FrontendServer.GlobalConstants;
+
+@inject HttpClient HttpClient
+@inject IHttpClientFactory HttpClientFactory
+@inject NavigationManager NM
+@inject ProtectedSessionStorage PS
+@inject ConfigService ConfS
+@inject PermissionService PermS
+@inject LabelService LS
+@inject IJSRuntime JS
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !_isError)
+        {
+            //Already logged in?
+            var result = await PS.GetAsync<string>(GC.TokenCacheKey);
+            if (result.Success)
+            {
+                await InitialiseBasePage(GC.PerIgnore);
+                _isLoading = false;
+                StateHasChanged();
+                return;
+            }
+
+
+            // Get the token key to use to get the actual token
+            var uri = NM.ToAbsoluteUri(NM.Uri);
+            var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
+            if (!query.TryGetValue("tk", out var tokenkey))
+            {
+                _isLoading = false;
+                _isError = true;
+                StateHasChanged();
+                return;
+            }
+
+            var token = await GetToken(tokenkey);
+            await SetClient(token);
+
+            //Get App / User Config
+            var config = await ConfS.Initialise();
+            var lps = ConfS.SetLoginParameters(tokenkey, token);
+            lps.LoadedUrl(GC.URL_config);
+            SetConfig(config);
+
+            //Get stuff
+            await LS.Initialise(lps);
+            await PermS.Initialise(lps);
+
+            _isLoading = false;
+            StateHasChanged();
+
+            //Is there an auto open?
+            if (query.TryGetValue("open", out var autoOpenX))
+            {
+                if (AppRoutes.IsRoute(autoOpenX))
+                    NM.NavigateTo("/" + AppRoutes.GetRoute(autoOpenX));
+            }
+
+        }
+    }
+
+    private async Task<string> GetToken(string tokenkey)
+    {
+        var clientU = HttpClientFactory.CreateClient(GC.UnAuthorizedClientKey);
+        var tokenResponse = await clientU.GetAsync(GC.URL_token + "?key=" + tokenkey);
+        var token = await tokenResponse.Content.ReadAsStringAsync();
+        token = token.Substring(LoginTokenDto.TOKEN_PREFIX_LENGTH);
+        await PS.SetAsync(GC.TokenCacheKey, token);
+        return token;
+    }
+
+    private async Task<HttpClient> SetClient(string token)
+    {
+        var client = HttpClientFactory.CreateClient(GC.AuthorizedClientKey);
+        client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue(GC.BearerKey, token);
+        return client;
+    }
+
+    protected override async Task OnInitializedAsync() => _isLoading = true;
+
+}

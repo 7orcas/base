@@ -1,0 +1,64 @@
+﻿@attribute [Route(BaseRoutes.UserRoleRoute)]
+@inherits BasePage
+@attribute [Authorize]
+
+
+<h3>All Roles</h3>
+
+@if (_isLoading)
+{
+    <div>loading....</div>
+}
+else if (_isError)
+{
+    <div>@_errorMessage</div>
+}        
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>RoleId</th>
+                <th>Role</th>
+                <th>orgNr</th>
+                <th>Role Description</th>
+                <th>Updated</th>
+                <th>Active</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var rec in roles)
+            {
+                <tr>
+                    <td>@rec.RoleId</td>
+                    <td>@rec.Code</td>
+                    <td>@rec.orgNr</td>
+                    <td>@rec.Description</td>
+                    <td>@rec.Updated</td>
+                    <td>@rec.IsActive</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@using GC = FrontendServer.GlobalConstants;
+@code {
+    private List<UserRoleDto>? roles;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+           // await SetClient();
+            await SetConfig();
+
+            roles = await GetAsync<List<UserRoleDto>>(GC.URL_user_role_list);
+            StateHasChanged();
+        }
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        _isLoading = true;
+    }
+}

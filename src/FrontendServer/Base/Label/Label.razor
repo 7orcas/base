@@ -1,0 +1,112 @@
+﻿@inherits BaseComponent
+@inject IDialogService DialogService
+@using GC = FrontendServer.GlobalConstants;
+
+<div>
+    @if (!isAdminLanguage)
+    {
+        @if (@IsShowToolTip())
+        {
+            <div data-tooltip="@ShowToolTip()">
+                <div class="@GetClass()">
+                    <MudText Style="@style"
+                        Typo="@size">@ShowLabel()</MudText>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="@GetClass()">
+                <MudText Style="@style"
+                    Typo="@size">@ShowLabel()</MudText>
+            </div>
+        }
+    }
+    else 
+    {
+        @if (@IsShowToolTip())
+        {
+            <div data-tooltip="@ShowToolTip()">
+                <button class="@GetClass()" @onclick="OpenDialog">
+                    <MudText Style="@style"
+                        Typo="@size">@ShowLabel()</MudText>
+                 </button>
+            </div>
+        }
+        else
+        {
+            <button class="@GetClass()" @onclick="OpenDialog">
+                <MudText Style="@style"
+                    Typo="@size">@ShowLabel()</MudText>
+            </button>
+        }
+    }
+</div>
+
+
+@code {
+    [Parameter] public string Key { get; set; }
+    [Parameter] public string Class { get; set; }
+    [Parameter] public GC.TextSize Size { get; set; } = GC.TextSize.Normal;
+    [Parameter] public bool HideTooltip { get; set; } = false;
+    [Parameter] public bool Bold { get; set; } = false;
+
+    private Typo size = Typo.body1;
+    private bool showTooltip = false;
+    private bool highlightNoKey = false;
+    private bool isAdminLanguage = false;
+    private string style = "white-space: normal; word-break: break-word;";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var cnfg = GetConfig();
+            showTooltip = (cnfg?.Label.ShowTooltip ?? false) && !HideTooltip;
+            highlightNoKey = !IsLabel(Key) && (cnfg?.Label.HighlightNoKey ?? false);
+            isAdminLanguage = cnfg?.Label.IsAdminLanguage ?? false;
+            size = GetTypo(Size);
+            if (Bold)
+                style += " font-weight:bold;";
+
+            StateHasChanged();
+        }
+    }
+
+    private string ShowLabel()
+    {
+        if (highlightNoKey) return GetLabelHighlightNoKey(Key);
+        return GetLabel(Key);
+    }
+
+    private bool IsShowToolTip() => IsTooltip(Key);
+    private string? ShowToolTip() => showTooltip ? GetTooltip(Key) : null;
+
+    private string GetClass()
+    {
+        string css = isAdminLanguage ? "label-link" : "label-no-link";
+        if (highlightNoKey) css += " label-no-key";
+        else css += " label";
+        if (!string.IsNullOrEmpty(Class)) css += " " + Class;
+        return css;
+    }
+
+    private Task OpenDialog()
+    {
+        if (!isAdminLanguage) return Task.CompletedTask;
+
+        var options = new DialogOptions 
+            { 
+                CloseOnEscapeKey = true,
+                Position = DialogPosition.TopCenter,
+                MaxWidth = MaxWidth.Medium
+            };
+        var parameters = new DialogParameters
+            {
+                { "LangKey", Key }
+            };
+
+        var title = GetLabel("LabelEdit");
+        return DialogService.ShowAsync<LabelDialog>(title, parameters, options);
+    }
+}

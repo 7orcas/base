@@ -1,0 +1,23 @@
+﻿@inherits BaseComponent
+
+@using System.Linq.Expressions
+@using MudBlazor
+@using GC = FrontendServer.GlobalConstants;
+
+<MudCheckBox Style="@GetStyle(@Width)"
+             Label="@label"
+             Value="@Value"
+             ValueChanged="@ValueChanged"
+             ValueExpression="@ValueExpression"
+             Variant=@MudVariant />
+
+@code {
+    [Parameter] public string LangCode { get; set; }
+    [Parameter] public GC.TextFieldWidth Width { get; set; } = GC.TextFieldWidth.Medium;
+    [Parameter] public bool Value { get; set; }
+    [Parameter] public EventCallback<bool> ValueChanged { get; set; }
+    [Parameter] public Expression<Func<bool>> ValueExpression { get; set; }
+
+    private string label = loading;
+    protected override void OnInitialized() => label = GetLabel(LangCode);
+}

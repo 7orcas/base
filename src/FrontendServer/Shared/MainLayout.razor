@@ -1,0 +1,192 @@
+﻿@inherits LayoutComponentBase
+
+<div class="layout-root">
+
+    <MudThemeProvider DefaultScrollbar="true" @bind-IsDarkMode="_isDarkMode" Theme="_theme" />
+    <MudPopoverProvider />
+    <MudDialogProvider />
+    <MudSnackbarProvider />
+
+    @if (!ConfS.IsInitialized)
+    {
+        <Loading />
+        @Body
+    }
+    else
+    {
+        <MudLayout>
+
+            <MudAppBar Elevation="4" Class="app-bar">
+                <div style="display: flex; align-items: center; width: 100%; justify-content: space-between;">
+
+                    <!-- Left -->
+                    <div style="display: flex; align-items: center;">
+                        @if (ConfS.Config.User.IsService)
+                        {
+                            <MudIconButton Icon="@Icons.Material.Filled.Menu"
+                                           Color="Color.Inherit"
+                                           Edge="Edge.Start"
+                                           OnClick="@ToggleDrawer" />
+                        }
+                        <MenuButton Title="@ConfS.Config.OrgDescription" Link="@AppRoutes.HomeRoute" />
+                    </div>
+
+                    <!-- Center: Menu items -->
+                    <div style="display: flex; gap: 16px;">
+                        <MainMenu />
+                    </div>
+
+                    <!-- Right Settings -->
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <MudMenu ActivationEvent="MouseEvent.MouseOver"
+                                 AnchorOrigin="Origin.BottomLeft"
+                                 TransformOrigin="Origin.TopLeft"
+                                 OffsetY="true"
+                                 Dense="true">
+                            <ActivatorContent>
+                                <MudIconButton Icon="@Icons.Material.Filled.ManageAccounts"
+                                               Color="Color.Inherit"
+                                               Size="Size.Large"/>
+                            </ActivatorContent>
+                            <ChildContent>
+                                <MudStack Spacing="1" Style="align-items: flex-start;">
+                                    <MudButton Class="custom-menu-button"
+                                               Link="true"
+                                               OnClick="@Logout"
+                                               Color="Color.Inherit"
+                                               Variant="Variant.Text">
+                                        <MudText Typo="Typo.h6">@GetLabel("Logout")</MudText>
+                                    </MudButton>
+
+                                    <div style="margin-left:9px;">
+                                        <MudSwitch @bind-Value="_isDarkMode"
+                                                   T="bool"
+                                                   LabelPlacement="Placement.Start"
+                                                    >
+                                            <MudText Typo="Typo.h6">@GetLabel("LDM")</MudText>
+                                        </MudSwitch>
+                                    </div>
+                                    <MenuButton Title="@GetLabel("ChgPw")" Link="@AppRoutes.ChangePWRoute" />
+                                    <MenuButton Title="@GetLabel("Config")" Link="@AppRoutes.ConfigRoute" />
+                                </MudStack>
+                            </ChildContent>
+                        </MudMenu>
+                    </div>
+
+                </div>
+            </MudAppBar>
+
+            <MudDrawer @bind-Open="_drawerOpen"
+                       Elevation="1"
+                       ClipMode="DrawerClipMode.Always"
+                       Variant="DrawerVariant.Responsive">
+                <ServiceMenu />
+            </MudDrawer>
+
+            <MudMainContent Class="main-content-fill-screen">
+                <MudContainer MaxWidth="MaxWidth.False" Class="main-container" Gutters="false">
+                    <MudPaper Class="main-container" Elevation="0" Square="true">
+                        @Body
+                    </MudPaper>
+                </MudContainer>
+            </MudMainContent>
+
+        </MudLayout>
+    }
+</div>
+
+@using GC = FrontendServer.GlobalConstants;
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject NavigationManager Navigation
+@inject ConfigService ConfS
+@inject LabelService LS
+@inject ThemeService TS
+@inject LogoutService LgS
+@inject ProtectedSessionStorage PS
+@code {
+    private string lOrg = "";
+
+    private bool _drawerOpen = false;
+    private bool _isDarkModeBacking = false;
+
+    protected override void OnInitialized()
+    {
+        LS.OnLabelsChanged += RefreshLayout;
+        TS.SetDarkMode(_isDarkMode);
+
+        if (!ConfS.IsInitialized)
+        {
+            ConfS.OnInitialized += HandleConfigInitialized;
+        }
+    }
+
+    private void HandleConfigInitialized() => InvokeAsync(StateHasChanged);
+
+    private bool _isDarkMode
+    {
+        get => _isDarkModeBacking;
+        set
+        {
+            _isDarkModeBacking = value;
+            TS.SetDarkMode(value);
+            StateHasChanged();
+        }
+    }
+
+    // private string lOrg = "Organisations";
+    // private string lMac = "Machines";
+
+    private MudTheme _theme = new MudTheme
+        {
+            PaletteLight = new PaletteLight
+            {
+                AppbarText = "#FFFFFF",
+                AppbarBackground = "#1976d2",
+
+                Primary = "#1976d2",
+                Secondary = "#e91e63",
+                Background = "#f5f5f5",
+                TextPrimary = "#212121",
+                DrawerBackground = "#ffffff",
+
+            },
+            PaletteDark = new PaletteDark
+            {
+                AppbarBackground = "#2A2D3E",   // Soft steel blue-gray
+                AppbarText = "#E0E0E0",         // Muted white for comfort
+
+                Background = "#1E1E2F",         // Deep but not harsh
+                Surface = "#2A2D3E",            // Match or complement AppBar
+                Primary = "#90CAF9",            // Soft blue (Material Blue 200)
+                PrimaryContrastText = "#1E1E2F",// Text on primary buttons
+
+                TextPrimary = "#E0E0E0",        // Light gray for standard text
+                TextSecondary = "#A0A0B2",      // Dimmer for subtext
+                DrawerBackground = "#2C2F3A",   // Slightly lighter for depth
+            },
+        };
+
+
+
+    private void RefreshLayout() 
+    {
+        // lOrg = LS.GetLabel("Orgs");
+        // lMac = LS.GetLabel("Machines");
+        InvokeAsync(StateHasChanged);
+    }
+
+    private string GetLabel(string key)
+    {
+        return LS.GetLabel(key);
+    }
+
+    private void ToggleDrawer() => _drawerOpen = !_drawerOpen;
+    private async Task Logout() => await LgS.LogoutAsync();
+    
+    public void Dispose() 
+    {
+        LS.OnLabelsChanged -= RefreshLayout;
+        ConfS.OnInitialized -= HandleConfigInitialized;
+    }
+
+}

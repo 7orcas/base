@@ -1,0 +1,45 @@
+﻿@inject LabelService LS
+@inject ConfigService CS
+@using MudBlazor
+@using GC = FrontendServer.GlobalConstants;
+
+@code {
+    public static string loading = "..loading";
+    public MudBlazor.Variant MudVariant = MudBlazor.Variant.Outlined;
+
+    public string GetStyle(GC.TextFieldWidth width) 
+    {
+        string s = width switch
+        {
+            GC.TextFieldWidth.Ignore => "",
+            GC.TextFieldWidth.Short => "width: 200px;",
+            GC.TextFieldWidth.Long => "width: 800px;",
+            _ => "width: 500px;"
+        };
+
+        if (CS.IsDebugMode)
+            s += " border: 1px dashed lightgray;";
+
+        return s;
+    }
+    
+    public Typo GetTypo(GC.TextSize size) => size switch
+    {
+        GC.TextSize.Heading => Typo.h3,
+        GC.TextSize.SubHeading => Typo.h4,
+        GC.TextSize.Section => Typo.h5,
+        GC.TextSize.Large => Typo.h6,
+        GC.TextSize.Small => Typo.body2,
+        GC.TextSize.ButtonText => Typo.h6,
+        _ => Typo.body1
+    };
+
+
+    //Convenience methods
+    public AppConfigDto GetConfig() => CS.Config;
+    public bool IsLabel(string labelCode) => LS.IsLabel(labelCode);
+    public bool IsTooltip(string labelCode) => LS.IsTooltip(labelCode);
+    public string GetLabel(string labelCode) => LS.GetLabel(labelCode);
+    public string GetLabelHighlightNoKey(string labelCode) => LS.GetLabelHighlightNoKey(labelCode);
+    public string? GetTooltip(string labelCode) => LS.GetTooltip(labelCode);
+}

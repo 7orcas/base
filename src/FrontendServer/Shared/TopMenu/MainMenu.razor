@@ -1,0 +1,73 @@
+﻿
+@for (int i = 0; i < items.Count(); i += cMax)
+{
+    var index = i;
+    <MenuButton Title="@items[index + cLabel]" Link="@items[index + cRoute]" />
+}
+
+@if (ConfS.Config.User.IsSystemAdmin)
+{
+    <MudMenu ActivationEvent="MouseEvent.MouseOver"
+             AnchorOrigin="Origin.BottomCenter"
+             TransformOrigin="Origin.TopCenter"
+             OffsetY="true"
+             Dense="true">
+        <ActivatorContent>
+            <MudButton Class="custom-menu-button"
+                       Link="true"
+                       Color="Color.Inherit"
+                       Variant="Variant.Text">
+                <MudText Typo="Typo.h6">@GetLabel("AdminM")</MudText>
+            </MudButton>
+        </ActivatorContent>
+        <ChildContent>
+            <MudStack Spacing="1" Style="align-items: flex-start;">
+                <MenuButton Title="@GetLabel("Roles")" Link="@AppRoutes.UserRoleRoute" />
+            </MudStack>
+        </ChildContent>
+    </MudMenu>
+}
+
+@inject ConfigService ConfS
+@inject LabelService LS
+@code {
+    private int cCode  = 0;
+    private int cRoute = 1;
+    private int cLabel = 2;
+    private int cMax   = 3;
+
+    private string[] items =
+        {
+            "Machines",     AppRoutes.MachinesRoute, "",
+            "Organisation", AppRoutes.OrgRoute,      "",
+            "Permissions",  AppRoutes.PermRoute,     "",
+            "Roles",        AppRoutes.RoleRoute,     "",
+            "UserRs",       AppRoutes.UserRoleRoute, "",
+            "Config",       AppRoutes.ConfigRoute,   "",
+            "Audit",        AppRoutes.AuditRoute,    "",
+    };
+
+
+    protected override void OnInitialized()
+    {
+        SetLabels();
+        LS.OnLabelsChanged += RefreshLayout;
+    }
+
+    private void RefreshLayout()
+    {
+        SetLabels();
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void SetLabels()
+    {
+        for (int i = 0; i < items.Count(); i += 3)
+            items[i + cLabel] = LS.GetLabel(items[i + cCode]);
+    }
+
+    private string GetLabel(string key) => LS.GetLabel(key);
+
+    public void Dispose() => LS.OnLabelsChanged -= RefreshLayout;
+
+}

@@ -1,0 +1,129 @@
+﻿@attribute [Route(BaseRoutes.ConfigRoute)]
+@inherits BasePage
+@attribute [Authorize]
+
+<ConfirmNavigation Dto="configDto" />
+
+<Header TitleKey="Cfg"
+        SubTitleKey="ConfSub"
+        PageCode=@_pageCode
+        ToolBarButtonsRight="toolBarButtonsRight" />
+
+@if (_isLoading || _isError || _isSaving)
+{
+    <LoadingWithError IsLoading=@_isLoading
+                        IsSaving=@_isSaving
+                        IsError=@_isError
+                        Message=@_errorMessage>
+        @exception
+    </LoadingWithError>
+}
+
+<p></p>
+
+<MudGrid>
+    
+    <!-- Right Side: Details -->
+    @if (configDto != null)
+    {
+        <MudItem xs="8">
+            <MudPaper Elevation="0" Outlined="@_debugOutlined">
+                <MudExpansionPanels MultiExpansion="true">
+                    <MudExpansionPanel>
+                        <TitleContent>
+                            <Label Size="GC.TextSize.Large" Key="ConfigG"></Label>
+                        </TitleContent>
+                        <ChildContent>
+                            <MudGrid>
+                                <MudCheckBox Label="@Label("IsAdminLanguage")" @bind-Value="@configDto.Label.IsAdminLanguage" Variant="Variant.Filled"></MudCheckBox>
+                            </MudGrid>
+
+                        </ChildContent>
+                    </MudExpansionPanel>
+
+                </MudExpansionPanels>
+            </MudPaper>
+        </MudItem>
+    }
+</MudGrid>
+
+
+
+@using System.Net
+@using MudBlazor
+@using FrontendServer.Base.Util
+@using System.Text;
+@using sysJ = System.Text.Json
+@using FrontendServer.Base._Base;
+@using GC = FrontendServer.GlobalConstants;
+
+@inject ConfigService ConfigService
+@code {
+    private AppConfigDto? configDto;
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await InitialiseBasePage(GC.PerConfig);
+            _pageCode = BaseRoutes.ConfigPageCode;
+            configDto = ConfigService.Config;
+            _isLoading = false;
+                        
+            AddToolbarSave(SaveAsync);
+            StateHasChanged();
+        }
+    }
+
+   // private async void OnItemSelected(int index) => Load(index, false);
+
+    // private async void Load(int index, bool force) 
+    // {
+    //     var dto = list[index];
+    //     if (!dto.IsLoaded || force){
+    //         orgDto = await GetAsync<OrgDto>(GC.URL_org + dto.Id);
+    //         orgDto.HashMe();
+    //         orgDto.IsLoaded = true;
+    //         list[index] = orgDto;
+    //     }
+    //     else
+    //         orgDto = dto;
+    //     StateHasChanged();
+    // }
+
+    private async Task SaveAsync()
+    {
+        _isSaving = true;
+        // var curIndex = orgDto != null? list.FindIndex(d => d.Id == orgDto.Id) : -1;
+        // // var client = await SetClient();
+        // for (int i = 0; i < list.Count; i++) {
+        //     var dto = list[i];
+        //     if (dto.IsLoaded && dto.HasChanged()) {
+
+        //         // var json = sysJ.JsonSerializer.Serialize(dto);
+        //         // var content = new StringContent(json, Encoding.UTF8, "application/json");
+        //         // var response = await client.PostAsync(GC.URL_org_update, content);
+
+        //         var response = await PostAsync<OrgDto>(GC.URL_org_update, dto);
+
+        //         if (response.StatusCode == HttpStatusCode.OK)
+        //         {
+        //             var o = await GetAsync<OrgDto>(GC.URL_org + dto.Id);
+        //             list[i] = o.HashMe().SetLoaded();
+        //         }
+        //     }
+        // }
+        _isSaving = false;
+      
+    }
+
+    //ToDo
+    private async void Export() 
+    {
+
+    }
+
+    private string Label(string key) => GetLabel(key);
+    protected override async Task OnInitializedAsync() => _isLoading = true;
+    
+}

@@ -1,0 +1,139 @@
+﻿@inherits BasePage
+
+<PageTitle>@title</PageTitle>
+
+<div class="title-container">
+    <div class="@GetTitleClass()">@title</div>
+    <div class="title-container-right">
+        <div class="page-code">@PageCode</div>
+        @if (CloseAction.HasDelegate)
+        {
+            <MudButton OnClick="@CloseAction" style="margin-left: 10px; text-transform: none;">@GetLabel("Close")</MudButton>
+        }
+        else
+        {
+            <MenuButton Title="@GetLabel("Close")" Link="@AppRoutes.HomeRoute" />
+        }
+    </div>
+</div>
+
+<div class="@GetSubTitleClass()">@subtitle</div>
+
+<div>
+    @ChildContent
+</div>
+
+@if (isToolbar)
+{
+    <MudPaper Elevation="0" Outlined="@_debugOutlined">
+        <div class="toolbar">
+            <div class="toolbar-left">
+            <!-- Left Buttons -->
+                @for (int i = 0; ToolBarButtonsLeft != null && i < ToolBarButtonsLeft.Count; i++)
+                {
+                    var b = ToolBarButtonsLeft[i];
+                    @if (b.IsLabelFn())
+                    {
+                        <MudButton OnClick="b.Action">
+                            <div class="@GetButtonClass(b) label label-no-link">
+                                <MudText Typo="@GetTypo(GC.TextSize.ButtonText)">@b.GetLabel()</MudText>
+                            </div>
+                        </MudButton>
+                    }
+                    else if (b.IsLabel())
+                    {
+                        <MudButton OnClick="b.Action">
+                            <div class="@GetButtonClass(b) label label-no-link">
+                                <MudText Typo="@GetTypo(GC.TextSize.ButtonText)">@b.Label</MudText>
+                            </div>
+                        </MudButton>
+                    }
+                    else
+                    {
+                        <MudButton OnClick="b.Action">
+                            <Label Key="@b.LangKey"
+                                   Class="@GetButtonClass(b)"
+                                   Size="GC.TextSize.ButtonText"
+                                   HideTooltip=true>
+                            </Label>
+                        </MudButton>
+                    }
+                }
+            </div>
+
+            <!-- Right Buttons -->
+            <div class="toolbar-right">
+                @for (int i = 0; ToolBarButtonsRight != null && i < ToolBarButtonsRight.Count; i++)
+                {
+                    var b = ToolBarButtonsRight[i];
+                    @if (b.IsLabel())
+                    {
+                        <MudButton OnClick="b.Action">
+                            <div class="@GetButtonClass(b) label label-no-link">
+                                <MudText Typo="@GetTypo(GC.TextSize.ButtonText)">@b.Label</MudText>
+                            </div>
+                        </MudButton>
+                    }
+                    else
+                    {
+                        <MudButton OnClick="b.Action">
+                            <Label Key="@b.LangKey"
+                                   Class="@GetButtonClass(b)"
+                                   Size="GC.TextSize.ButtonText"
+                                   HideTooltip=true>
+                            </Label>
+                        </MudButton>
+                    }
+                }
+            </div>
+        </div>
+    </MudPaper>
+}
+
+@using GC = FrontendServer.GlobalConstants;
+
+@code {
+    [Parameter] public string TitleKey { get; set; }
+    [Parameter] public string SubTitleKey { get; set; }
+    [Parameter] public string PageCode { get; set; }
+    [Parameter] public List<ToolBarButton> ToolBarButtonsLeft { get; set; } = new();
+    [Parameter] public List<ToolBarButton> ToolBarButtonsRight { get; set; } = new();
+    [Parameter] public EventCallback CloseAction { get; set; } = new();
+    [Parameter] public RenderFragment ChildContent { get; set; }
+
+    private string title;
+    private string? subtitle;
+    private bool isSubTitle;
+    private bool isToolbar = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender){
+            await InitialiseBasePage(GC.PerIgnore);
+            title = GetLabel(TitleKey);
+            isSubTitle = !string.IsNullOrEmpty(SubTitleKey);
+            subtitle = isSubTitle? GetLabel(SubTitleKey) : null;
+
+            isToolbar = IsButtons(ToolBarButtonsLeft);
+            isToolbar = isToolbar || IsButtons(ToolBarButtonsRight);
+
+            StateHasChanged();
+        }
+    }
+
+    private bool IsButtons(List<ToolBarButton> l) => l != null && l.Count > 0;
+    private string GetTitleClass() => " title title" + GetLightDarkClassSuffix();
+    private string GetSubTitleClass() => " subtitle subtitle" + GetLightDarkClassSuffix();
+    
+    private string GetButtonClass(ToolBarButton b)
+    {
+        var clazz = " toolbar-button ";
+        
+        if (!string.IsNullOrEmpty(b.Class))
+            clazz += b.Class;
+        else
+            clazz += "toolbar-button"; 
+
+        return clazz += GetLightDarkClassSuffix();
+    }
+}

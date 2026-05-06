@@ -1,0 +1,99 @@
+﻿@inherits BasePage
+
+<MudDialog Style="min-width: 1000px;">
+    <DialogContent>
+
+        <Header @key="_stateChangedToggle"
+                TitleKey="ValT"
+                SubTitleKey="ValTs" 
+                CloseAction="@CloseDialog" />
+
+        <MudGrid>
+            <MudItem xs="12" >
+                <MudPaper Class="pa-4" style="background-color: #f2f2f2;  border: 1px solid black;">
+                
+                    <MudTable Items="@validations"
+                        Striped="true">
+
+                        <ColGroup>
+                            <col style="width: 200px;" />
+                            <col style="width: 200px;" />
+                            <col style="width: 600px;" />
+                        </ColGroup>
+
+                        <HeaderContent>
+                            <MudTh>@lEntity</MudTh>
+                            <MudTh>@lField</MudTh>
+                            <MudTh>@lMessage</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd>@context.Entity</MudTd>
+                            <MudTd>@context.Field</MudTd>
+                            <MudTd>@context.Message</MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                            
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </DialogContent>
+</MudDialog>
+
+@using GC = FrontendServer.GlobalConstants;
+
+
+@code {
+    [Parameter] public List<ValDto> Errors { get; set; }
+    [Parameter] public string EntityKey { get; set; }
+    [CascadingParameter] private IMudDialogInstance? MudDialog { get; set; }
+
+    private List<ErrorMessage> validations = new List<ErrorMessage>();
+
+    //Headings
+    private string? lEntity;
+    private string? lField;
+    private string? lMessage;
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await InitialiseBasePage(GC.PerIgnore);
+
+            if (!string.IsNullOrEmpty(EntityKey))
+                lEntity = GetLabelHighlightNoKey(EntityKey);
+            else
+                lEntity = GetLabelHighlightNoKey("Entity");
+
+            lField = GetLabelHighlightNoKey("Field");
+            lMessage = GetLabelHighlightNoKey("Message");
+
+            foreach (var v in Errors)
+            {
+                foreach (var m in v.Messages)
+                    validations.Add(new ErrorMessage
+                    {
+                        Entity = v.Code,
+                        Field = m.Field,
+                        Message = m.Message
+                    });
+            }
+
+            StateHasChanged();
+        }
+    }
+
+    protected override async Task OnInitializedAsync() => _isLoading = true;
+    private void CloseDialog() => MudDialog.Close();
+    
+
+    public class ErrorMessage
+    {
+        public string Entity { get; set; }
+        public string Field { get; set; }
+        public string Message { get; set; }
+    }
+
+   
+}

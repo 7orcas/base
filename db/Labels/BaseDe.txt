@@ -1,0 +1,47 @@
+Org,OrganisationD
+Orgs,OrganisationsD
+Orgs-s,OrgsD
+OrgSub,Configuration of OrganisationD
+Conf,ConfigurationD
+ConfSub,User ConfigurationD
+PW,PasswordD
+PWs,PasswordsD
+PWmc,Must be mixed caseD
+PWNonLet,Must contain non-letterD
+PWNum,Must contain a numberD
+PWAt,Max. number of login attemptsD
+BConf,Base ConfigurationD
+Lang,LanguageD
+Langs,LanguagesD
+LangCodeV,Language VariantD
+Label,LabelD
+SaveRec,SaveD
+SaveChg,Save ChangesD
+Config,ConfigurationD
+ConfigG,General ConfigurationD
+UnsavedC,There are unsaved changes. Leave anyway?
+LenMax,Max Length
+LenMin,Min Length
+Nr,Number
+AdminM,AdminD
+Role,RoleD
+Roles,RolesD
+RoleSub,Roles contain permissions. Permissions are cumulative||ie. they combine to give the user the maximum authorisationD
+MachSub,Machine recordD
+NAuth,Not AuthorisedD
+NAuthX,You are not authorised to view this pageD
+NAuthA,Please see you system admin to give you accessD
+UserPerm,User PermissionsD
+UserPermSub,User Permissions with respective CRUD (Create Read Update Delete) settingsD
+Perm,PermissionD
+Perms,PermissionsD
+PermNr,Permission NrD
+Crud,CRUD D
+PermAll,All PermissionsD
+PermEff,Effective PermissionsD
+User,UserD
+LDM,Light/Dark ModeD
+Logout,LogoutD
+ChgPw,Change PasswordD
+Audit,AuditD
+<LAST>,<LAST LINE>
