@@ -13,3 +13,8 @@ JwtBearer:
   help: https://learn.microsoft.com/en-us/aspnet/core/security/authentication/configure-jwt-bearer-authentication?view=aspnetcore-9.0
 
 
+To Do:
+Entity Frame work
+- set id = 0
+- set updated = DateTime.UtfNow
+- Remove child entities where appropriate

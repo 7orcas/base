@@ -67,6 +67,7 @@ builder.Services.AddScoped<OrgServiceI, OrgService>();
 builder.Services.AddScoped<SessionServiceI, SessionService>();
 builder.Services.AddScoped<PermissionServiceI, PermissionService>();
 builder.Services.AddScoped<RoleServiceI, RoleService>();
+builder.Services.AddScoped<RoleRepoI, RoleRepo>();
 builder.Services.AddScoped<EntityServiceI, EntityService>();
 
 

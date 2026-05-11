@@ -8,5 +8,7 @@
         public string Crud { get; set; }
         public DateTime Updated { get; set; }
         public bool IsActive { get; set; }
+
+        public RoleEnt Role { get; set; }  
     }
 }

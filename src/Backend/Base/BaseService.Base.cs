@@ -70,7 +70,7 @@ public abstract class BaseService : SqlUtils
             (ent.Description != null ? "'" + ent.Description + "'," : "") +
             (e != null ? "'" + e + "'," : "") +
             "'" + DateTime.Now.ToString(GC.DateTimeFormat) + "'," +
-            (ent.IsActive?1:0) +
+            (ent.IsActive?"true":"false") +
             ")";
     }
 

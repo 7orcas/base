@@ -41,7 +41,7 @@ namespace Backend.Base.Database
 
         static public bool IsActive(NpgsqlDataReader r) => GetBoolean(r, "isActive");
         static public string TestActive() => TestActive(null);
-        static public string TestActive(string? table) => " " + (!string.IsNullOrEmpty(table) ? table + "." : "") + "isActive = 1 ";
+        static public string TestActive(string? table) => " " + (!string.IsNullOrEmpty(table) ? table + "." : "") + "isActive = true ";
         static public bool GetBoolean(NpgsqlDataReader r, string column) => !r.IsDBNull(r.GetOrdinal(column)) && r.GetBoolean(r.GetOrdinal(column));
 
 
@@ -49,7 +49,7 @@ namespace Backend.Base.Database
         static public string Update(string column, int value) => column + "=" + value + ",";
         static public string Update(string column, string? value) => column + "=" + (value != null ? "'" + value + "'": "NULL") + ",";
         static public string Update(string column, DateTime? value) => column + "=" + (value != null ? "'" + value.Value.ToString(GC.DateTimeFormat) + "'" : "NULL") + ",";
-        static public string Update(string column, bool? value) => column + "=" + (value != null ? (value.Value?1:0)  : "NULL") + ",";
+        static public string Update(string column, bool? value) => column + "=" + (value != null ? (value.Value?"true":"false")  : "NULL") + ",";
         static public string NoComma(string column) => column.EndsWith(",")? column.Substring(0,column.Length-1) : column;
     }
 }

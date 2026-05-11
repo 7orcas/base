@@ -95,7 +95,8 @@ namespace Backend.Base.Database
 
         static public async Task<long> ExecuteAndReturnId(string sqlString)
         {
-            sqlString += "; SELECT SCOPE_IDENTITY();";
+            //sqlString += "; SELECT SCOPE_IDENTITY();"; //Sql
+            sqlString += " RETURNING id;";  //Postgres
 
             return await Task.Run(() =>
             {

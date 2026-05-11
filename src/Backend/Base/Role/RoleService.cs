@@ -1,6 +1,7 @@
 ﻿using Common.Validator;
-using Npgsql;
 using Microsoft.IdentityModel.Tokens;
+using Npgsql;
+using System.Data;
 using System.Text;
 using System.Transactions;
 using GC = Backend.GlobalConstants;
@@ -15,8 +16,14 @@ namespace Backend.Base.Role
     /// <license>**Licence**</license>
     public class RoleService: BaseService, RoleServiceI
     {
+        private readonly RoleRepoI _roleRepo;
 
-        public RoleService(IServiceProvider serviceProvider) : base(serviceProvider) { }
+
+        public RoleService(IServiceProvider serviceProvider, RoleRepoI roleRepo) 
+            : base(serviceProvider) 
+        { 
+            _roleRepo = roleRepo;
+        }
 
         /// <summary>
         /// Return a user's Roles
@@ -32,7 +39,7 @@ namespace Backend.Base.Role
                     "FROM base.userAccRole zr " +
                         "INNER JOIN base.role r ON r.Id = zr.roleId " +
                     "WHERE zr.userAccId = @userId " +
-                    "AND r.isActive = 1 ";
+                    "AND r.isActive = true ";
                 var by = " ORDER BY r.code ";
 
                 await Sql.Run(sql + "AND r.orgNr = @orgNr" + by,
@@ -169,8 +176,12 @@ namespace Backend.Base.Role
             }
             foreach (var ent in list.Where(e => e.IsNew()))
             {
-                await InsertRole(ent);
-                await InsertRolePermissions(ent);
+                //await InsertRole(ent);
+                ent.Id = 0;
+                ent.Updated = DateTime.UtcNow;
+                //ent.RolePermissions = new List<RolePermissionEnt>(); //not needed
+                var entX = await _roleRepo.Create(ent);
+                await InsertRolePermissions(entX);
             }
         }
 
@@ -187,7 +198,7 @@ namespace Backend.Base.Role
         private async Task InsertRole(RoleEnt ent)
         {
             ent.Encode();
-            var id = await Sql.ExecuteAndReturnId("INSERT base.role " + Insert(ent));
+            var id = await Sql.ExecuteAndReturnId("INSERT INTO base.role " + Insert(ent));
             ent.Id = id;
         }
 
@@ -198,7 +209,7 @@ namespace Backend.Base.Role
             {
                 if (!string.IsNullOrEmpty(p.Crud))
                     sb.Append(
-                        "INSERT base.rolePermission (roleId,PermissionNr,crud,updated) " +
+                        "INSERT INTO base.rolePermission (roleId,PermissionNr,crud,updated) " +
                         "VALUES (" + 
                         ent.Id + "," +
                         p.PermissionNr + "," +
