@@ -71,6 +71,7 @@ namespace Backend.Base
             return ent;
         }
 
+        [NonAction]
         public async Task<IActionResult> Response(List<ValDto> validations)
         {
             var session = HttpContext.Items["session"] as SessionEnt;
