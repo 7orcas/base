@@ -10,3 +10,9 @@ Download and install Postgres
 - cd [source files]\f2f\db\Postgres
 - run 0_createDB.sql (in pgadmin)
 - run _reload.ps1
+
+
+
+Swagger
+- Need to login to get a token
+- There is a PathBase so that needs to be configured in program.cs

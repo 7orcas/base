@@ -24,6 +24,10 @@ namespace Backend.App.Machines
             _machineService = machineService;
         }
 
+        /// <summary>
+        /// List of machines
+        /// 
+        /// </summary>
         [CrudAtt(GC.CrudRead)]
         [AuditListAtt(GC.EntityTypeMachine)]
         [HttpGet("list")]
