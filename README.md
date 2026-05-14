@@ -13,6 +13,26 @@ Download and install Postgres
 
 
 
+Docker
+- https://www.docker.com/products/docker-desktop
+- download: Windows AMD64 and run
+- AI query
+  - Give me step by step instructions to
+    - Download and Install Docker on my Windows PC
+	- Use a docker volume on my PC
+	- Configure it to run Seq log view
+	- Configure it to run Postgres
+	- Make sure logs are stored locally
+	- Make sure db is stored locally
+	- Connect my c# .Net API program to connect to Postgres db
+
+
 Swagger
 - Need to login to get a token
 - There is a PathBase so that needs to be configured in program.cs
+
+Logging
+- Use Serilog
+- Enable json formatting
+- Use log view Seq running in Docker
+

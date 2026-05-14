@@ -17,6 +17,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Set up Serilog to use appsettings.json
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration) // Reads from appsettings.json
+    .Enrich.FromLogContext() //wrap log entries with additional context info (e.g. request details)
     .CreateLogger();
 
 builder.Host.UseSerilog();

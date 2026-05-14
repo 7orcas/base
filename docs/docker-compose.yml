@@ -1,0 +1,26 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: postgres-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: js
+      POSTGRES_DB: blue
+    ports:
+      - "5432:5432"
+    volumes:
+      - C:\docker-data\postgres:/var/lib/postgresql/data
+
+  seq:
+    image: datalust/seq:latest
+    container_name: seq-logs
+    restart: always
+    environment:
+      ACCEPT_EULA: "Y"
+    ports:
+      - "5341:80"
+    volumes:
+      - C:\docker-data\seq:/data
