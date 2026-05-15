@@ -15,6 +15,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add Serilog configuration
 // Set up Serilog to use appsettings.json
+builder.Logging.ClearProviders();
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration) // Reads from appsettings.json
     .Enrich.FromLogContext() //wrap log entries with additional context info (e.g. request details)
@@ -124,6 +125,17 @@ builder.Services.AddScoped<MachineServiceI, MachineService>();
 
 var app = builder.Build();
 
+LogAppSettings(app);
+
+app.UseSerilogRequestLogging(options =>
+{
+    options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
+    {
+        diagnosticContext.Set("RequestPath", httpContext.Request.Path);
+        diagnosticContext.Set("RequestMethod", httpContext.Request.Method);
+    };
+});
+
 app.UsePathBase(AppSettings.PathBase);
 
 app.UseHttpsRedirection();
@@ -200,19 +212,23 @@ void LoadAppSettings(WebApplicationBuilder builder)
             AppSettings.ServiceAccount = acc;
     }
     catch { }
+}
 
-
+void LogAppSettings(WebApplication app)
+{
     var _log = Serilog.Log.Logger;
-    _log.Information("---------Backend Startup------------" +
-        "\nDBMainConnection=" + AppSettings.DBMainConnection +
-        "\nMaxGetTokenCalls=" + AppSettings.MaxGetTokenCalls + 
-        "\nCacheExpirationAddSeconds=" + AppSettings.CacheExpirationAddSeconds + 
-        "\nCacheExpirationGetSeconds=" + AppSettings.CacheExpirationGetSeconds +
-        "\nMainClientUrl=" + AppSettings.MainClientUrl +
-        "\nPathBase=" + AppSettings.PathBase +
-        "\nServiceAccountActive=" + (AppSettings.ServiceAccount != null?"Yes":"No")
-        );
+    _log.Information("---------Backend Startup------------");
 
+    _log.Information("mtc {MaxGetTokenCalls} ceas {CacheExpirationAddSeconds} cegs {CacheExpirationGetSeconds} mcurl {MainClientUrl} bp {BasePath} saa {ServiceAccountActive}", 
+        AppSettings.MaxGetTokenCalls, 
+        AppSettings.CacheExpirationAddSeconds, 
+        AppSettings.CacheExpirationGetSeconds,
+        AppSettings.MainClientUrl,
+        AppSettings.PathBase,
+        (AppSettings.ServiceAccount != null ? "Yes" : "No"));
 
-    
+    if (app.Environment.IsDevelopment())
+    {
+        _log.Information("dbc {DBConnection}", AppSettings.DBMainConnection);
+    }
 }

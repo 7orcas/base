@@ -35,7 +35,8 @@ namespace Backend.Base.Session
             };
 
             _memoryCache.Set(Key(key), ses);
-            _log.Information("CreateSession, key=" + key + ", LoginId=" + userAccount.Id + ", org id=" + org.Nr);
+            _log.Information("CreateSession Key {SessionKey} LoginId {LoginId} Org {OrgId}",
+                key, userAccount.Id, org.Nr);
             return ses;
         }
 
@@ -47,8 +48,9 @@ namespace Backend.Base.Session
                 _log.Error("RemoveSession, no session, key=" + key);
                 return;
             }
-
-            _log.Information("RemoveSession, key=" + key + ", LoginId=" + ses.UserAccount.Id + ", org id=" + ses.Org.Nr);
+            
+            _log.Information("RemoveSession Key {SessionKey} LoginId {LoginId} Org {OrgId}",
+                key, ses.UserAccount.Id, ses.Org.Nr);
             _memoryCache.Remove(Key(key));
         }
 

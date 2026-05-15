@@ -1,10 +1,11 @@
-﻿using GC = Backend.GlobalConstants;
-using Backend.Base.Token.Ent;
+﻿using Backend.Base.Token.Ent;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using GC = Backend.GlobalConstants;
 
 /// <summary>
 /// Tokens are used to control authorisation to this app
@@ -51,7 +52,7 @@ namespace Backend.Base.Token
                 signingCredentials: creds
                 );
 
-            _log.Debug("Create token, TokenValues=" + tv.ToLogString());
+            _log.Debug("CreateToken TokenValues {TokenValues}", tv.ToLogString());
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
@@ -77,12 +78,12 @@ namespace Backend.Base.Token
                 tv.SessionKey = principal.FindFirst("Key")?.Value.ToString();
                 int.TryParse(principal.FindFirst("Org")?.Value, out int orgNr);
                 tv.Org = orgNr;
-                _log.Debug("Decode token, SessionKey=" + tv.SessionKey);
+                _log.Debug("DecodeToken SessionKey {SessionKey} Token {Token}", tv.SessionKey, token);
                 return tv;
             }
             catch (Exception ex)
             {
-                _log.Error("Token validation failed: {ex.Message}");
+                _log.Error("TokenValidationFailed Exception {Exception}", ex.Message);
                 return null;
             }
         }
@@ -95,7 +96,7 @@ namespace Backend.Base.Token
         public void AddToken(string key, string token)
         {
             string tokenX = AppSettings.MaxGetTokenCalls.ToString().PadLeft(PAD_TOKEN, '0') + token;
-            _log.Debug("Add token, key=" + key + ", token=" + tokenX);
+            _log.Debug("AddTokenToCache TokenKey {TokenKey} Token {Token}", key, tokenX);
 
             var cacheEntryOptions = new MemoryCacheEntryOptions
             {
@@ -112,7 +113,7 @@ namespace Backend.Base.Token
         /// <returns></returns>
         public string? GetToken(string key)
         {
-            _log.Debug("GetToken, key=" + key);
+            _log.Debug("GetToken TokenKey {TokenKey}", key);
 
             if (_memoryCache.TryGetValue(Key(key), out var cachedValue))
             {
@@ -129,18 +130,19 @@ namespace Backend.Base.Token
                         AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(AppSettings.CacheExpirationGetSeconds) // Cache expiration
                     };
                     tokenX = calls.ToString().PadLeft(PAD_TOKEN, '0') + token;
-                    _log.Debug("GetToken - added key=" + key + ", tokenX=" + tokenX);
+                    _log.Debug("GetToken-AddKey TokenKey {TokenKey} TokenX {TokenX}", key, tokenX);
                     _memoryCache.Set(Key(key), tokenX, cacheEntryOptions);
                     return token;
                 }
                 else if (calls == 0)
                 {
-                    _log.Debug("GetToken - last call key=" + key + ", tokenX=" + tokenX);
+                    _log.Debug("GetToken-LastCall TokenKey {TokenKey} TokenX {TokenX}", key, tokenX);
                     return token;
                 }
-                _log.Error("GetToken rejected, calls=" + calls + ", key = " + key);
+                _log.Error("GetToken-Rejected TokenKey {TokenKey} NumberCalls {NumberCalls}", key, calls);
             }
-            _log.Error("GetToken is null, key=" + key);
+
+            _log.Error("GetToken-IsNull TokenKey {TokenKey}", key);
             return null;
         }
 

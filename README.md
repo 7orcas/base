@@ -25,6 +25,8 @@ Docker
 	- Make sure logs are stored locally
 	- Make sure db is stored locally
 	- Connect my c# .Net API program to connect to Postgres db
+- Windows Subsystem for Linux will be installed (you may need to update - this will be highlighted)
+- Run in terminal in solution root: docker compose up -d  (check: docker ps)
 
 
 Swagger
@@ -35,4 +37,16 @@ Logging
 - Use Serilog
 - Enable json formatting
 - Use log view Seq running in Docker
+
+
+
+
+Running the Application
+- Config startup projects:
+  - Backend: start
+  - FrontendServer: start
+  - FrontendLogin: start
+- https://localhost:7289  (as configured in FrontendLogin/Properties/launchsettings.json
+
+
 
