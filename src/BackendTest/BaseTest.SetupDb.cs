@@ -19,7 +19,9 @@ namespace BackendTest
                 await DeleteAll();
                 await InsertOrg(GCT.TOrg);
                 await InsertUser(GCT.TUser);
-                await InsertUserPermissionRole(GCT.TUserRole, GCT.TPermission, GCT.TRole, GCT.TRolePermission);
+                //await InsertUserPermissionRole(GCT.TUserRole, 
+                //    "GCT.TPermission", //DELETE ME
+                //    GCT.TRole, GCT.TRolePermission);
                 initialisedDb = true;
                 return true;
             }
@@ -35,14 +37,14 @@ namespace BackendTest
             await Sql.Execute(
                 IdentityInsert(t,
                     "INSERT INTO " + t + " " +
-                        "(id, nr, code, descr, langCode, encoded) " +
+                        "(nr, code, descr, langCode, langlabelvariant, encoded) " +
                     "VALUES (" +
                         GCT.orgNr +
-                        "," + GCT.OrgNr +
                         ",'Test Org'" +
                         ",'Test Org Descr'" +
                         ",'" + GCT.OrgLangCode + "'" +
-                        ",'{IsLangCodeEditable:false,Languages:[" + string.Join(",", GCT.Languages.Select(lang => $"\"{lang}\"")) + "]}'" +
+                        ",1" +
+                        ",'{Languages:[{LangCode:\"en\",IsEditable:true},{LangCode:\"de\",IsEditable:true},{LangCode:\"c1\",IsEditable:false},{LangCode:\"c2\",IsEditable:false}]}'" +
                         ");" 
                     ));
         }
@@ -52,13 +54,13 @@ namespace BackendTest
             await Sql.Execute(
                 IdentityInsert(t,
                     "INSERT INTO " + t + " " +
-                        "(id, xxx, yyy, orgs, langCode) " +
+                        "(id, xxx, yyy)" + // orgs, langCode) " +
                     "VALUES (" +
                         GCT.UserId +
                         ",'" + GCT.UserName + "'" +
                         ",'" + GCT.UserPW + "'" +
-                        ",'" + GCT.UserOrgs + "'" +
-                        ",'" + GCT.UserLangCode + "'" +
+                        //",'" + GCT.UserOrgs + "'" +
+                        //",'" + GCT.UserLangCode + "'" +
                         ");"
                     ));
         }
@@ -70,9 +72,11 @@ namespace BackendTest
                 perms[i] = new PermissionEnt { Nr = -1 + i*-1, LangKey = "perm" + (i+1) };
 
             string sql = "";
-            foreach (var rec in perms)
-                sql += "INSERT INTO " + tP + " (id, code) VALUES (" + rec.Nr + ",'" + rec.LangKey + "');";
-            await Sql.Execute(IdentityInsert(tP, sql));
+            
+            //DELETE ME
+            //foreach (var rec in perms)
+            //    sql += "INSERT INTO " + tP + " (id, code) VALUES (" + rec.Nr + ",'" + rec.LangKey + "');";
+            //await Sql.Execute(IdentityInsert(tP, sql));
 
 
             RoleEnt[] roles = new RoleEnt[MaxRoles];
@@ -94,7 +98,7 @@ namespace BackendTest
                 else p = 0;
                 string c = crud[p];
                 foreach (var rec2 in perms)
-                    sql += "INSERT INTO " + tRP + " (id, roleId, permissionId, crud) VALUES (" + --idTest + "," + rec1.Id + "," + rec2.Nr + ",'" + c + "');";
+                    sql += "INSERT INTO " + tRP + " (id, roleId, permissionnr, crud) VALUES (" + --idTest + "," + rec1.Id + "," + rec2.Nr + ",'" + c + "');";
             }
             await Sql.Execute(IdentityInsert(tRP, sql));
 
@@ -107,27 +111,34 @@ namespace BackendTest
 
         private static string IdentityInsert(string table, string sql)
         {
-            if (!sql.EndsWith(";"))
-                sql += ";";
+            //if (!sql.EndsWith(";"))
+            //    sql += ";";
 
-            return "SET IDENTITY_INSERT " + table + " ON;" +
-                sql +
-                "SET IDENTITY_INSERT " + table + " OFF;";
+            //return "SET IDENTITY_INSERT " + table + " ON;" +
+            //    sql +
+            //    "SET IDENTITY_INSERT " + table + " OFF;";
+            return sql;
         }
 
         private static async Task DeleteAll()
         {
             string[] tables = {
                 GCT.TRolePermission
-                ,GCT.TPermission
+              //  ,GCT.TPermission
                 ,GCT.TUserRole
                 ,GCT.TRole
                 ,GCT.TUser
-                ,GCT.TOrg
+            };
+            string[] tablesX = {
+                GCT.TOrg
             };
 
             foreach (var table in tables)
                 await Sql.Execute("Delete from " + table + " WHERE id < 0");
+
+            foreach (var table in tablesX)
+                await Sql.Execute("Delete from " + table + " WHERE nr < 0");
+
         }
 
     }

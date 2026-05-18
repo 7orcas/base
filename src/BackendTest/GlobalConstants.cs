@@ -2,7 +2,7 @@
 {
     public class GlobalConstants
     {
-        public const string ConnString            = "Server=np:localhost;Database=blue;TrustServerCertificate=True;Authentication=Active Directory Integrated;";
+        public const string ConnString            = "Host=localhost;Port=5432;Database=blue;Username=postgres;Password=js;";
 
         public const int orgNr                    = -99;
         public const int OrgNr                    = 204;
@@ -18,10 +18,10 @@
         
         public const string TOrg            = "base.org";
         public const string TUser           = "base.zzz";
-        public const string TPermission     = "base.permission";
+        //public const string TPermission     = "base.permission"; DELETE ME
         public const string TRole           = "base.role";
-        public const string TRolePermission = "base.rolePermission";
-        public const string TUserRole       = "base.zzzRole";
+        public const string TRolePermission = "base.rolepermission";
+        public const string TUserRole       = "base.useraccrole";
 
 
 

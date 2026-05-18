@@ -17,8 +17,10 @@ VALUES
 (2, 'Org 2', 'Org 2 Description', 'en', 2,
  '{Languages:[{LangCode:"de",IsEditable:true}]}');
 
-INSERT INTO base.org (nr, code, descr, langcode)
-VALUES (3, 'Org 3', 'Org 3 Description', 'de');
+INSERT INTO base.org (nr, code, descr, langcode, langlabelvariant, encoded)
+VALUES (3, 'Org 3', 'Org 3 Description', 'de', 1,
+'{Languages:[{LangCode:"de",IsEditable:true}]}');
+
 
 -- -------------------------------------------------
 -- base.zzz
