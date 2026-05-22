@@ -84,19 +84,19 @@ namespace Backend.Base.Role
         /// <summary>
         /// Get Org
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="roleId"></param>
         /// <returns></returns>
         [CrudAtt(GC.CrudRead)] //ToDo
         [AuditListAtt(GC.EntityTypeRole)]
         [HttpGet("get/{id}")]
-        public async Task<IActionResult> GetRole(long id)
+        public async Task<IActionResult> GetRole(long roleId)
         {
             var session = HttpContext.Items["session"] as SessionEnt;
             var langDic = await _labelService.GetLanguageLabelDic(session.UserConfig.LangCodeCurrent, session.Org.LangLabelVariant);
             var permDic = _PermissionInitialiseService.GetPermissions();
             var permList = permDic.Values.OrderBy(v => v.Nr).ToList();
 
-            var ent = await _RoleService.GetRole(id);
+            var ent = await _RoleService.GetRole(roleId);
             var dto = LoadDto<RoleEnt, RoleDto>(ent);
             dto.RolePermissions = new List<RolePermissionDto>();
             var newId = -1L;

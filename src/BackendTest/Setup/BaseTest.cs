@@ -22,27 +22,20 @@ namespace BackendTest.Setup
             memoryCache = new MemoryCache(new MemoryCacheOptions());
            // InitialiseServices();
         }
-
-        //Will run each time for all tests
-        //[TestInitialize]
-        //public static async Task InitialiseDb(TestContext context)
-        //{
-        //    ResetInitialisedDb();
-        //    await SetupTestDb();
-        //}
-
+               
 
         //Generic controller creation
         public T CreateController<T>() where T : ControllerBase
         {
             var session = CreateSessionEnt();
-            var _labelService = GetLabelService();
-
+            
             var services = new ServiceCollection();
-            services.AddSingleton(_labelService);
-            services.AddSingleton(new Mock<AuditServiceI>().Object);
-            services.AddSingleton<Microsoft.Extensions.Caching.Memory.IMemoryCache>(new MemoryCache(new MemoryCacheOptions()));
+            services.AddSingleton(memoryCache);
             services.AddSingleton<Microsoft.Extensions.Logging.ILoggerFactory, Microsoft.Extensions.Logging.LoggerFactory>();
+            services.AddSingleton(GetLabelService());
+            services.AddSingleton(new Mock<AuditServiceI>().Object);
+            services.AddSingleton(GetPermissionInitialiseService());
+            services.AddSingleton(GetRoleService());
             services.AddSingleton<System.IServiceProvider>(sp => sp);
 
             var sp = services.BuildServiceProvider();
@@ -56,27 +49,6 @@ namespace BackendTest.Setup
             return controller;
         }
 
-        public LabelServiceI GetLabelService()
-        {
-            var labelServiceMock = new Mock<LabelServiceI>();
-
-            labelServiceMock
-                .Setup(x => x.GetLanguageLabelList(It.IsAny<string>(), It.IsAny<int>()))
-                .ReturnsAsync(CreateLangLabels());
-
-            labelServiceMock
-                .Setup(x => x.GetLanguageKey(It.IsAny<string>()))
-                .ReturnsAsync(new LangKey
-                {
-                    Id = 1 
-                });
-
-            labelServiceMock
-                .Setup(x => x.GetRelatedLabels(It.IsAny<string>(), It.IsAny<List<string>>()))
-                .ReturnsAsync(CreateLangLabels());
-
-            return labelServiceMock.Object;
-        }
 
         public _ResponseDto GetResponseDto(Object result)
         {

@@ -115,9 +115,9 @@ namespace Backend.Base.Role
         /// <summary>
         /// Return the specific role for the passed in id
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="roleId"></param>
         /// <returns></returns>
-        public async Task<RoleEnt> GetRole(long id)
+        public async Task<RoleEnt> GetRole(long roleId)
         {
             try
             {
@@ -126,7 +126,7 @@ namespace Backend.Base.Role
                 RoleEnt ent = null;
                 await Sql.Run(sql,
                     r => ent = ReadBaseEntity<RoleEnt>(r),
-                    new NpgsqlParameter("@id", id)
+                    new NpgsqlParameter("@id", roleId)
                 );
                 ent.RolePermissions = new List<RolePermissionEnt>();
 
@@ -143,7 +143,7 @@ namespace Backend.Base.Role
                             IsActive = IsActive(r),
                         });
                     },
-                    new NpgsqlParameter("@id", id)
+                    new NpgsqlParameter("@id", roleId)
                 );
 
                 return ent;
