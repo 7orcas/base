@@ -18,6 +18,7 @@ Use the following instructions:
 - The new tests must only include the Backend project controller public REST methods - add a return placeholder for each method test: Assert.IsTrue(true);
 I confirm you may read the controller files directly (Backend/Base/*Controller.cs and Backend/App/*Controller.cs)
 
+Note the confirm is not working - I pasted the file into the prompt.
 
 
 
