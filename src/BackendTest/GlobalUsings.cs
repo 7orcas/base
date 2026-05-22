@@ -21,6 +21,7 @@ global using Backend.Base.Role;
 global using Backend.Base.Role.Ent;
 global using Backend.Base.Session;
 global using Backend.Base.Session.Ent;
+global using BackendTest.Setup;
 global using System;
 global using System.Threading.Tasks;
 global using System.Collections.Generic;

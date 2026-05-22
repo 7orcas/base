@@ -1,7 +1,7 @@
 ﻿using GC = Backend.GlobalConstants;
 using GCT = BackendTest.GlobalConstants;
 
-namespace BackendTest
+namespace BackendTest.Setup
 {
     public partial class BaseTest
     {

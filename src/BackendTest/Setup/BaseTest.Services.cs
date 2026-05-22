@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BackendTest
+namespace BackendTest.Setup
 {
     public partial class BaseTest
     {
