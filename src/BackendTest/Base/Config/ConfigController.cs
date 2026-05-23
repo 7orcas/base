@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 namespace BackendTest.Base.Config
 {
     [TestClass]
+    [TestCategory("UnitControllerToDo")]
     public class ConfigController
     {
         [TestMethod]

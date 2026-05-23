@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 namespace BackendTest.Base.Login
 {
     [TestClass]
+    [TestCategory("UnitControllerToDo")]
     public class LoginController
     {
         [TestMethod]

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 namespace BackendTest.Base.Token
 {
     [TestClass]
+    [TestCategory("UnitControllerToDo")]
     public class TokenController
     {
         [TestMethod]

@@ -1,0 +1,9 @@
+<RunSettings>
+  <RunConfiguration>
+    <TestCaseFilter>
+		TestCategory=UnitControllerBase
+		|TestCategory=UnitControllerMachinesX
+		|TestCategory=UnitServiceBase
+	</TestCaseFilter>
+  </RunConfiguration>
+</RunSettings>

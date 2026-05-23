@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 namespace BackendTest.App.Machines
 {
     [TestClass]
+    [TestCategory("UnitControllerMachines")]
     public class MachineController
     {
         [TestMethod]

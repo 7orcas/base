@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 namespace BackendTest.Base.Audit
 {
     [TestClass]
+    [TestCategory("UnitControllerToDo")]
     public class AuditController
     {
         [TestMethod]

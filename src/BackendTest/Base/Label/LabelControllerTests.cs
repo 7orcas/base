@@ -3,7 +3,10 @@ using Common.DTO.Base;
 
 namespace BackendTest.Base.Label
 {
+
     [TestClass]
+    [TestCategory("UnitControllerBase")]
+
     public class LabelControllerTests : BaseTest
     {
         private LabelController _controller = null!;

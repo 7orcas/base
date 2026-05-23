@@ -7,6 +7,7 @@ using GCT = BackendTest.GlobalConstants;
 namespace BackendTest.Base.Role
 {
     [TestClass]
+    [TestCategory("UnitControllerBase")]
     public class RoleControllerTests : BaseTest
     {
 

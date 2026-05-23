@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 namespace BackendTest.Base.Org
 {
     [TestClass]
+    [TestCategory("UnitControllerToDo")]
     public class OrgController
     {
         [TestMethod]

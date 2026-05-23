@@ -1,7 +1,21 @@
+# Unit Testing of the Backend project
+Running tests are controlled in the **Test.runsettings** file, which is configured to run all tests in the BackendTest project 
+Menu: Test > Configure run settings.
+Note changes to the Test.runsettings file requires a rebuild of the BackendTest project to take effect.
 
-Controllers and Services are tested separately.
-Controller tests are mocked (use AI to create and update - see below).
-All tests need to extend BackendTest to obtain necessary configuration and setup.
+The test classes are organized in a directory structure that replicates the Backend project, with separate directories for Base and App controllers.
+
+Details of the testing approach:
+- Controllers and Services are tested separately.
+- Controller tests are mocked (use AI to create and update - see below).
+- Service tests are seeded (use AI to create and update - see below).
+- All tests need to extend BackendTest to obtain necessary configuration and setup.
+- MSTest is used as the testing framework.
+
+#Test Categories:
+Unit tests are categorised into:
+- UnitControllerBase: Tests for controllers in the Base directory.
+- UnitControllerApp: Tests for controllers in the App directory.
 
 
 # Create controller unit tests via AI using the following prompts:
@@ -21,5 +35,5 @@ I confirm you may read the controller files directly (Backend/Base/*Controller.c
 Note the confirm is not working - I pasted the file into the prompt.
 
 
-
+# Create service unit tests via AI using the following prompts:
 

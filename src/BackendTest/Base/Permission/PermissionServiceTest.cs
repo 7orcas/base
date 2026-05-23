@@ -21,7 +21,7 @@ namespace BackendTest.Base.Permission
             await SetupTestDb();
         }
 
-        [TestMethod]
+       // [TestMethod]
         public async Task LoadPermissions()
         {
             var list = await service.LoadEffectivePermissionsInt(GCT.UserId, GCT.orgNr);

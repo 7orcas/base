@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 namespace BackendTest.Base.Permission
 {
     [TestClass]
+    [TestCategory("UnitControllerToDo")]
     public class PermissionController
     {
         [TestMethod]

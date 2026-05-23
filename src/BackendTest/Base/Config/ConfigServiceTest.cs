@@ -7,6 +7,7 @@ using GCT = BackendTest.GlobalConstants;
 namespace BackendTest.Base.Config
 {
     [TestClass]
+    [TestCategory("UnitServiceBase")]
     public class ConfigServiceTest : BaseTest
     {
         ConfigService service;
