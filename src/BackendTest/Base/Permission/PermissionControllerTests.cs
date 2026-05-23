@@ -1,17 +1,52 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
-using System.Threading.Tasks;
+using Common.DTO.Base;
 
 namespace BackendTest.Base.Permission
 {
     [TestClass]
     [TestCategory("UnitControllerBase")]
-    public class PermissionControllerTests
+    public class PermissionControllerTests : BaseControllerTest
     {
-        [TestMethod]
-        public void PlaceholderTest()
+        private PermissionController _controller = null!;
+
+        [TestInitialize]
+        public void Init()
         {
-            Assert.IsTrue(true);
+            _controller = CreateController<PermissionController>();
         }
+
+        [TestMethod]
+        public async Task GetUserPermissions()
+        {
+            var result = await _controller.GetUserPermissions();
+            var dto = GetResponseDto(result);
+            Assert.AreEqual(dto.StatusCode, 200);
+
+            var list = dto.Result as List<UserRolePermissionDto>;
+            Assert.AreNotEqual(list.Count, 0);
+        }
+
+        [TestMethod]
+        public async Task GetEffective()
+        {
+            var result = await _controller.GetEffective();
+            var dto = GetResponseDto(result);
+            Assert.AreEqual(dto.StatusCode, 200);
+
+            var list = dto.Result as List<PermissionDto>;
+            Assert.AreNotEqual(list.Count, 0);
+        }
+        
+        [TestMethod]
+        public async Task GetPermissionList()
+        {
+            var result = await _controller.GetPermissionList();
+            var dto = GetResponseDto(result);
+            Assert.AreEqual(dto.StatusCode, 200);
+
+            var list = dto.Result as List<PermissionDto>;
+            Assert.AreNotEqual(list.Count, 0);
+        }
+
+
     }
 }

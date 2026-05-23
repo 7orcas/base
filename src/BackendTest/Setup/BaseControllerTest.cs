@@ -21,6 +21,7 @@ namespace BackendTest.Setup
             services.AddSingleton(memoryCache);
             services.AddSingleton<Microsoft.Extensions.Logging.ILoggerFactory, Microsoft.Extensions.Logging.LoggerFactory>();
             services.AddSingleton(GetLabelService());
+            services.AddSingleton(GetPermissionService());
             services.AddSingleton(new Mock<AuditServiceI>().Object);
             services.AddSingleton(GetPermissionInitialiseService());
             services.AddSingleton(GetRoleService());

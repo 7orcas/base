@@ -59,22 +59,19 @@ namespace BackendTest.Setup
             service
                 .Setup(x => x.GetLanguageLabelList(It.IsAny<string>(), It.IsAny<int>()))
                 .ReturnsAsync(CreateLangLabels());
-
             service
                 .Setup(x => x.GetLanguageKey(It.IsAny<string>()))
-                .ReturnsAsync(new LangKey
-                {
-                    Id = 1
-                });
-
+                .ReturnsAsync(new LangKey {Id = 1});
             service
                 .Setup(x => x.GetRelatedLabels(It.IsAny<string>(), It.IsAny<List<string>>()))
                 .ReturnsAsync(CreateLangLabels());
-
+            service
+                .Setup(x => x.GetLanguageLabelDic(It.IsAny<SessionEnt>()))
+                .ReturnsAsync(CreateLanguageDictionary());
             service
                 .Setup(x => x.GetLanguageLabelDic(It.IsAny<string>(), It.IsAny<int>()))
                 .ReturnsAsync(CreateLanguageDictionary());
-
+                              
             return service.Object;
         }
 
@@ -182,6 +179,39 @@ namespace BackendTest.Setup
             return dic;
         }
 
+        public PermissionServiceI GetPermissionService()
+        {
+            var service = new Mock<PermissionServiceI>();
+
+            service
+                .Setup(x => x.GetPermissions(It.IsAny<SessionEnt>()))
+                .ReturnsAsync(GetRolePermission());
+            service
+                .Setup(x => x.GetPermissionEnt(It.IsAny<int>()))
+                .Returns(new PermissionEnt {Nr = 1});
+            service
+                .Setup(x => x.LoadEffectivePermissions(It.IsAny<SessionEnt> ()))
+                .ReturnsAsync(GetPermissionCrud());
+            service
+                .Setup(x => x.LoadEffectivePermissionsInt(It.IsAny<long>(), It.IsAny<long>()))
+                .ReturnsAsync(GetPermissionCrud());
+
+            return service.Object;
+        }
+        public static List<RolePermissionCrudEnt> GetRolePermission()
+        {
+            return new List<RolePermissionCrudEnt>
+            {
+                new RolePermissionCrudEnt { Role = ROLE_1, Crud = "CRUD", LangKey = "Perm", OrgNr = ORG_NR, PermissionNr = 1 }
+            };
+        }
+        public static List<PermissionCrudEnt> GetPermissionCrud()
+        {
+            return new List<PermissionCrudEnt>
+            {
+                new PermissionCrudEnt { Crud = "CRUD", Nr = 1 }
+            };
+        }
 
 
         //public async Task<UserEnt> GetUserEnt()
