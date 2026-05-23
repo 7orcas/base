@@ -1,5 +1,6 @@
 ﻿using Backend.Base.Entity;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using System.Security.Cryptography;
 using GC = Backend.GlobalConstants;
 using GCT = BackendTest.GlobalConstants;
@@ -8,7 +9,7 @@ namespace BackendTest.Base.Config
 {
     [TestClass]
     [TestCategory("UnitServiceBase")]
-    public class ConfigServiceTest : BaseTest
+    public class ConfigServiceTest : BaseServiceTest
     {
         ConfigService service;
         OrgEnt org;
@@ -18,7 +19,9 @@ namespace BackendTest.Base.Config
 
         public ConfigServiceTest() : base()
         {
-            service = new ConfigService(null, memoryCache);
+            service = CreateService<ConfigService>();
+            orgService = _serviceProvider.GetRequiredService<OrgService>();
+            orgConfigInitialiseService = _serviceProvider.GetRequiredService<OrgConfigInitialiseService>();
         }
 
         [ClassInitialize]
@@ -30,7 +33,7 @@ namespace BackendTest.Base.Config
 
         private async Task Setup()
         {
-            org = await orgService.GetOrg(GCT.OrgNr);
+            org = await orgService.GetOrg(GCT.orgNr);
             await orgConfigInitialiseService.InitialiseOrgConfigs();
             orgConfig = memoryCache.Get<OrgConfig>(GC.CacheKeyOrgConfigPrefix + GCT.orgNr);
         }

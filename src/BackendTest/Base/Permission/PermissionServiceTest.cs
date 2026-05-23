@@ -4,13 +4,13 @@ using GCT = BackendTest.GlobalConstants;
 namespace BackendTest.Base.Permission
 {
     [TestClass]
-    public class PermissionServiceTest : BaseTest
+    public class PermissionServiceTest : BaseServiceTest
     {
         PermissionService service;
 
         public PermissionServiceTest() : base ()
         {
-            service = permissionService;
+            service = CreateService<PermissionService>();
         }
 
         //[AssemblyInitialize]

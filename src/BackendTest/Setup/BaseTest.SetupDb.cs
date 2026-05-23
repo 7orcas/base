@@ -9,6 +9,9 @@ namespace BackendTest.Setup
         public static int MaxRoles = 10;
         public static int MaxPermissions = 10;
 
+        public static void ResetInitialisedDb() => initialisedDb = false;
+        public bool IsInitialisedDb() => initialisedDb;
+
         public static async Task<bool> SetupTestDb()
         {
             initialisedDb = false;

@@ -2,7 +2,7 @@
   <RunConfiguration>
     <TestCaseFilter>
 		TestCategory=UnitControllerBase
-		|TestCategory=UnitControllerMachinesX
+		|TestCategory=UnitControllerMachines
 		|TestCategory=UnitServiceBase
 	</TestCaseFilter>
   </RunConfiguration>

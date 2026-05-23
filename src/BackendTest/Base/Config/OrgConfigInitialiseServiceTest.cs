@@ -5,13 +5,14 @@ using GCT = BackendTest.GlobalConstants;
 namespace BackendTest.Base.Config
 {
     [TestClass]
-    public class OrgConfigInitialiseServiceTest : BaseTest
+    [TestCategory("UnitServiceBase")]
+    public class OrgConfigInitialiseServiceTest : BaseServiceTest
     {
         OrgConfigInitialiseService service;
 
         public OrgConfigInitialiseServiceTest() : base()
         {
-            service = orgConfigInitialiseService;
+            service = CreateService<OrgConfigInitialiseService>();
         }
 
         [ClassInitialize]

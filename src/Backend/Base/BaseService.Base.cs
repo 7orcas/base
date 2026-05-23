@@ -13,8 +13,8 @@ public abstract class BaseService : SqlUtils
         _log = Log.Logger;
 
         //for testing
-        if (serviceProvider == null) 
-            return;
+        //if (serviceProvider == null) 
+        //    return;
 
         // Create a scoped service provider
         using var scope = serviceProvider.CreateScope();

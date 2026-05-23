@@ -7,7 +7,7 @@ namespace BackendTest.Base.Label
     [TestClass]
     [TestCategory("UnitControllerBase")]
 
-    public class LabelControllerTests : BaseTest
+    public class LabelControllerTests : BaseControllerTest
     {
         private LabelController _controller = null!;
 

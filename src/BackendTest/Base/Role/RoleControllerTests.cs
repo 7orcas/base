@@ -8,7 +8,7 @@ namespace BackendTest.Base.Role
 {
     [TestClass]
     [TestCategory("UnitControllerBase")]
-    public class RoleControllerTests : BaseTest
+    public class RoleControllerTests : BaseControllerTest
     {
 
         private RoleController _controller = null!;
