@@ -22,7 +22,6 @@ namespace BackendTest.Base.Label
         [ClassInitialize]
         public static async Task InitialiseDb(TestContext context)
         {
-            ResetInitialisedDb();
             await SetupTestDb();
         }
 

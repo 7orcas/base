@@ -6,7 +6,6 @@ namespace BackendTest.Setup
 {
     public partial class BaseTest
     {
-        private static bool initialisedDb = false;
         public IMemoryCache memoryCache;
 
         public BaseTest() 

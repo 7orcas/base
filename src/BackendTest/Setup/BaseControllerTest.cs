@@ -15,7 +15,7 @@ namespace BackendTest.Setup
         //Generic controller creation
         public T CreateController<T>() where T : ControllerBase
         {
-            var session = CreateSessionEnt();
+            var session = CreateSessionEnt(ORG_NR, USER_ACCOUNT_ID_1);
 
             var services = new ServiceCollection();
             services.AddSingleton(memoryCache);

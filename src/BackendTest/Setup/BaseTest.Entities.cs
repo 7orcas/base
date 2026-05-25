@@ -23,26 +23,44 @@ namespace BackendTest.Setup
         public const int USER_ACCOUNT_ID_2 = 2;
 
 
-        public static SessionEnt CreateSessionEnt()
+        public SessionEnt CreateSessionEnt(int orgNr, int userAccId)
         {
             var session = new SessionEnt
             {
-                Org = new OrgEnt { LangLabelVariant = 0 },
-                UserConfig = CreateUserConfig()
+                Org = new OrgEnt { 
+                    Nr = orgNr,
+                    LangLabelVariant = 0 
+                },
+                UserConfig = CreateUserConfig(orgNr),
+                UserAccount = CreateUserAccount(orgNr, userAccId)
             };
 
             return session;
         }
 
-        public static UserConfig CreateUserConfig()
+        public UserConfig CreateUserConfig(int orgNr)
         {
             var userConfig = new UserConfig
                 {
-                    orgNr = ORG_NR,
+                    orgNr = orgNr,
                     LangCodeCurrent = LANG_CODE_EN,
                     Languages = CreateLanguageConfigs()
             };
             return userConfig;
+        }
+
+        public UserAccountEnt CreateUserAccount(int orgNr, int userAccId)
+        {
+            var acc = new UserAccountEnt
+            {
+                Id = userAccId,
+                Userid = GCT.UserName,
+                orgNr = orgNr,
+                LangCode = LANG_CODE_EN,
+                Classification = 0,
+                IsAdmin = false,
+            };
+            return acc;
         }
 
         public async Task<OrgEnt> GetOrgEnt()
@@ -75,7 +93,7 @@ namespace BackendTest.Setup
             return service.Object;
         }
 
-        public static List<LangLabel> CreateLangLabels()
+        public List<LangLabel> CreateLangLabels()
         {
             return new List<LangLabel>
             {
@@ -85,7 +103,7 @@ namespace BackendTest.Setup
             };
         }
 
-        public static List<LanguageConfig> CreateLanguageConfigs()
+        public List<LanguageConfig> CreateLanguageConfigs()
         {
             return new List<LanguageConfig>
             {
@@ -95,7 +113,7 @@ namespace BackendTest.Setup
             };
         }
 
-        public static Dictionary<string, LangLabel> CreateLanguageDictionary()
+        public Dictionary<string, LangLabel> CreateLanguageDictionary()
         {
             var dic = new Dictionary<string, LangLabel>();
             var list = CreateLangLabels();
@@ -122,7 +140,7 @@ namespace BackendTest.Setup
             return service.Object;
         }
 
-        public static List<RoleEnt> GetRoles()
+        public List<RoleEnt> GetRoles()
         {
             var list = new List<RoleEnt>
             {
@@ -142,7 +160,7 @@ namespace BackendTest.Setup
             return list;
         }
 
-        public static List<UserAccountRoleEnt> GetUserRoles()
+        public List<UserAccountRoleEnt> GetUserRoles()
         {
             return new List<UserAccountRoleEnt>
             {
@@ -198,14 +216,14 @@ namespace BackendTest.Setup
 
             return service.Object;
         }
-        public static List<RolePermissionCrudEnt> GetRolePermission()
+        public List<RolePermissionCrudEnt> GetRolePermission()
         {
             return new List<RolePermissionCrudEnt>
             {
                 new RolePermissionCrudEnt { Role = ROLE_1, Crud = "CRUD", LangKey = "Perm", OrgNr = ORG_NR, PermissionNr = 1 }
             };
         }
-        public static List<PermissionCrudEnt> GetPermissionCrud()
+        public List<PermissionCrudEnt> GetPermissionCrud()
         {
             return new List<PermissionCrudEnt>
             {

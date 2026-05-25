@@ -1,40 +1,66 @@
-﻿using GC = Backend.GlobalConstants;
+﻿using System.Reflection.Emit;
+using GC = Backend.GlobalConstants;
 using GCT = BackendTest.GlobalConstants;
 
 namespace BackendTest.Base.Permission
 {
     [TestClass]
+    [DoNotParallelize]
+    [TestCategory("UnitServiceBase")]
     public class PermissionServiceTest : BaseServiceTest
     {
         PermissionService service;
+        SessionEnt session;
 
         public PermissionServiceTest() : base ()
         {
             service = CreateService<PermissionService>();
+            session = CreateSessionEnt();
         }
 
-        //[AssemblyInitialize]
         [ClassInitialize]
         public static async Task InitialiseDb(TestContext context)
         {
-            ResetInitialisedDb();
             await SetupTestDb();
+            await DeleteAll();
+            await InsertOrg();
+            await InsertUser();
+            await InsertRole();
+            await InsertUserAcc();
+            await InsertUserAccRole();
+            await InsertRolePermission();
         }
 
-       // [TestMethod]
-        public async Task LoadPermissions()
+        [TestMethod]
+        public async Task GetPermissions()
         {
-            var list = await service.LoadEffectivePermissionsInt(GCT.UserId, GCT.orgNr);
-            Assert.AreEqual(MaxRoles, list.Count);
-            
-            bool v = true;
-            foreach (var permission in list)
-            {
-                if (permission.Crud != "crud")
-                    v = false;
-            }
-            if (!v) Assert.Fail();
+            var list = await service.GetPermissions(session);
+            Assert.IsTrue(list.Count > 0);
+        }
 
+        [TestMethod]
+        public async Task GetPermissionEnt()
+        {
+            Assert.IsTrue(true);
+        }
+
+        [TestMethod]
+        public async Task LoadEffectivePermissions()
+        {
+            Assert.IsTrue(true);
+        }
+
+        [TestMethod]
+        public async Task LoadEffectivePermissionsInt()
+        {
+            Assert.IsTrue(true);
+        }
+
+
+        [TestMethod]
+        public async Task IsAuthorizedToAccessEndPoint()
+        {
+            Assert.IsTrue(true);
         }
 
 

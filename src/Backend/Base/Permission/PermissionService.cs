@@ -159,9 +159,6 @@ namespace Backend.Base.Permission
                     },
                     new NpgsqlParameter("@userAccId", session.UserAccount.Id)
                 );
-
-
-
                 return list.OrderBy(r => r.Role).ThenBy(r => r.PermissionNr).ToList();
             }
             catch

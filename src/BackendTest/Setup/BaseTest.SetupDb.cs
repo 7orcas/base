@@ -9,23 +9,12 @@ namespace BackendTest.Setup
         public static int MaxRoles = 10;
         public static int MaxPermissions = 10;
 
-        public static void ResetInitialisedDb() => initialisedDb = false;
-        public bool IsInitialisedDb() => initialisedDb;
-
         public static async Task<bool> SetupTestDb()
         {
-            initialisedDb = false;
-
             try
             {
                 AppSettings.DBMainConnection = GCT.ConnString;
-                await DeleteAll();
-                await InsertOrg(GCT.TOrg);
-                await InsertUser(GCT.TUser);
-                //await InsertUserPermissionRole(GCT.TUserRole, 
-                //    "GCT.TPermission", //DELETE ME
-                //    GCT.TRole, GCT.TRolePermission);
-                initialisedDb = true;
+                //await DeleteAll();
                 return true;
             }
             catch (Exception ex)
@@ -35,40 +24,90 @@ namespace BackendTest.Setup
             }
         }
 
-        private static async Task InsertOrg(string t)
+        protected static async Task InsertOrg()
         {
             await Sql.Execute(
-                IdentityInsert(t,
-                    "INSERT INTO " + t + " " +
-                        "(nr, code, descr, langCode, langlabelvariant, encoded) " +
-                    "VALUES (" +
-                        GCT.orgNr +
-                        ",'Test Org'" +
-                        ",'Test Org Descr'" +
-                        ",'" + GCT.OrgLangCode + "'" +
-                        ",1" +
-                        ",'{Languages:[{LangCode:\"en\",IsEditable:true},{LangCode:\"de\",IsEditable:true},{LangCode:\"c1\",IsEditable:false},{LangCode:\"c2\",IsEditable:false}]}'" +
-                        ");" 
-                    ));
+                "INSERT INTO " + GCT.TOrg + " " +
+                    "(nr, code, descr, langCode, langlabelvariant, encoded) " +
+                "VALUES (" +
+                    GCT.OrgNr +
+                    ",'Test Org'" +
+                    ",'Test Org Descr'" +
+                    ",'" + GCT.OrgLangCode + "'" +
+                    ",1" +
+                    ",'{Languages:[{LangCode:\"en\",IsEditable:true},{LangCode:\"de\",IsEditable:true},{LangCode:\"c1\",IsEditable:false},{LangCode:\"c2\",IsEditable:false}]}'" +
+                    ");" 
+                );
         }
-
-        private static async Task InsertUser(string t)
+        protected static async Task InsertUser()
         {
             await Sql.Execute(
-                IdentityInsert(t,
-                    "INSERT INTO " + t + " " +
-                        "(id, xxx, yyy)" + // orgs, langCode) " +
-                    "VALUES (" +
-                        GCT.UserId +
-                        ",'" + GCT.UserName + "'" +
-                        ",'" + GCT.UserPW + "'" +
-                        //",'" + GCT.UserOrgs + "'" +
-                        //",'" + GCT.UserLangCode + "'" +
-                        ");"
-                    ));
+                "INSERT INTO " + GCT.TUser + " " +
+                    "(id, xxx, yyy)" + // orgs, langCode) " +
+                "VALUES (" +
+                    GCT.UserId +
+                    ",'" + GCT.UserName + "'" +
+                    ",'" + GCT.UserPW + "'" +
+                    ");"
+                );
         }
 
-        private static async Task InsertUserPermissionRole(string tUR, string tP, string tR, string tRP)
+        protected static async Task InsertUserAcc()
+        {
+            await Sql.Execute(
+                "INSERT INTO " + GCT.TUserAccount + " " +
+                    "(id, zzzid, orgnr, langcode, isadmin)" + 
+                "VALUES (" +
+                    GCT.UserAccountId +
+                    "," + GCT.UserId + 
+                    "," + GCT.OrgNr +
+                    ",'" + GCT.OrgLangCode + "'" +
+                    ",false" +
+                    ");"
+                );
+        }
+
+        protected static async Task InsertUserAccRole()
+        {
+            await Sql.Execute(
+                "INSERT INTO " + GCT.TUserAccountRole + " " +
+                    "(id, useraccid, roleid)" +
+                "VALUES (" +
+                    GCT.UserAccountRoleId +
+                    "," + GCT.UserAccountId +
+                    "," + GCT.RoleId +
+                    ");"
+                );
+        }
+
+        protected static async Task InsertRole()
+        {
+            await Sql.Execute(
+                "INSERT INTO " + GCT.TRole + " " +
+                    "(id, orgnr, code)" +
+                "VALUES (" +
+                    GCT.RoleId +
+                    ",0" +
+                    ",'test'" +
+                    ");"
+                );
+        }
+
+        protected static async Task InsertRolePermission()
+        {
+            await Sql.Execute(
+                "INSERT INTO " + GCT.TRolePermission + " " +
+                    "(id, roleid, permissionnr, crud)" +
+                "VALUES (" +
+                    GCT.RolePermissionId +
+                    "," + GCT.RoleId +
+                    "," + GC.PerPerm7 +
+                    ",'crud'" +
+                    ");"
+                );
+        }
+
+        protected static async Task InsertUserPermissionRole(string tUR, string tP, string tR, string tRP)
         {
             PermissionEnt[] perms = new PermissionEnt[MaxPermissions];
             for (int i = 0; i < MaxPermissions; i++)
@@ -84,12 +123,12 @@ namespace BackendTest.Setup
 
             RoleEnt[] roles = new RoleEnt[MaxRoles];
             for (int i = 0; i< MaxRoles; i++)
-                roles[i] = new RoleEnt { Id = -1 + i*-1, Code = "role" + (i + 1), OrgNr = GCT.orgNr };
+                roles[i] = new RoleEnt { Id = -1 + i*-1, Code = "role" + (i + 1), OrgNr = GCT.OrgNr };
 
             sql = "";
             foreach (var rec in roles)
                 sql += "INSERT INTO " + tR + " (id, code, orgNr) VALUES (" + rec.Id + ",'" + rec.Code + "'," + rec.OrgNr + ");";
-            await Sql.Execute(IdentityInsert(tR, sql));
+            await Sql.Execute(sql);
 
 
             string[] crud = { "c","r","u","d", "crud", "xyz", "crudcrudz", "ddddd" };
@@ -103,32 +142,20 @@ namespace BackendTest.Setup
                 foreach (var rec2 in perms)
                     sql += "INSERT INTO " + tRP + " (id, roleId, permissionnr, crud) VALUES (" + --idTest + "," + rec1.Id + "," + rec2.Nr + ",'" + c + "');";
             }
-            await Sql.Execute(IdentityInsert(tRP, sql));
+            await Sql.Execute(sql);
 
             sql = "";
             foreach (var rec in roles)
                 sql += "INSERT INTO " + tUR + " (id, zzzId, roleId) VALUES (" + --idTest + "," +  GCT.UserId + "," + rec.Id + ");";
-            await Sql.Execute(IdentityInsert(tUR, sql));
+            await Sql.Execute(sql);
         }
 
-
-        private static string IdentityInsert(string table, string sql)
-        {
-            //if (!sql.EndsWith(";"))
-            //    sql += ";";
-
-            //return "SET IDENTITY_INSERT " + table + " ON;" +
-            //    sql +
-            //    "SET IDENTITY_INSERT " + table + " OFF;";
-            return sql;
-        }
-
-        private static async Task DeleteAll()
+        protected static async Task DeleteAll()
         {
             string[] tables = {
                 GCT.TRolePermission
-              //  ,GCT.TPermission
-                ,GCT.TUserRole
+                ,GCT.TUserAccountRole
+                ,GCT.TUserAccount
                 ,GCT.TRole
                 ,GCT.TUser
             };

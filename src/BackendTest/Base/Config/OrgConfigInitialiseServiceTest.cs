@@ -16,9 +16,8 @@ namespace BackendTest.Base.Config
         }
 
         [ClassInitialize]
-        public static async Task InitialiseDb(TestContext context)
+        public async Task InitialiseDb(TestContext context)
         {
-            ResetInitialisedDb();
             await SetupTestDb();
         }
 
@@ -27,9 +26,9 @@ namespace BackendTest.Base.Config
         {
             await service.InitialiseOrgConfigs();
 
-            var orgConfig = memoryCache.Get<OrgConfig>(GC.CacheKeyOrgConfigPrefix + GCT.orgNr);
+            var orgConfig = memoryCache.Get<OrgConfig>(GC.CacheKeyOrgConfigPrefix + GCT.OrgNr);
 
-            Assert.AreEqual(GCT.orgNr, orgConfig.orgNr);
+            Assert.AreEqual(GCT.OrgNr, orgConfig.orgNr);
             Assert.AreEqual(GCT.OrgLangCode, orgConfig.LangCodeDefault);
 
             foreach (var lang in GCT.Languages)

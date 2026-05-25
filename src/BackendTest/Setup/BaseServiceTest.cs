@@ -22,7 +22,14 @@ namespace BackendTest.Setup
         {
             AppSettings.DBMainConnection = GCT.ConnString;
         }
-       
+
+        public SessionEnt CreateSessionEnt()
+        {
+            var session = base.CreateSessionEnt(GCT.OrgNr, GCT.UserAccountId);
+            session.Org.Nr = GCT.OrgNr;
+            return session;
+        }
+
         public T CreateService<T>() where T : BaseService
         {
             _serviceProvider = BuildServiceProviderX();

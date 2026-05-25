@@ -25,24 +25,23 @@ namespace BackendTest.Base.Config
         }
 
         [ClassInitialize]
-        public static async Task InitialiseDb(TestContext context)
+        public async Task InitialiseDb(TestContext context)
         {
-            ResetInitialisedDb();
             await SetupTestDb();
         }
 
         private async Task Setup()
         {
-            org = await orgService.GetOrg(GCT.orgNr);
+            org = await orgService.GetOrg(GCT.OrgNr);
             await orgConfigInitialiseService.InitialiseOrgConfigs();
-            orgConfig = memoryCache.Get<OrgConfig>(GC.CacheKeyOrgConfigPrefix + GCT.orgNr);
+            orgConfig = memoryCache.Get<OrgConfig>(GC.CacheKeyOrgConfigPrefix + GCT.OrgNr);
         }
 
         [TestMethod]
         public async Task ConfigOrgs()
         {
             await Setup();
-            Assert.AreEqual(GCT.orgNr, orgConfig.orgNr);
+            Assert.AreEqual(GCT.OrgNr, orgConfig.orgNr);
             Assert.AreEqual(GCT.OrgLangCode, orgConfig.LangCodeDefault);
             foreach (var lang in GCT.Languages)
             {
@@ -58,7 +57,7 @@ namespace BackendTest.Base.Config
         //    user = await GetUserEnt();
         //    userConfig = configService.CreateUserConfig(user, org, GCT.UserLangCode);
 
-        //    Assert.AreEqual(GCT.orgNr, userConfig.orgNr);
+        //    Assert.AreEqual(GCT.OrgNr, userConfig.orgNr);
         //    Assert.AreEqual(GCT.UserLangCode, userConfig.LangCodeCurrent);
         //    foreach (var lang in GCT.Languages)
         //    {
