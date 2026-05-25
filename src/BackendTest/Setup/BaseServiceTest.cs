@@ -45,6 +45,7 @@ namespace BackendTest.Setup
             services.AddScoped<ConfigService>();
             services.AddScoped<SessionService>();
             services.AddScoped<LoginService>();
+            services.AddScoped<LabelService>();
 
             return services.BuildServiceProvider();
         }
