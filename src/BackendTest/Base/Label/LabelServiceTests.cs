@@ -12,11 +12,12 @@ namespace BackendTest.Base.Label
     {
         LabelService service;
         SessionEnt session;
+        static int IdStart = IdStartLabel;
 
         public LabelServiceTests() : base()
         {
             service = CreateService<LabelService>();
-            session = CreateSessionEnt();
+            session = CreateSessionEnt(IdStart, IdStart);
         }
 
         [ClassInitialize]

@@ -13,8 +13,7 @@ namespace BackendTest.Setup
         {
             try
             {
-                AppSettings.DBMainConnection = GCT.ConnString;
-                //await DeleteAll();
+                AppSettings.DBMainConnection = ConnString;
                 return true;
             }
             catch (Exception ex)
@@ -24,83 +23,83 @@ namespace BackendTest.Setup
             }
         }
 
-        protected static async Task InsertOrg()
+        protected static async Task InsertOrg(int idStart)
         {
             await Sql.Execute(
-                "INSERT INTO " + GCT.TOrg + " " +
+                "INSERT INTO " + TOrg + " " +
                     "(nr, code, descr, langCode, langlabelvariant, encoded) " +
                 "VALUES (" +
-                    GCT.OrgNr +
+                    idStart +
                     ",'Test Org'" +
                     ",'Test Org Descr'" +
-                    ",'" + GCT.OrgLangCode + "'" +
+                    ",'" + OrgLangCode + "'" +
                     ",1" +
                     ",'{Languages:[{LangCode:\"en\",IsEditable:true},{LangCode:\"de\",IsEditable:true},{LangCode:\"c1\",IsEditable:false},{LangCode:\"c2\",IsEditable:false}]}'" +
                     ");" 
                 );
         }
-        protected static async Task InsertUser()
+        protected static async Task InsertUser(int idStart)
         {
             await Sql.Execute(
-                "INSERT INTO " + GCT.TUser + " " +
+                "INSERT INTO " + TUser + " " +
                     "(id, xxx, yyy)" + // orgs, langCode) " +
                 "VALUES (" +
-                    GCT.UserId +
-                    ",'" + GCT.UserName + "'" +
-                    ",'" + GCT.UserPW + "'" +
+                    idStart +
+                    ",'" + UserName + "'" +
+                    ",'" + UserPW + "'" +
                     ");"
                 );
         }
 
-        protected static async Task InsertUserAcc()
+        protected static async Task InsertUserAcc(int idStart)
         {
             await Sql.Execute(
-                "INSERT INTO " + GCT.TUserAccount + " " +
+                "INSERT INTO " + TUserAccount + " " +
                     "(id, zzzid, orgnr, langcode, isadmin)" + 
                 "VALUES (" +
-                    GCT.UserAccountId +
-                    "," + GCT.UserId + 
-                    "," + GCT.OrgNr +
-                    ",'" + GCT.OrgLangCode + "'" +
+                    idStart +
+                    "," + idStart + 
+                    "," + idStart +
+                    ",'" + OrgLangCode + "'" +
                     ",false" +
                     ");"
                 );
         }
 
-        protected static async Task InsertUserAccRole()
+        protected static async Task InsertUserAccRole(int idStart)
         {
             await Sql.Execute(
-                "INSERT INTO " + GCT.TUserAccountRole + " " +
+                "INSERT INTO " + TUserAccountRole + " " +
                     "(id, useraccid, roleid)" +
                 "VALUES (" +
-                    GCT.UserAccountRoleId +
-                    "," + GCT.UserAccountId +
-                    "," + GCT.RoleId +
+                    idStart +
+                    "," + idStart +
+                    "," + idStart +
                     ");"
                 );
         }
 
-        protected static async Task InsertRole()
+        protected static async Task InsertRole(int idStart)
         {
             await Sql.Execute(
-                "INSERT INTO " + GCT.TRole + " " +
+                "INSERT INTO " + TRole + " " +
                     "(id, orgnr, code)" +
                 "VALUES (" +
-                    GCT.RoleId +
+                    idStart +
                     ",0" +
-                    ",'test'" +
+                    ",'ServiceTest'" +
                     ");"
                 );
         }
 
-        protected static async Task InsertRolePermission()
+        protected static async Task InsertRolePermission(int idStart)
         {
             await Sql.Execute(
-                "INSERT INTO " + GCT.TRolePermission + " " +
+                "INSERT INTO " + TRolePermission + " " +
                     "(id, roleid, permissionnr, crud)" +
                 "VALUES (" +
-                    GCT.RolePermissionId +
-                    "," + GCT.RoleId +
+                    idStart +
+                    "," + idStart +
                     "," + GC.PerPerm7 +
                     ",'crud'" +
                     ");"
@@ -123,7 +122,7 @@ namespace BackendTest.Setup
 
             RoleEnt[] roles = new RoleEnt[MaxRoles];
             for (int i = 0; i< MaxRoles; i++)
-                roles[i] = new RoleEnt { Id = -1 + i*-1, Code = "role" + (i + 1), OrgNr = GCT.OrgNr };
+                roles[i] = new RoleEnt { Id = -1 + i*-1, Code = "role" + (i + 1), OrgNr = OrgNr };
 
             sql = "";
             foreach (var rec in roles)
@@ -146,28 +145,28 @@ namespace BackendTest.Setup
 
             sql = "";
             foreach (var rec in roles)
-                sql += "INSERT INTO " + tUR + " (id, zzzId, roleId) VALUES (" + --idTest + "," +  GCT.UserId + "," + rec.Id + ");";
+                sql += "INSERT INTO " + tUR + " (id, zzzId, roleId) VALUES (" + --idTest + "," +  UserId + "," + rec.Id + ");";
             await Sql.Execute(sql);
         }
 
-        protected static async Task DeleteAll()
+        protected static async Task DeleteAll(int idStart)
         {
             string[] tables = {
-                GCT.TRolePermission
-                ,GCT.TUserAccountRole
-                ,GCT.TUserAccount
-                ,GCT.TRole
-                ,GCT.TUser
+                TRolePermission
+                ,TUserAccountRole
+                ,TUserAccount
+                ,TRole
+                ,TUser
             };
             string[] tablesX = {
-                GCT.TOrg
+                TOrg
             };
 
             foreach (var table in tables)
-                await Sql.Execute("Delete from " + table + " WHERE id < 0");
+                await Sql.Execute("Delete from " + table + " WHERE id >= " + idStart + " AND id <= " + (idStart + IdStartRange));
 
             foreach (var table in tablesX)
-                await Sql.Execute("Delete from " + table + " WHERE nr < 0");
+                await Sql.Execute("Delete from " + table + " WHERE nr >= " + idStart + " AND nr <= " + (idStart + IdStartRange));
 
         }
 

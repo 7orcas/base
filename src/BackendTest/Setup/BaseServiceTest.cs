@@ -20,13 +20,13 @@ namespace BackendTest.Setup
 
         public BaseServiceTest() : base()
         {
-            AppSettings.DBMainConnection = GCT.ConnString;
+            AppSettings.DBMainConnection = ConnString;
         }
 
-        public SessionEnt CreateSessionEnt()
+        public SessionEnt CreateSessionEnt(int OrgNr, int UserAccountId)
         {
-            var session = base.CreateSessionEnt(GCT.OrgNr, GCT.UserAccountId);
-            session.Org.Nr = GCT.OrgNr;
+            var session = base.CreateSessionEnt(OrgNr, UserAccountId);
+            session.Org.Nr = OrgNr;
             return session;
         }
 

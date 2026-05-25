@@ -1,8 +1,4 @@
-﻿using System.Reflection.Emit;
-using GC = Backend.GlobalConstants;
-using GCT = BackendTest.GlobalConstants;
-
-namespace BackendTest.Base.Permission
+﻿namespace BackendTest.Base.Permission
 {
     [TestClass]
     [DoNotParallelize]
@@ -11,25 +7,35 @@ namespace BackendTest.Base.Permission
     {
         PermissionService service;
         SessionEnt session;
+        static int IdStart = IdStartPermission;
 
         public PermissionServiceTest() : base ()
         {
             service = CreateService<PermissionService>();
-            session = CreateSessionEnt();
+            session = CreateSessionEnt(IdStart, IdStart);
         }
 
         [ClassInitialize]
         public static async Task InitialiseDb(TestContext context)
         {
             await SetupTestDb();
-            await DeleteAll();
-            await InsertOrg();
-            await InsertUser();
-            await InsertRole();
-            await InsertUserAcc();
-            await InsertUserAccRole();
-            await InsertRolePermission();
+            await DeleteAll(IdStart);
+            await InsertOrg(IdStart);
+            await InsertUser(IdStart);
+            await InsertRole(IdStart);
+            await InsertUserAcc(IdStart);
+            await InsertUserAccRole(IdStart);
+            await InsertRolePermission(IdStart);
         }
+
+
+        [ClassCleanup]
+        public static async Task Cleanup()
+        {
+            if (RunCleanup)
+                await DeleteAll(IdStart);
+        }
+
 
         [TestMethod]
         public async Task GetPermissions()
