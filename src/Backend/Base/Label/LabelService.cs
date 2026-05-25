@@ -175,7 +175,7 @@ namespace Backend.Base.Label
                 }
 
                 if (!string.IsNullOrEmpty(langKeyCode))
-                    sqlWhere = "AND k.code = '" + langKeyCode + "' ";
+                    sqlWhere += "AND k.code = '" + langKeyCode + "' ";
 
             }
             sql += sqlWhere;
