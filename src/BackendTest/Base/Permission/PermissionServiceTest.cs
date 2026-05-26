@@ -28,7 +28,6 @@
             await InsertRolePermission(IdStart);
         }
 
-
         [ClassCleanup]
         public static async Task Cleanup()
         {

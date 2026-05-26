@@ -1,6 +1,4 @@
 ﻿using Moq;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Net.NetworkInformation;
 using GC = Backend.GlobalConstants;
 using GCT = BackendTest.GlobalConstants;
 
