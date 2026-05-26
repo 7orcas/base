@@ -45,7 +45,7 @@ namespace BackendTest.Setup
                     "(id, xxx, yyy)" + // orgs, langCode) " +
                 "VALUES (" +
                     idStart +
-                    ",'" + UserName + "'" +
+                    ",'" + (UserName + "_" + idStart ) + "'" +
                     ",'" + UserPW + "'" +
                     ");"
                 );
@@ -87,7 +87,7 @@ namespace BackendTest.Setup
                 "VALUES (" +
                     idStart +
                     ",0" +
-                    ",'ServiceTest'" +
+                    ",'" + ("ServiceTest_" + idStart) + "'" +
                     ");"
                 );
         }
@@ -163,10 +163,10 @@ namespace BackendTest.Setup
             };
 
             foreach (var table in tables)
-                await Sql.Execute("Delete from " + table + " WHERE id >= " + idStart + " AND id <= " + (idStart + IdStartRange));
+                await Sql.Execute("Delete from " + table + " WHERE id >= " + idStart + " AND id < " + (idStart + IdStartRange));
 
             foreach (var table in tablesX)
-                await Sql.Execute("Delete from " + table + " WHERE nr >= " + idStart + " AND nr <= " + (idStart + IdStartRange));
+                await Sql.Execute("Delete from " + table + " WHERE nr >= " + idStart + " AND nr < " + (idStart + IdStartRange));
 
         }
 

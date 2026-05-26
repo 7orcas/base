@@ -3,13 +3,13 @@
     [TestClass]
     [DoNotParallelize]
     [TestCategory("UnitServiceBase")]
-    public class PermissionServiceTest : BaseServiceTest
+    public class PermissionServiceTests : BaseServiceTest
     {
         PermissionService service;
         SessionEnt session;
         static int IdStart = IdStartPermission;
 
-        public PermissionServiceTest() : base ()
+        public PermissionServiceTests() : base ()
         {
             service = CreateService<PermissionService>();
             session = CreateSessionEnt(IdStart, IdStart);

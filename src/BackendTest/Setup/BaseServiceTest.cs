@@ -32,11 +32,11 @@ namespace BackendTest.Setup
 
         public T CreateService<T>() where T : BaseService
         {
-            _serviceProvider = BuildServiceProviderX();
+            _serviceProvider = BuildServiceProvider();
             return ActivatorUtilities.CreateInstance<T>(_serviceProvider);
         }
 
-        private IServiceProvider BuildServiceProviderX()
+        private IServiceProvider BuildServiceProvider()
         {
             var services = new ServiceCollection();
 

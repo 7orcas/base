@@ -6,7 +6,7 @@ namespace BackendTest.Setup
 {
     public partial class BaseTest
     {
-        public const bool RunCleanup = true;
+        public const bool RunCleanup = false;
         public const string ConnString = "Host=localhost;Port=5432;Database=blue;Username=postgres;Password=js;";
 
         public const int OrgNr = -99;
@@ -28,9 +28,11 @@ namespace BackendTest.Setup
         public const string TRole = "base.role";
         public const string TRolePermission = "base.rolepermission";
 
-        public const int IdStartRange = 1000;
-        public const int IdStartLabel = 1000001;
-        public const int IdStartPermission = 1000001;
+        public const int IdStartRange         = 1000;
+        public const int IdStartLabel         = 1000001;
+        public const int IdStartPermission    = 1001001;
+        public const int IdStartConfig        = 1002001;
+        public const int IdStartConfigInitial = 1003001;
 
         public IMemoryCache memoryCache;
 

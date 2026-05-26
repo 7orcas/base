@@ -1,5 +1,3 @@
-using Common.DTO.Base;
-
 namespace BackendTest.Base.Permission
 {
     [TestClass]

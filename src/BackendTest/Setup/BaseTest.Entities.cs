@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using Microsoft.Extensions.Caching.Memory;
+using Moq;
 using GC = Backend.GlobalConstants;
 using GCT = BackendTest.GlobalConstants;
 
@@ -8,6 +9,8 @@ namespace BackendTest.Setup
     {
 
         public const int ORG_NR = 1;
+        public const string ORG_DESC = "TEST123";
+        public const string LANG_CODE_DEFAULT = "en";
         public const string LANG_CODE_EN = "en";
         public const string LANG_CODE_DE = "de";
         public const string LANG_CODE_ES = "es";
@@ -27,12 +30,21 @@ namespace BackendTest.Setup
             {
                 Org = new OrgEnt { 
                     Nr = orgNr,
-                    LangLabelVariant = 0 
+                    LangLabelVariant = 0,
+                    Description = ORG_DESC,
                 },
                 UserConfig = CreateUserConfig(orgNr),
                 UserAccount = CreateUserAccount(orgNr, userAccId)
             };
 
+            var orgConfig = new OrgConfig() {
+                orgNr = orgNr,
+                LangCodeDefault = LANG_CODE_DEFAULT,
+                IsLangCodeEditable = true,
+                Languages = CreateLanguageConfigs()
+            };
+
+            memoryCache.Set(GC.CacheKeyOrgConfigPrefix + orgNr, orgConfig);
             return session;
         }
 
@@ -41,7 +53,7 @@ namespace BackendTest.Setup
             var userConfig = new UserConfig
                 {
                     orgNr = orgNr,
-                    LangCodeCurrent = LANG_CODE_EN,
+                    LangCodeCurrent = LANG_CODE_DEFAULT,
                     Languages = CreateLanguageConfigs()
             };
             return userConfig;
@@ -54,18 +66,33 @@ namespace BackendTest.Setup
                 Id = userAccId,
                 Userid = GCT.UserName,
                 orgNr = orgNr,
-                LangCode = LANG_CODE_EN,
+                LangCode = LANG_CODE_DEFAULT,
                 Classification = 0,
                 IsAdmin = false,
             };
             return acc;
         }
-
-        public async Task<OrgEnt> GetOrgEnt()
+        
+        public ConfigServiceI GetConfigService()
         {
-            //  var org = await orgService.GetOrg(GCT.OrgNr);
-            // return org;
-            return null;
+            var service = new Mock<ConfigServiceI>();
+
+            service
+                .Setup(x => x.CreateUserConfig(It.IsAny<UserAccountEnt>(), It.IsAny<OrgEnt>(), It.IsAny<string>()))
+                .Returns(CreateUserConfig());
+
+            return service.Object;
+        }
+
+        public UserConfig CreateUserConfig()
+        {
+            var userConfig = new UserConfig
+            {
+                orgNr = ORG_NR,
+                LangCodeCurrent = LANG_CODE_DEFAULT,
+                Languages = CreateLanguageConfigs()
+            };
+            return userConfig;
         }
 
         public LabelServiceI GetLabelService()
