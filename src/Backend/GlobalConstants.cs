@@ -4,7 +4,6 @@
     {
         public const int BaseOrgNr   = 0;
                 
-        public const int AppClient          = 1; //defined in FrontendLogin as well
         public const string LangCodeDefault = "en";
 
         public const string DateTimeFormat = "yyyy-MM-dd HH:mm:ss";

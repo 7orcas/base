@@ -20,7 +20,7 @@ namespace BackendTest.Setup
             var services = new ServiceCollection();
             services.AddSingleton(memoryCache);
             services.AddSingleton<Microsoft.Extensions.Logging.ILoggerFactory, Microsoft.Extensions.Logging.LoggerFactory>();
-            services.AddSingleton(new Mock<AuditServiceI>().Object);
+            services.AddSingleton(GetAuditService());
             services.AddSingleton(GetConfigService());
             services.AddSingleton(GetLabelService());
             services.AddSingleton(GetPermissionService());

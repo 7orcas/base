@@ -100,7 +100,7 @@ namespace BackendTest.Setup
                 "VALUES (" +
                     idStart +
                     "," + idStart +
-                    "," + GC.PerPerm7 +
+                    "," + GCT.PerPerm7 +
                     ",'crud'" +
                     ");"
                 );
@@ -149,6 +149,23 @@ namespace BackendTest.Setup
             await Sql.Execute(sql);
         }
 
+        protected static async Task InsertAudit(int idStart)
+        {
+            await Sql.Execute(
+                "INSERT INTO " + TAudit + " " +
+                    "(id, orgnr, source, entityTypeId, userAccId, created)" +
+                "VALUES (" +
+                    idStart +
+                    "," + idStart +
+                    "," + GCT.AppClient +
+                    "," + GC.EntityTypeAudit +
+                    ",-1" +
+                    ",'2024-01-01 00:00:00'" +
+                    ");"
+                );
+        }
+
+
         protected static async Task DeleteAll(int idStart)
         {
             string[] tables = {
@@ -157,6 +174,7 @@ namespace BackendTest.Setup
                 ,TUserAccount
                 ,TRole
                 ,TUser
+                ,TAudit
             };
             string[] tablesX = {
                 TOrg
