@@ -1,6 +1,6 @@
 ﻿namespace BackendTest
 {
-    public class GlobalConstants
+    public class GlobalConstants : Common.GlobalConstants
     {
         public const string ConnString            = "Host=localhost;Port=5432;Database=blue;Username=postgres;Password=js;";
 

@@ -1,11 +1,13 @@
-﻿namespace BackendTest.Base.Permission
+﻿using BGC = BackendTest.GlobalConstants;
+
+namespace BackendTest.Base.Permission
 {
     [TestClass]
-    [DoNotParallelize]
     [TestCategory("UnitServiceBase")]
     public class PermissionServiceTests : BaseServiceTest
     {
         PermissionService service;
+        PermissionInitialiseService initialiseService;
         SessionEnt session;
         static int IdStart = IdStartPermission;
 
@@ -13,6 +15,8 @@
         {
             service = CreateService<PermissionService>();
             session = CreateSessionEnt(IdStart, IdStart);
+            initialiseService = CreateService<PermissionInitialiseService>();
+            initialiseService.InitialisePermissions();
         }
 
         [ClassInitialize]
@@ -46,25 +50,30 @@
         [TestMethod]
         public async Task GetPermissionEnt()
         {
-            Assert.IsTrue(true);
+            
+            var perm = service.GetPermissionEnt(BGC.PerPerm7);
+            Assert.IsTrue(perm.Nr == BGC.PerPerm7);
         }
 
         [TestMethod]
         public async Task LoadEffectivePermissions()
         {
-            Assert.IsTrue(true);
+            var list = await service.LoadEffectivePermissions(session);
+            Assert.IsTrue(list.Count > 0);
         }
 
         [TestMethod]
         public async Task LoadEffectivePermissionsInt()
         {
-            Assert.IsTrue(true);
+            var list = await service.LoadEffectivePermissionsInt(session.UserAccount.Id, session.Org.Nr);
+            Assert.IsTrue(list.Count > 0);
         }
 
 
         [TestMethod]
         public async Task IsAuthorizedToAccessEndPoint()
         {
+            var valid = service.IsAuthorizedToAccessEndPoint(session, new PermissionAtt(USER_PERM), new CrudAtt(USER_PERM_CRUD));
             Assert.IsTrue(true);
         }
 
