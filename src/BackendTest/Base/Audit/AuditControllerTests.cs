@@ -6,7 +6,7 @@ namespace BackendTest.Base.Audit
 {
     [TestClass]
     [TestCategory("UnitControllerToDo")]
-    public class AuditController
+    public class AuditControllerTests
     {
         [TestMethod]
         public void PlaceholderTest()
