@@ -263,14 +263,23 @@ namespace BackendTest.Setup
             };
         }
 
+        public AuditServiceI GetAuditService()
+        {
+            var service = new Mock<AuditServiceI>();
 
-        //public async Task<UserEnt> GetUserEnt()
-        //{
-        //    var result = await loginservice.GetLogin(GCT.UserName, GCT.OrgNr);
-        //    var org = await orgService.GetOrg(GCT.OrgNr);
-        //    var user = await loginservice.InitialiseLogin(result.login, org, GC.AppClient);
-        //    return user;
-        //}
+            service
+                .Setup(x => x.GetEvents(It.IsAny<SessionEnt>()))
+                .ReturnsAsync(GetAuditList());
 
+            return service.Object;
+        }
+
+        public List<AuditList> GetAuditList()
+        {
+            return new List<AuditList>
+            {
+                new AuditList {EntityId = 1}
+            };
+        }
     }
 }

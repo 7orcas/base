@@ -21,6 +21,7 @@ namespace BackendTest.Setup
         public const string UserLangCode = "en";
         public static readonly string[] Languages = { "en", "de", "c1", "c2" };
 
+        public const string TAudit = "base.audit";
         public const string TOrg = "base.org";
         public const string TUser = "base.zzz";
         public const string TUserAccount = "base.useracc";
@@ -28,11 +29,13 @@ namespace BackendTest.Setup
         public const string TRole = "base.role";
         public const string TRolePermission = "base.rolepermission";
 
+
         public const int IdStartRange         = 1000;
-        public const int IdStartLabel         = 1000001;
+        public const int IdStartAudit         = 1000001;
         public const int IdStartPermission    = 1001001;
         public const int IdStartConfig        = 1002001;
         public const int IdStartConfigInitial = 1003001;
+        public const int IdStartLabel         = 1004001;
 
         public IMemoryCache memoryCache;
 

@@ -10,13 +10,13 @@ namespace BackendTest.Setup
         protected IServiceProvider _serviceProvider;
 
         //Here for convienenece
-        public OrgConfigInitialiseService orgConfigInitialiseService;
-        public LoginService loginservice;
-        public PermissionService permissionService;
-        public TokenService tokenService;
-        public OrgService orgService;
-        public ConfigService configService;
-        public SessionService sessionService;
+        //public OrgConfigInitialiseService orgConfigInitialiseService;
+        //public LoginService loginservice;
+        //public PermissionService permissionService;
+        //public TokenService tokenService;
+        //public OrgService orgService;
+        //public ConfigService configService;
+        //public SessionService sessionService;
 
         public BaseServiceTest() : base()
         {
@@ -36,7 +36,7 @@ namespace BackendTest.Setup
             return ActivatorUtilities.CreateInstance<T>(_serviceProvider);
         }
 
-        private IServiceProvider BuildServiceProvider()
+        protected IServiceProvider BuildServiceProvider()
         {
             var services = new ServiceCollection();
 
@@ -45,6 +45,7 @@ namespace BackendTest.Setup
             services.AddSingleton<IMemoryCache>(memoryCache);
 
             // ✅ Register ALL services
+            //services.AddScoped<AuditService>();
             services.AddScoped<OrgService>();
             services.AddScoped<OrgConfigInitialiseService>();
             services.AddScoped<PermissionService>();
@@ -53,13 +54,14 @@ namespace BackendTest.Setup
             services.AddScoped<SessionService>();
             services.AddScoped<LoginService>();
             services.AddScoped<LabelService>();
+            services.AddScoped<EntityService>();
 
             return services.BuildServiceProvider();
         }
 
         public class AuditTest : AuditServiceI
         {
-            public Task<List<AuditList>> GetEvents(SessionEnt session) =>  throw new NotImplementedException(); 
+            public Task<List<AuditList>> GetEvents(SessionEnt session) => throw new NotImplementedException();
             public void LogInOut(int sourceApp, int orgNr, int loginId, int entity) { }
             public void LogInOut(int sourceApp, long orgNr, long loginId, int entityTypeId) => throw new NotImplementedException();
             public void ReadEntity(SessionEnt session, int entityTypeId, int entityId) { }
