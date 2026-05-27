@@ -18,3 +18,9 @@ Entity Frame work
 - set id = 0
 - set updated = DateTime.UtfNow
 - Remove child entities where appropriate
+
+
+Run Docker
+1. docker compose up -d
+2. docker compose down -v
+3. docker inspect seq-logs  or docker logs seq-logs  ??
