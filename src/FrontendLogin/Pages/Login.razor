@@ -6,34 +6,46 @@
 @inject NavigationManager NavigationManager
 @inject IHttpClientFactory HttpClientFactory
 
-<h3>Login</h3>
-<EditForm Model="@loginRequest" OnValidSubmit="@HandleLogin">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
 
-    <div>
-        <label>Username:</label>
-        <InputText @bind-Value="loginRequest.Username" />
-    </div>
-    <div>
-        <label>Password:</label>
-        <InputText @bind-Value="loginRequest.Password" Type="password" />
-    </div>
-    <div>
-        <label>Org:</label>
-        <InputNumber @bind-Value="loginRequest.Org" />
-    </div>
-    <div>
-        <label>Language:</label>
-        <InputText @bind-Value="loginRequest.LangCode" />
-    </div>
-    <button type="submit">Login</button>
-</EditForm>
+<div class="d-flex justify-content-center align-items-center vh-100 bg-light">
+    <div class="card shadow-lg p-4" style="width: 400px; border-radius: 12px;">
+        
+        <h3 class="text-center mb-4">🔐 Login</h3>
 
-<p>@successMessage</p>
-<p>@errorMessage</p>
-<p>@tokenkey</p>
-<p>@token</p>
+            <EditForm Model="@loginRequest" OnValidSubmit="@HandleLogin">
+                <DataAnnotationsValidator />
+                <ValidationSummary class="text-danger mb-3" />
+
+                <div class="mb-3">
+                    <label>Username:</label>
+                    <InputText @bind-Value="loginRequest.Username" />
+                </div>
+                <div class="mb-3">
+                    <label>Password:</label>
+                    <InputText @bind-Value="loginRequest.Password" Type="password" />
+                </div>
+                <div class="mb-3">
+                    <label>Org:</label>
+                    <InputNumber @bind-Value="loginRequest.Org" />
+                </div>
+                <div class="mb-3">
+                    <label>Language:</label>
+                    <InputText @bind-Value="loginRequest.LangCode" />
+                </div>
+                <button type="submit" class="btn btn-primary w-100">
+                    Login
+                </button>
+            </EditForm>
+
+        <p>@successMessage</p>
+        <p>@errorMessage</p>
+        <p>@tokenkey</p>
+        <p>@token</p>
+
+        
+    </div>
+</div>
+
 
 @code {
     private LoginRequest loginRequest = new LoginRequest

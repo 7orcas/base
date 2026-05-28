@@ -30,7 +30,7 @@
         "xPASSWORD": "xx123",
         "ORG": "1",
         "LANGCODE": "en",
-        "AUTO": "true",
+        "AUTO": "false",
         "OPEN": "rol001"
       }
     },
