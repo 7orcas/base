@@ -1,0 +1,71 @@
+User Login Stuff
+
+✅ Account system
+Register (sign up)
+Login (email/username + password)
+Logout
+
+✅ Password security
+Password hashing (ASP.NET Identity does this)
+Password rules (length, complexity)
+
+✅ Email confirmation
+Send verification link on signup
+Prevent login until confirmed
+
+✅ Password reset
+“Forgot password” flow
+Email reset link with expiry
+
+✅ Authenticator app (TOTP)
+QR code setup (for scanning)
+TOTP verification
+Enable/disable MFA
+
+✅ 4. Recovery codes (IMPORTANT)
+Generate ~10 one-time backup codes
+Show once to the user
+Allow regeneration
+Mark used codes as invalid
+
+✅ Account lockout
+After X failed login attempts
+C# options.Lockout.MaxFailedAccessAttempts = 5;
+
+✅ Session timeout
+Auto logout after inactivity
+
+✅ Remember me (optional)
+Persistent login cookie
+
+✅ Anti-forgery (CSRF protection)
+Built into Blazor / ASP.NET — keep enabled.
+
+✅ HTTPS only
+Enforce secure connections
+
+✅ Secure cookies
+C#options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+
+
+✅ “Manage account” page
+Where users can:
+Change password
+Enable/disable MFA
+Regenerate recovery codes
+
+✅ Clear error messages
+Invalid login
+Expired tokens
+MFA required
+
+
+✅ 8. Optional (but highly recommended)
+🔒 Device remembering
+“Don’t ask for MFA on this device”
+
+🔒 Login notifications
+Email when:
+New device logs in
+Password changes
+
