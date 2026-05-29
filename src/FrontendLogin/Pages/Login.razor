@@ -36,6 +36,22 @@
                 <button type="submit" class="btn btn-primary w-100">
                     Login
                 </button>
+
+                
+            @if (options != null)
+            {
+                <div class="form-check mb-2">
+                    <InputCheckbox class="form-check-input" @bind-Value="options.RememberMe" id="rememberMe" />
+                    <label class="form-check-label" for="rememberMe">Remember Me</label>
+                </div>
+
+                <div class="form-check mb-2">
+                    <InputCheckbox class="form-check-input" @bind-Value="options.Forgot" id="useSSO" />
+                    <label class="form-check-label" for="useSSO">Forgot</label>
+                </div>
+            }
+
+
             </EditForm>
 
         <p>@successMessage</p>
@@ -125,13 +141,9 @@
     protected override async Task OnInitializedAsync()
     {
         var client = HttpClientFactory.CreateClient("BackendApi");
-        var response = await client.GetAsync($"api/LoginOption/get/1");
+        var response = await client.GetAsync($"api/LoginOption/get/{LoginNr}");
         var r = await response.Content.ReadAsStringAsync();
         var dto = JsonConvert.DeserializeObject<_ResponseDto>(r);
-
-// Console.WriteLine(responseDto.StatusCode);
-// var text = await responseDto.Content.ReadAsStringAsync();
-// Console.WriteLine(text);
 
         options = JsonConvert.DeserializeObject<LoginOptionDto>(dto.Result.ToString());
         
