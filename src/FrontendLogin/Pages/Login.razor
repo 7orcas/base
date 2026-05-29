@@ -1,4 +1,4 @@
-﻿@page "/"
+﻿@page "/{LoginNr:int}"
 @using Newtonsoft.Json;
 @using GC = FrontendLogin.GlobalConstants;
 @using Common.DTO.Base;
@@ -32,6 +32,7 @@
                     <label>Language:</label>
                     <InputText @bind-Value="loginRequest.LangCode" />
                 </div>
+
                 <button type="submit" class="btn btn-primary w-100">
                     Login
                 </button>
@@ -46,6 +47,10 @@
 
 
 @code {
+
+    [Parameter]
+    public int LoginNr { get; set; }
+
     private LoginRequest loginRequest = new LoginRequest
     {
         LangCode = "en"    
@@ -56,6 +61,7 @@
     private string token;
     private bool autoLogin = false;
     private string autoOpen = string.Empty;
+    private LoginOptionDto options;
 
     private async Task HandleLogin()
     {
@@ -118,6 +124,17 @@
 
     protected override async Task OnInitializedAsync()
     {
+        var client = HttpClientFactory.CreateClient("BackendApi");
+        var response = await client.GetAsync($"api/LoginOption/get/1");
+        var r = await response.Content.ReadAsStringAsync();
+        var dto = JsonConvert.DeserializeObject<_ResponseDto>(r);
+
+// Console.WriteLine(responseDto.StatusCode);
+// var text = await responseDto.Content.ReadAsStringAsync();
+// Console.WriteLine(text);
+
+        options = JsonConvert.DeserializeObject<LoginOptionDto>(dto.Result.ToString());
+        
         loginRequest.Org = 1;
 
         // Parse the URL query string

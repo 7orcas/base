@@ -1,5 +1,6 @@
 
 drop table if exists cntrl.token;
+drop table if exists cntrl.loginoption;
 
 drop table if exists base.audit;
 

@@ -111,6 +111,7 @@ builder.Services.AddScoped<AuditServiceI, AuditService>();
 builder.Services.AddScoped<LabelServiceI, LabelService>();
 builder.Services.AddScoped<ConfigServiceI, ConfigService>();
 builder.Services.AddScoped<LoginServiceI, LoginService>();
+builder.Services.AddScoped<LoginOptionServiceI, LoginOptionService>();
 builder.Services.AddScoped<TokenServiceI, TokenService>();
 builder.Services.AddScoped<OrgServiceI, OrgService>();
 builder.Services.AddScoped<SessionServiceI, SessionService>();

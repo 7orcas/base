@@ -1,6 +1,9 @@
+
 I have a c# ,Net, Blazor Server application.
 The .Net backend is an API project.
 The Blazor frontend is made up of 2 projects, a login project and the client project.
+
+
 The login (once successful) redirects the browser to the actual client project.
 The login at the moment is user id / password.
 I want to add in a MFA login process - how do I do this?

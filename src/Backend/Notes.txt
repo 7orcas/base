@@ -28,3 +28,8 @@ Run Docker
 
 View logs
 - http://localhost:5341
+
+
+Run Swagger
+1. Start backend
+2. URL https://localhost:6002/swagger/index.html

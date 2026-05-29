@@ -1,5 +1,6 @@
-﻿using Npgsql;
-using Microsoft.Extensions.Caching.Memory;
+﻿using Microsoft.Extensions.Caching.Memory;
+using Npgsql;
+using Superpower.Model;
 using GC = Backend.GlobalConstants;
 
 /// <summary>
@@ -83,6 +84,23 @@ namespace Backend.Base.Org
             );
             _memoryCache.Set(GC.CacheKeyOrgPrefix + org.Nr, org);
         }
+
+        public OrgDto Populate (OrgEnt org)
+        {
+            OrgDto orgDto = new OrgDto()
+            {
+                Id = org.Nr,
+                Code = org.Code,
+                Description = org.Description,
+                Updated = org.Updated,
+                IsActive = org.IsActive,
+                LangCode = org.LangCode,
+                LangLabelVariant = org.LangLabelVariant,
+            };
+
+            return orgDto;
+        }
+
 
     }
 }

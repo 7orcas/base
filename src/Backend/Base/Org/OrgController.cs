@@ -41,18 +41,8 @@ namespace Backend.Base.Org
             var list = new List<OrgDto>();
 
             foreach (var org in orgs)
-            {
-                list.Add(new OrgDto
-                    {
-                        Id = org.Nr,
-                        Code = org.Code,
-                        Description = org.Description,
-                        Updated = org.Updated,
-                        IsActive = org.IsActive,
-                    }
-                );
-            }
-
+                list.Add(_orgService.Populate(org));
+            
             var r = new _ResponseDto
             {
                 SuccessMessage = "Ok",
