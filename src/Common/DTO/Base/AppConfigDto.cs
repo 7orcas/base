@@ -9,6 +9,7 @@
         public LabelConfigDto Label { get; set; }
         public UserConfigDto User { get; set; }
         public bool DebugMode { get; set; } = false;
+        public string UrlLogin { get; set; }
     }
 
     public class LabelConfigDto

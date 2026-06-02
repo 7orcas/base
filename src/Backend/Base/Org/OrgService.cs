@@ -89,7 +89,7 @@ namespace Backend.Base.Org
         {
             OrgDto orgDto = new OrgDto()
             {
-                Id = org.Nr,
+                Nr = org.Nr,
                 Code = org.Code,
                 Description = org.Description,
                 Updated = org.Updated,

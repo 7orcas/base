@@ -41,6 +41,7 @@ namespace FrontendServer.Base.Config
                 var cdto = JsonConvert.DeserializeObject<_ResponseDto>(cls);
                 var cjson = cdto.Result.ToString();
                 config = JsonConvert.DeserializeObject<AppConfigDto>(cjson);
+
 config.DebugMode = true; //DELETE ME
 
                 OnInitialized?.Invoke(); // Notify subscribers

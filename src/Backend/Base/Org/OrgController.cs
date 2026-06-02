@@ -80,7 +80,7 @@ namespace Backend.Base.Org
                 SuccessMessage = "Config Ok",
                 Result = new OrgDto
                 {
-                    Id = org.Nr,
+                    Nr = org.Nr,
                     Code = org.Code,
                     Description = org.Description,
                     Updated = org.Updated,
@@ -134,7 +134,7 @@ namespace Backend.Base.Org
 
             var org = new OrgEnt
             {
-                Nr = dto.Id,
+                Nr = dto.Nr,
                 Code = dto.Code,
                 Description = dto.Description,
                 Updated = dto.Updated,

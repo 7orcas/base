@@ -9,13 +9,16 @@ namespace FrontendServer.Base.Logout
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly NavigationManager _navigation;
+        private readonly ConfigService _configService;
 
         public LogoutService(ProtectedSessionStorage session,
+            ConfigService configService,
             NavigationManager navigationManager,
             IHttpClientFactory httpClientFactory)
         {
             _session = session;
             _navigation = navigationManager;
+            _configService = configService;
             _httpClientFactory = httpClientFactory;
         }
 
@@ -31,8 +34,9 @@ namespace FrontendServer.Base.Logout
 
             await _session.DeleteAsync(GC.TokenCacheKey);
             var response = await client.PostAsync(GC.URL_logout, null);
+            var config = _configService.Config;
 
-            _navigation.NavigateTo("https://localhost:7289", forceLoad: true);
+            _navigation.NavigateTo(config.UrlLogin, forceLoad: true);
         }
 
     }

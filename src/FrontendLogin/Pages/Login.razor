@@ -26,20 +26,25 @@
                 </div>
                 <div class="mb-3">
                     <label>Org:</label>
-                    <InputNumber @bind-Value="loginRequest.Org" />
+                    <InputSelect class="form-select" @bind-Value="loginRequest.Org">
+                        <option value="">-- Select Org --</option>
+                        @foreach (var org in OrgList)
+                        {
+                            <option value="@org.Nr">@org.Name</option>
+                        }
+                    </InputSelect>
                 </div>
-        <div class="mb-3">
-            <label>Orgs (db):</label>
-            <InputText @bind-Value="orgs" />
-        </div>
+
                 <div class="mb-3">
                     <label>Language:</label>
-                    <InputText @bind-Value="loginRequest.LangCode" />
+                    <InputSelect class="form-select" @bind-Value="loginRequest.LangCode">
+                        <option value="">-- Select Language --</option>
+                        @foreach (var lang in LangList)
+                        {
+                            <option value="@lang.Code">@lang.Name</option>
+                        }
+                    </InputSelect>
                 </div>
-        <div class="mb-3">
-            <label>Langs (db):</label>
-            <InputText @bind-Value="langs" />
-        </div>
 
                 <button type="submit" class="btn btn-primary w-100">
                     Login
@@ -73,7 +78,7 @@
 @code {
 
     [Parameter]
-    public string? UrlSuffix { get; set; }
+    public string UrlSuffix { get; set; }
 
     private LoginRequest loginRequest = new LoginRequest
     {
@@ -83,11 +88,11 @@
     private string successMessage = string.Empty;
     private string tokenkey;
     private string token;
-    private string orgs = "";
-    private string langs = "";
     private bool autoLogin = false;
     private string autoOpen = string.Empty;
     private LoginOptionDto options;
+    private List<OrgItem> OrgList = new List<OrgItem>();
+    private List<LangItem> LangList = new List<LangItem>();
 
     private async Task HandleLogin()
     {
@@ -116,7 +121,8 @@
 
                     NavigationManager.NavigateTo(login.MainUrl 
                         + "?tk=" + tokenkey
-                        + (string.IsNullOrEmpty(autoOpen)? "" : "&open=" + autoOpen),
+                        + (string.IsNullOrEmpty(autoOpen)? "" : "&open=" + autoOpen)
+                        + ("&urlLogin=https://localhost:7289/" + UrlSuffix),
                         true);
                 }
                 else
@@ -157,14 +163,31 @@
 
         options = JsonConvert.DeserializeObject<LoginOptionDto>(dto.Result.ToString());
 
-        orgs = "";
-        foreach (var o in options.Orgs)
-            orgs += o.Code + " ";
-        langs = "";
-        foreach (var l in options.LangCodes)
-            langs += l + " ";
 
-        loginRequest.Org = int.Parse(options.Orgs[0].Id.ToString());
+        //Load organisation options
+        OrgList = new List<OrgItem>();
+        foreach (var o in options.Orgs)
+        {
+            OrgList.Add(new OrgItem
+                {
+                    Nr = o.Nr,
+                    Name = o.Code + (!string.IsNullOrEmpty(o.Description) ? " - " + o.Description : "")
+                });
+        }
+
+        //Load langauge options
+        LangList = new List<LangItem>();
+        foreach (var o in options.LangCodes)
+        {
+            LangList.Add(new LangItem
+            {
+                Code = o.Code,
+                Name = o.Description
+            });
+        }
+
+        loginRequest.UrlSuffix = UrlSuffix;
+        loginRequest.Org = int.Parse(options.Orgs[0].Nr.ToString());
         
         // Parse the URL query string
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
@@ -216,5 +239,18 @@
 
         var openValue = Environment.GetEnvironmentVariable("OPEN");
         autoOpen = openValue?.ToString();
+    }
+
+    
+    public class OrgItem
+    {
+        public int Nr { get; set; }
+        public string Name { get; set; }
+    }
+
+    public class LangItem
+    {
+        public string Code { get; set; }
+        public string Name { get; set; }
     }
 }

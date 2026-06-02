@@ -63,9 +63,9 @@
                                 <NumericField Width=GC.TextFieldWidth.Short
                                               LangCode="Nr"
                                               ReadOnly="true"
-                                              Value="@orgDto.Id"
-                                              ValueChanged="@((int val) => orgDto.Id = val)"
-                                              ValueExpression="() => orgDto.Id" />
+                                              Value="@orgDto.Nr"
+                                              ValueChanged="@((int val) => orgDto.Nr = val)"
+                                              ValueExpression="() => orgDto.Nr" />
                                 
                                 <TextField Width=GC.TextFieldWidth.Short
                                            LangCode="Code"
@@ -222,7 +222,7 @@
     {
         var dto = list[index];
         if (!dto.IsLoaded || force){
-            orgDto = await GetAsync<OrgDto>(GC.URL_org + dto.Id);
+            orgDto = await GetAsync<OrgDto>(GC.URL_org + dto.Nr);
             orgDto.HashMe();
             orgDto.IsLoaded = true;
             list[index] = orgDto;
@@ -235,7 +235,7 @@
     private async Task SaveAsync()
     {
         _isSaving = true;
-        var curIndex = orgDto != null? list.FindIndex(d => d.Id == orgDto.Id) : -1;
+        var curIndex = orgDto != null? list.FindIndex(d => d.Nr == orgDto.Nr) : -1;
         // var client = await SetClient();
         for (int i = 0; i < list.Count; i++) {
             var dto = list[i];
@@ -249,7 +249,7 @@
 
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    var o = await GetAsync<OrgDto>(GC.URL_org + dto.Id);
+                    var o = await GetAsync<OrgDto>(GC.URL_org + dto.Nr);
                     list[i] = o.HashMe().SetLoaded();
                 }
             }

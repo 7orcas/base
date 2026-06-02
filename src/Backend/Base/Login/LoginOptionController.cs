@@ -32,7 +32,7 @@ namespace Backend.Base.Login
         /// <returns></returns>
         [CrudAtt(GC.CrudIgnore)] 
         [HttpGet("get/{urlSuffix}")]
-        public async Task<IActionResult> LoginOptions(string? urlSuffix)
+        public async Task<IActionResult> LoginOptions(string urlSuffix)
         {
             var options = await _loginOptionService.GetLoginOptions(urlSuffix);
 

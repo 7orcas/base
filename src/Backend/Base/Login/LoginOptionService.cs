@@ -18,7 +18,7 @@ namespace Backend.Base.Login
         }
 
         //Login options for the passed in login nr
-        public async Task<LoginOptionEnt> GetLoginOptions(string? urlSuffix)
+        public async Task<LoginOptionEnt> GetLoginOptions(string urlSuffix)
         {
 
             var whereSql = "urlsuffix = @urlsuffix";
@@ -98,12 +98,13 @@ namespace Backend.Base.Login
         {
 
             var orgs = new List<OrgDto>();
+            var langs = new List<LangCodeDto>();
             var dto = new LoginOptionDto
             {
                 UrlSuffix = ent.UrlSuffix,
                 LangCode = ent.LangCode,
                 Orgs = orgs,
-                LangCodes = ent.LangCodes?.Split(',').ToList() ?? new List<string>(),
+                LangCodes = langs,
                 MFA = ent.MFA,
                 RememberMe = ent.RememberMe,
                 Forgot = ent.Forgot,
@@ -117,13 +118,25 @@ namespace Backend.Base.Login
                 if (!ent.IsService && !o.IsActive) continue;
                 dto.Orgs.Add(new OrgDto
                 {
-                    Id = o.Nr,
+                    Nr = o.Nr,
                     Code = o.Code,
                     Description = o.Description
                 });
 
             }
 
+            var list = await _labelService.GetLangCodeList();
+            foreach (var part in ent.LangCodes.Split(","))
+            {
+                var l = list.Find(l => l.Code == part);
+                if (!ent.IsService && !l.IsActive) continue;
+                dto.LangCodes.Add(new LangCodeDto
+                {
+                    Code = l.Code,
+                    Description = l.Description
+                });
+
+            }
             return dto;
         }
 
