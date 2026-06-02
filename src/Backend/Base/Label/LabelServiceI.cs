@@ -4,6 +4,7 @@ namespace Backend.Base.Label
 {
     public interface LabelServiceI
     {
+        Task<List<LangCode>> GetLangCodeList();
         Task<List<LangLabel>> GetLanguageLabelList(string langCode, int? variant);
         Task<Dictionary<string, LangLabel>> GetLanguageLabelDic(SessionEnt session);
         Task<Dictionary<string, LangLabel>> GetLanguageLabelDic(string langCode, int? variant);

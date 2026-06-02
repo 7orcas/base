@@ -12,22 +12,13 @@ Download and install Postgres
 - run _reload.ps1
 
 
-
 Docker
 - https://www.docker.com/products/docker-desktop
 - download: Windows AMD64 and run
-- AI query
-  - Give me step by step instructions to
-    - Download and Install Docker on my Windows PC
-	- Use a docker volume on my PC
-	- Configure it to run Seq log view
-	- Configure it to run Postgres
-	- Make sure logs are stored locally
-	- Make sure db is stored locally
-	- Connect my c# .Net API program to connect to Postgres db
 - Windows Subsystem for Linux will be installed (you may need to update - this will be highlighted)
-- Run in terminal in solution root: docker compose up -d  (check: docker ps)
-
+- Run in terminal in solution root: 
+    - docker compose up -d  (check: docker ps)
+	- docker compose down -v
 
 Swagger
 - Need to login to get a token
@@ -40,7 +31,6 @@ Logging
 
 
 
-
 Running the Application
 - Config startup projects:
   - Backend: start
@@ -48,5 +38,17 @@ Running the Application
   - FrontendLogin: start
 - https://localhost:7289  (as configured in FrontendLogin/Properties/launchsettings.json
 
+Run Docker
+1. Open Docker Desktop
+2. cd src directory
+3. docker compose up -d
+4. docker compose down -v
 
+View logs
+- http://localhost:5341
+
+
+Run Swagger
+1. Start backend
+2. URL https://localhost:6002/swagger/index.html
 

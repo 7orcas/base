@@ -28,13 +28,13 @@ namespace Backend.Base.Login
         /// <summary>
         /// Get Login Options for a user (e.g., languages, organisations)
         /// </summary>
-        /// <param name="loginNr"></param>
+        /// <param name="urlSuffix"></param>
         /// <returns></returns>
         [CrudAtt(GC.CrudIgnore)] 
-        [HttpGet("get/{loginNr}")]
-        public async Task<IActionResult> LoginOptions(int loginNr)
+        [HttpGet("get/{urlSuffix}")]
+        public async Task<IActionResult> LoginOptions(string? urlSuffix)
         {
-            var options = await _loginOptionService.GetLoginOptions(loginNr);
+            var options = await _loginOptionService.GetLoginOptions(urlSuffix);
 
             if (!options.IsActive)
                 return Ok(new _ResponseDto

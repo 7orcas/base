@@ -1,4 +1,4 @@
-﻿@page "/{LoginNr:int}"
+﻿@page "/{UrlSuffix}"
 @using Newtonsoft.Json;
 @using GC = FrontendLogin.GlobalConstants;
 @using Common.DTO.Base;
@@ -28,10 +28,18 @@
                     <label>Org:</label>
                     <InputNumber @bind-Value="loginRequest.Org" />
                 </div>
+        <div class="mb-3">
+            <label>Orgs (db):</label>
+            <InputText @bind-Value="orgs" />
+        </div>
                 <div class="mb-3">
                     <label>Language:</label>
                     <InputText @bind-Value="loginRequest.LangCode" />
                 </div>
+        <div class="mb-3">
+            <label>Langs (db):</label>
+            <InputText @bind-Value="langs" />
+        </div>
 
                 <button type="submit" class="btn btn-primary w-100">
                     Login
@@ -65,7 +73,7 @@
 @code {
 
     [Parameter]
-    public int LoginNr { get; set; }
+    public string? UrlSuffix { get; set; }
 
     private LoginRequest loginRequest = new LoginRequest
     {
@@ -75,6 +83,8 @@
     private string successMessage = string.Empty;
     private string tokenkey;
     private string token;
+    private string orgs = "";
+    private string langs = "";
     private bool autoLogin = false;
     private string autoOpen = string.Empty;
     private LoginOptionDto options;
@@ -141,14 +151,21 @@
     protected override async Task OnInitializedAsync()
     {
         var client = HttpClientFactory.CreateClient("BackendApi");
-        var response = await client.GetAsync($"api/LoginOption/get/{LoginNr}");
+        var response = await client.GetAsync($"api/LoginOption/get/{UrlSuffix}");
         var r = await response.Content.ReadAsStringAsync();
         var dto = JsonConvert.DeserializeObject<_ResponseDto>(r);
 
         options = JsonConvert.DeserializeObject<LoginOptionDto>(dto.Result.ToString());
-        
-        loginRequest.Org = 1;
 
+        orgs = "";
+        foreach (var o in options.Orgs)
+            orgs += o.Code + " ";
+        langs = "";
+        foreach (var l in options.LangCodes)
+            langs += l + " ";
+
+        loginRequest.Org = int.Parse(options.Orgs[0].Id.ToString());
+        
         // Parse the URL query string
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
         var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);

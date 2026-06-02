@@ -2,7 +2,7 @@
 {
     public class LoginOptionDto
     {
-        public int LoginNr { get; set; }
+        public string UrlSuffix { get; set; }
         public string LangCode { get; set; }
         public List<OrgDto> Orgs { get; set; }
         public List<string> LangCodes { get; set; }
@@ -10,5 +10,6 @@
         public bool RememberMe { get; set; }
         public bool Forgot { get; set; }
         public bool SelfRegistration { get; set; }
+        public bool Masquerade { get; set; }
     }
 }

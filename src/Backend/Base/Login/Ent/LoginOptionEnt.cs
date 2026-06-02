@@ -1,4 +1,6 @@
-﻿/// <summary>
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+/// <summary>
 /// Login options entity
 /// Created: May 2026
 /// [*Licence*]
@@ -8,7 +10,7 @@ namespace Backend.Base.Login.Ent
 {
     public class LoginOptionEnt
     {
-        public int LoginNr { get; set; }
+        public string UrlSuffix { get; set; }
         public bool IsActive { get; set; }
         public string OrgNrs { get; set; }
         public string LangCode { get; set; }
@@ -18,5 +20,9 @@ namespace Backend.Base.Login.Ent
         public bool RememberMe { get; set; }
         public bool Forgot { get; set; }
         public bool SelfRegistration { get; set; }
+        public bool Masquerade { get; set; }
+
+        [NotMapped]
+        public bool IsService { get; set; }
     }
 }

@@ -2,7 +2,7 @@
 {
     public interface LoginOptionServiceI
     {
-        Task<LoginOptionEnt> GetLoginOptions(int loginNr);
+        Task<LoginOptionEnt> GetLoginOptions(string? urlSuffix);
         Task<LoginOptionDto> InitialiseLoginOptions(LoginOptionEnt ent);
     }
 }
