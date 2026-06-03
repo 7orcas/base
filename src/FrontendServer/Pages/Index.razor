@@ -51,6 +51,7 @@ else
 @inject PermissionService PermS
 @inject LabelService LS
 @inject IJSRuntime JS
+@inject IHttpContextAccessor HttpContextAccessor
 
 @code {
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -67,11 +68,29 @@ else
                 return;
             }
 
+            var uri = NM.ToAbsoluteUri(NM.Uri);
+            var fragment = uri.Fragment;
+
+            if (string.IsNullOrEmpty(fragment))
+            {
+                _isLoading = false;
+                _isError = true;
+                StateHasChanged();
+                return;
+            }
+
+            //Search the fragment for parameters
+            var values = fragment.TrimStart('#')
+                .Split('&', StringSplitOptions.RemoveEmptyEntries)
+                .Select(p => p.Split('='))
+                .Where(p => p.Length == 2)
+                .ToDictionary(
+                    p => p[0],
+                    p => Uri.UnescapeDataString(p[1])
+                );
 
             // Get the token key to use to get the actual token
-            var uri = NM.ToAbsoluteUri(NM.Uri);
-            var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
-            if (!query.TryGetValue("tk", out var tokenkey))
+            if (!values.TryGetValue("tk", out var tokenkey))
             {
                 _isLoading = false;
                 _isError = true;
@@ -82,27 +101,72 @@ else
             var token = await GetToken(tokenkey);
             await SetClient(token);
 
-            //Get App / User Config
+            // Get App / User Config
             var config = await ConfS.Initialise();
             var lps = ConfS.SetLoginParameters(tokenkey, token);
             lps.LoadedUrl(GC.URL_config);
             SetConfig(config);
 
-            //Get stuff
+            // Get stuff
             await LS.Initialise(lps);
             await PermS.Initialise(lps);
-            if (query.TryGetValue("urlLogin", out var urlLogin))
+
+            if (values.TryGetValue("urlLogin", out var urlLogin))
                 config.UrlLogin = urlLogin;
 
             _isLoading = false;
             StateHasChanged();
 
-            //Is there an auto open?
-            if (query.TryGetValue("open", out var autoOpenX))
+            // Auto open
+            var auto = false;
+            if (values.TryGetValue("open", out var autoOpenX))
             {
                 if (AppRoutes.IsRoute(autoOpenX))
+                {
+                    auto = true;
                     NM.NavigateTo("/" + AppRoutes.GetRoute(autoOpenX));
+                }
             }
+            if (!auto)
+                NM.NavigateTo("/", replace: true);
+
+
+            //DELETE ME
+            // Get the token key to use to get the actual token
+            // var uri = NM.ToAbsoluteUri(NM.Uri);
+            // var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
+            // if (!query.TryGetValue("tk", out var tokenkey))
+            // {
+            //     _isLoading = false;
+            //     _isError = true;
+            //     StateHasChanged();
+            //     return;
+            // }
+
+            // var token = await GetToken(tokenkey);
+            // await SetClient(token);
+
+            // //Get App / User Config
+            // var config = await ConfS.Initialise();
+            // var lps = ConfS.SetLoginParameters(tokenkey, token);
+            // lps.LoadedUrl(GC.URL_config);
+            // SetConfig(config);
+
+            // //Get stuff
+            // await LS.Initialise(lps);
+            // await PermS.Initialise(lps);
+            // if (query.TryGetValue("urlLogin", out var urlLogin))
+            //     config.UrlLogin = urlLogin;
+
+            // _isLoading = false;
+            // StateHasChanged();
+
+            // //Is there an auto open?
+            // if (query.TryGetValue("open", out var autoOpenX))
+            // {
+            //     if (AppRoutes.IsRoute(autoOpenX))
+            //         NM.NavigateTo("/" + AppRoutes.GetRoute(autoOpenX));
+            // }
 
         }
     }

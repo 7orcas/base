@@ -120,7 +120,7 @@
                     //await TestPause();
 
                     NavigationManager.NavigateTo(login.MainUrl 
-                        + "?tk=" + tokenkey
+                        + "#tk=" + tokenkey   //Use fragments
                         + (string.IsNullOrEmpty(autoOpen)? "" : "&open=" + autoOpen)
                         + ("&urlLogin=https://localhost:7289/" + UrlSuffix),
                         true);

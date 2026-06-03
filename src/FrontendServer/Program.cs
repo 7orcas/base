@@ -42,6 +42,7 @@ builder.Services.AddHttpClient(GC.AuthorizedClientKey, client =>
 {
     client.BaseAddress = new Uri(AppSettings.AuthorizedClientBaseUri);
 }); //.AddHttpMessageHandler<AuthorizationMessageHandler>();
+builder.Services.AddHttpContextAccessor();
 
 //Base Services (start up)
 builder.Services.AddSingleton<CacheInitialiseServiceI, CacheInitialiseService>();
