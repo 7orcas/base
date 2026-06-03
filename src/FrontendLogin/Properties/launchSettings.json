@@ -32,7 +32,7 @@
         "ORG": "1",
         "LANGCODE": "en",
         "AUTO": "false",
-        "OPEN": "rol001"
+        "OPENx": "rol001"
       }
     },
     "IIS Express": {

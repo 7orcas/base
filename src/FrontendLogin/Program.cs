@@ -33,6 +33,20 @@ app.UseRouting();
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 
+
+app.MapPost("/post-login", async (HttpContext context) =>
+{
+    var form = await context.Request.ReadFormAsync();
+
+    var tk = form["tk"].ToString();
+    var open = form["open"].ToString();
+    var urlLogin = form["urlLogin"].ToString();
+
+    // ✅ redirect into Blazor with safe query or fragment
+    context.Response.Redirect($"/?tk={tk}&open={open}");
+});
+
+
 app.Run();
 
 
