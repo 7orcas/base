@@ -1,0 +1,34 @@
+
+I have a c# ,Net, Blazor Server application.
+The .Net backend is an API project.
+The Blazor frontend is made up of 2 blazor server projects, a login project and the client project.
+I also will allow external clients to interact with my APIs (they will need to be logged in) 
+In the future I want to develop a mobile app - this will also need to login.
+
+Login
+  - Give me step by step instructions to:
+    - Add cookies to my 2 blazor server projects
+    - The internal work flow is the user browsers to the login blazor app.
+    - The login app sends the userid and password to the API project to validate
+	- I want to include MFA using Microsoft authenticator.
+    - Once successful login, the login app then redirects the user to a client blazor app.
+    - The external work flow is the user browsers to the login blazor app to get a JWT token.
+    - The token is then used to allow access to the REST api's.
+
+
+
+The login (once successful) redirects the browser to the actual client project.
+The login at the moment is user id / password.
+I want to add in a MFA login process - how do I do this?
+
+
+
+Docker
+  - Give me step by step instructions to:
+    - Download and Install Docker on my Windows PC
+	- Use a docker volume on my PC
+	- Configure it to run Seq log view
+	- Configure it to run Postgres
+	- Make sure logs are stored locally
+	- Make sure db is stored locally
+	- Connect my c# .Net API program to connect to Postgres db
