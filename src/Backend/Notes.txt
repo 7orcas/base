@@ -21,6 +21,15 @@ Entity Frame work
 
 
 Run Docker
-1. docker compose up -d
-2. docker compose down -v
-3. docker inspect seq-logs  or docker logs seq-logs  ??
+1. Open Docker Desktop
+2. cd src directory
+3. docker compose up -d
+4. docker compose down -v
+
+View logs
+- http://localhost:5341
+
+
+Run Swagger
+1. Start backend
+2. URL https://localhost:6002/swagger/index.html

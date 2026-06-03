@@ -37,7 +37,7 @@ namespace Backend.Base
 
 
         /// <summary>
-        /// Intercept all calls and inspect for autorisation
+        /// Intercept all calls and inspect for authorisation
         /// </summary>
         /// <param name="context"></param>
         public override void OnActionExecuting(ActionExecutingContext context)

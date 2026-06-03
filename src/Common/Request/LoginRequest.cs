@@ -13,6 +13,7 @@ namespace Common.Request
         public string LangCode { get; set; }
         public int Org { get; set; }
         public int SourceApplication { get; set; }
+        public string UrlSuffix { get; set; }
 
         public bool IsPopulated()
         {

@@ -2,6 +2,7 @@
 using Common.Validator.Base;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.IdentityModel.Tokens;
 using System.Collections.Generic;
 using GC = Backend.GlobalConstants;
@@ -73,6 +74,10 @@ namespace Backend.Base.Role
             foreach (var m in roles)
                 list.Add(LoadDto<RoleEnt, RoleDto>(m));
 
+foreach (var m in list)
+Debug.WriteLine(m.Code + " " + m.Id); 
+
+
             var r = new _ResponseDto
             {
                 SuccessMessage = "Ok",
@@ -88,7 +93,7 @@ namespace Backend.Base.Role
         /// <returns></returns>
         [CrudAtt(GC.CrudRead)] //ToDo
         [AuditListAtt(GC.EntityTypeRole)]
-        [HttpGet("get/{id}")]
+        [HttpGet("get/{roleId}")]
         public async Task<IActionResult> GetRole(long roleId)
         {
             var session = HttpContext.Items["session"] as SessionEnt;

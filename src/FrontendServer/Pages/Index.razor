@@ -91,6 +91,8 @@ else
             //Get stuff
             await LS.Initialise(lps);
             await PermS.Initialise(lps);
+            if (query.TryGetValue("urlLogin", out var urlLogin))
+                config.UrlLogin = urlLogin;
 
             _isLoading = false;
             StateHasChanged();

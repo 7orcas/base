@@ -18,6 +18,9 @@ namespace Common
         public const int StatusCodeNotAuthorised = 403;
         public const int StatusCodeUnProcessable = 422;
 
+        //Service account
+        public const string ServiceLoginUrlSuffix = "servicex";
+
         //Labels
         public const string LabelParameterPrefix = "%%";
 

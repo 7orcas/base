@@ -23,3 +23,4 @@ global using Backend.Base.Role;
 global using Backend.Base.Role.Ent;
 global using Backend.Base.Session;
 global using Backend.Base.Session.Ent;
+global using System.Diagnostics;
