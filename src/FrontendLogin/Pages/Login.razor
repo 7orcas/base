@@ -1,4 +1,4 @@
-﻿@page "/"
+﻿@page "/{UrlSuffix}"
 @using Newtonsoft.Json;
 @using GC = FrontendLogin.GlobalConstants;
 @using Common.DTO.Base;
@@ -6,36 +6,80 @@
 @inject NavigationManager NavigationManager
 @inject IHttpClientFactory HttpClientFactory
 
-<h3>Login</h3>
-<EditForm Model="@loginRequest" OnValidSubmit="@HandleLogin">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
 
-    <div>
-        <label>Username:</label>
-        <InputText @bind-Value="loginRequest.Username" />
-    </div>
-    <div>
-        <label>Password:</label>
-        <InputText @bind-Value="loginRequest.Password" Type="password" />
-    </div>
-    <div>
-        <label>Org:</label>
-        <InputNumber @bind-Value="loginRequest.Org" />
-    </div>
-    <div>
-        <label>Language:</label>
-        <InputText @bind-Value="loginRequest.LangCode" />
-    </div>
-    <button type="submit">Login</button>
-</EditForm>
+<div class="d-flex justify-content-center align-items-center vh-100 bg-light">
+    <div class="card shadow-lg p-4" style="width: 400px; border-radius: 12px;">
+        
+        <h3 class="text-center mb-4">🔐 Login</h3>
 
-<p>@successMessage</p>
-<p>@errorMessage</p>
-<p>@tokenkey</p>
-<p>@token</p>
+            <EditForm Model="@loginRequest" OnValidSubmit="@HandleLogin">
+                <DataAnnotationsValidator />
+                <ValidationSummary class="text-danger mb-3" />
+
+                <div class="mb-3">
+                    <label>Username:</label>
+                    <InputText @bind-Value="loginRequest.Username" />
+                </div>
+                <div class="mb-3">
+                    <label>Password:</label>
+                    <InputText @bind-Value="loginRequest.Password" Type="password" />
+                </div>
+                <div class="mb-3">
+                    <label>Org:</label>
+                    <InputSelect class="form-select" @bind-Value="loginRequest.Org">
+                        <option value="">-- Select Org --</option>
+                        @foreach (var org in OrgList)
+                        {
+                            <option value="@org.Nr">@org.Name</option>
+                        }
+                    </InputSelect>
+                </div>
+
+                <div class="mb-3">
+                    <label>Language:</label>
+                    <InputSelect class="form-select" @bind-Value="loginRequest.LangCode">
+                        <option value="">-- Select Language --</option>
+                        @foreach (var lang in LangList)
+                        {
+                            <option value="@lang.Code">@lang.Name</option>
+                        }
+                    </InputSelect>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">
+                    Login
+                </button>
+
+                
+            @if (options != null)
+            {
+                <div class="form-check mb-2">
+                    <InputCheckbox class="form-check-input" @bind-Value="options.RememberMe" id="rememberMe" />
+                    <label class="form-check-label" for="rememberMe">Remember Me</label>
+                </div>
+
+                <div class="form-check mb-2">
+                    <InputCheckbox class="form-check-input" @bind-Value="options.Forgot" id="useSSO" />
+                    <label class="form-check-label" for="useSSO">Forgot</label>
+                </div>
+            }
+
+
+            </EditForm>
+
+        <p>@successMessage</p>
+        <p>@errorMessage</p>
+        <p>@tokenkey</p>
+        <p>@token</p>
+    </div>
+</div>
+
 
 @code {
+
+    [Parameter]
+    public string UrlSuffix { get; set; }
+
     private LoginRequest loginRequest = new LoginRequest
     {
         LangCode = "en"    
@@ -46,6 +90,9 @@
     private string token;
     private bool autoLogin = false;
     private string autoOpen = string.Empty;
+    private LoginOptionDto options;
+    private List<OrgItem> OrgList = new List<OrgItem>();
+    private List<LangItem> LangList = new List<LangItem>();
 
     private async Task HandleLogin()
     {
@@ -74,7 +121,8 @@
 
                     NavigationManager.NavigateTo(login.MainUrl 
                         + "?tk=" + tokenkey
-                        + (string.IsNullOrEmpty(autoOpen)? "" : "&open=" + autoOpen),
+                        + (string.IsNullOrEmpty(autoOpen)? "" : "&open=" + autoOpen)
+                        + ("&urlLogin=https://localhost:7289/" + UrlSuffix),
                         true);
                 }
                 else
@@ -108,8 +156,39 @@
 
     protected override async Task OnInitializedAsync()
     {
-        loginRequest.Org = 1;
+        var client = HttpClientFactory.CreateClient("BackendApi");
+        var response = await client.GetAsync($"api/LoginOption/get/{UrlSuffix}");
+        var r = await response.Content.ReadAsStringAsync();
+        var dto = JsonConvert.DeserializeObject<_ResponseDto>(r);
 
+        options = JsonConvert.DeserializeObject<LoginOptionDto>(dto.Result.ToString());
+
+
+        //Load organisation options
+        OrgList = new List<OrgItem>();
+        foreach (var o in options.Orgs)
+        {
+            OrgList.Add(new OrgItem
+                {
+                    Nr = o.Nr,
+                    Name = o.Code + (!string.IsNullOrEmpty(o.Description) ? " - " + o.Description : "")
+                });
+        }
+
+        //Load langauge options
+        LangList = new List<LangItem>();
+        foreach (var o in options.LangCodes)
+        {
+            LangList.Add(new LangItem
+            {
+                Code = o.Code,
+                Name = o.Description
+            });
+        }
+
+        loginRequest.UrlSuffix = UrlSuffix;
+        loginRequest.Org = int.Parse(options.Orgs[0].Nr.ToString());
+        
         // Parse the URL query string
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
         var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
@@ -160,5 +239,18 @@
 
         var openValue = Environment.GetEnvironmentVariable("OPEN");
         autoOpen = openValue?.ToString();
+    }
+
+    
+    public class OrgItem
+    {
+        public int Nr { get; set; }
+        public string Name { get; set; }
+    }
+
+    public class LangItem
+    {
+        public string Code { get; set; }
+        public string Name { get; set; }
     }
 }

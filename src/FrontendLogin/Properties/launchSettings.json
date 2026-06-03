@@ -21,6 +21,7 @@
       "commandName": "Project",
       "dotnetRunMessages": false,
       "launchBrowser": true,
+      "launchUrl": "servicex",
       "applicationUrl": "https://localhost:7289;http://localhost:5217",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
@@ -30,7 +31,7 @@
         "xPASSWORD": "xx123",
         "ORG": "1",
         "LANGCODE": "en",
-        "AUTO": "true",
+        "AUTO": "false",
         "OPEN": "rol001"
       }
     },

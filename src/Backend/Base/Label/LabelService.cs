@@ -1,7 +1,5 @@
-﻿using Backend.Base.Label.Ent;
-using Npgsql;
+﻿using Npgsql;
 using Microsoft.Extensions.Caching.Memory;
-using System.Collections.Generic;
 using GC = Backend.GlobalConstants;
 
 /// <summary>
@@ -203,7 +201,25 @@ namespace Backend.Base.Label
 
             return list;
         }
-        
+
+        public async Task<List<LangCode>> GetLangCodeList()
+        {
+            var list = new List<LangCode>();
+            await Sql.Run(
+                    "SELECT * FROM base.langcode ",
+                    r => {
+                        var lang = new LangCode();
+                        lang.Id = GetId(r);
+                        lang.Code = GetCode(r);
+                        lang.Description = GetDescription(r);
+                        lang.IsActive = IsActive(r);
+                        list.Add(lang);
+                    }
+                );
+            return list;
+        }
+
+
         public async Task<bool> SaveLabel(LangLabel label)
         {
             string sql = "";

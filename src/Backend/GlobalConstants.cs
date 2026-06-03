@@ -56,5 +56,9 @@
         public const long ServiceAccountId           = -1L;
         public const string ServiceAccountName       = "Service";
 
+        //MFA
+        public const int MFAinactive = 0;
+        public const int MFAactive   = 1;
+
     }
 }

@@ -1,0 +1,21 @@
+
+I have a c# ,Net, Blazor Server application.
+The .Net backend is an API project.
+The Blazor frontend is made up of 2 projects, a login project and the client project.
+
+
+The login (once successful) redirects the browser to the actual client project.
+The login at the moment is user id / password.
+I want to add in a MFA login process - how do I do this?
+
+
+
+Docker
+  - Give me step by step instructions to
+    - Download and Install Docker on my Windows PC
+	- Use a docker volume on my PC
+	- Configure it to run Seq log view
+	- Configure it to run Postgres
+	- Make sure logs are stored locally
+	- Make sure db is stored locally
+	- Connect my c# .Net API program to connect to Postgres db
