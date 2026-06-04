@@ -7,6 +7,7 @@
         public List<OrgDto> Orgs { get; set; }
         public List<LangCodeDto> LangCodes { get; set; }
         public int MFA { get; set; }
+		public int SuccessAction { get; set; }
         public bool RememberMe { get; set; }
         public bool Forgot { get; set; }
         public bool SelfRegistration { get; set; }

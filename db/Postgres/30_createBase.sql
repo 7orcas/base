@@ -19,6 +19,7 @@ CREATE TABLE cntrl.loginoption (
     langcode VARCHAR(4) NOT NULL,
     langlabelvariant INTEGER,
 	langcodes TEXT,
+	successaction INTEGER NOT NULL DEFAULT 0,
 	mfa INTEGER NOT NULL DEFAULT 0,
 	rememberme BOOLEAN NOT NULL DEFAULT FALSE,
 	forgot BOOLEAN NOT NULL DEFAULT FALSE,

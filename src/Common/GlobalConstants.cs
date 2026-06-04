@@ -18,6 +18,10 @@ namespace Common
         public const int StatusCodeNotAuthorised = 403;
         public const int StatusCodeUnProcessable = 422;
 
+        //Login (successful) Actions
+        public const int NavigateToFrontendServer = 0;
+        public const int GetAndDisplayJWTtoken    = 1;
+
         //Service account
         public const string ServiceLoginUrlSuffix = "servicex";
 
