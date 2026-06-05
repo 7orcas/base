@@ -48,7 +48,7 @@ namespace Backend.Base.Login
             var r = new _ResponseDto
             {
                 SuccessMessage = "Login Ok",
-                Result = new LoginTokenDto { 
+                Result = new LoginSuccessDto { 
                     TokenKey = res.TokenKey,
                     MainUrl = res.MainUrl,
                     LangCode = res.LangCode,

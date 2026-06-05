@@ -26,8 +26,9 @@ namespace Backend.Base.Token.Ent
                 ValidateIssuerSigningKey = _ValidateIssuerSigningKey,
                 ValidIssuer = _Issuer,
                 ValidAudience = _Audience,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_Key))
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_Key)),
+                ClockSkew = TimeSpan.Zero // By default, .NET adds a 5-minute grace period when validating tokens.Removed for testing purposes, but consider adding it back in production for better security.
             };
         }
-}
+    }
 }

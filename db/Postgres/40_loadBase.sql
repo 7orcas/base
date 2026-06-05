@@ -14,6 +14,9 @@ VALUES ('admin', '1,2', 'en', 0, 'en,de', 1, true, true, true);
 INSERT INTO cntrl.loginoption (urlsuffix, orgnrs, langcode, langlabelvariant, langcodes)
 VALUES ('all', '1,2,3', 'de', 1, 'en,de,es,xx');
 
+INSERT INTO cntrl.loginoption (urlsuffix, orgnrs, langcode, langlabelvariant, langcodes, successaction)
+VALUES ('api', '1', 'en', 0, 'en', 1);
+
 -- -------------------------------------------------
 -- base.org
 -- -------------------------------------------------

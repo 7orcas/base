@@ -31,10 +31,19 @@ namespace Backend.Base.Token
             {
                 return Unauthorized("No token found in session");
             }
-            token = LoginTokenDto.TOKEN_PREFIX + token;
+            token = LoginSuccessDto.TOKEN_PREFIX + token;
 
             _log.Debug("Get token controller, Token=" + token);
-            return Ok(token);
+
+            var r = new _ResponseDto
+            {
+                SuccessMessage = "Got Token Ok",
+                Result = new LoginTokenDto
+                {
+                    AccessToken = token,
+                }
+            };
+            return Ok(r);
         }
     }
 

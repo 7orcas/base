@@ -48,6 +48,15 @@ namespace FrontendServer.Base._Base
             catch
             {
                 _statusCode = -1;
+                
+                if (response != null && response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    _errorMessage = new MarkupString("Login Expired. Please log in again.");
+                    _isLoading = false;
+                    _isError = true;
+                    return default;
+                }
+
                 try
                 {
                     var r = await response.Content.ReadAsStringAsync();

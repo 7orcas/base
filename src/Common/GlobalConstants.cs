@@ -21,6 +21,8 @@ namespace Common
         //Login (successful) Actions
         public const int NavigateToFrontendServer = 0;
         public const int GetAndDisplayJWTtoken    = 1;
+        public const string URL_login_option      = "api/LoginOption/get/";
+        public const string URL_token             = "api/Token/token";
 
         //Service account
         public const string ServiceLoginUrlSuffix = "servicex";

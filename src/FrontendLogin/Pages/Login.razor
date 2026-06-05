@@ -89,6 +89,7 @@
     private string tokenkey;
     private string token;
     private bool autoLogin = false;
+    private bool navigateTo = false;
     private string autoOpen = string.Empty;
     private LoginOptionDto options;
     private List<OrgItem> OrgList = new List<OrgItem>();
@@ -112,18 +113,23 @@
 
                 if (responseDto.Valid)
                 {
-                    var login = JsonConvert.DeserializeObject<LoginTokenDto>(responseDto.Result.ToString());
+                    var login = JsonConvert.DeserializeObject<LoginSuccessDto>(responseDto.Result.ToString());
                     successMessage = responseDto.SuccessMessage;
                     tokenkey = login.TokenKey;
-                    token = login.Token;
 
                     //await TestPause();
 
-                    NavigationManager.NavigateTo(login.MainUrl 
-                        + "#tk=" + tokenkey   //Use fragments
-                        + (string.IsNullOrEmpty(autoOpen)? "" : "&open=" + autoOpen)
-                        + ("&urlLogin=https://localhost:7289/" + UrlSuffix),
-                        true);
+                    if (navigateTo)
+                    {
+                        NavigationManager.NavigateTo(login.MainUrl 
+                            + "#tk=" + tokenkey   //Use fragments
+                            + (string.IsNullOrEmpty(autoOpen)? "" : "&open=" + autoOpen)
+                            + ("&urlLogin=https://localhost:7289/" + UrlSuffix),
+                            true);
+                        return;
+                    }
+
+                    await GetToken(tokenkey);
                 }
                 else
                 {
@@ -154,15 +160,24 @@
             HandleLogin();
     }
 
+    private async Task GetToken(string tokenkey)
+    {
+        var client = HttpClientFactory.CreateClient("BackendApi");
+        var tokenResponse = await client.GetAsync(GC.URL_token + "?key=" + tokenkey);
+        var tokenX = await tokenResponse.Content.ReadAsStringAsync();
+        token = tokenX.Substring(LoginSuccessDto.TOKEN_PREFIX_LENGTH);
+    }
+
     protected override async Task OnInitializedAsync()
     {
         var client = HttpClientFactory.CreateClient("BackendApi");
-        var response = await client.GetAsync($"api/LoginOption/get/{UrlSuffix}");
+        var response = await client.GetAsync(GC.URL_login_option + $"{UrlSuffix}");
         var r = await response.Content.ReadAsStringAsync();
         var dto = JsonConvert.DeserializeObject<_ResponseDto>(r);
 
         options = JsonConvert.DeserializeObject<LoginOptionDto>(dto.Result.ToString());
 
+        navigateTo = options.SuccessAction == GC.NavigateToFrontendServer;
 
         //Load organisation options
         OrgList = new List<OrgItem>();

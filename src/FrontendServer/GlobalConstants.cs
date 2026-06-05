@@ -11,7 +11,6 @@
         public const string UnAuthorizedClientKey = "kUAC";
         public const string BearerKey             = "Bearer";
 
-        public const string URL_token             = "api/Token/token";
         public const string URL_logout            = "api/Logout/logout";
         public const string URL_perm_user         = "api/Permission/userlist";
         public const string URL_perm_user_eff     = "api/Permission/userlisteff";

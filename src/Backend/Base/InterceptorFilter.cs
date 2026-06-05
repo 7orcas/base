@@ -51,6 +51,19 @@ namespace Backend.Base
             {
                 var token = authorizationHeader.Substring("Bearer".Length);
                 var tv = _tokenService.DecodeToken(token);
+
+                if (tv == null)
+                {
+                    var r = new _ResponseDto
+                    {
+                        Valid = false,
+                        ErrorMessage = "No token - may have expired",  //ToDo label 'NToken'
+                        StatusCode = GC.StatusCodeNotAuthorised // HTTP status code
+                    };
+                    context.Result = new OkObjectResult(r);
+                    return;
+                }
+
                 sessionKey = tv.SessionKey;
                 session = _sessionService.GetSession(sessionKey);
                 context.HttpContext.Items["session"] = session;

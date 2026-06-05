@@ -1,5 +1,4 @@
 ﻿using Backend.Base.Token.Ent;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -48,7 +47,7 @@ namespace Backend.Base.Token
                 issuer: TokenParameters._Issuer,
                 audience: TokenParameters._Audience,
                 claims: claims,
-                expires: DateTime.Now.AddHours(30),
+                expires: DateTime.UtcNow.AddMinutes(1),
                 signingCredentials: creds
                 );
 
@@ -58,14 +57,13 @@ namespace Backend.Base.Token
         }
 
         /// <summary>
-        /// Every call will use this method
+        /// Every call will use this method via the Interceptor
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
         public TokenValues DecodeToken(string token)
         {
             token = token.Trim();
-            //token = token.Substring(TOKEN_PREFIX.Length);
             var tokenHandler = new JwtSecurityTokenHandler();
 
             TokenValues tv = new TokenValues();
@@ -83,6 +81,8 @@ namespace Backend.Base.Token
             }
             catch (Exception ex)
             {
+                var jwt = new JwtSecurityTokenHandler().ReadJwtToken(token);
+                _log.Debug("Token expires at {Expiry}", jwt.ValidTo);
                 _log.Error("TokenValidationFailed Exception {Exception}", ex.Message);
                 return null;
             }
@@ -123,6 +123,7 @@ namespace Backend.Base.Token
                 
                 _memoryCache.Remove(Key(key));
 
+                //This logic is not used, max calls is = 1 (number calls is controlled by appsettings) and can be removed DELETE ME
                 if (--calls >= 1)
                 {
                     var cacheEntryOptions = new MemoryCacheEntryOptions
