@@ -12,7 +12,6 @@ namespace Common.DTO.Base
         public const int TOKEN_PREFIX_LENGTH = 11;
 
         public string TokenKey { get; set; }
-        public string Token { get; set; }
         public string MainUrl { get; set; }
         public string LangCode { get; set; }
     }

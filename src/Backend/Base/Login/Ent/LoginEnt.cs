@@ -49,7 +49,6 @@ namespace Backend.Base.Login.Ent
         public bool Valid { get; set; } = false;
 
         public string TokenKey { get; set; }
-        public string Token { get; set; }
         public string MainUrl { get; set; }
         public string LangCode { get; set; }
         public string ErrorMessage { get; set; }

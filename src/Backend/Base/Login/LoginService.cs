@@ -79,9 +79,7 @@ namespace Backend.Base.Login
                 var keyX = Guid.NewGuid().ToString();
                 _tokenService.AddToken(keyX, tokenX);
 
-
                 login.Response.Valid = true;
-                login.Response.Token = tokenX;
                 login.Response.TokenKey = keyX;
                 login.Response.MainUrl = AppSettings.MainClientUrl;
                 login.Response.LangCode = userConfig.LangCodeCurrent;

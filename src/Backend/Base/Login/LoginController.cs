@@ -50,7 +50,6 @@ namespace Backend.Base.Login
                 SuccessMessage = "Login Ok",
                 Result = new LoginTokenDto { 
                     TokenKey = res.TokenKey,
-                    Token = res.Token,
                     MainUrl = res.MainUrl,
                     LangCode = res.LangCode,
                 }
