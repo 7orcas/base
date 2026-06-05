@@ -3,6 +3,7 @@ using Common.DTO.Base;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace Backend.Base.Token
 {
@@ -33,7 +34,13 @@ namespace Backend.Base.Token
             }
             token = LoginSuccessDto.TOKEN_PREFIX + token;
 
-            _log.Debug("Get token controller, Token=" + token);
+            var refreshToken = _tokenService.CreateRefreshToken();
+
+            var handler = new JwtSecurityTokenHandler();
+            var jwt = handler.ReadJwtToken(token);
+            var expiry = jwt.ValidTo;
+
+            _log.Debug("Get token controller, Token {Token} expiry {expiry}", token, expiry);
 
             var r = new _ResponseDto
             {
@@ -41,6 +48,8 @@ namespace Backend.Base.Token
                 Result = new LoginTokenDto
                 {
                     AccessToken = token,
+                    RefreshToken = refreshToken,
+                    AccessTokenExpiry = expiry
                 }
             };
             return Ok(r);

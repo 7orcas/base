@@ -3,6 +3,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using GC = Backend.GlobalConstants;
 
@@ -47,7 +48,7 @@ namespace Backend.Base.Token
                 issuer: TokenParameters._Issuer,
                 audience: TokenParameters._Audience,
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(1),
+                expires: DateTime.UtcNow.AddMinutes(AppSettings.AccessTokenMinutes),
                 signingCredentials: creds
                 );
 
@@ -87,6 +88,15 @@ namespace Backend.Base.Token
                 return null;
             }
         }
+
+        public string CreateRefreshToken()
+        {
+            var randomBytes = new byte[64];
+            using var rng = RandomNumberGenerator.Create();
+            rng.GetBytes(randomBytes);
+            return Convert.ToBase64String(randomBytes);
+        }
+
 
         /// <summary>
         /// Login process adds this token

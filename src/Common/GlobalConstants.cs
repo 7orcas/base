@@ -15,6 +15,7 @@ namespace Common
         public const int NewRecordId = -9000;
 
         public const int StatusCodeOk            = 200;
+        public const int StatusCodeLoginExpired  = 401;
         public const int StatusCodeNotAuthorised = 403;
         public const int StatusCodeUnProcessable = 422;
 

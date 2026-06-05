@@ -26,7 +26,7 @@ Nr,Number
 AdminM,AdminD
 Role,RoleD
 Roles,RolesD
-RoleSub,Roles contain permissions. Permissions are cumulative||ie. they combine to give the user the maximum authorisationD
+RoleSub,Roles contain permissions. Permissions are cumulative|| ie. they combine to give the user the maximum authorisationD
 MachSub,Machine recordD
 NAuth,Not AuthorisedD
 NAuthX,You are not authorised to view this pageD

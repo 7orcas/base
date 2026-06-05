@@ -48,12 +48,12 @@ DROP TABLE IF EXISTS zz_import_labels_base;
 DROP TABLE IF EXISTS zz_import_labels_basex;
 DROP TABLE IF EXISTS zz_langlabel;
 
-CREATE TEMP TABLE zz_import_labels_base (
+CREATE TABLE zz_import_labels_base (
     langkey TEXT NOT NULL,
     label   TEXT NOT NULL
 );
 
-CREATE TEMP TABLE zz_import_labels_basex (
+CREATE TABLE zz_import_labels_basex (
     langcode TEXT NOT NULL,
     langkey  TEXT NOT NULL,
     label    TEXT,
@@ -90,12 +90,12 @@ TRUNCATE zz_import_labels_base;
 DELETE FROM zz_import_labels_basex WHERE langkey = '<LAST>';
 
 UPDATE zz_import_labels_basex
-SET label = REPLACE(label, E'\n\n', ',')
-WHERE label LIKE '%' || E'\n\n' || '%';
+SET label = REPLACE(label, E'||', ',')
+WHERE label LIKE '%' || E'||' || '%';
 
 UPDATE zz_import_labels_basex
-SET tooltip = REPLACE(tooltip, E'\n\n', ',')
-WHERE tooltip LIKE '%' || E'\n\n' || '%';
+SET tooltip = REPLACE(tooltip, E'||', ',')
+WHERE tooltip LIKE '%' || E'||' || '%';
 
 -- Fill missing tooltips
 UPDATE zz_import_labels_basex b
@@ -116,7 +116,7 @@ SELECT DISTINCT langkey
 FROM zz_import_labels_basex
 ON CONFLICT (code) DO NOTHING;
 
-CREATE TEMP TABLE zz_langlabel AS
+CREATE TABLE zz_langlabel AS
 SELECT
     lk.id       AS langkeyid,
     x.langcode,

@@ -196,6 +196,8 @@ void LoadAppSettings(WebApplicationBuilder builder)
 {
     AppSettings.DBMainConnection = builder.Configuration["ConnectionStrings:DBMainConnection"];
     AppSettings.MaxGetTokenCalls = int.Parse(builder.Configuration["Token:MaxGetTokenCalls"]);
+    AppSettings.AccessTokenMinutes = int.Parse(builder.Configuration["Token:AccessTokenMinutes"]);
+    AppSettings.RefreshTokenDays = int.Parse(builder.Configuration["Token:RefreshTokenDays"]);
     AppSettings.CacheExpirationAddSeconds = int.Parse(builder.Configuration["Token:CacheExpirationAddSeconds"]);
     AppSettings.CacheExpirationGetSeconds = int.Parse(builder.Configuration["Token:CacheExpirationGetSeconds"]);
     AppSettings.MainClientUrl = builder.Configuration["Urls:MainClientUrl"];

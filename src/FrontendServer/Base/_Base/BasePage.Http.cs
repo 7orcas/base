@@ -47,16 +47,17 @@ namespace FrontendServer.Base._Base
             }
             catch
             {
-                _statusCode = -1;
                 
                 if (response != null && response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
                 {
-                    _errorMessage = new MarkupString("Login Expired. Please log in again.");
+                    _statusCode = GC.StatusCodeLoginExpired;
+                    _errorMessage = new MarkupString(LS.GetLabel("LEx"));
                     _isLoading = false;
                     _isError = true;
                     return default;
                 }
 
+                _statusCode = -1;
                 try
                 {
                     var r = await response.Content.ReadAsStringAsync();
