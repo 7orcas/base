@@ -5,11 +5,12 @@ namespace Backend.Base.Token
 {
     public interface TokenServiceI
     {
-        string CreateToken(TokenValues tokenValues);
-        string CreateRefreshToken();
-        TokenValues DecodeToken(string token);
-        void AddToken(string key, string token);
+        public string CreateToken(TokenValues tokenValues);
         string? GetToken(string key);
+        TokenValues DecodeToken(string token);
         
+        
+        RefreshToken CreateRefreshToken(TokenValues tv);
+        RefreshToken? GetRefreshToken(string tokenKey);
     }
 }

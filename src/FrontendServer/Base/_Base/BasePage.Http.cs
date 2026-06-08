@@ -2,6 +2,7 @@
 using MudBlazor;
 using Newtonsoft.Json;
 using System.Text;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using GC = FrontendServer.GlobalConstants;
 
 
@@ -19,6 +20,8 @@ namespace FrontendServer.Base._Base
         //Http Client
         public async Task<HttpClient> GetClient() => await HS.GetClient();
 
+        public async Task<HttpClient> GetClientU() => await HS.GetClientU();
+
         public async Task<T> GetAsync<T>(string url)
         {
             return await GetAsync<T>(url, false);
@@ -28,13 +31,61 @@ namespace FrontendServer.Base._Base
         {
             _isLoading = !surpressLoading;
 
+
             var client = await GetClient();
+
+
+//var key = "";
+//var r1 = await PS.GetAsync<string>(GC.RefreshTokenCacheKey);
+//if (r1.Success)
+//    key = r1.Value;
+
+////var clientU = _httpClientFactory.CreateClient(GC.UnAuthorizedClientKey);
+
+//var responseX = await client.GetAsync(GC.URL_refresh_token + "?key=" + key);
+//var rX = await responseX.Content.ReadAsStringAsync();
+//var dtoX = JsonConvert.DeserializeObject<_ResponseDto>(rX);
+//var tokenDtoX = JsonConvert.DeserializeObject<LoginTokenDto>(dtoX.Result.ToString());
+//await PS.SetAsync(GC.TokenCacheKey, tokenDtoX.AccessToken);
+//await PS.SetAsync(GC.RefreshTokenCacheKey, tokenDtoX.RefreshToken);
+
+
+
+
+
 
             var response = await client.GetAsync(url);
 
             try
             {
-                response.EnsureSuccessStatusCode();
+                try
+                {
+                    response.EnsureSuccessStatusCode();
+                }
+                catch
+                {
+
+
+                    var keyx = "";
+                    var r1x = await PS.GetAsync<string>(GC.RefreshTokenCacheKey);
+                    if (r1x.Success)
+                        keyx = r1x.Value;
+
+                    var clientU = await GetClientU();
+
+                    var responseXx = await clientU.GetAsync(GC.URL_refresh_token + "/" + keyx);
+                    var rXx = await responseXx.Content.ReadAsStringAsync();
+                    var dtoXx = JsonConvert.DeserializeObject<_ResponseDto>(rXx);
+                    var tokenDtoXx = JsonConvert.DeserializeObject<LoginTokenDto>(dtoXx.Result.ToString());
+                    await PS.SetAsync(GC.TokenCacheKey, tokenDtoXx.AccessToken);
+                    await PS.SetAsync(GC.RefreshTokenCacheKey, tokenDtoXx.RefreshToken);
+
+return await GetAsync<T>(url, surpressLoading);
+
+                }
+                
+                
+                
                 var r = await response.Content.ReadAsStringAsync();
                 var dto = JsonConvert.DeserializeObject<_ResponseDto>(r);
                 _statusCode = dto.StatusCode;

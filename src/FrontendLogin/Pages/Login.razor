@@ -164,8 +164,7 @@
     {
         var client = HttpClientFactory.CreateClient("BackendApi");
         var tokenResponse = await client.GetAsync(GC.URL_token + "?key=" + tokenkey);
-        var tokenX = await tokenResponse.Content.ReadAsStringAsync();
-        token = tokenX.Substring(LoginSuccessDto.TOKEN_PREFIX_LENGTH);
+        token = await tokenResponse.Content.ReadAsStringAsync();
     }
 
     protected override async Task OnInitializedAsync()

@@ -114,5 +114,10 @@ namespace Backend.Base
                 _log.Warning(logstring);
         }
 
+        protected string GetClientIp()
+        {
+            var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
+            return ipAddress ?? "x";
+        }
     }
 }

@@ -10,6 +10,7 @@
 
         //IMemoryCache keys
         public const string CacheKeyTokenPrefix     = "TS_";
+        public const string CacheKeyRefreshPrefix   = "RF_";
         public const string CacheKeyOrgPrefix       = "OS_";
         public const string CacheKeyOrgConfigPrefix = "CS_";
         public const string CacheKeySessionPrefix   = "SS_";

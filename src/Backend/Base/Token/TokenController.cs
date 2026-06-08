@@ -1,9 +1,8 @@
-﻿using Backend.App.Machines;
-using Common.DTO.Base;
+﻿using Backend.Base.Token.Ent;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
-using Serilog;
 using System.IdentityModel.Tokens.Jwt;
+using GC = Backend.GlobalConstants;
 
 namespace Backend.Base.Token
 {
@@ -26,15 +25,17 @@ namespace Backend.Base.Token
         [HttpGet("token")]
         public IActionResult GetToken([FromQuery] string key)
         {
+            var ipAddress = GetClientIp();
+
             var token = _tokenService.GetToken(key);
 
             if (string.IsNullOrEmpty(token))
             {
                 return Unauthorized("No token found in session");
             }
-            token = LoginSuccessDto.TOKEN_PREFIX + token;
 
-            var refreshToken = _tokenService.CreateRefreshToken();
+            var tv = _tokenService.DecodeToken(token);
+            var refreshToken = _tokenService.CreateRefreshToken(tv);
 
             var handler = new JwtSecurityTokenHandler();
             var jwt = handler.ReadJwtToken(token);
@@ -48,12 +49,53 @@ namespace Backend.Base.Token
                 Result = new LoginTokenDto
                 {
                     AccessToken = token,
-                    RefreshToken = refreshToken,
+                    RefreshToken = refreshToken.Token,
                     AccessTokenExpiry = expiry
                 }
             };
             return Ok(r);
         }
+
+        //[Authorize]
+       // [CrudAtt(GC.CrudIgnore)]
+        [HttpGet("refresh/{key}")]
+        public IActionResult RefreshToken(string key)
+        {
+            var ipAddress = GetClientIp();
+            var refresh = _tokenService.GetRefreshToken(key);
+
+            var tv = new TokenValues {
+                IpAddress = ipAddress,
+                Username = refresh.Username,
+                SessionKey = refresh.SessionKey,
+                OrgNr = refresh.OrgNr,
+
+            };
+
+            var tokenKey = _tokenService.CreateToken(tv);
+            var token = _tokenService.GetToken(tokenKey);
+            var refreshToken = _tokenService.CreateRefreshToken(tv);
+
+            var handler = new JwtSecurityTokenHandler();
+            var jwt = handler.ReadJwtToken(token);
+            var expiry = jwt.ValidTo;
+
+            _log.Debug("Get token controller, Token {Token} expiry {expiry}", token, expiry);
+
+            var r = new _ResponseDto
+            {
+                SuccessMessage = "Got Token Ok",
+                Result = new LoginTokenDto
+                {
+                    AccessToken = token,
+                    RefreshToken = refreshToken.Token,
+                    AccessTokenExpiry = expiry
+                }
+            };
+            return Ok(r);
+        }
+
+
     }
 
 }

@@ -6,6 +6,7 @@
         
         public const string LabelCacheKey         = "kLabel";
         public const string TokenCacheKey         = "kToken";
+        public const string RefreshTokenCacheKey  = "kRefreshToken";
         public const string ConfigCacheKey        = "kConfig";
         public const string AuthorizedClientKey   = "kAC";
         public const string UnAuthorizedClientKey = "kUAC";
