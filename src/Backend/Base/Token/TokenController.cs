@@ -49,20 +49,18 @@ namespace Backend.Base.Token
                 Result = new LoginTokenDto
                 {
                     AccessToken = token,
-                    RefreshToken = refreshToken.Token,
+                    RefreshToken = refreshToken.Token.ToString(),
                     AccessTokenExpiry = expiry
                 }
             };
             return Ok(r);
         }
 
-        //[Authorize]
-       // [CrudAtt(GC.CrudIgnore)]
         [HttpGet("refresh/{key}")]
-        public IActionResult RefreshToken(string key)
+        public async Task<IActionResult> RefreshToken(string key)
         {
             var ipAddress = GetClientIp();
-            var refresh = _tokenService.GetRefreshToken(key);
+            var refresh = await _tokenService.GetRefreshToken(key);
 
             var tv = new TokenValues {
                 IpAddress = ipAddress,
@@ -88,13 +86,26 @@ namespace Backend.Base.Token
                 Result = new LoginTokenDto
                 {
                     AccessToken = token,
-                    RefreshToken = refreshToken.Token,
+                    RefreshToken = refreshToken.Token.ToString(),
                     AccessTokenExpiry = expiry
                 }
             };
             return Ok(r);
         }
 
+        [Authorize]
+        [CrudAtt(GC.CrudIgnore)]
+        [HttpGet("test")]
+        public IActionResult TestToken()
+        {
+            var session = HttpContext.Items["session"] as SessionEnt;
+            var r = new _ResponseDto
+            {
+                SuccessMessage = "Ok",
+                Result = "Ok"
+            };
+            return Ok(r);
+        }
 
     }
 

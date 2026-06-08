@@ -24,7 +24,8 @@ namespace Common
         public const int GetAndDisplayJWTtoken    = 1;
         public const string URL_login_option      = "api/LoginOption/get/";
         public const string URL_token             = "api/Token/token";
-        public const string URL_refresh_token     = "api/Token/refresh";
+        public const string URL_token_refresh     = "api/Token/refresh";
+        public const string URL_token_test        = "api/Token/test";
 
         //Service account
         public const string ServiceLoginUrlSuffix = "servicex";

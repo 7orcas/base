@@ -34,6 +34,8 @@ namespace Backend.Base.Database
 
         static public string? GetEncoded(NpgsqlDataReader r) => GetStringNull(r, "encoded");
 
+        static public Guid GetGuid(NpgsqlDataReader r, string column) => r.GetGuid(r.GetOrdinal(column));
+
 
         static public DateTime GetUpdated(NpgsqlDataReader r) => GetDateTime(r, "updated");
         static public DateTime GetDateTime(NpgsqlDataReader r, string column) => r[column] == DBNull.Value ? DateTime.MinValue : (DateTime)r[column];
@@ -43,7 +45,7 @@ namespace Backend.Base.Database
         static public string TestActive() => TestActive(null);
         static public string TestActive(string? table) => " " + (!string.IsNullOrEmpty(table) ? table + "." : "") + "isActive = true ";
         static public bool GetBoolean(NpgsqlDataReader r, string column) => !r.IsDBNull(r.GetOrdinal(column)) && r.GetBoolean(r.GetOrdinal(column));
-
+        
 
         static public string Update(string column, int? value) => column + "=" + (value != null? value : "NULL") + ",";
         static public string Update(string column, int value) => column + "=" + value + ",";

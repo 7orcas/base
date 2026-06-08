@@ -20,14 +20,17 @@ namespace Backend.Base.Token
 {
     public class TokenService: BaseService, TokenServiceI
     {
+        private readonly TokenRepoI _tokenRepo;
         private readonly IMemoryCache _memoryCache;
         private const int PAD_TOKEN = 5;
 
         public TokenService(IServiceProvider serviceProvider,
-            IMemoryCache memoryCache)
+            IMemoryCache memoryCache,
+            TokenRepoI tokenRepo)
             : base(serviceProvider)
         {
             _memoryCache = memoryCache;
+            _tokenRepo = tokenRepo;
         }
 
 
@@ -104,45 +107,6 @@ namespace Backend.Base.Token
             }
         }
 
-        public RefreshToken CreateRefreshToken(TokenValues tv)
-        {
-            var token = new RefreshToken
-            {
-                Token = Guid.NewGuid().ToString(),
-                Expires = DateTime.UtcNow.AddDays(AppSettings.RefreshTokenDays),
-                Created = DateTime.UtcNow,
-                CreatedByIp = tv.IpAddress,
-                Username = tv.Username,
-                SessionKey = tv.SessionKey,
-                OrgNr = tv.OrgNr
-            };
-
-            var cacheEntryOptions = new MemoryCacheEntryOptions
-            {
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(AppSettings.RefreshTokenDays)
-            };
-            _memoryCache.Set(RefreshKey(token.Token), token, cacheEntryOptions);
-
-            return token;
-        }
-
-        public RefreshToken? GetRefreshToken(string tokenKey)
-        {
-            _log.Debug("GetRefreshToken TokenKey {TokenKey}", tokenKey);
-
-            if (_memoryCache.TryGetValue(RefreshKey(tokenKey), out var cachedValue))
-            {
-                var token = (RefreshToken)cachedValue;
-                _memoryCache.Remove(TokenKey(tokenKey));
-                _log.Debug("GetToken-LastCall TokenKey {TokenKey} TokenX {TokenX}", tokenKey, token.Token);
-                return token;
-            }
-
-            _log.Error("GetRefreshToken-IsNull TokenKey {TokenKey}", tokenKey);
-            return null;
-        }
-
-
         private void CacheTokenKey(string key, string token)
         {
             string tokenX = AppSettings.MaxGetTokenCalls.ToString().PadLeft(PAD_TOKEN, '0') + token;
@@ -201,9 +165,59 @@ namespace Backend.Base.Token
         {
             return GC.CacheKeyTokenPrefix + key;
         }
-        private string RefreshKey(string key)
+
+
+private string RefreshKey(string key)
+{
+    return GC.CacheKeyRefreshPrefix + key;
+}
+
+        public RefreshToken CreateRefreshToken(TokenValues tv)
         {
-            return GC.CacheKeyRefreshPrefix + key;
+            var token = new RefreshToken
+            {
+                Token = Guid.NewGuid(),
+                Expires = DateTime.UtcNow.AddDays(AppSettings.RefreshTokenDays),
+                Created = DateTime.UtcNow,
+                CreatedByIp = tv.IpAddress,
+                Username = tv.Username,
+                SessionKey = tv.SessionKey,
+                OrgNr = tv.OrgNr
+            };
+
+            var cacheEntryOptions = new MemoryCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(AppSettings.RefreshTokenDays)
+            };
+            _memoryCache.Set(RefreshKey(token.Token.ToString()), token, cacheEntryOptions);
+
+            _tokenRepo.SaveRefreshToken(token);
+
+            return token;
         }
+
+        public async Task<RefreshToken?> GetRefreshToken(string tokenKey)
+        {
+            _log.Debug("GetRefreshToken TokenKey {TokenKey}", tokenKey);
+
+            var tokenx = await _tokenRepo.LoadRefreshToken(tokenKey);
+            if (tokenx != null)
+                _tokenRepo.RevokeRefreshToken(tokenx);
+            
+            
+            if (_memoryCache.TryGetValue(RefreshKey(tokenKey), out var cachedValue))
+            {
+                var token = (RefreshToken)cachedValue;
+                
+                _memoryCache.Remove(TokenKey(tokenKey));
+                _log.Debug("GetToken-LastCall TokenKey {TokenKey} TokenX {TokenX}", tokenKey, token.Token);
+                return token;
+            }
+
+            _log.Error("GetRefreshToken-IsNull TokenKey {TokenKey}", tokenKey);
+            return null;
+        }
+
+
     }
 }

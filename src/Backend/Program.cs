@@ -113,6 +113,7 @@ builder.Services.AddScoped<ConfigServiceI, ConfigService>();
 builder.Services.AddScoped<LoginServiceI, LoginService>();
 builder.Services.AddScoped<LoginOptionServiceI, LoginOptionService>();
 builder.Services.AddScoped<TokenServiceI, TokenService>();
+builder.Services.AddScoped<TokenRepoI, TokenRepo>();
 builder.Services.AddScoped<OrgServiceI, OrgService>();
 builder.Services.AddScoped<SessionServiceI, SessionService>();
 builder.Services.AddScoped<PermissionServiceI, PermissionService>();

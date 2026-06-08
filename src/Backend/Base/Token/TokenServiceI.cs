@@ -11,6 +11,6 @@ namespace Backend.Base.Token
         
         
         RefreshToken CreateRefreshToken(TokenValues tv);
-        RefreshToken? GetRefreshToken(string tokenKey);
+        Task<RefreshToken?> GetRefreshToken(string tokenKey);
     }
 }
