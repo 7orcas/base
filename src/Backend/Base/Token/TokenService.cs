@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json.Linq;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -35,12 +36,12 @@ namespace Backend.Base.Token
 
 
         /// <summary>
-        /// Login process creates this token, saves it to cache and returns a key to the token.
+        /// Login process creates this JWT token, saves it to cache and returns a key to the token.
         /// The key is a one time use key to get the token from cache. The token is used to create a JWT token which is returned to the client.
         /// </summary>
         /// <param name="tv"></param>
         /// <returns></returns>
-        public string CreateToken(TokenValues tv)
+        public string CreateJWToken(TokenValues tv)
         {
             var claims = new[]
             {
@@ -57,8 +58,8 @@ namespace Backend.Base.Token
                 issuer: TokenParameters._Issuer,
                 audience: TokenParameters._Audience,
                 claims: claims,
-                //expires: DateTime.UtcNow.AddMinutes(AppSettings.AccessTokenMinutes),
-                expires: DateTime.UtcNow.AddSeconds(AppSettings.AccessTokenMinutes),
+                expires: DateTime.UtcNow.AddMinutes(AppSettings.AccessTokenMinutes),
+                //expires: DateTime.UtcNow.AddSeconds(AppSettings.AccessTokenMinutes), TESTING
                 signingCredentials: creds
                 );
 
@@ -67,7 +68,15 @@ namespace Backend.Base.Token
             var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
 
             var tokenKey = Guid.NewGuid().ToString();
-            CacheTokenKey(tokenKey, tokenString);
+            
+            string tokenX = AppSettings.MaxGetTokenCalls.ToString().PadLeft(PAD_TOKEN, '0') + tokenString;
+            _log.Debug("AddTokenToCache TokenKey {TokenKey} Token {Token}", tokenKey, tokenX);
+
+            var cacheEntryOptions = new MemoryCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(AppSettings.CacheExpirationAddSeconds) // Cache expiration
+            };
+            _memoryCache.Set(TokenKey(tokenKey), tokenX, cacheEntryOptions);
 
             return tokenKey;
         }
@@ -77,7 +86,7 @@ namespace Backend.Base.Token
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
-        public TokenValues DecodeToken(string token)
+        public TokenValues DecodeJWToken(string token)
         {
             token = token.Trim();
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -106,18 +115,7 @@ namespace Backend.Base.Token
                 return null;
             }
         }
-
-        private void CacheTokenKey(string key, string token)
-        {
-            string tokenX = AppSettings.MaxGetTokenCalls.ToString().PadLeft(PAD_TOKEN, '0') + token;
-            _log.Debug("AddTokenToCache TokenKey {TokenKey} Token {Token}", key, tokenX);
-
-            var cacheEntryOptions = new MemoryCacheEntryOptions
-            {
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(AppSettings.CacheExpirationAddSeconds) // Cache expiration
-            };
-            _memoryCache.Set(TokenKey(key), tokenX, cacheEntryOptions);
-        }
+        
 
         /// <summary>
         /// Login process calls this method to get the actual JWT token
@@ -125,7 +123,7 @@ namespace Backend.Base.Token
         /// </summary>
         /// <param name="tokenKey"></param>
         /// <returns></returns>
-        public string? GetToken(string tokenKey)
+        public string? GetJWToken(string tokenKey)
         {
             _log.Debug("GetToken TokenKey {TokenKey}", tokenKey);
 
@@ -166,13 +164,7 @@ namespace Backend.Base.Token
             return GC.CacheKeyTokenPrefix + key;
         }
 
-
-private string RefreshKey(string key)
-{
-    return GC.CacheKeyRefreshPrefix + key;
-}
-
-        public RefreshToken CreateRefreshToken(TokenValues tv)
+        public async Task<RefreshToken> CreateRefreshToken(TokenValues tv)
         {
             var token = new RefreshToken
             {
@@ -185,38 +177,66 @@ private string RefreshKey(string key)
                 OrgNr = tv.OrgNr
             };
 
-            var cacheEntryOptions = new MemoryCacheEntryOptions
-            {
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(AppSettings.RefreshTokenDays)
-            };
-            _memoryCache.Set(RefreshKey(token.Token.ToString()), token, cacheEntryOptions);
-
-            _tokenRepo.SaveRefreshToken(token);
+            token = await _tokenRepo.SaveRefreshToken(token);
 
             return token;
         }
 
-        public async Task<RefreshToken?> GetRefreshToken(string tokenKey)
+        public async Task<RefreshToken?> GetRefreshToken(string tokenString)
         {
-            _log.Debug("GetRefreshToken TokenKey {TokenKey}", tokenKey);
+            _log.Debug("GetRefreshToken TokenKey {TokenKey}", tokenString);
 
-            var tokenx = await _tokenRepo.LoadRefreshToken(tokenKey);
-            if (tokenx != null)
-                _tokenRepo.RevokeRefreshToken(tokenx);
+            var result = GetRefreshTokenFromComposite(tokenString);
+
+            var token = await _tokenRepo.LoadRefreshToken(result.Id);
             
-            
-            if (_memoryCache.TryGetValue(RefreshKey(tokenKey), out var cachedValue))
+            if (token != null
+                && token.Token.ToString() == result.Guid.ToString() 
+                && token.Expires > DateTime.UtcNow 
+                && token.Revoked == null)
             {
-                var token = (RefreshToken)cachedValue;
-                
-                _memoryCache.Remove(TokenKey(tokenKey));
-                _log.Debug("GetToken-LastCall TokenKey {TokenKey} TokenX {TokenX}", tokenKey, token.Token);
+                _tokenRepo.RevokeRefreshToken(result.Id);
+                _log.Debug("GetRefreshToken-Found TokenKey {TokenKey} Token {Token}", tokenString, token.Token);
                 return token;
             }
 
-            _log.Error("GetRefreshToken-IsNull TokenKey {TokenKey}", tokenKey);
+            _log.Error("GetRefreshToken-IsNull TokenKey {TokenKey}", tokenString);
             return null;
         }
+
+
+        public (Guid Guid, long Id) GetRefreshTokenFromComposite(string tokenString)
+        {
+            if (string.IsNullOrWhiteSpace(tokenString))
+            {
+                _log.Error("Invalid RefreshTokenString {tokenString}", tokenString);
+                throw new ArgumentException("Input cannot be null or empty.");
+            }
+
+
+            int lastDash = tokenString.LastIndexOf('-');
+
+            if (lastDash < 0)
+                throw new FormatException("Invalid format.");
+
+            string guidPart = tokenString.Substring(0, lastDash);
+            string idPart = tokenString.Substring(lastDash + 1);
+
+            if (!Guid.TryParse(guidPart, out var guid))
+            {
+                _log.Error("Invalid RefreshTokenString {tokenString}", tokenString);
+                throw new FormatException("Invalid GUID.");
+            }
+
+            if (!long.TryParse(idPart, out var id))
+            {
+                _log.Error("Invalid RefreshTokenString {tokenString}", tokenString);
+                throw new FormatException("Invalid ID.");
+            }
+
+            return (guid, id);
+        }
+
 
 
     }

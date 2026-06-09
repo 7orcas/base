@@ -76,7 +76,7 @@ namespace Backend.Base.Login
                     OrgNr = orgNr,
                 };
 
-                var tokenKey = _tokenService.CreateToken(tv);
+                var tokenKey = _tokenService.CreateJWToken(tv);
                 
                 login.Response.Valid = true;
                 login.Response.TokenKey = tokenKey;

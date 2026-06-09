@@ -39,6 +39,7 @@ namespace Backend.Base.Database
 
         static public DateTime GetUpdated(NpgsqlDataReader r) => GetDateTime(r, "updated");
         static public DateTime GetDateTime(NpgsqlDataReader r, string column) => r[column] == DBNull.Value ? DateTime.MinValue : (DateTime)r[column];
+        static public DateTime? GetDateTimeNull(NpgsqlDataReader r, string column) => r[column] == DBNull.Value ? null : (DateTime)r[column];
 
 
         static public bool IsActive(NpgsqlDataReader r) => GetBoolean(r, "isActive");

@@ -4,9 +4,9 @@ namespace Backend.Base.Token
 {
     public interface TokenRepoI
     {
-        Task<RefreshToken?> LoadRefreshToken(string key);
-        Task SaveRefreshToken(RefreshToken token);
-        Task RevokeRefreshToken(RefreshToken token);
+        Task<RefreshToken> SaveRefreshToken(RefreshToken token);
+        Task<RefreshToken?> LoadRefreshToken(long id);
+        Task RevokeRefreshToken(long id);
 
     }
 }

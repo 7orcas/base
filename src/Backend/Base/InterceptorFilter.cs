@@ -51,7 +51,7 @@ namespace Backend.Base
             if (!string.IsNullOrEmpty(authorizationHeader) && authorizationHeader.StartsWith("Bearer"))
             {
                 var token = authorizationHeader.Substring("Bearer".Length);
-                var tv = _tokenService.DecodeToken(token);
+                var tv = _tokenService.DecodeJWToken(token);
 
                 if (tv == null)
                 {

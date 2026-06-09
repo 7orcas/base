@@ -10,8 +10,6 @@ namespace Backend.Base.Token
 {
     public class TokenRepo : TokenRepoI
     {
-
-
         private readonly AppDbContext _context;
 
         public TokenRepo(AppDbContext context)
@@ -20,56 +18,50 @@ namespace Backend.Base.Token
         }
 
 
-        public async Task<RefreshToken?> LoadRefreshToken(string key)
+        public async Task<RefreshToken?> LoadRefreshToken(long id)
         {
             RefreshToken token = null;
             await Sql.Run(
                     "SELECT * FROM cntrl.tokenrefresh "
-                    + "WHERE token = @token ",
+                    + "WHERE id = @id ",
                     r => {
-                        token = Load(r);
+                        token = RefreshTokenLoad.Load(r);
                     },
-                    new NpgsqlParameter("@token", Guid.Parse(key))
+                    new NpgsqlParameter("@id", id)
                 );
             return token;
         }
 
-        static public RefreshToken Load(NpgsqlDataReader r)
-        {
-            var token = new RefreshToken();
-            token.Token = SqlUtils.GetGuid(r, "token");
-            token.OrgNr = SqlUtils.GetInt(r, "orgnr");
-            token.Created = SqlUtils.GetDateTime(r, "created");
-            token.CreatedByIp = SqlUtils.GetStringNull(r, "createdbyip");
-            token.Username = SqlUtils.GetString(r, "username");
-            token.Expires = SqlUtils.GetDateTime(r, "expires");
-            token.Revoked = SqlUtils.GetDateTime(r, "revoked");
 
+
+        public async Task<RefreshToken> SaveRefreshToken(RefreshToken token)
+        {
+            var sql = @"
+                    INSERT INTO cntrl.tokenrefresh
+                        (token, createdbyip, username, sessionkey, orgnr, expires)
+                    VALUES
+                        (@Token, @CreatedByIp, @Username, @SessionKey, @OrgNr, @Expires);";
+
+            var id = await Sql.ExecuteAndReturnId(sql, new
+            {
+                token.Token,
+                token.CreatedByIp,
+                token.Username,
+                token.SessionKey,
+                token.OrgNr,
+                Expires = token.Expires
+            });
+
+            token.Id = id;
             return token;
         }
 
 
-        public async Task SaveRefreshToken(RefreshToken token)
+        public async Task RevokeRefreshToken(long id)
         {
             await Sql.Execute(
-                    "INSERT INTO cntrl.tokenrefresh " +
-                        "(token, createdbyip, username, sessionkey, orgnr, expires) " +
-                    "VALUES (" +
-                        "'" + token.Token + "'," +
-                        "'" + token.CreatedByIp + "'," +
-                        "'" + token.Username + "'," +
-                        "'" + token.SessionKey + "'," +
-                        token.OrgNr + "," +
-                        "'" + token.Expires.ToString("yyyy-MM-dd HH:mm:ss") + "'" +
-                        ")");
-        }
-
-
-        public async Task RevokeRefreshToken(RefreshToken token)
-        {
-            await Sql.Execute(
-                    "UPDATE cntrl.tokenrefresh SET revoked = CURRENT_TIMESTAMP WHERE token = "
-                        + "'" + token.Token.ToString() + "'");
+                    "UPDATE cntrl.tokenrefresh SET revoked = CURRENT_TIMESTAMP " +
+                    "WHERE id = " + id.ToString());
         }
 
 
