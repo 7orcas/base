@@ -67,7 +67,6 @@ namespace Backend.Base.Token
                 Username = refresh.Username,
                 SessionKey = refresh.SessionKey,
                 OrgNr = refresh.OrgNr,
-
             };
 
             var jwTokenKey = _tokenService.CreateJWToken(tv);
