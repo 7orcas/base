@@ -57,10 +57,12 @@ namespace Backend.Base.Token
         }
 
 
-        public async Task RevokeRefreshToken(long id)
+        public async Task RevokeRefreshToken(long id, string revokedBy)
         {
             await Sql.Execute(
-                    "UPDATE cntrl.tokenrefresh SET revoked = CURRENT_TIMESTAMP " +
+                    "UPDATE cntrl.tokenrefresh " +
+                    "SET revoked = CURRENT_TIMESTAMP, " +
+                        "revokedBy = '" + revokedBy + "' " +
                     "WHERE id = " + id.ToString());
         }
 

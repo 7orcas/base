@@ -19,7 +19,7 @@ namespace Backend.Base
         private readonly SessionServiceI _sessionService;
         private readonly PermissionServiceI _permissionService;
         private readonly AuditServiceI _auditService;
-        private readonly string[] nonAuthorisedMethods = { "LoginOptions", "Login", "GetToken", "RefreshToken" };
+        private readonly string[] nonAuthorisedMethods = { "LoginOptions", "Login", "GetToken", "RefreshExpiredToken", "RefreshCurrentToken" };
 
         public InterceptorFilter(
             Serilog.IDiagnosticContext diagnosticContext,

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Serilog.Events;
 using System.Diagnostics;
+using System.Net;
 using GC = Backend.GlobalConstants;
 
 namespace Backend.Base
@@ -116,8 +117,22 @@ namespace Backend.Base
 
         protected string GetClientIp()
         {
-            var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
-            return ipAddress ?? "x";
+            var ipAddress = HttpContext.Connection.RemoteIpAddress;
+
+            if(ipAddress == null)
+                return "x";
+
+            // Handle IPv6 localhost
+            if (IPAddress.IsLoopback(ipAddress))
+                return "127.0.0.1";
+
+            // Convert mapped IPv6 → IPv4
+            if (ipAddress.IsIPv4MappedToIPv6)
+                ipAddress = ipAddress.MapToIPv4();
+
+            return ipAddress.ToString();
+
         }
+
     }
 }

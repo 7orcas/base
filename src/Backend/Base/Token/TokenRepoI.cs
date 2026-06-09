@@ -6,7 +6,7 @@ namespace Backend.Base.Token
     {
         Task<RefreshToken> SaveRefreshToken(RefreshToken token);
         Task<RefreshToken?> LoadRefreshToken(long id);
-        Task RevokeRefreshToken(long id);
+        Task RevokeRefreshToken(long id, string revokedBy);
 
     }
 }

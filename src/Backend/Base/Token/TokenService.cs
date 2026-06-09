@@ -164,6 +164,35 @@ namespace Backend.Base.Token
             return GC.CacheKeyTokenPrefix + key;
         }
 
+        /**
+        * Refresh tokens.
+        * 1. Create a new JWT token
+        * 2. Create a new refresh token and save it to database
+        * 2. Revoke the old refresh token
+        */
+        public async Task<(string jwToken, RefreshToken refreshToken)> RefreshToken(string refreshTokenString, string ipAddress, string revokedBy)
+        {
+            var refresh = await GetRefreshToken(refreshTokenString, revokedBy);
+
+            if (refresh == null)
+                return (null, null);
+
+            var tv = new TokenValues
+            {
+                IpAddress = ipAddress,
+                Username = refresh.Username,
+                SessionKey = refresh.SessionKey,
+                OrgNr = refresh.OrgNr,
+            };
+
+            var jwTokenKey = CreateJWToken(tv);
+            var jwTokenNew = GetJWToken(jwTokenKey);
+            var refreshTokenNew = await CreateRefreshToken(tv);
+
+            return (jwTokenNew, refreshTokenNew);
+        }
+
+
         public async Task<RefreshToken> CreateRefreshToken(TokenValues tv)
         {
             var token = new RefreshToken
@@ -182,7 +211,7 @@ namespace Backend.Base.Token
             return token;
         }
 
-        public async Task<RefreshToken?> GetRefreshToken(string tokenString)
+        private async Task<RefreshToken?> GetRefreshToken(string tokenString, string revokedBy)
         {
             _log.Debug("GetRefreshToken TokenKey {TokenKey}", tokenString);
 
@@ -195,7 +224,7 @@ namespace Backend.Base.Token
                 && token.Expires > DateTime.UtcNow 
                 && token.Revoked == null)
             {
-                _tokenRepo.RevokeRefreshToken(result.Id);
+                _tokenRepo.RevokeRefreshToken(result.Id, revokedBy);
                 _log.Debug("GetRefreshToken-Found TokenKey {TokenKey} Token {Token}", tokenString, token.Token);
                 return token;
             }
@@ -205,7 +234,7 @@ namespace Backend.Base.Token
         }
 
 
-        public (Guid Guid, long Id) GetRefreshTokenFromComposite(string tokenString)
+        private (Guid Guid, long Id) GetRefreshTokenFromComposite(string tokenString)
         {
             if (string.IsNullOrWhiteSpace(tokenString))
             {

@@ -1,6 +1,9 @@
 ﻿using Backend.Base.Token.Ent;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Superpower.Model;
+using Superpower.Parsers;
 using System.IdentityModel.Tokens.Jwt;
 using GC = Backend.GlobalConstants;
 
@@ -56,40 +59,52 @@ namespace Backend.Base.Token
             return Ok(r);
         }
 
-        [HttpGet("refresh/{refreshTokenString}")]
-        public async Task<IActionResult> RefreshToken(string refreshTokenString)
+        [HttpGet("refreshcurrent/{refreshTokenString}")]
+        public async Task<IActionResult> RefreshCurrentToken(string refreshTokenString)
+        {
+            var dto = await RefreshToken(refreshTokenString, "Current");
+            return Ok(dto);
+        }
+
+        [HttpGet("refreshexpired/{refreshTokenString}")]
+        public async Task<IActionResult> RefreshExpiredToken(string refreshTokenString)
+        {
+            var dto = await RefreshToken(refreshTokenString, "Expired");
+            return Ok(dto);
+        }
+
+        private async Task<_ResponseDto> RefreshToken(string refreshTokenString, string revokedBy)
         {
             var ipAddress = GetClientIp();
-            var refresh = await _tokenService.GetRefreshToken(refreshTokenString);
+            var result = await _tokenService.RefreshToken(refreshTokenString, ipAddress, revokedBy);
 
-            var tv = new TokenValues {
-                IpAddress = ipAddress,
-                Username = refresh.Username,
-                SessionKey = refresh.SessionKey,
-                OrgNr = refresh.OrgNr,
-            };
-
-            var jwTokenKey = _tokenService.CreateJWToken(tv);
-            var jwTokenNew = _tokenService.GetJWToken(jwTokenKey);
-            var refreshTokenNew = await _tokenService.CreateRefreshToken(tv);
+            if (result.jwToken == null || result.refreshToken == null)
+            {
+                return new _ResponseDto
+                    {
+                        Valid = false,
+                        ErrorMessage = "No token - may have expired",  
+                        StatusCode = GC.StatusCodeNotAuthorised 
+                    };
+            }
 
             var handler = new JwtSecurityTokenHandler();
-            var jwt = handler.ReadJwtToken(jwTokenNew);
+            var jwt = handler.ReadJwtToken(result.jwToken);
             var expiry = jwt.ValidTo;
 
-            _log.Debug("Get token controller, Token {Token} expiry {expiry}", jwTokenNew, expiry);
+            _log.Debug("Get token controller, Token {Token} expiry {expiry}", result.jwToken, expiry);
 
             var r = new _ResponseDto
             {
                 SuccessMessage = "Got Token Ok",
                 Result = new LoginTokenDto
                 {
-                    AccessToken = jwTokenNew,
-                    RefreshToken = refreshTokenNew.TokenString(),
+                    AccessToken = result.jwToken,
+                    RefreshToken = result.refreshToken.TokenString(),
                     AccessTokenExpiry = expiry
                 }
             };
-            return Ok(r);
+            return r;
         }
 
         [Authorize]
@@ -97,11 +112,22 @@ namespace Backend.Base.Token
         [HttpGet("test")]
         public IActionResult TestToken()
         {
-            var session = HttpContext.Items["session"] as SessionEnt;
+            var authorizationHeader = HttpContext.Request.Headers["Authorization"].ToString();
+            var expiry = DateTime.MinValue;
+            if (!string.IsNullOrEmpty(authorizationHeader) && authorizationHeader.StartsWith("Bearer"))
+            {
+                var jwToken = authorizationHeader.Substring("Bearer".Length);
+                var handler = new JwtSecurityTokenHandler();
+                var jwt = handler.ReadJwtToken(jwToken.Trim());
+                expiry = jwt.ValidTo;
+            }
+
+            double minutes = (expiry - DateTime.UtcNow).TotalMinutes;
+            var refresh = minutes < 1.5;
             var r = new _ResponseDto
             {
                 SuccessMessage = "Ok",
-                Result = "Ok"
+                Result = refresh
             };
             return Ok(r);
         }

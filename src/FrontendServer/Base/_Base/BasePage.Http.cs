@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using Newtonsoft.Json;
+using System.ComponentModel;
 using System.Text;
 using GC = FrontendServer.GlobalConstants;
 
@@ -23,27 +24,43 @@ namespace FrontendServer.Base._Base
 
         public async Task ValidateAccess()
         {
+            var refreshUrl = "";
+
             try
             {
                 var client = await GetClient();
                 var response = await client.GetAsync(GC.URL_token_test);
                 response.EnsureSuccessStatusCode();
+
+                var r = await response.Content.ReadAsStringAsync();
+                var dto = JsonConvert.DeserializeObject<_ResponseDto>(r);
+                //var expiry = JsonConvert.DeserializeObject<Boolean>(dto.Result.ToString());
+                var expiry = dto.Result?.ToString().ToLower() == "true";
+
+                if (expiry)
+                    refreshUrl = GC.URL_token_refresh_current;
             }
             catch
             {
+                refreshUrl = GC.URL_token_refresh_expired;
+            }
+
+            if (!string.IsNullOrEmpty(refreshUrl))
+            {
                 var clientU = await GetClientU();
-                var key = "";
+                var refreshTokenString = "";
                 var r1 = await PS.GetAsync<string>(GC.RefreshTokenCacheKey);
                 if (r1.Success)
-                    key = r1.Value;
+                    refreshTokenString = r1.Value;
 
-                var response = await clientU.GetAsync(GC.URL_token_refresh + "/" + key);
+                var response = await clientU.GetAsync(refreshUrl + "/" + refreshTokenString);
                 var r2 = await response.Content.ReadAsStringAsync();
                 var dto = JsonConvert.DeserializeObject<_ResponseDto>(r2);
                 var tokenDto = JsonConvert.DeserializeObject<LoginTokenDto>(dto.Result.ToString());
                 await PS.SetAsync(GC.TokenCacheKey, tokenDto.AccessToken);
                 await PS.SetAsync(GC.RefreshTokenCacheKey, tokenDto.RefreshToken);
             }
+
         }
 
         public async Task<T> GetAsync<T>(string url)

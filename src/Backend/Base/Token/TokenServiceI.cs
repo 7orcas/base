@@ -9,8 +9,7 @@ namespace Backend.Base.Token
         string? GetJWToken(string key);
         TokenValues DecodeJWToken(string token);
 
-
+        Task<(string jwToken, RefreshToken refreshToken)> RefreshToken(string refreshTokenString, string ipAddress, string revokedBy);
         Task<RefreshToken> CreateRefreshToken(TokenValues tv);
-        Task<RefreshToken?> GetRefreshToken(string tokenKey);
     }
 }

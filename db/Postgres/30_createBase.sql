@@ -36,7 +36,8 @@ CREATE TABLE cntrl.tokenrefresh (
     sessionkey TEXT NOT NULL,
     orgnr INTEGER,
 	expires TIMESTAMP NOT NULL,
-	revoked TIMESTAMP
+	revoked TIMESTAMP,
+	revokedby TEXT
 );
 
 
