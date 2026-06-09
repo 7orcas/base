@@ -35,8 +35,7 @@ namespace Backend.Base.Session
             };
 
             _memoryCache.Set(Key(key), ses);
-            _log.Information("CreateSession Key {SessionKey} LoginId {LoginId} Org {OrgId}",
-                key, userAccount.Id, org.Nr);
+            _log.Information("CreateSession Key {SessionKey} OrgNr {OrgNr}", key, org.Nr);
             return ses;
         }
 
