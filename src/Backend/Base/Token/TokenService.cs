@@ -63,8 +63,7 @@ namespace Backend.Base.Token
                 signingCredentials: creds
                 );
 
-            _log.Debug("CreateToken TokenValues {TokenValues}", tv.ToLogString());
-
+            _log.Debug("CreateToken Username {Username} OrgNr {OrgNr} SessionKey {SessionKey}", tv.Username, tv.OrgNr, tv.SessionKey);
             var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
 
             var tokenKey = Guid.NewGuid().ToString();
@@ -175,7 +174,10 @@ namespace Backend.Base.Token
             var refresh = await GetRefreshToken(refreshTokenString, revokedBy);
 
             if (refresh == null)
+            {
+                _log.Debug("RefreshToken-Failed Token {Token}", refreshTokenString);
                 return (null, null);
+            }
 
             var tv = new TokenValues
             {
@@ -188,6 +190,8 @@ namespace Backend.Base.Token
             var jwTokenKey = CreateJWToken(tv);
             var jwTokenNew = GetJWToken(jwTokenKey);
             var refreshTokenNew = await CreateRefreshToken(tv);
+            
+            _log.Debug("RefreshToken OldToken {OldToken} NewToken {NewToken}", refreshTokenString, refreshTokenNew.TokenString());
 
             return (jwTokenNew, refreshTokenNew);
         }
@@ -207,16 +211,14 @@ namespace Backend.Base.Token
             };
 
             token = await _tokenRepo.SaveRefreshToken(token);
+            _log.Debug("RefreshToken-Create Token {Token}", token.TokenString());
 
             return token;
         }
 
         private async Task<RefreshToken?> GetRefreshToken(string tokenString, string revokedBy)
         {
-            _log.Debug("GetRefreshToken TokenKey {TokenKey}", tokenString);
-
             var result = GetRefreshTokenFromComposite(tokenString);
-
             var token = await _tokenRepo.LoadRefreshToken(result.Id);
             
             if (token != null
@@ -225,11 +227,11 @@ namespace Backend.Base.Token
                 && token.Revoked == null)
             {
                 _tokenRepo.RevokeRefreshToken(result.Id, revokedBy);
-                _log.Debug("GetRefreshToken-Found TokenKey {TokenKey} Token {Token}", tokenString, token.Token);
+                _log.Debug("GetRefreshToken-Found Token {Token}", tokenString);
                 return token;
             }
 
-            _log.Error("GetRefreshToken-IsNull TokenKey {TokenKey}", tokenString);
+            _log.Error("GetRefreshToken-IsNull Token {Token}", tokenString);
             return null;
         }
 
