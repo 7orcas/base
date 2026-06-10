@@ -5,10 +5,11 @@ namespace Backend.Base.Token
 {
     public interface TokenServiceI
     {
-        string CreateToken(TokenValues tokenValues);
-        TokenValues DecodeToken(string token);
-        void AddToken(string key, string token);
-        string? GetToken(string key);
-        
+        public string CreateJWToken(TokenValues tokenValues);
+        string? GetJWToken(string key);
+        TokenValues DecodeJWToken(string token);
+
+        Task<(string jwToken, RefreshToken refreshToken)> RefreshToken(string refreshTokenString, string ipAddress, string revokedBy);
+        Task<RefreshToken> CreateRefreshToken(TokenValues tv);
     }
 }

@@ -37,7 +37,7 @@ namespace Backend.Base.Login
             _sessionService = sessionService;
         }
 
-        public async Task<LoginEnt> LoginUser(string userid, string password, int orgNr, int sourceAppNr, string? langCode)
+        public async Task<LoginEnt> LoginUser(string ipAddress, string userid, string password, int orgNr, int sourceAppNr, string? langCode)
         {
             try
             {
@@ -70,19 +70,16 @@ namespace Backend.Base.Login
 
                 var tv = new TokenValues
                 {
+                    IpAddress = ipAddress,
                     Username = userid,
                     SessionKey = session.Key,
-                    Org = orgNr,
+                    OrgNr = orgNr,
                 };
 
-                var tokenX = _tokenService.CreateToken(tv);
-                var keyX = Guid.NewGuid().ToString();
-                _tokenService.AddToken(keyX, tokenX);
-
-
+                var tokenKey = _tokenService.CreateJWToken(tv);
+                
                 login.Response.Valid = true;
-                login.Response.Token = tokenX;
-                login.Response.TokenKey = keyX;
+                login.Response.TokenKey = tokenKey;
                 login.Response.MainUrl = AppSettings.MainClientUrl;
                 login.Response.LangCode = userConfig.LangCodeCurrent;
 
@@ -99,7 +96,7 @@ namespace Backend.Base.Login
 
         //Each login to an org requires an account record
         //Users can have multiple accounts
-        public async Task<(LoginEnt? Login, UserAccountEnt? Account)> GetLogin(string userid, int orgNr)
+        private async Task<(LoginEnt? Login, UserAccountEnt? Account)> GetLogin(string userid, int orgNr)
         {
             var login = null as LoginEnt;
             var account = null as UserAccountEnt;

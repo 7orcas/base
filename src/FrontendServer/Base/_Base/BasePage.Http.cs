@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using Newtonsoft.Json;
+using System.ComponentModel;
 using System.Text;
 using GC = FrontendServer.GlobalConstants;
 
@@ -19,6 +20,49 @@ namespace FrontendServer.Base._Base
         //Http Client
         public async Task<HttpClient> GetClient() => await HS.GetClient();
 
+        public async Task<HttpClient> GetClientU() => await HS.GetClientUnauthorized();
+
+        public async Task ValidateAccess()
+        {
+            var refreshUrl = "";
+
+            try
+            {
+                var client = await GetClient();
+                var response = await client.GetAsync(GC.URL_token_test);
+                response.EnsureSuccessStatusCode();
+
+                var r = await response.Content.ReadAsStringAsync();
+                var dto = JsonConvert.DeserializeObject<_ResponseDto>(r);
+                //var expiry = JsonConvert.DeserializeObject<Boolean>(dto.Result.ToString());
+                var expiry = dto.Result?.ToString().ToLower() == "true";
+
+                if (expiry)
+                    refreshUrl = GC.URL_token_refresh_current;
+            }
+            catch
+            {
+                refreshUrl = GC.URL_token_refresh_expired;
+            }
+
+            if (!string.IsNullOrEmpty(refreshUrl))
+            {
+                var clientU = await GetClientU();
+                var refreshTokenString = "";
+                var r1 = await PS.GetAsync<string>(GC.RefreshTokenCacheKey);
+                if (r1.Success)
+                    refreshTokenString = r1.Value;
+
+                var response = await clientU.GetAsync(refreshUrl + "/" + refreshTokenString);
+                var r2 = await response.Content.ReadAsStringAsync();
+                var dto = JsonConvert.DeserializeObject<_ResponseDto>(r2);
+                var tokenDto = JsonConvert.DeserializeObject<LoginTokenDto>(dto.Result.ToString());
+                await PS.SetAsync(GC.TokenCacheKey, tokenDto.AccessToken);
+                await PS.SetAsync(GC.RefreshTokenCacheKey, tokenDto.RefreshToken);
+            }
+
+        }
+
         public async Task<T> GetAsync<T>(string url)
         {
             return await GetAsync<T>(url, false);
@@ -27,9 +71,9 @@ namespace FrontendServer.Base._Base
         public async Task<T> GetAsync<T>(string url, bool surpressLoading)
         {
             _isLoading = !surpressLoading;
+            await ValidateAccess();
 
             var client = await GetClient();
-
             var response = await client.GetAsync(url);
 
             try
@@ -47,6 +91,16 @@ namespace FrontendServer.Base._Base
             }
             catch
             {
+                
+                if (response != null && response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    _statusCode = GC.StatusCodeLoginExpired;
+                    _errorMessage = new MarkupString(LS.GetLabel("LEx"));
+                    _isLoading = false;
+                    _isError = true;
+                    return default;
+                }
+
                 _statusCode = -1;
                 try
                 {
@@ -71,6 +125,7 @@ namespace FrontendServer.Base._Base
         protected async Task<HttpResponseMessage> PostAsync<T>(string url, _BaseDto<T> dto) where T : _BaseDto<T>
         {
             _isSaving = true;
+            await ValidateAccess();
             var client = await GetClient();
 
             var json = System.Text.Json.JsonSerializer.Serialize((T)dto);
@@ -89,6 +144,7 @@ namespace FrontendServer.Base._Base
             foreach (var d in dtos)
                 d.IsError = false;
 
+            await ValidateAccess();
             var client = await GetClient();
 
             var json = System.Text.Json.JsonSerializer.Serialize(dtos);

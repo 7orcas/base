@@ -8,5 +8,5 @@ $env:PGCLIENTENCODING="UTF8"
 
 #NOTE label_path not working
 psql -h localhost -d blue -U postgres `
-  -v label_path=C:/src/f2f/db/Labels `
+  -v label_path=C:/Source/db/Labels `
   -f _reload.sql	 

@@ -126,5 +126,40 @@ namespace Backend.Base.Database
             });
         }
 
+        static public async Task<long> ExecuteAndReturnId(string sqlString, object parameters)
+        {
+
+            if (sqlString.EndsWith(";"))
+                sqlString = sqlString.Trim().TrimEnd(';');
+
+            sqlString += " RETURNING id;"; // Postgres
+
+            var connectionString = AppSettings.DBMainConnection;
+
+            await using var connection = new NpgsqlConnection(connectionString);
+            await connection.OpenAsync();
+
+            await using var command = new NpgsqlCommand(sqlString, connection);
+
+            //Add parameters dynamically
+            foreach (var prop in parameters.GetType().GetProperties())
+            {
+                var value = prop.GetValue(parameters) ?? DBNull.Value;
+                command.Parameters.AddWithValue(prop.Name, value);
+            }
+
+            try
+            {
+                var result = await command.ExecuteScalarAsync();
+                return Convert.ToInt64(result);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Log.Logger.Error(sqlString + " -> " + ex.Message);
+                throw;
+            }
+        }
+
     }
 }

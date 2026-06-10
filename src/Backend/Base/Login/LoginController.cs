@@ -12,7 +12,7 @@ namespace Backend.Base.Login
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class LoginController : ControllerBase
+    public class LoginController : BaseController
     {
         private readonly LoginServiceI _loginService;
         
@@ -22,11 +22,8 @@ namespace Backend.Base.Login
         /// </summary>
         /// <param name="labelService"></param>
         public LoginController(
-            LoginServiceI loginService,
-            TokenServiceI tokenService,
-            OrgServiceI orgService,
-            ConfigServiceI configService,
-            SessionServiceI sessionService)
+            IServiceProvider serviceProvider,
+            LoginServiceI loginService) : base(serviceProvider)
         {
             _loginService = loginService;
         }
@@ -35,7 +32,8 @@ namespace Backend.Base.Login
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
-            var login = await _loginService.LoginUser(request.Username, request.Password, request.Org, request.SourceApplication, request.LangCode);
+            var ipAddress = GetClientIp();
+            var login = await _loginService.LoginUser(ipAddress, request.Username, request.Password, request.Org, request.SourceApplication, request.LangCode);
             var res = login.Response;
 
             if (!res.Valid)
@@ -48,9 +46,8 @@ namespace Backend.Base.Login
             var r = new _ResponseDto
             {
                 SuccessMessage = "Login Ok",
-                Result = new LoginTokenDto { 
+                Result = new LoginSuccessDto { 
                     TokenKey = res.TokenKey,
-                    Token = res.Token,
                     MainUrl = res.MainUrl,
                     LangCode = res.LangCode,
                 }

@@ -49,5 +49,20 @@ namespace FrontendServer.Base._Base
             }
         }
 
+
+        public async Task<HttpClient?> GetClientUnauthorized()
+        {
+            try
+            {
+                var token = await GetToken();
+                var client = _httpClientFactory.CreateClient(GC.UnAuthorizedClientKey);
+                return client;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
     }
 }

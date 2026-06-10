@@ -98,7 +98,7 @@ else
                 return;
             }
 
-            var token = await GetToken(tokenkey);
+            var token = await GetTokenFromKey(tokenkey);
             await SetClient(token);
 
             // Get App / User Config
@@ -130,55 +130,19 @@ else
             if (!auto)
                 NM.NavigateTo("/", replace: true);
 
-
-            //DELETE ME
-            // Get the token key to use to get the actual token
-            // var uri = NM.ToAbsoluteUri(NM.Uri);
-            // var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
-            // if (!query.TryGetValue("tk", out var tokenkey))
-            // {
-            //     _isLoading = false;
-            //     _isError = true;
-            //     StateHasChanged();
-            //     return;
-            // }
-
-            // var token = await GetToken(tokenkey);
-            // await SetClient(token);
-
-            // //Get App / User Config
-            // var config = await ConfS.Initialise();
-            // var lps = ConfS.SetLoginParameters(tokenkey, token);
-            // lps.LoadedUrl(GC.URL_config);
-            // SetConfig(config);
-
-            // //Get stuff
-            // await LS.Initialise(lps);
-            // await PermS.Initialise(lps);
-            // if (query.TryGetValue("urlLogin", out var urlLogin))
-            //     config.UrlLogin = urlLogin;
-
-            // _isLoading = false;
-            // StateHasChanged();
-
-            // //Is there an auto open?
-            // if (query.TryGetValue("open", out var autoOpenX))
-            // {
-            //     if (AppRoutes.IsRoute(autoOpenX))
-            //         NM.NavigateTo("/" + AppRoutes.GetRoute(autoOpenX));
-            // }
-
         }
     }
 
-    private async Task<string> GetToken(string tokenkey)
+    private async Task<string> GetTokenFromKey(string tokenkey)
     {
         var clientU = HttpClientFactory.CreateClient(GC.UnAuthorizedClientKey);
-        var tokenResponse = await clientU.GetAsync(GC.URL_token + "?key=" + tokenkey);
-        var token = await tokenResponse.Content.ReadAsStringAsync();
-        token = token.Substring(LoginTokenDto.TOKEN_PREFIX_LENGTH);
-        await PS.SetAsync(GC.TokenCacheKey, token);
-        return token;
+        var response = await clientU.GetAsync(GC.URL_token + "?key=" + tokenkey);
+        var r = await response.Content.ReadAsStringAsync();
+        var dto = JsonConvert.DeserializeObject<_ResponseDto>(r);
+        var tokenDto = JsonConvert.DeserializeObject<LoginTokenDto>(dto.Result.ToString());
+        await PS.SetAsync(GC.TokenCacheKey, tokenDto.AccessToken);
+        await PS.SetAsync(GC.RefreshTokenCacheKey, tokenDto.RefreshToken);
+        return tokenDto.AccessToken;
     }
 
     private async Task<HttpClient> SetClient(string token)

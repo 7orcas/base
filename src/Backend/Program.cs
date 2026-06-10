@@ -113,6 +113,7 @@ builder.Services.AddScoped<ConfigServiceI, ConfigService>();
 builder.Services.AddScoped<LoginServiceI, LoginService>();
 builder.Services.AddScoped<LoginOptionServiceI, LoginOptionService>();
 builder.Services.AddScoped<TokenServiceI, TokenService>();
+builder.Services.AddScoped<TokenRepoI, TokenRepo>();
 builder.Services.AddScoped<OrgServiceI, OrgService>();
 builder.Services.AddScoped<SessionServiceI, SessionService>();
 builder.Services.AddScoped<PermissionServiceI, PermissionService>();
@@ -196,6 +197,8 @@ void LoadAppSettings(WebApplicationBuilder builder)
 {
     AppSettings.DBMainConnection = builder.Configuration["ConnectionStrings:DBMainConnection"];
     AppSettings.MaxGetTokenCalls = int.Parse(builder.Configuration["Token:MaxGetTokenCalls"]);
+    AppSettings.AccessTokenMinutes = int.Parse(builder.Configuration["Token:AccessTokenMinutes"]);
+    AppSettings.RefreshTokenDays = int.Parse(builder.Configuration["Token:RefreshTokenDays"]);
     AppSettings.CacheExpirationAddSeconds = int.Parse(builder.Configuration["Token:CacheExpirationAddSeconds"]);
     AppSettings.CacheExpirationGetSeconds = int.Parse(builder.Configuration["Token:CacheExpirationGetSeconds"]);
     AppSettings.MainClientUrl = builder.Configuration["Urls:MainClientUrl"];

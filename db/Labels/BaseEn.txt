@@ -16,6 +16,7 @@ PWmc,Must be mixed case
 PWNonLet,Must contain non-letter
 PWNum,Must contain a number
 PWAt,Max. number of login attempts
+LEx,Login Expired|| please log in again.
 BConf,Base Configuration
 Lang,Language
 Langs,Languages

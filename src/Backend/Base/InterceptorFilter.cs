@@ -19,6 +19,7 @@ namespace Backend.Base
         private readonly SessionServiceI _sessionService;
         private readonly PermissionServiceI _permissionService;
         private readonly AuditServiceI _auditService;
+        private readonly string[] nonAuthorisedMethods = { "LoginOptions", "Login", "GetToken", "RefreshExpiredToken", "RefreshCurrentToken" };
 
         public InterceptorFilter(
             Serilog.IDiagnosticContext diagnosticContext,
@@ -50,29 +51,53 @@ namespace Backend.Base
             if (!string.IsNullOrEmpty(authorizationHeader) && authorizationHeader.StartsWith("Bearer"))
             {
                 var token = authorizationHeader.Substring("Bearer".Length);
-                var tv = _tokenService.DecodeToken(token);
+                var tv = _tokenService.DecodeJWToken(token);
+
+                if (tv == null)
+                {
+                    var r = new _ResponseDto
+                    {
+                        Valid = false,
+                        ErrorMessage = "No token - may have expired",  //ToDo label 'NToken'
+                        StatusCode = GC.StatusCodeNotAuthorised // HTTP status code
+                    };
+                    context.Result = new OkObjectResult(r);
+                    return;
+                }
+
                 sessionKey = tv.SessionKey;
                 session = _sessionService.GetSession(sessionKey);
                 context.HttpContext.Items["session"] = session;
                 _diagnosticContext.Set("SessionKey", sessionKey);
             }
-
+           
             //Test permissions
             if (context.ActionDescriptor is ControllerActionDescriptor controllerActionDescriptor)
             {
+                var authorised = false;
                 //Method assign permission
                 MethodInfo methodInfo = controllerActionDescriptor.MethodInfo;
-                var perm = methodInfo.GetCustomAttribute<PermissionAtt>();
-                var crud = methodInfo.GetCustomAttribute<CrudAtt>();
-
-                //Class assign permission
-                if (perm == null)
+                
+                if (session == null)
                 {
-                    Type controllerType = controllerActionDescriptor.ControllerTypeInfo.AsType();
-                    perm = controllerType.GetCustomAttribute<PermissionAtt>();
+                    authorised = nonAuthorisedMethods.Contains(methodInfo.Name);
                 }
+                else
+                {
+                    var perm = methodInfo.GetCustomAttribute<PermissionAtt>();
+                    var crud = methodInfo.GetCustomAttribute<CrudAtt>();
 
-                if (!_permissionService.IsAuthorizedToAccessEndPoint(session, perm, crud))
+                    //Class assign permission
+                    if (perm == null)
+                    {
+                        Type controllerType = controllerActionDescriptor.ControllerTypeInfo.AsType();
+                        perm = controllerType.GetCustomAttribute<PermissionAtt>();
+                    }
+                    authorised = _permissionService.IsAuthorizedToAccessEndPoint(session, perm, crud);
+                }
+                
+
+                if (!authorised)
                 {
                     Log(LogEventLevel.Error, "InterceptorNotAuthorised", context, sessionKey);
                     var r = new _ResponseDto
@@ -88,9 +113,6 @@ namespace Backend.Base
                 var audit = methodInfo.GetCustomAttribute<AuditListAtt>();
                 if (audit != null)
                     _auditService.ReadList(session, audit.EntityTypeId, null);
-                
-
-
             }
 
             if (_log.IsEnabled(LogEventLevel.Debug))

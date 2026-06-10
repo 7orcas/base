@@ -191,7 +191,7 @@
 @using GC = FrontendServer.GlobalConstants;
 @using FrontendServer.Base._Base;
 
-@code {
+    @code {
     private bool showList = false;
     private List<OrgDto> list;
     private OrgDto? orgDto;
@@ -205,13 +205,18 @@
 
             list = await GetAsync<List<OrgDto>>(GC.URL_org_list);
 
-            if (list.Count > 0)
-                Load(0, true);
+            if (list == null)
+            {
+                //probably expired login
+            }
+            else
+            {
+                if (list.Count > 0)
+                    Load(0, true);
 
-            showList = list.Count > 1;
-               
+                showList = list.Count > 1;
+            }
             AddToolbarSave(SaveAsync);
-
             StateHasChanged();
         }
     }
