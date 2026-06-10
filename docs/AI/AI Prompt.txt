@@ -1,9 +1,16 @@
 
-I have a c# ,Net, Blazor Server application.
-The .Net backend is an API project.
-The Blazor frontend is made up of 2 blazor server projects, a login project and the client project.
+I have a c# ,.Net, Blazor Server application.
+The .Net Backend is an API project.
+The Blazor frontend is made up of 2 Blazor server projects, a Login project and the Client project.
 I also will allow external clients to interact with my APIs (they will need to be logged in) 
-In the future I want to develop a mobile app - this will also need to login.
+
+MFA
+  - Give me step by step instructions to:
+    - Add MFA to to my Login project
+	- I want to use Microsoft Authenticator
+	- I want it to be free
+	
+
 
 Login
   - Give me step by step instructions to:
@@ -20,7 +27,7 @@ Login
 The login (once successful) redirects the browser to the actual client project.
 The login at the moment is user id / password.
 I want to add in a MFA login process - how do I do this?
-
+In the future I want to develop a mobile app - this will also need to login.
 
 
 Docker
