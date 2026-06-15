@@ -47,9 +47,12 @@ namespace Backend.Base.Login
             {
                 SuccessMessage = "Login Ok",
                 Result = new LoginSuccessDto { 
+                    Id = login.Id,
                     TokenKey = res.TokenKey,
                     MainUrl = res.MainUrl,
                     LangCode = res.LangCode,
+                    MfaRequired = res.MfaRequired,
+                    MfaEnabled = res.MfaEnabled
                 }
             };
             return Ok(r);

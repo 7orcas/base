@@ -5,6 +5,7 @@ global using Common.Request;
 global using Serilog;
 global using Backend.Base;
 global using Backend.Base.Database;
+global using Backend.Base.Mfa;
 global using Backend.Base.Token;
 global using Backend.Base.Entity;
 global using Backend.Base.Config;

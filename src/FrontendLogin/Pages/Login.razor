@@ -2,6 +2,7 @@
 @using Newtonsoft.Json;
 @using GC = FrontendLogin.GlobalConstants;
 @using Common.DTO.Base;
+@using QRCoder;
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
 @inject IHttpClientFactory HttpClientFactory
@@ -64,6 +65,32 @@
                 </div>
             }
 
+            @if (showQr)
+            {
+                <div class="mt-4 text-center">
+                    <h5>Scan with Microsoft Authenticator</h5>
+
+                    <img src="@qrCodeBase64" style="width:200px;height:200px;" />
+
+                    <p class="mt-2">
+                        Or enter this key manually:<br />
+                        <b>@manualKey</b>
+                    </p>
+                </div>
+            }
+
+            @if (showMfaInput)
+            {
+                <div class="mt-3">
+                    <label>Enter code from Microsoft Authenticator:</label>
+
+                    <InputText @bind-Value="mfaCode" class="form-control" />
+
+                    <button class="btn btn-success mt-2" @onclick="VerifyMfa">
+                        Verify
+                    </button>
+                </div>
+            }
 
             </EditForm>
 
@@ -95,6 +122,14 @@
     private List<OrgItem> OrgList = new List<OrgItem>();
     private List<LangItem> LangList = new List<LangItem>();
 
+    //MFA
+    private string qrCodeBase64;
+    private bool showQr = false;
+    private string manualKey;
+    private string mfaCode;
+    private bool showMfaInput = false; // for future use if no QR
+
+
     private async Task HandleLogin()
     {
         try
@@ -118,6 +153,23 @@
                     tokenkey = login.TokenKey;
 
                     //await TestPause();
+
+                    if (login.MfaRequired)
+                    {
+                        if (!login.MfaEnabled)
+                        {
+                            await LoadMfaQr();
+                        }
+
+                        else
+                        {
+                            showMfaInput = true;
+                        }
+
+
+                        return;
+                    }
+
 
                     if (navigateTo)
                     {
@@ -157,7 +209,10 @@
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (autoLogin)
+        {
+            autoLogin = false; 
             HandleLogin();
+        }
     }
 
     private async Task GetToken(string tokenkey)
@@ -224,6 +279,101 @@
         if (!loginRequest.IsPopulated())
             getEnvironmentVariables();
     }
+
+    private async Task LoadMfaQr()
+    {
+        var client = HttpClientFactory.CreateClient("BackendApi");
+
+        // call your API endpoint
+        var response = await client.PostAsync("api/Mfa/SetupMfa", null);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            errorMessage = "Failed to load MFA setup";
+            return;
+        }
+
+        var json = await response.Content.ReadAsStringAsync();
+
+        dynamic result = JsonConvert.DeserializeObject(json);
+
+        string uri = result.qrCodeUri;
+        manualKey = result.sharedKey;
+
+        qrCodeBase64 = GenerateQrCode(uri);
+        showQr = true;
+        StateHasChanged();
+    }
+    
+    private string GenerateQrCode(string uri)
+    {
+        using var generator = new QRCodeGenerator();
+        var data = generator.CreateQrCode(uri, QRCodeGenerator.ECCLevel.Q);
+        var png = new PngByteQRCode(data);
+        var bytes = png.GetGraphic(20);
+
+        return $"data:image/png;base64,{Convert.ToBase64String(bytes)}";
+    }
+
+    private async Task VerifyMfa()
+    {
+        try
+        {
+            errorMessage = "";
+
+            var client = HttpClientFactory.CreateClient("BackendApi");
+
+            var response = await client.PostAsJsonAsync("api/Mfa/VerifyMfa", new
+            {
+                Username = loginRequest.Username,
+                Org = loginRequest.Org,
+                Code = mfaCode
+            });
+
+            if (!response.IsSuccessStatusCode)
+            {
+                errorMessage = "Invalid MFA code";
+                return;
+            }
+
+            var json = await response.Content.ReadAsStringAsync();
+            var responseDto = JsonConvert.DeserializeObject<_ResponseDto>(json);
+
+            if (!responseDto.Valid)
+            {
+                errorMessage = responseDto.ErrorMessage;
+                return;
+            }
+
+            var login = JsonConvert.DeserializeObject<LoginSuccessDto>(responseDto.Result.ToString());
+
+            tokenkey = login.TokenKey;
+
+            // ✅ NOW complete login
+            if (navigateTo)
+            {
+                NavigationManager.NavigateTo(login.MainUrl
+                    + "#tk=" + tokenkey
+                    + (string.IsNullOrEmpty(autoOpen) ? "" : "&open=" + autoOpen)
+                    + ("&urlLogin=https://localhost:7289/" + UrlSuffix),
+                    true);
+
+                return;
+            }
+
+            await GetToken(tokenkey);
+
+            successMessage = "MFA verified. Logged in ✅";
+
+            // ✅ hide QR after success
+            showQr = false;
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+    }
+
 
     /**
      * Passed in parameters via launchSettings.json

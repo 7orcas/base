@@ -41,10 +41,10 @@ VALUES (3, 'Org 3', 'Org 3 Description', 'de', 1,
 -- -------------------------------------------------
 -- base.zzz
 -- -------------------------------------------------
-INSERT INTO base.zzz (id, xxx, yyy)
+INSERT INTO base.zzz (id, xxx, yyy, email)
 VALUES
-(1, '1', '1'),
-(2, 'user', 'xx123');
+(1, '1', '1', '1'),
+(2, 'user', 'xx123', 'xx123');
 
 -- -------------------------------------------------
 -- base.useracc

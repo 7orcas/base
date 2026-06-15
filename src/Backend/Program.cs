@@ -1,8 +1,10 @@
 using Backend;
 using Backend.App.Machines;
+using Backend.Base.DataProtection;
 using Backend.Base.Token.Ent;
 using Backend.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens; // For TokenValidationParameters
@@ -10,6 +12,7 @@ using Microsoft.OpenApi.Models;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
+using GC = Backend.GlobalConstants;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -97,6 +100,18 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options => options.TokenValidationParameters = TokenParameters.GetParameters());
 
+/*  This must change when deploying to Azure */
+builder.Services.AddDataProtection().SetApplicationName(GC.AppName);
+/* For Azure Blob Storage key storage, add the following NuGet package:
+   Microsoft.AspNetCore.DataProtection.AzureStorage
+using Azure.Identity;
+builder.Services.AddDataProtection()
+    .PersistKeysToAzureBlobStorage(
+        new Uri("https://<storage>.blob.core.windows.net/dpkeys/keys.xml"),
+        new DefaultAzureCredential())
+    .SetApplicationName(GC.AppName);
+*/
+
 builder.Services.AddRouting(options =>
 {
     options.LowercaseUrls = true;
@@ -112,6 +127,8 @@ builder.Services.AddScoped<LabelServiceI, LabelService>();
 builder.Services.AddScoped<ConfigServiceI, ConfigService>();
 builder.Services.AddScoped<LoginServiceI, LoginService>();
 builder.Services.AddScoped<LoginOptionServiceI, LoginOptionService>();
+builder.Services.AddScoped<MfaServiceI, MfaService>();
+builder.Services.AddScoped<MfaKeyProtector>();
 builder.Services.AddScoped<TokenServiceI, TokenService>();
 builder.Services.AddScoped<TokenRepoI, TokenRepo>();
 builder.Services.AddScoped<OrgServiceI, OrgService>();
@@ -201,6 +218,7 @@ void LoadAppSettings(WebApplicationBuilder builder)
     AppSettings.RefreshTokenDays = int.Parse(builder.Configuration["Token:RefreshTokenDays"]);
     AppSettings.CacheExpirationAddSeconds = int.Parse(builder.Configuration["Token:CacheExpirationAddSeconds"]);
     AppSettings.CacheExpirationGetSeconds = int.Parse(builder.Configuration["Token:CacheExpirationGetSeconds"]);
+    AppSettings.AuthenticatorAppName = builder.Configuration["Mfa:AuthenticatorAppName"];
     AppSettings.MainClientUrl = builder.Configuration["Urls:MainClientUrl"];
     AppSettings.PathBase = builder.Configuration["PathBase"];
 
@@ -209,6 +227,7 @@ void LoadAppSettings(WebApplicationBuilder builder)
     {
         var acc = new AppServiceAccount();
         acc.UserId = builder.Configuration["ServiceAccount:UserId"];
+        acc.UserEmail = builder.Configuration["ServiceAccount:Email"];
         acc.UserPw = builder.Configuration["ServiceAccount:PW"];
         acc.AttemptsFile = builder.Configuration["ServiceAccount:AttemptsFile"];
 

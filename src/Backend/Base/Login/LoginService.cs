@@ -37,15 +37,23 @@ namespace Backend.Base.Login
             _sessionService = sessionService;
         }
 
+        // Get the user login and account details, validate the password and return a tokenkey if valid
         public async Task<LoginEnt> LoginUser(string ipAddress, string userid, string password, int orgNr, int sourceAppNr, string? langCode)
         {
             try
             {
-                var result = await GetLogin(userid, orgNr);
-                var login = result.Login;
+                var login = await GetLogin(userid);
+                UserAccountEnt? account = null;
+
                 if (login == null) 
                     login = new LoginEnt();
-                var account = result.Account;
+                else if (ServiceAccount != null && login.IsService())
+                {
+                    login = LoginEnt.GetServiceLogin();
+                    login.Password = ServiceAccount.UserPw;
+                }
+                else
+                    account = await GetAccount(login.Id, orgNr);
 
                 if (!login.IsActive ||
                     account == null ||
@@ -82,6 +90,8 @@ namespace Backend.Base.Login
                 login.Response.TokenKey = tokenKey;
                 login.Response.MainUrl = AppSettings.MainClientUrl;
                 login.Response.LangCode = userConfig.LangCodeCurrent;
+                login.Response.MfaRequired = org.MfaRequired;
+                login.Response.MfaEnabled = login.MfaEnabled;
 
                 return login;
             }
@@ -94,13 +104,18 @@ namespace Backend.Base.Login
             }
         }
 
-        //Each login to an org requires an account record
-        //Users can have multiple accounts
-        private async Task<(LoginEnt? Login, UserAccountEnt? Account)> GetLogin(string userid, int orgNr)
+        //Authenicate the user
+        private async Task<LoginEnt?> GetLogin(string userid)
         {
             var login = null as LoginEnt;
-            var account = null as UserAccountEnt;
+            if (ServiceAccount != null && userid.Equals(ServiceAccount.UserId))
+            {
+                login = LoginEnt.GetServiceLogin();
+                login.Password = ServiceAccount.UserPw;
+                return login;
+            }
 
+            long? id = null;
             try
             {
                 //ToDo Log
@@ -108,28 +123,71 @@ namespace Backend.Base.Login
                     throw new Exception();
 
                 await Sql.Run(
-                    "SELECT * FROM base.zzz " +
+                    "SELECT id FROM base.zzz " +
                         "WHERE xxx = @userid ",
                     r =>
                     {
-                        login = new LoginEnt { 
-                            Id = GetId(r),
-                            Userid = GetString(r, "xxx"),
-                            Password = GetString(r, "yyy"),
-                            Attempts = GetIntNull(r, "attempts"),
-                            Lastlogin = GetDateTime(r, "lastlogin"),
-                            IsActive = GetBoolean(r, "isActive")
-                        };
+                        id = GetId(r);
                     },
                     new NpgsqlParameter("@userid", userid)
                 );
 
-                if (ServiceAccount != null && userid.Equals(ServiceAccount.UserId))
+                if (id != null)
+                    login = await GetLogin(id.Value);
+            }
+            catch { }
+
+            return login;
+        }
+
+        public async Task<LoginEnt?> GetLogin(long id)
+        {
+            var login = null as LoginEnt;
+            var isService = ServiceAccount != null && id == GC.ServiceLoginId;
+
+            try
+            {
+                await Sql.Run(
+                    "SELECT * FROM base.zzz " +
+                        "WHERE xxx = @userid ",
+                    r =>
+                    {
+                        login = new LoginEnt
+                        {
+                            Id = GetId(r),
+                            Userid = GetString(r, "xxx"),
+                            Email = GetString(r, "email"),
+                            Password = GetString(r, "yyy"),
+                            Attempts = GetIntNull(r, "attempts"),
+                            Lastlogin = GetDateTime(r, "lastlogin"),
+                            IsActive = GetBoolean(r, "isActive"),
+                            MfaSecret = GetStringNull(r, "mfasecret"),
+                            MfaEnabled = GetBoolean(r, "mfaenabled"),
+                        };
+                    },
+                    new NpgsqlParameter("@id", id)
+                );
+
+                if (login == null && isService)
                 {
                     login = LoginEnt.GetServiceLogin();
+                    login.Email = ServiceAccount.UserEmail;
                     login.Password = ServiceAccount.UserPw;
                 }
 
+            }
+            catch { }
+
+            return login;
+        }
+
+
+        private async Task<UserAccountEnt?> GetAccount(long loginId, int orgNr)
+        {
+            var account = null as UserAccountEnt;
+
+            try
+            {
                 await Sql.Run(
                     "SELECT * FROM base.userAcc " +
                         "WHERE zzzId = @zzzId " +
@@ -148,17 +206,13 @@ namespace Backend.Base.Login
                             Classification = GetIntNull(r, "classification")
                         };
                     },
-                    new NpgsqlParameter("@zzzId", login.Id),
+                    new NpgsqlParameter("@zzzId", loginId),
                     new NpgsqlParameter("@orgNr", orgNr)
                 );
-
-                if (login.IsService() && account == null)
-                    account = UserAccountEnt.GetServiceAccount(orgNr);
-
             }
             catch { }
 
-            return (login, account);
+            return account;
         }
 
         //ToDo Language codes!

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using OtpNet;
 using GC = Backend.GlobalConstants;
 
 /// <summary>
@@ -11,7 +12,6 @@ using GC = Backend.GlobalConstants;
 
 namespace Backend.Base.Mfa
 {
-    [Authorize]
     [Route("api/[controller]")]
     public class MfaController : BaseController
     {
@@ -29,54 +29,57 @@ namespace Backend.Base.Mfa
         }
 
         /// <summary>
-        /// Get client Mfa
+        /// Get client setup for Mfa
         /// This is a mix of organisation and user account Mfa
         /// </summary>
         /// <returns></returns>
-        [CrudAtt(GC.CrudIgnore)]
-
-        [HttpPost("mfa/setup")]
-        public async Task<IActionResult> SetupMfa()
+        [HttpPost("SetupMfa/{id}")]
+        public async Task<IActionResult> SetupMfa(long id)
         {
-            var user = await _userManager.GetUserAsync(User);
+            var key = await _MfaService.SetupMfa(id);
 
-            var key = await _userManager.GetAuthenticatorKeyAsync(user);
-            if (string.IsNullOrEmpty(key))
+            if (key == null)
+                return Ok(new _ResponseDto
+                {
+                    Valid = false,
+                });
+           
+            var r = new _ResponseDto
             {
-                await _userManager.ResetAuthenticatorKeyAsync(user);
-                key = await _userManager.GetAuthenticatorKeyAsync(user);
-            }
+                SuccessMessage = "Ok",
+                Result = new MfaSetupDto
+                {
+                    SharedKey = key.SharedKey,
+                    QrCodeUri = key.QrCodeUri
+                }
+            };
+            return Ok(r);
 
-            var email = user.Email;
-
-            var uri = $"otpauth://totp/YourApp:{email}?secret={key}&issuer=YourApp&digits=6";
-
-            return Ok(new
-            {
-                sharedKey = key,
-                qrCodeUri = uri
-            });
         }
 
 
+       
 
-        [HttpPost("mfa/verify")]
-        public async Task<IActionResult> VerifyMfa([FromBody] VerifyMfaRequest request)
-        {
-            var user = await _userManager.GetUserAsync(User);
+      
 
-            var isValid = await _userManager.VerifyTwoFactorTokenAsync(
-                user,
-                _userManager.Options.Tokens.AuthenticatorTokenProvider,
-                request.Code);
 
-            if (!isValid)
-                return BadRequest("Invalid code");
+        //[HttpPost("VerifyMfa")]
+        //public async Task<IActionResult> VerifyMfa([FromBody] VerifyMfaRequest request)
+        //{
+        //    var user = await _userManager.GetUserAsync(User);
 
-            await _userManager.SetTwoFactorEnabledAsync(user, true);
+        //    var isValid = await _userManager.VerifyTwoFactorTokenAsync(
+        //        user,
+        //        _userManager.Options.Tokens.AuthenticatorTokenProvider,
+        //        request.Code);
 
-            return Ok();
-        }
+        //    if (!isValid)
+        //        return BadRequest("Invalid code");
+
+        //    await _userManager.SetTwoFactorEnabledAsync(user, true);
+
+        //    return Ok();
+        //}
 
 
 

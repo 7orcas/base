@@ -23,6 +23,7 @@ namespace Backend.Base.Org
             org.IsActive = IsActive(r);
             org.LangLabelVariant = GetIntNull(r, "langLabelVariant");
             org.Encoded = GetEncoded(r);
+            org.MfaRequired = GetBoolean(r, "mfaRequired");
             org.Decode();
 
             if (org.LangCode == null) org.LangCode = GC.LangCodeDefault;
