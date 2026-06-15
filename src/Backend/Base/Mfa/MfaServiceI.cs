@@ -5,5 +5,6 @@ namespace Backend.Base.Mfa
     public interface MfaServiceI
     {
         Task<MfaSetup?> SetupMfa(long id);
+        Task<bool> VerifyMfaCode(long id, string mfaCode);
     }
 }

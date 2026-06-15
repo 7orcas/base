@@ -48,10 +48,7 @@ namespace Backend.Base.Login
                 if (login == null) 
                     login = new LoginEnt();
                 else if (ServiceAccount != null && login.IsService())
-                {
-                    login = LoginEnt.GetServiceLogin();
-                    login.Password = ServiceAccount.UserPw;
-                }
+                    account = UserAccountEnt.GetServiceAccount(orgNr);
                 else
                     account = await GetAccount(login.Id, orgNr);
 
@@ -112,6 +109,14 @@ namespace Backend.Base.Login
             {
                 login = LoginEnt.GetServiceLogin();
                 login.Password = ServiceAccount.UserPw;
+
+                var loginX = await GetLogin(login.Id);
+                if (loginX != null)
+                {
+                    login.MfaEnabled = loginX.MfaEnabled;
+                    login.MfaSecret = loginX.MfaSecret;
+                }
+
                 return login;
             }
 
@@ -139,6 +144,7 @@ namespace Backend.Base.Login
 
             return login;
         }
+        
 
         public async Task<LoginEnt?> GetLogin(long id)
         {
@@ -149,7 +155,7 @@ namespace Backend.Base.Login
             {
                 await Sql.Run(
                     "SELECT * FROM base.zzz " +
-                        "WHERE xxx = @userid ",
+                        "WHERE id = @id ",
                     r =>
                     {
                         login = new LoginEnt
@@ -292,5 +298,26 @@ namespace Backend.Base.Login
             File.WriteAllText(ServiceAccount.AttemptsFile, "" + attempts);
             return true;
         }
+
+        public async Task<bool> SetMfaKey(long id, string key)
+        {
+            await Sql.Execute(
+                   "UPDATE base.zzz "
+                   + "SET mfasecret = '" + key + "' "
+                   + "WHERE id = " + id
+               );
+            return true;
+        }
+
+        public async Task<bool> EnableMfa(long id)
+        {
+            await Sql.Execute(
+                   "UPDATE base.zzz "
+                   + "SET mfaenabled = true "
+                   + "WHERE id = " + id
+               );
+            return true;
+        }
+
     }
 }

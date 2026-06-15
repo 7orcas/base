@@ -33,8 +33,8 @@ namespace Backend.Base.Mfa
         /// This is a mix of organisation and user account Mfa
         /// </summary>
         /// <returns></returns>
-        [HttpPost("SetupMfa/{id}")]
-        public async Task<IActionResult> SetupMfa(long id)
+        [HttpPost("SetupMfa")]
+        public async Task<IActionResult> SetupMfa([FromBody] long id)
         {
             var key = await _MfaService.SetupMfa(id);
 
@@ -57,29 +57,17 @@ namespace Backend.Base.Mfa
 
         }
 
+        [HttpPost("VerifyMfa")]
+        public async Task<IActionResult> VerifyMfa([FromBody] MfaVerifyDto request)
+        {
+            var result = await _MfaService.VerifyMfaCode(request.Id, request.MfaCode);
 
-       
+            return Ok(new _ResponseDto
+            {
+                Valid = result
+            });
 
-      
-
-
-        //[HttpPost("VerifyMfa")]
-        //public async Task<IActionResult> VerifyMfa([FromBody] VerifyMfaRequest request)
-        //{
-        //    var user = await _userManager.GetUserAsync(User);
-
-        //    var isValid = await _userManager.VerifyTwoFactorTokenAsync(
-        //        user,
-        //        _userManager.Options.Tokens.AuthenticatorTokenProvider,
-        //        request.Code);
-
-        //    if (!isValid)
-        //        return BadRequest("Invalid code");
-
-        //    await _userManager.SetTwoFactorEnabledAsync(user, true);
-
-        //    return Ok();
-        //}
+        }
 
 
 

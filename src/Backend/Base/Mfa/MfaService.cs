@@ -1,5 +1,6 @@
 ﻿using Backend.Base.Mfa.Ent;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Caching.Memory;
 using OtpNet;
 using GC = Backend.GlobalConstants;
@@ -28,12 +29,13 @@ namespace Backend.Base.Mfa
         {
             var login = await _loginService.GetLogin(id);
 
-            if (login == null || login.MfaEnabled)
+            if (login == null || login.MfaEnabled || !string.IsNullOrEmpty(login.MfaSecret))
                 return null;
 
             var key = GenerateMfaKey();
-            var email = "js@7orcas.com";
-            var qrCodeUri = GenerateQrCodeUri(email, key);
+            var qrCodeUri = GenerateQrCodeUri(login.Email, key);
+            _loginService.SetMfaKey(id, key);
+
 
             return new MfaSetup
             {
@@ -41,6 +43,28 @@ namespace Backend.Base.Mfa
                 QrCodeUri = qrCodeUri
             };
         }
+
+        public async Task<bool> VerifyMfaCode(long id, string mfaCode)
+        {
+            var login = await _loginService.GetLogin(id);
+
+            if (login == null || login.MfaSecret == null)
+                return false;
+
+            var totp = new Totp(Base32Encoding.ToBytes(login.MfaSecret));
+
+            var result = totp.VerifyTotp(
+                mfaCode.Trim(),
+                out _,
+                new VerificationWindow(2, 2) // allows slight clock drift
+            );
+
+            if (result && !login.MfaEnabled)
+                _loginService.EnableMfa(id);
+
+            return result;
+        }
+
 
         private string GenerateMfaKey()
         {

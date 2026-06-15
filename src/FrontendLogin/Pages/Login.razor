@@ -115,6 +115,7 @@
     private string successMessage = string.Empty;
     private string tokenkey;
     private string token;
+    private string mainUrl;
     private bool autoLogin = false;
     private bool navigateTo = false;
     private string autoOpen = string.Empty;
@@ -128,7 +129,7 @@
     private string manualKey;
     private string mfaCode;
     private bool showMfaInput = false; // for future use if no QR
-
+    private long? verifyId = null;
 
     private async Task HandleLogin()
     {
@@ -151,11 +152,13 @@
                     var login = JsonConvert.DeserializeObject<LoginSuccessDto>(responseDto.Result.ToString());
                     successMessage = responseDto.SuccessMessage;
                     tokenkey = login.TokenKey;
+                    mainUrl = login.MainUrl;
 
                     //await TestPause();
 
                     if (login.MfaRequired)
                     {
+                        verifyId = login.Id;
                         if (!login.MfaEnabled)
                         {
                             await LoadMfaQr();
@@ -164,9 +167,8 @@
                         else
                         {
                             showMfaInput = true;
+                            StateHasChanged();
                         }
-
-
                         return;
                     }
 
@@ -200,6 +202,9 @@
             errorMessage = $"An error occurred: {ex.Message}";
         }
     }
+
+
+
 
     private async Task TestPause()
     {
@@ -257,7 +262,7 @@
 
         loginRequest.UrlSuffix = UrlSuffix;
         loginRequest.Org = int.Parse(options.Orgs[0].Nr.ToString());
-        
+
         // Parse the URL query string
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
         var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
@@ -284,25 +289,25 @@
     {
         var client = HttpClientFactory.CreateClient("BackendApi");
 
-        // call your API endpoint
-        var response = await client.PostAsync("api/Mfa/SetupMfa", null);
-
-        if (!response.IsSuccessStatusCode)
+        var response = await client.PostAsJsonAsync(GC.URL_mfa_setup, verifyId);
+        if (response.IsSuccessStatusCode)
         {
-            errorMessage = "Failed to load MFA setup";
-            return;
+            var result = await response.Content.ReadAsStringAsync();
+            var responseDto = JsonConvert.DeserializeObject<_ResponseDto>(result);
+
+            if (responseDto.Valid)
+            {
+                var mfa = JsonConvert.DeserializeObject<MfaSetupDto>(responseDto.Result.ToString());
+                qrCodeBase64 = GenerateQrCode(mfa.QrCodeUri);
+                manualKey = mfa.SharedKey;
+                showQr = true;
+                showMfaInput = true;
+                StateHasChanged();
+                return;
+            }
         }
-
-        var json = await response.Content.ReadAsStringAsync();
-
-        dynamic result = JsonConvert.DeserializeObject(json);
-
-        string uri = result.qrCodeUri;
-        manualKey = result.sharedKey;
-
-        qrCodeBase64 = GenerateQrCode(uri);
-        showQr = true;
-        StateHasChanged();
+        
+        errorMessage = "Failed to load MFA setup";
     }
     
     private string GenerateQrCode(string uri)
@@ -323,11 +328,10 @@
 
             var client = HttpClientFactory.CreateClient("BackendApi");
 
-            var response = await client.PostAsJsonAsync("api/Mfa/VerifyMfa", new
+            var response = await client.PostAsJsonAsync(GC.URL_mfa_verify, new MfaVerifyDto
             {
-                Username = loginRequest.Username,
-                Org = loginRequest.Org,
-                Code = mfaCode
+                Id = verifyId.Value,
+                MfaCode = mfaCode
             });
 
             if (!response.IsSuccessStatusCode)
@@ -345,14 +349,10 @@
                 return;
             }
 
-            var login = JsonConvert.DeserializeObject<LoginSuccessDto>(responseDto.Result.ToString());
-
-            tokenkey = login.TokenKey;
-
             // ✅ NOW complete login
             if (navigateTo)
             {
-                NavigationManager.NavigateTo(login.MainUrl
+                NavigationManager.NavigateTo(mainUrl
                     + "#tk=" + tokenkey
                     + (string.IsNullOrEmpty(autoOpen) ? "" : "&open=" + autoOpen)
                     + ("&urlLogin=https://localhost:7289/" + UrlSuffix),
@@ -360,13 +360,6 @@
 
                 return;
             }
-
-            await GetToken(tokenkey);
-
-            successMessage = "MFA verified. Logged in ✅";
-
-            // ✅ hide QR after success
-            showQr = false;
         }
         catch (Exception ex)
         {
