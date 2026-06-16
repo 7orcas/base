@@ -9,6 +9,7 @@ MFA
     - Add MFA to to my Login project
 	- I want to use Microsoft Authenticator
 	- I want it to be free
+	- The login project must use the Backend project to get entities, ie I don't want the login project to make db connections
 	
 
 

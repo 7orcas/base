@@ -19,7 +19,9 @@ namespace Backend.Base.Org.Ent
         public bool IsActive { get; set; }
         public string? LangCode { get; set; }
         public int? LangLabelVariant { get; set; }
-        
+        public bool MfaRequired { get; set; }
+
+
         public OrgEnc Encoding { get; set; }
 
         public override void Decode()

@@ -2,6 +2,7 @@
 @using Newtonsoft.Json;
 @using GC = FrontendLogin.GlobalConstants;
 @using Common.DTO.Base;
+@using QRCoder;
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
 @inject IHttpClientFactory HttpClientFactory
@@ -64,6 +65,32 @@
                 </div>
             }
 
+            @if (showQr)
+            {
+                <div class="mt-4 text-center">
+                    <h5>Scan with Microsoft Authenticator</h5>
+
+                    <img src="@qrCodeBase64" style="width:200px;height:200px;" />
+
+                    <p class="mt-2">
+                        Or enter this key manually:<br />
+                        <b>@manualKey</b>
+                    </p>
+                </div>
+            }
+
+            @if (showMfaInput)
+            {
+                <div class="mt-3">
+                    <label>Enter code from Microsoft Authenticator:</label>
+
+                    <InputText @bind-Value="mfaCode" class="form-control" />
+
+                    <button type="button" class="btn btn-success mt-2" @onclick="VerifyMfa">
+                        Verify
+                    </button>
+                </div>
+            }
 
             </EditForm>
 
@@ -82,72 +109,114 @@
 
     private LoginRequest loginRequest = new LoginRequest
     {
-        LangCode = "en"    
+        LangCode = "en",
+        SourceApplication = GC.AppClient
     };
     private string errorMessage = string.Empty;
     private string successMessage = string.Empty;
+
+
     private string tokenkey;
     private string token;
     private bool autoLogin = false;
-    private bool navigateTo = false;
+    private bool navigateToMain = false;
     private string autoOpen = string.Empty;
     private LoginOptionDto options;
     private List<OrgItem> OrgList = new List<OrgItem>();
     private List<LangItem> LangList = new List<LangItem>();
 
+    //MFA
+    private string qrCodeBase64;
+    private bool showQr = false;
+    private string manualKey;
+    private string mfaCode;
+    private bool showMfaInput = false; // for future use if no QR
+
+
     private async Task HandleLogin()
     {
         try
         {
-            loginRequest.SourceApplication = GC.AppClient;
             errorMessage = string.Empty;
             successMessage = string.Empty;
 
-            var client = HttpClientFactory.CreateClient("BackendApi");
+            var login = await LoginToBlue(GC.URL_login);
 
-            var response = await client.PostAsJsonAsync(GC.URL_login, loginRequest);
-            if (response.IsSuccessStatusCode)
+            if (login == null)
+                return;
+
+            //MFA is an extra step
+            if (login.MfaRequired)
             {
-                var result = await response.Content.ReadAsStringAsync();
-                var responseDto = JsonConvert.DeserializeObject<_ResponseDto>(result);
-
-                if (responseDto.Valid)
-                {
-                    var login = JsonConvert.DeserializeObject<LoginSuccessDto>(responseDto.Result.ToString());
-                    successMessage = responseDto.SuccessMessage;
-                    tokenkey = login.TokenKey;
-
-                    //await TestPause();
-
-                    if (navigateTo)
-                    {
-                        NavigationManager.NavigateTo(login.MainUrl 
-                            + "#tk=" + tokenkey   //Use fragments
-                            + (string.IsNullOrEmpty(autoOpen)? "" : "&open=" + autoOpen)
-                            + ("&urlLogin=https://localhost:7289/" + UrlSuffix),
-                            true);
-                        return;
-                    }
-
-                    await GetToken(tokenkey);
-                }
-                else
-                {
-                    errorMessage = responseDto.ErrorMessage;
-                }
-
-                // Save token, e.g., in localStorage if this were Blazor WebAssembly
+                await MfaCheck(login);
+                return;
             }
-            else
+
+            //Web clients
+            if (navigateToMain)
             {
-                errorMessage = "Invalid username or password + ";
+                NavigateToMain(login);
+                return;
             }
+
+            //API clients just get the token
+            await GetToken(login.TokenKey);
+            
         }
         catch (Exception ex)
         {
             errorMessage = $"An error occurred: {ex.Message}";
         }
     }
+
+    //Call the API with the login credentials (and the MFA code if applicable) 
+    private async Task<LoginSuccessDto?> LoginToBlue(string url)
+    {
+        try
+        {
+            var isMfa = url == GC.URL_mfa_verify;
+            errorMessage = "";
+
+            var client = HttpClientFactory.CreateClient(GC.HTTP_Client);
+            var response = await client.PostAsJsonAsync(url, loginRequest);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                errorMessage = isMfa ? "Invalid MFA code" : "Invalid username or password";
+                return null;
+            }
+
+            var json = await response.Content.ReadAsStringAsync();
+            var responseDto = JsonConvert.DeserializeObject<_ResponseDto>(json);
+
+            if (!responseDto.Valid)
+            {
+                errorMessage = responseDto.ErrorMessage;
+                return null;
+            }
+            
+            var login = JsonConvert.DeserializeObject<LoginSuccessDto>(responseDto.Result.ToString());
+            successMessage = responseDto.SuccessMessage;
+
+            return login;
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+            return null;
+        }
+    }
+
+    private void NavigateToMain(LoginSuccessDto login)
+    {
+        NavigationManager.NavigateTo(login.MainUrl
+                               //Use fragments
+                               + "#tk=" + login.TokenKey   
+                               + (string.IsNullOrEmpty(autoOpen) ? "" : "&open=" + autoOpen)
+                               + ("&urlLogin=https://localhost:7289/" + UrlSuffix),
+                               true);
+    }
+
 
     private async Task TestPause()
     {
@@ -157,26 +226,31 @@
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (autoLogin)
+        {
+            autoLogin = false; 
             HandleLogin();
+        }
     }
 
-    private async Task GetToken(string tokenkey)
+    //For API login's, display the bearer token
+    private async Task GetToken(string key)
     {
-        var client = HttpClientFactory.CreateClient("BackendApi");
-        var tokenResponse = await client.GetAsync(GC.URL_token + "?key=" + tokenkey);
+        tokenkey = key;
+        var client = HttpClientFactory.CreateClient(GC.HTTP_Client);
+        var tokenResponse = await client.GetAsync(GC.URL_token + "?key=" + key);
         token = await tokenResponse.Content.ReadAsStringAsync();
     }
 
     protected override async Task OnInitializedAsync()
     {
-        var client = HttpClientFactory.CreateClient("BackendApi");
+        var client = HttpClientFactory.CreateClient(GC.HTTP_Client);
         var response = await client.GetAsync(GC.URL_login_option + $"{UrlSuffix}");
         var r = await response.Content.ReadAsStringAsync();
         var dto = JsonConvert.DeserializeObject<_ResponseDto>(r);
 
         options = JsonConvert.DeserializeObject<LoginOptionDto>(dto.Result.ToString());
 
-        navigateTo = options.SuccessAction == GC.NavigateToFrontendServer;
+        navigateToMain = options.SuccessAction == GC.NavigateToFrontendServer;
 
         //Load organisation options
         OrgList = new List<OrgItem>();
@@ -202,7 +276,7 @@
 
         loginRequest.UrlSuffix = UrlSuffix;
         loginRequest.Org = int.Parse(options.Orgs[0].Nr.ToString());
-        
+
         // Parse the URL query string
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
         var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
@@ -224,6 +298,9 @@
         if (!loginRequest.IsPopulated())
             getEnvironmentVariables();
     }
+
+    
+
 
     /**
      * Passed in parameters via launchSettings.json

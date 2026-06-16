@@ -23,9 +23,9 @@ VALUES ('api', '1', 'en', 0, 'en', 1);
 INSERT INTO base.org (nr, code, descr)
 VALUES (0, 'Org Base', 'Base Organisation');
 
-INSERT INTO base.org (nr, code, descr, langcode, langlabelvariant, encoded)
+INSERT INTO base.org (nr, code, descr, langcode, langlabelvariant, mfarequired, encoded)
 VALUES
-(1, 'Org 1', 'Org 1 Description', 'en', 1,
+(1, 'Org 1', 'Org 1 Description', 'en', 1, true,
  '{Languages:[{LangCode:"en",IsEditable:true},{LangCode:"de",IsEditable:true},{LangCode:"c1",IsEditable:false},{LangCode:"c2",IsEditable:false}]}');
 
 INSERT INTO base.org (nr, code, descr, langcode, langlabelvariant, encoded)
@@ -41,10 +41,11 @@ VALUES (3, 'Org 3', 'Org 3 Description', 'de', 1,
 -- -------------------------------------------------
 -- base.zzz
 -- -------------------------------------------------
-INSERT INTO base.zzz (id, xxx, yyy)
+INSERT INTO base.zzz (id, xxx, yyy, email)
 VALUES
-(1, '1', '1'),
-(2, 'user', 'xx123');
+(1, '1', '1', '1'),
+(2, 'user', 'xx123', 'xx123'),
+(-1, '$', '$', 'js@7orcas.com');
 
 -- -------------------------------------------------
 -- base.useracc

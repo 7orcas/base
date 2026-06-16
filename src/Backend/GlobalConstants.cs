@@ -2,6 +2,7 @@
 {
     public class GlobalConstants : Common.GlobalConstants
     {
+        public const string AppName  = "Blue";
         public const int BaseOrgNr   = 0;
                 
         public const string LangCodeDefault = "en";
