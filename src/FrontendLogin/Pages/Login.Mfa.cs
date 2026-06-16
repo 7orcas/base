@@ -14,6 +14,20 @@ namespace FrontendLogin.Pages
 {
     public partial class Login
     {
+        private async Task MfaCheck(LoginSuccessDto login)
+        {
+            loginRequest.Id = login.Id;
+
+            if (!login.MfaEnabled)
+                await LoadMfaQr(); //Show the QR code to set up MFA
+            else
+            {
+                showMfaInput = true;
+                StateHasChanged();
+            }
+        }
+
+
         private async Task LoadMfaQr()
         {
             var client = HttpClientFactory.CreateClient(GC.HTTP_Client);
@@ -54,42 +68,22 @@ namespace FrontendLogin.Pages
             try
             {
                 errorMessage = "";
-
-                var client = HttpClientFactory.CreateClient(GC.HTTP_Client);
                 loginRequest.MfaCode = mfaCode;
 
-                var response = await client.PostAsJsonAsync(GC.URL_mfa_verify, loginRequest);
+                var login = await LoginToBlue(GC.URL_mfa_verify);
 
-                if (!response.IsSuccessStatusCode)
+                if (login == null)
+                    return;
+
+                //Web clients
+                if (navigateToMain)
                 {
-                    errorMessage = "Invalid MFA code";
+                    NavigateToMain(login);
                     return;
                 }
 
-                var json = await response.Content.ReadAsStringAsync();
-                var responseDto = JsonConvert.DeserializeObject<_ResponseDto>(json);
-                var login = JsonConvert.DeserializeObject<LoginSuccessDto>(responseDto.Result.ToString());
-                successMessage = responseDto.SuccessMessage;
-                tokenkey = login.TokenKey;
-                mainUrl = login.MainUrl;
-
-                if (!responseDto.Valid)
-                {
-                    errorMessage = responseDto.ErrorMessage;
-                    return;
-                }
-
-                // ✅ NOW complete login
-                if (navigateTo)
-                {
-                    NavigationManager.NavigateTo(mainUrl
-                        + "#tk=" + tokenkey
-                        + (string.IsNullOrEmpty(autoOpen) ? "" : "&open=" + autoOpen)
-                        + ("&urlLogin=https://localhost:7289/" + UrlSuffix),
-                        true);
-
-                    return;
-                }
+                //API clients just get the token
+                await GetToken(login.TokenKey);
             }
             catch (Exception ex)
             {

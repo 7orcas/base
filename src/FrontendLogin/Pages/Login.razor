@@ -118,9 +118,8 @@
 
     private string tokenkey;
     private string token;
-    private string mainUrl;
     private bool autoLogin = false;
-    private bool navigateTo = false;
+    private bool navigateToMain = false;
     private string autoOpen = string.Empty;
     private LoginOptionDto options;
     private List<OrgItem> OrgList = new List<OrgItem>();
@@ -141,63 +140,28 @@
             errorMessage = string.Empty;
             successMessage = string.Empty;
 
-            var client = HttpClientFactory.CreateClient(GC.HTTP_Client);
+            var login = await LoginToBlue(GC.URL_login);
 
-            var response = await client.PostAsJsonAsync(GC.URL_login, loginRequest);
-            if (response.IsSuccessStatusCode)
+            if (login == null)
+                return;
+
+            //MFA is an extra step
+            if (login.MfaRequired)
             {
-                var result = await response.Content.ReadAsStringAsync();
-                var responseDto = JsonConvert.DeserializeObject<_ResponseDto>(result);
-
-                if (responseDto.Valid)
-                {
-                    var login = JsonConvert.DeserializeObject<LoginSuccessDto>(responseDto.Result.ToString());
-                    successMessage = responseDto.SuccessMessage;
-                    tokenkey = login.TokenKey;
-                    mainUrl = login.MainUrl;
-
-                    //await TestPause();
-
-                    //MFA is an extra step
-                    if (login.MfaRequired)
-                    {
-                        loginRequest.Id = login.Id; 
-
-                        if (!login.MfaEnabled)
-                            await LoadMfaQr(); //Show the QR code to set up MFA
-                        else
-                        {
-                            showMfaInput = true;
-                            StateHasChanged();
-                        }
-                        return;
-                    }
-
-                    //Web clients
-                    if (navigateTo)
-                    {
-                        NavigationManager.NavigateTo(login.MainUrl 
-                            + "#tk=" + tokenkey   //Use fragments
-                            + (string.IsNullOrEmpty(autoOpen)? "" : "&open=" + autoOpen)
-                            + ("&urlLogin=https://localhost:7289/" + UrlSuffix),
-                            true);
-                        return;
-                    }
-
-                    //API clients just get the token
-                    await GetToken(tokenkey);
-                }
-                else
-                {
-                    errorMessage = responseDto.ErrorMessage;
-                }
-
-                // Save token, e.g., in localStorage if this were Blazor WebAssembly
+                await MfaCheck(login);
+                return;
             }
-            else
+
+            //Web clients
+            if (navigateToMain)
             {
-                errorMessage = "Invalid username or password + ";
+                NavigateToMain(login);
+                return;
             }
+
+            //API clients just get the token
+            await GetToken(login.TokenKey);
+            
         }
         catch (Exception ex)
         {
@@ -206,17 +170,15 @@
     }
 
     //Call the API with the login credentials (and the MFA code if applicable) 
-    private async Task<LoginSuccessDto?> LoginToBlue(string mfaCode)
+    private async Task<LoginSuccessDto?> LoginToBlue(string url)
     {
         try
         {
-            var isMfa = !string.IsNullOrEmpty(mfaCode);
+            var isMfa = url == GC.URL_mfa_verify;
             errorMessage = "";
 
             var client = HttpClientFactory.CreateClient(GC.HTTP_Client);
-            loginRequest.MfaCode = mfaCode;
-
-            var response = await client.PostAsJsonAsync(GC.URL_mfa_verify, loginRequest);
+            var response = await client.PostAsJsonAsync(url, loginRequest);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -226,13 +188,14 @@
 
             var json = await response.Content.ReadAsStringAsync();
             var responseDto = JsonConvert.DeserializeObject<_ResponseDto>(json);
-            var login = JsonConvert.DeserializeObject<LoginSuccessDto>(responseDto.Result.ToString());
-            
+
             if (!responseDto.Valid)
             {
                 errorMessage = responseDto.ErrorMessage;
                 return null;
             }
+            
+            var login = JsonConvert.DeserializeObject<LoginSuccessDto>(responseDto.Result.ToString());
             successMessage = responseDto.SuccessMessage;
 
             return login;
@@ -242,6 +205,16 @@
             errorMessage = ex.Message;
             return null;
         }
+    }
+
+    private void NavigateToMain(LoginSuccessDto login)
+    {
+        NavigationManager.NavigateTo(login.MainUrl
+                               //Use fragments
+                               + "#tk=" + login.TokenKey   
+                               + (string.IsNullOrEmpty(autoOpen) ? "" : "&open=" + autoOpen)
+                               + ("&urlLogin=https://localhost:7289/" + UrlSuffix),
+                               true);
     }
 
 
@@ -260,10 +233,11 @@
     }
 
     //For API login's, display the bearer token
-    private async Task GetToken(string tokenkey)
+    private async Task GetToken(string key)
     {
+        tokenkey = key;
         var client = HttpClientFactory.CreateClient(GC.HTTP_Client);
-        var tokenResponse = await client.GetAsync(GC.URL_token + "?key=" + tokenkey);
+        var tokenResponse = await client.GetAsync(GC.URL_token + "?key=" + key);
         token = await tokenResponse.Content.ReadAsStringAsync();
     }
 
@@ -276,7 +250,7 @@
 
         options = JsonConvert.DeserializeObject<LoginOptionDto>(dto.Result.ToString());
 
-        navigateTo = options.SuccessAction == GC.NavigateToFrontendServer;
+        navigateToMain = options.SuccessAction == GC.NavigateToFrontendServer;
 
         //Load organisation options
         OrgList = new List<OrgItem>();
