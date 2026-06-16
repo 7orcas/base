@@ -5,6 +5,8 @@ using OtpNet;
 using GC = Backend.GlobalConstants;
 
 /// <summary>
+/// Multifactor authentication controller for any client
+/// When successful, a valid security token is issued 
 /// Created: June 2026
 /// [*Licence*]
 /// Author: John Stewart
@@ -16,6 +18,7 @@ namespace Backend.Base.Mfa
     public class MfaController : BaseController
     {
         private readonly MfaServiceI _MfaService;
+        private readonly LoginServiceI _loginService;
 
         /// <summary>
         /// Constructor
@@ -23,9 +26,11 @@ namespace Backend.Base.Mfa
         /// <param name="ServiceProvider"></param>
         /// <param name="MfaService"></param>
         public MfaController(IServiceProvider serviceProvider,
-            MfaServiceI MfaService) : base(serviceProvider)
+            MfaServiceI MfaService,
+            LoginServiceI loginService) : base(serviceProvider)
         {
             _MfaService = MfaService;
+            _loginService = loginService;
         }
 
         /// <summary>
@@ -58,18 +63,42 @@ namespace Backend.Base.Mfa
         }
 
         [HttpPost("VerifyMfa")]
-        public async Task<IActionResult> VerifyMfa([FromBody] MfaVerifyDto request)
+        public async Task<IActionResult> VerifyMfa([FromBody] LoginRequest request) 
         {
-            var result = await _MfaService.VerifyMfaCode(request.Id, request.MfaCode);
+            var result = await _MfaService.VerifyMfaCode(request.Id.Value, request.MfaCode);
+            
+            if (!result)
+                return Ok(new _ResponseDto
+                {
+                    Valid = false,
+                    ErrorMessage = "Invalid Mfa code"
+                });
+        
 
-            return Ok(new _ResponseDto
+            var ipAddress = GetClientIp();
+            var login = await _loginService.LoginUser(ipAddress, request.Username, request.Password, request.Org, request.SourceApplication, request.LangCode, true);
+            var res = login.Response;
+
+            LoginSuccessDto dto = null;
+
+            if (result)
+                dto = new LoginSuccessDto
+                {
+                    Id = login.Id,
+                    TokenKey = res.TokenKey,
+                    MainUrl = res.MainUrl,
+                    LangCode = res.LangCode,
+                    MfaRequired = res.MfaRequired,
+                    MfaEnabled = res.MfaEnabled
+                };
+
+            var r = new _ResponseDto
             {
-                Valid = result
-            });
-
+                Valid = result,
+                Result = dto
+            };
+            return Ok(r);
         }
-
-
 
     }
 }

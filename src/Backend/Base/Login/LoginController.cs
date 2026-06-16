@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Login controller for any client
-/// When successful, a valid security token is issued
+/// When successful, a valid security token is issued (unless MFA is required, then that is the next step)
 /// Created: June 2025
 /// [*Licence*]
 /// Author: John Stewart
@@ -33,7 +33,7 @@ namespace Backend.Base.Login
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
             var ipAddress = GetClientIp();
-            var login = await _loginService.LoginUser(ipAddress, request.Username, request.Password, request.Org, request.SourceApplication, request.LangCode);
+            var login = await _loginService.LoginUser(ipAddress, request.Username, request.Password, request.Org, request.SourceApplication, request.LangCode, false);
             var res = login.Response;
 
             if (!res.Valid)
@@ -43,13 +43,15 @@ namespace Backend.Base.Login
                         ErrorMessage = res.ErrorMessage,
                     });
 
+            //Don't send the next step if MFA is active as that needs to happen first
             var r = new _ResponseDto
             {
                 SuccessMessage = "Login Ok",
+                Valid = true,
                 Result = new LoginSuccessDto { 
                     Id = login.Id,
-                    TokenKey = res.TokenKey,
-                    MainUrl = res.MainUrl,
+                    TokenKey = res.MfaRequired ? null : res.TokenKey,
+                    MainUrl = res.MfaRequired ? null : res.MainUrl,
                     LangCode = res.LangCode,
                     MfaRequired = res.MfaRequired,
                     MfaEnabled = res.MfaEnabled

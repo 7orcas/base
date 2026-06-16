@@ -37,8 +37,9 @@ namespace Backend.Base.Login
             _sessionService = sessionService;
         }
 
-        // Get the user login and account details, validate the password and return a tokenkey if valid
-        public async Task<LoginEnt> LoginUser(string ipAddress, string userid, string password, int orgNr, int sourceAppNr, string? langCode)
+        // Get the user login and account details, validate the password
+        // Return a tokenkey if valid and MFA is not required or MFA is enabled and validated 
+        public async Task<LoginEnt> LoginUser(string ipAddress, string userid, string password, int orgNr, int sourceAppNr, string? langCode, bool mfaValid)
         {
             try
             {
@@ -68,6 +69,16 @@ namespace Backend.Base.Login
                     return login;
                 }
 
+                //Return only that the user / pw / orgnr is valid.
+                if (!mfaValid && org.MfaRequired)
+                {
+                    login.Response.Valid = true;
+                    login.Response.MfaRequired = true;
+                    login.Response.MfaEnabled = login.MfaEnabled;
+                    return login;
+                }
+
+                //Continue with login process and return tokenkey
                 langCode = !string.IsNullOrEmpty(langCode) ? langCode : account.LangCode;
                 await InitialiseLogin(login, account, org, sourceAppNr);
                 var userConfig = _configService.CreateUserConfig(account, org, langCode);

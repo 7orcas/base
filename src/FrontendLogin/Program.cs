@@ -1,5 +1,4 @@
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
+using GC = FrontendLogin.GlobalConstants;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,7 +8,7 @@ LoadAppSettings(builder);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 
-builder.Services.AddHttpClient("BackendApi", client =>
+builder.Services.AddHttpClient(GC.HTTP_Client, client =>
 {
     client.BaseAddress = new Uri(AppSettings.BackendApiBaseUri); // Adjust base URL to your backend
 });
