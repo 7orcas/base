@@ -72,7 +72,7 @@ namespace FrontendLogin.Pages
 
                 var login = await LoginToBlue(GC.URL_mfa_verify);
 
-                if (login == null)
+                if (login == null || string.IsNullOrEmpty(login.TokenKey))
                     return;
 
                 //Web clients

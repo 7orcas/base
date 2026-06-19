@@ -14,6 +14,7 @@ namespace Common.Request
         public int Org { get; set; }
         public int SourceApplication { get; set; }
         public string UrlSuffix { get; set; }
+        public bool RememberMe { get; set; }
 
         public long? Id { get; set; }
         public string? MfaCode { get; set; }

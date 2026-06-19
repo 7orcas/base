@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using GC = Backend.GlobalConstants;
 
 /// <summary>
 /// Login controller for any client
@@ -43,6 +44,29 @@ namespace Backend.Base.Login
                         ErrorMessage = res.ErrorMessage,
                     });
 
+            //Remember me cookie - only if requested and login is successful.
+            //This is used to pre-populate the login form for the user, it is not a security risk as it does not contain any token or similar, just the username and org for pre-population
+            var cookie = "";
+            if (request.RememberMe)
+            {
+                cookie = "V=1" +
+                    ",x=" + request.UrlSuffix +
+                    ",u=" + request.Username + 
+                    ",p=" + request.Password +
+                    ",o=" + request.Org +
+                    ",l=" + request.LangCode;
+            }
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.None,
+                Expires = DateTime.UtcNow.AddDays(30),
+                Path = "/"
+            };
+            HttpContext.Response.Cookies.Append(GC.Cookie_RememberMe + request.UrlSuffix, cookie, cookieOptions);
+
+
             //Don't send the next step if MFA is active as that needs to happen first
             var r = new _ResponseDto
             {
@@ -59,5 +83,6 @@ namespace Backend.Base.Login
             };
             return Ok(r);
         }
+
     }
 }

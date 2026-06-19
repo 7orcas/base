@@ -97,6 +97,18 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowBlazorLogin",
+        policy =>
+        {
+            policy.WithOrigins(AppSettings.CorsAllowedOrigins) 
+                  .AllowAnyHeader()
+                  .AllowAnyMethod()
+                  .AllowCredentials(); 
+        });
+});
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options => options.TokenValidationParameters = TokenParameters.GetParameters());
 
@@ -161,6 +173,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 app.UseSession();
+app.UseCors("AllowBlazorLogin");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -220,6 +233,7 @@ void LoadAppSettings(WebApplicationBuilder builder)
     AppSettings.CacheExpirationGetSeconds = int.Parse(builder.Configuration["Token:CacheExpirationGetSeconds"]);
     AppSettings.AuthenticatorAppName = builder.Configuration["Mfa:AuthenticatorAppName"];
     AppSettings.MainClientUrl = builder.Configuration["Urls:MainClientUrl"];
+    AppSettings.CorsAllowedOrigins = builder.Configuration["Cors:AllowedOrigins"];
     AppSettings.PathBase = builder.Configuration["PathBase"];
 
     //Do not log details!

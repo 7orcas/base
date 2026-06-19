@@ -84,9 +84,9 @@ namespace Backend.Base.Login
                 LangCodes = langs,
                 MFA = GC.MFAactive,
                 SuccessAction = GC.NavigateToFrontendServer,
-                RememberMe = false,
-                Forgot = false,
-                SelfRegistration = false,
+                RememberMe = true,
+                Forgot = true,
+                SelfRegistration = true,
                 Masquerade = true,
                 IsActive = true
             };
@@ -132,7 +132,7 @@ namespace Backend.Base.Login
             foreach (var part in ent.LangCodes.Split(","))
             {
                 var l = list.Find(l => l.Code == part);
-                if (!ent.IsService && !l.IsActive) continue;
+                if (l == null || (!ent.IsService && !l.IsActive)) continue;
                 dto.LangCodes.Add(new LangCodeDto
                 {
                     Code = l.Code,
