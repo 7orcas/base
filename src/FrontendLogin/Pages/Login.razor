@@ -268,13 +268,18 @@
     {
         cookie = GetRememberMeCookie(GC.Cookie_RememberMe + $"{UrlSuffix}");
 
+        var url = GC.URL_login_option + $"{UrlSuffix}";
+        if (!string.IsNullOrEmpty(cookie))
+            url += "?encryptedCookie=" + cookie;
+
         var client = HttpClientFactory.CreateClient(GC.HTTP_Client);
-        var response = await client.GetAsync(GC.URL_login_option + $"{UrlSuffix}");
+        var response = await client.GetAsync(url);
         var r = await response.Content.ReadAsStringAsync();
         var dto = JsonConvert.DeserializeObject<_ResponseDto>(r);
 
         options = JsonConvert.DeserializeObject<LoginOptionDto>(dto.Result.ToString());
 
+        cookie = options.RememberMeCookie;
         navigateToMain = options.SuccessAction == GC.NavigateToFrontendServer;
 
         //Load organisation options

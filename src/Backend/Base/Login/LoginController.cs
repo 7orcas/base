@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Backend.Base.DataProtection;
+using Microsoft.AspNetCore.Mvc;
 using GC = Backend.GlobalConstants;
 
 /// <summary>
@@ -16,7 +17,7 @@ namespace Backend.Base.Login
     public class LoginController : BaseController
     {
         private readonly LoginServiceI _loginService;
-        
+        private readonly CookieProtector _cookieProtector;
 
         /// <summary>
         /// Constructor
@@ -24,9 +25,11 @@ namespace Backend.Base.Login
         /// <param name="labelService"></param>
         public LoginController(
             IServiceProvider serviceProvider,
-            LoginServiceI loginService) : base(serviceProvider)
+            LoginServiceI loginService,
+            CookieProtector cookieProtector) : base(serviceProvider)
         {
             _loginService = loginService;
+            _cookieProtector = cookieProtector;
         }
 
 
@@ -56,6 +59,9 @@ namespace Backend.Base.Login
                     ",o=" + request.Org +
                     ",l=" + request.LangCode;
             }
+
+            var encryptedCookie = _cookieProtector.Encrypt(cookie);
+
             var cookieOptions = new CookieOptions
             {
                 HttpOnly = true,
@@ -64,7 +70,7 @@ namespace Backend.Base.Login
                 Expires = DateTime.UtcNow.AddDays(30),
                 Path = "/"
             };
-            HttpContext.Response.Cookies.Append(GC.Cookie_RememberMe + request.UrlSuffix, cookie, cookieOptions);
+            HttpContext.Response.Cookies.Append(GC.Cookie_RememberMe + request.UrlSuffix, encryptedCookie, cookieOptions);
 
 
             //Don't send the next step if MFA is active as that needs to happen first
