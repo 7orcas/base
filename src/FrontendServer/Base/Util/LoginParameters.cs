@@ -21,6 +21,7 @@ namespace FrontendServer.Base.Util
         public string? userId { get; set; }
         public string? sessionId { get; set; }
         public MarkupString loaded { get; set; }
+        public string? loginUrl { get; set; }
 
         public void Set(AppConfigDto config)
         {
@@ -30,6 +31,7 @@ namespace FrontendServer.Base.Util
             langVariant = config.Label.Variant;
             userId = config.UniqueUserId.ToString();
             sessionId = config.UniqueSessionId.ToString();
+            loginUrl = config.UrlLogin;
         }
 
         public void LoadedUrl(string url)

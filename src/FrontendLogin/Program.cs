@@ -1,3 +1,4 @@
+using System.Net;
 using GC = FrontendLogin.GlobalConstants;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +13,15 @@ builder.Services.AddHttpClient(GC.HTTP_Client, client =>
 {
     client.BaseAddress = new Uri(AppSettings.BackendApiBaseUri); // Adjust base URL to your backend
 });
+
+//Here for Remember Me cookie handling, as the cookie is set by the backend and we need to ensure it is included in requests
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddHttpClient(GC.HTTP_Client)
+    .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+    {
+        UseCookies = true,
+        CookieContainer = new CookieContainer()
+    });
 
 var app = builder.Build();
 
@@ -52,4 +62,5 @@ app.Run();
 void LoadAppSettings(WebApplicationBuilder builder)
 {
     AppSettings.BackendApiBaseUri = builder.Configuration["Urls:BackendApiBaseUri"];
+    AppSettings.LoginClientUrl = builder.Configuration["Urls:LoginClientUrl"];
 }

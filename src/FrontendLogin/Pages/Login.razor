@@ -2,11 +2,11 @@
 @using Newtonsoft.Json;
 @using GC = FrontendLogin.GlobalConstants;
 @using Common.DTO.Base;
-@using QRCoder;
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
 @inject IHttpClientFactory HttpClientFactory
-
+@inject IHttpContextAccessor HttpContextAccessor
+@inject IJSRuntime JS
 
 <div class="d-flex justify-content-center align-items-center vh-100 bg-light">
     <div class="card shadow-lg p-4" style="width: 400px; border-radius: 12px;">
@@ -52,13 +52,15 @@
                 </button>
 
                 
-            @if (options != null)
+            @if (options != null && options.RememberMe)
             {
                 <div class="form-check mb-2">
-                    <InputCheckbox class="form-check-input" @bind-Value="options.RememberMe" id="rememberMe" />
+                    <InputCheckbox class="form-check-input" @bind-Value="loginRequest.RememberMe" id="rememberMe" />
                     <label class="form-check-label" for="rememberMe">Remember Me</label>
                 </div>
-
+            }
+            @if (options != null && options.Forgot)
+            {
                 <div class="form-check mb-2">
                     <InputCheckbox class="form-check-input" @bind-Value="options.Forgot" id="useSSO" />
                     <label class="form-check-label" for="useSSO">Forgot</label>
@@ -98,6 +100,7 @@
         <p>@errorMessage</p>
         <p>@tokenkey</p>
         <p>@token</p>
+        <p>@cookie</p>
     </div>
 </div>
 
@@ -132,6 +135,7 @@
     private string mfaCode;
     private bool showMfaInput = false; // for future use if no QR
 
+    private string cookie;
 
     private async Task HandleLogin()
     {
@@ -161,7 +165,7 @@
 
             //API clients just get the token
             await GetToken(login.TokenKey);
-            
+
         }
         catch (Exception ex)
         {
@@ -177,24 +181,30 @@
             var isMfa = url == GC.URL_mfa_verify;
             errorMessage = "";
 
+            //Use JS interop to call the login function in wwwroot/login.js, which uses fetch with 'credentials: include' to allow cookies (for MFA flow)
             var client = HttpClientFactory.CreateClient(GC.HTTP_Client);
-            var response = await client.PostAsJsonAsync(url, loginRequest);
+            var urlX = client.BaseAddress.ToString() + url;
+            var responseDto = await JS.InvokeAsync<_ResponseDto>(
+                "login",
+                urlX,
+                loginRequest);
 
-            if (!response.IsSuccessStatusCode)
-            {
-                errorMessage = isMfa ? "Invalid MFA code" : "Invalid username or password";
-                return null;
-            }
-
-            var json = await response.Content.ReadAsStringAsync();
-            var responseDto = JsonConvert.DeserializeObject<_ResponseDto>(json);
+            //DELETE ME
+            // var response = await client.PostAsJsonAsync(url, loginRequest);
+            // if (!response.IsSuccessStatusCode)
+            // {
+            //     errorMessage = isMfa ? "Invalid MFA code" : "Invalid username or password";
+            //     return null;
+            // }
+            // var json = await response.Content.ReadAsStringAsync();
+            // var responseDto = JsonConvert.DeserializeObject<_ResponseDto>(json);
 
             if (!responseDto.Valid)
             {
                 errorMessage = responseDto.ErrorMessage;
                 return null;
             }
-            
+
             var login = JsonConvert.DeserializeObject<LoginSuccessDto>(responseDto.Result.ToString());
             successMessage = responseDto.SuccessMessage;
 
@@ -213,7 +223,7 @@
                                //Use fragments
                                + "#tk=" + login.TokenKey   
                                + (string.IsNullOrEmpty(autoOpen) ? "" : "&open=" + autoOpen)
-                               + ("&urlLogin=https://localhost:7289/" + UrlSuffix),
+                               + ("&urlLogin=" + AppSettings.LoginClientUrl + "/" + UrlSuffix),
                                true);
     }
 
@@ -241,8 +251,23 @@
         token = await tokenResponse.Content.ReadAsStringAsync();
     }
 
+    private string GetRememberMeCookie(string cookie)
+    {
+        try
+        {
+            HttpContextAccessor.HttpContext.Request.Cookies.TryGetValue(cookie, out var value);
+            return value;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
     protected override async Task OnInitializedAsync()
     {
+        cookie = GetRememberMeCookie(GC.Cookie_RememberMe + $"{UrlSuffix}");
+
         var client = HttpClientFactory.CreateClient(GC.HTTP_Client);
         var response = await client.GetAsync(GC.URL_login_option + $"{UrlSuffix}");
         var r = await response.Content.ReadAsStringAsync();
@@ -297,9 +322,55 @@
 
         if (!loginRequest.IsPopulated())
             getEnvironmentVariables();
+
+
+        //Reset cookie if RememberMe is not checked
+        if (!options.RememberMe)
+            cookie = null;
+
+        //The remember me cookie overrides all other inputs 
+        if (string.IsNullOrEmpty(cookie))
+            return;
+        parseCookie(cookie);
     }
 
     
+    
+    private void parseCookie(string cookie)
+    {
+        if (string.IsNullOrWhiteSpace(cookie))
+            return;
+
+        loginRequest.RememberMe = true; // if cookie exists, it means RememberMe was checked
+        var parts = cookie.Split(',');
+
+        foreach (var part in parts)
+        {
+            var kv = part.Split('=', 2); // split only once
+            if (kv.Length != 2) continue;
+
+            var key = kv[0].Trim();
+            var value = kv[1].Trim();
+
+            switch (key)
+            {
+                case "u":
+                    loginRequest.Username = value;
+                    break;
+                case "p":
+                    loginRequest.Password = value;
+                    break;
+                case "o":
+                    loginRequest.Org = int.Parse(value);
+                    break;
+                case "l":
+                    loginRequest.LangCode = value;
+                    break;
+            }
+        }
+    }
+
+
 
 
     /**

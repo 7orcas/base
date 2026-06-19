@@ -33,6 +33,7 @@ else
                 <tr><td>Loaded:</td><td><b>@ConfS.loginParameters?.loaded</b></td></tr>
                 <tr><td>Token key:</td><td><b>@ConfS.loginParameters?.tokenkey</b></td></tr>
                 <tr><td>Token:</td><td><b>@ConfS.loginParameters?.token</b></td></tr>
+                <tr><td>LoginUrl:</td><td><b>@ConfS.loginParameters?.loginUrl</b></td></tr>
             </tbody>
         </table>
     </p>
@@ -101,8 +102,11 @@ else
             var token = await GetTokenFromKey(tokenkey);
             await SetClient(token);
 
-            // Get App / User Config
             var config = await ConfS.Initialise();
+            if (values.TryGetValue("urlLogin", out var urlLogin))
+                config.UrlLogin = urlLogin;
+
+            // Get App / User Config
             var lps = ConfS.SetLoginParameters(tokenkey, token);
             lps.LoadedUrl(GC.URL_config);
             SetConfig(config);
@@ -110,9 +114,6 @@ else
             // Get stuff
             await LS.Initialise(lps);
             await PermS.Initialise(lps);
-
-            if (values.TryGetValue("urlLogin", out var urlLogin))
-                config.UrlLogin = urlLogin;
 
             _isLoading = false;
             StateHasChanged();

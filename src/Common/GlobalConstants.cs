@@ -27,6 +27,7 @@ namespace Common
         public const string URL_token_refresh_expired = "api/Token/refreshexpired";
         public const string URL_token_refresh_current = "api/Token/refreshcurrent";
         public const string URL_token_test            = "api/Token/test";
+        public const string Cookie_RememberMe         = "remember_me_";
 
         //Service account
         public const string ServiceLoginUrlSuffix = "servicex";
