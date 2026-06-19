@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Backend.Base.DataProtection;
+using Microsoft.AspNetCore.Mvc;
 using GC = Backend.GlobalConstants;
 
 /// <summary>
@@ -16,12 +17,15 @@ namespace Backend.Base.Login
     public class LoginOptionController : ControllerBase
     {
         private readonly LoginOptionServiceI _loginOptionService;
+        private readonly CookieProtector _cookieProtector;
 
         public LoginOptionController(
             LoginOptionServiceI loginOptionService,
-            OrgServiceI orgService)
+            OrgServiceI orgService,
+            CookieProtector cookieProtector)
         {
             _loginOptionService = loginOptionService;
+            _cookieProtector = cookieProtector;
         }
 
 
@@ -32,7 +36,7 @@ namespace Backend.Base.Login
         /// <returns></returns>
         [CrudAtt(GC.CrudIgnore)] 
         [HttpGet("get/{urlSuffix}")]
-        public async Task<IActionResult> LoginOptions(string urlSuffix)
+        public async Task<IActionResult> LoginOptions([FromRoute] string urlSuffix, [FromQuery] string? encryptedCookie)
         {
             var options = await _loginOptionService.GetLoginOptions(urlSuffix);
 
@@ -44,6 +48,7 @@ namespace Backend.Base.Login
                 });
 
             var dto = await _loginOptionService.InitialiseLoginOptions(options);
+            dto.RememberMeCookie = _cookieProtector.Decrypt(encryptedCookie);
 
             var r = new _ResponseDto
             {

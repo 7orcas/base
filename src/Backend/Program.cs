@@ -141,6 +141,7 @@ builder.Services.AddScoped<LoginServiceI, LoginService>();
 builder.Services.AddScoped<LoginOptionServiceI, LoginOptionService>();
 builder.Services.AddScoped<MfaServiceI, MfaService>();
 builder.Services.AddScoped<MfaKeyProtector>();
+builder.Services.AddScoped<CookieProtector>();
 builder.Services.AddScoped<TokenServiceI, TokenService>();
 builder.Services.AddScoped<TokenRepoI, TokenRepo>();
 builder.Services.AddScoped<OrgServiceI, OrgService>();
@@ -149,7 +150,6 @@ builder.Services.AddScoped<PermissionServiceI, PermissionService>();
 builder.Services.AddScoped<RoleServiceI, RoleService>();
 builder.Services.AddScoped<RoleRepoI, RoleRepo>();
 builder.Services.AddScoped<EntityServiceI, EntityService>();
-
 
 //App Services
 builder.Services.AddScoped<MachineServiceI, MachineService>();
