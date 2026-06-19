@@ -23,7 +23,7 @@ namespace Backend.Base
             using var scope = serviceProvider.CreateScope();
             _auditService = scope.ServiceProvider.GetRequiredService<AuditServiceI>();
             _labelService = scope.ServiceProvider.GetRequiredService<LabelServiceI>();
-        }
+         }
 
         protected string GetLabel (string langKey, Dictionary<string, LangLabel> labels)
         {

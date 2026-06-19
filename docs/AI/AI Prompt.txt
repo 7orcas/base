@@ -4,14 +4,41 @@ The .Net Backend is an API project.
 The Blazor frontend is made up of 2 Blazor server projects, a Login project and the Client project.
 I also will allow external clients to interact with my APIs (they will need to be logged in) 
 
+
+Remember Me
+  - Is this a good idea:
+    - Add a table to store remember me logins with the users credentials (encrypted using .Net data protection)
+	- When a user successfully logs in and has remember me set, the are added to the table and returned a key
+	- The key is stored locally on the device (give me steps to do this using Blazor server app)
+	- When the user returns the remember key is used to auto log into the app using the stored credentials
+	
+	I have a c# ,.Net, Blazor Server application.
+	The .Net Backend is an API project.
+	The Blazor frontend is made up of 2 Blazor server projects, a Login project and the Client project.
+	How do I create, store and retieve cookies in the browser?
+	
+	No
+	I do the following:
+	1. Login.razor will encrypt the user's username and password
+	2. The js will store the cookie
+	3. When the user returns, the js will get the cookie
+	4. The Login.razor will decrypt the user's username and password
+	The server is not in the loop
+	
+	
+	I have a c# ,.Net, Blazor Server application.
+	The .Net Backend is an API project.
+	The Blazor frontend is made up of 2 Blazor server projects, a Login project and the Client project.
+	I want to store a cookie via the server - can I can the API, it creates a cookie and returns it then can I have the API read the cookie again at a later time?
+	
+
+
 MFA
   - Give me step by step instructions to:
     - Add MFA to to my Login project
 	- I want to use Microsoft Authenticator
 	- I want it to be free
 	- The login project must use the Backend project to get entities, ie I don't want the login project to make db connections
-	
-
 
 Login
   - Give me step by step instructions to:

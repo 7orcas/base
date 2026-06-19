@@ -28,6 +28,7 @@ namespace FrontendServer.Base.Logout
             var client = _httpClientFactory.CreateClient(GC.AuthorizedClientKey);
             var token = await _session.GetAsync<string>(GC.TokenCacheKey);
 
+        //To Do    HttpContextAccessor.HttpContext.Response.Cookies.Delete("remember_me");
 
             client.DefaultRequestHeaders.Authorization =
                 new System.Net.Http.Headers.AuthenticationHeaderValue(GC.BearerKey, token.Value);

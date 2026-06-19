@@ -1,3 +1,5 @@
+using System.Net;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using GC = FrontendLogin.GlobalConstants;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +14,16 @@ builder.Services.AddHttpClient(GC.HTTP_Client, client =>
 {
     client.BaseAddress = new Uri(AppSettings.BackendApiBaseUri); // Adjust base URL to your backend
 });
+
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddHttpClient(GC.HTTP_Client)
+    .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+    {
+        UseCookies = true,
+        CookieContainer = new CookieContainer()
+    });
+
 
 var app = builder.Build();
 

@@ -110,6 +110,7 @@ namespace Backend.Base.Login
                 MFA = ent.MFA,
                 SuccessAction = ent.SuccessAction,
                 RememberMe = ent.RememberMe,
+                RememberMeCookie = "",
                 Forgot = ent.Forgot,
                 SelfRegistration = ent.SelfRegistration,
                 Masquerade= ent.Masquerade

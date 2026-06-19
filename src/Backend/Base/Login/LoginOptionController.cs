@@ -43,7 +43,12 @@ namespace Backend.Base.Login
                     ErrorMessage = "NAuthA",
                 });
 
+
             var dto = await _loginOptionService.InitialiseLoginOptions(options);
+            var cookieValue = HttpContext.Request.Cookies["remember_me"];
+            
+            
+            dto.RememberMeCookie = cookieValue;
 
             var r = new _ResponseDto
             {

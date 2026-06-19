@@ -2,10 +2,11 @@
 @using Newtonsoft.Json;
 @using GC = FrontendLogin.GlobalConstants;
 @using Common.DTO.Base;
-@using QRCoder;
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
 @inject IHttpClientFactory HttpClientFactory
+@inject IHttpContextAccessor HttpContextAccessor
+@inject IJSRuntime JS
 
 
 <div class="d-flex justify-content-center align-items-center vh-100 bg-light">
@@ -16,6 +17,8 @@
             <EditForm Model="@loginRequest" OnValidSubmit="@HandleLogin">
                 <DataAnnotationsValidator />
                 <ValidationSummary class="text-danger mb-3" />
+
+            <p>@cookie</p>
 
                 <div class="mb-3">
                     <label>Username:</label>
@@ -132,6 +135,9 @@
     private string mfaCode;
     private bool showMfaInput = false; // for future use if no QR
 
+    //Remember Me
+    private string cookie = "cookie";
+
 
     private async Task HandleLogin()
     {
@@ -161,7 +167,7 @@
 
             //API clients just get the token
             await GetToken(login.TokenKey);
-            
+
         }
         catch (Exception ex)
         {
@@ -178,25 +184,35 @@
             errorMessage = "";
 
             var client = HttpClientFactory.CreateClient(GC.HTTP_Client);
-            var response = await client.PostAsJsonAsync(url, loginRequest);
+            // var response = await client.PostAsJsonAsync(url, loginRequest);
 
-            if (!response.IsSuccessStatusCode)
-            {
-                errorMessage = isMfa ? "Invalid MFA code" : "Invalid username or password";
-                return null;
-            }
+            // if (!response.IsSuccessStatusCode)
+            // {
+            //     errorMessage = isMfa ? "Invalid MFA code" : "Invalid username or password";
+            //     return null;
+            // }
 
-            var json = await response.Content.ReadAsStringAsync();
-            var responseDto = JsonConvert.DeserializeObject<_ResponseDto>(json);
+            // var json = await response.Content.ReadAsStringAsync();
+            // var responseDto = JsonConvert.DeserializeObject<_ResponseDto>(json);
+            var urlX = client.BaseAddress.ToString() + GC.URL_login;
+            var responseDto = await JS.InvokeAsync<_ResponseDto>(
+                "login",
+                urlX,
+                loginRequest);
+
+
 
             if (!responseDto.Valid)
             {
                 errorMessage = responseDto.ErrorMessage;
                 return null;
             }
-            
+
             var login = JsonConvert.DeserializeObject<LoginSuccessDto>(responseDto.Result.ToString());
             successMessage = responseDto.SuccessMessage;
+
+            if (isMfa || true)
+                await SetRememberMeCookie("This is my cookie");
 
             return login;
         }
@@ -207,14 +223,43 @@
         }
     }
 
+    private async Task SetRememberMeCookie(string tokenKey)
+    {
+        // var options = new CookieOptions
+        // {
+        //     Expires = DateTimeOffset.UtcNow.AddDays(30), // Remember Me duration
+        //     HttpOnly = true,
+        //     Secure = true,
+        //     SameSite = SameSiteMode.Lax
+        // };
+
+        // HttpContextAccessor.HttpContext.Response.Cookies.Append(
+        //     "remember_me",
+        //     tokenKey,
+        //     options);
+    }
+
+
+    private string GetRememberMeCookie()
+    {
+        HttpContextAccessor.HttpContext.Request.Cookies
+            .TryGetValue("remember_me", out var value);
+
+        return value;
+        //return "123";
+    }
+
+
+
+
     private void NavigateToMain(LoginSuccessDto login)
     {
-        NavigationManager.NavigateTo(login.MainUrl
-                               //Use fragments
-                               + "#tk=" + login.TokenKey   
-                               + (string.IsNullOrEmpty(autoOpen) ? "" : "&open=" + autoOpen)
-                               + ("&urlLogin=https://localhost:7289/" + UrlSuffix),
-                               true);
+        // NavigationManager.NavigateTo(login.MainUrl
+        //                        //Use fragments
+        //                        + "#tk=" + login.TokenKey   
+        //                        + (string.IsNullOrEmpty(autoOpen) ? "" : "&open=" + autoOpen)
+        //                        + ("&urlLogin=https://localhost:7289/" + UrlSuffix),
+        //                        true);
     }
 
 
@@ -243,7 +288,18 @@
 
     protected override async Task OnInitializedAsync()
     {
+        
+
+        cookie = GetRememberMeCookie();
+
         var client = HttpClientFactory.CreateClient(GC.HTTP_Client);
+
+        // var urlX = client.BaseAddress.ToString() + GC.URL_login_option + $"{UrlSuffix}";
+        // var dto = await JS.InvokeAsync<_ResponseDto>(
+        //     "loginOptions",
+        //     urlX,
+        //     loginRequest);
+
         var response = await client.GetAsync(GC.URL_login_option + $"{UrlSuffix}");
         var r = await response.Content.ReadAsStringAsync();
         var dto = JsonConvert.DeserializeObject<_ResponseDto>(r);

@@ -9,6 +9,7 @@
         public int MFA { get; set; }
         public int SuccessAction { get; set; }
         public bool RememberMe { get; set; }
+        public string RememberMeCookie { get; set; }
         public bool Forgot { get; set; }
         public bool SelfRegistration { get; set; }
         public bool Masquerade { get; set; }

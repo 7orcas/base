@@ -97,6 +97,21 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowBlazor",
+        policy =>
+        {
+            policy.WithOrigins("https://localhost:7289") // 👈 your Blazor URL
+                  .AllowAnyHeader()
+                  .AllowAnyMethod()
+                  .AllowCredentials(); // ✅ REQUIRED
+        });
+});
+
+
+
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options => options.TokenValidationParameters = TokenParameters.GetParameters());
 
@@ -161,6 +176,8 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 app.UseSession();
+
+app.UseCors("AllowBlazor");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

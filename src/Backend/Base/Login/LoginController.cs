@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
+using Superpower.Model;
 
 /// <summary>
 /// Login controller for any client
@@ -10,6 +12,7 @@
 
 namespace Backend.Base.Login
 {
+    [IgnoreAntiforgeryToken]
     [ApiController]
     [Route("api/[controller]")]
     public class LoginController : BaseController
@@ -27,8 +30,7 @@ namespace Backend.Base.Login
         {
             _loginService = loginService;
         }
-
-
+                
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
@@ -36,12 +38,26 @@ namespace Backend.Base.Login
             var login = await _loginService.LoginUser(ipAddress, request.Username, request.Password, request.Org, request.SourceApplication, request.LangCode, false);
             var res = login.Response;
 
+
             if (!res.Valid)
                 return Ok(new _ResponseDto
                     {
                         Valid = false,
                         ErrorMessage = res.ErrorMessage,
                     });
+
+
+            //will need cross domain cookie handling if the client is on a different domain, but for now we will assume same domain
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.None,
+                Expires = DateTime.UtcNow.AddDays(30),
+                Path = "/"
+            };
+
+            HttpContext.Response.Cookies.Append("remember_me", "apicookie u='" + request.Username + "' p='" +  request.Password + "'", cookieOptions);
 
             //Don't send the next step if MFA is active as that needs to happen first
             var r = new _ResponseDto
