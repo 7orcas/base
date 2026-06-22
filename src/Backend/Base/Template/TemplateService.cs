@@ -1,4 +1,5 @@
-﻿using GC = Backend.GlobalConstants;
+﻿
+using GC = Backend.GlobalConstants;
 
 /// <summary>
 /// Template generation methods
@@ -16,6 +17,19 @@ namespace Backend.Base.Template
         {
         }
 
+        //public byte[] GenerateDocument(string templatePath)
+        //{
+        //    using var doc = DocX.Load(templatePath);
+
+        //    doc.ReplaceText("{CustomerName}", "Acme Ltd");
+        //    doc.ReplaceText("{ContactFirstName}", "John");
+        //    doc.ReplaceText("{ReportDate}", DateTime.Now.ToShortDateString());
+
+        //    using var ms = new MemoryStream();
+        //    doc.SaveAs(ms);
+
+        //    return ms.ToArray();
+        //}
 
 
     }

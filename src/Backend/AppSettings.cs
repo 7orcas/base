@@ -17,6 +17,7 @@
         public static string PathBase { get; set; }
         public static string AuthenticatorAppName { get; set; }
         public static AppServiceAccount? ServiceAccount { get; set; }
+        public static EmailSettings? EmailSettings { get; set; }
     }
 
     public class AppServiceAccount 
@@ -32,6 +33,16 @@
                 !string.IsNullOrEmpty(UserPw) &&
                 !string.IsNullOrEmpty(AttemptsFile);
         }
+    }
+
+    public class EmailSettings
+    {
+        public string SmtpServer { get; set; }
+        public int Port { get; set; }
+        public string SenderName { get; set; }
+        public string SenderEmail { get; set; }
+        public string Username { get; set; }
+        public string Password { get; set; }
     }
 
 }

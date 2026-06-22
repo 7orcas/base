@@ -30,7 +30,6 @@ Logging
 - Use log view Seq running in Docker
 
 
-
 Running the Application
 - Config startup projects:
   - Backend: start

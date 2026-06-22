@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens; // For TokenValidationParameters
 using Microsoft.OpenApi.Models;
+using QuestPDF.Infrastructure;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
@@ -153,7 +154,9 @@ builder.Services.AddScoped<RoleRepoI, RoleRepo>();
 builder.Services.AddScoped<EntityServiceI, EntityService>();
 builder.Services.AddScoped<TemplateServiceI, TemplateService>();
 builder.Services.AddScoped<PdfServiceI, PdfService>();
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 builder.Services.AddScoped<EmailServiceI, EmailService>();
+builder.Services.AddScoped<WordServiceI, WordService>();
 
 
 //App Services
@@ -211,6 +214,8 @@ app.Use(async (context, next) =>
     await next();
 });
 
+QuestPDF.Settings.License = LicenseType.Community;
+
 RunOnStartup(app);
 app.Run();
 
@@ -240,6 +245,19 @@ void LoadAppSettings(WebApplicationBuilder builder)
     AppSettings.MainClientUrl = builder.Configuration["Urls:MainClientUrl"];
     AppSettings.CorsAllowedOrigins = builder.Configuration["Cors:AllowedOrigins"];
     AppSettings.PathBase = builder.Configuration["PathBase"];
+
+    try
+    {
+        var email = new EmailSettings();
+        email.SmtpServer = builder.Configuration["Email:SmtpServer"];
+        email.Port = int.Parse(builder.Configuration["Email:Port"]);
+        email.SenderName = builder.Configuration["Email:SenderName"];
+        email.SenderEmail = builder.Configuration["Email:SenderEmail"];
+        email.Username = builder.Configuration["Email:Username"];
+        email.Password = builder.Configuration["Email:Password"];
+        AppSettings.EmailSettings = email;
+    }
+    catch { }
 
     //Do not log details!
     try
