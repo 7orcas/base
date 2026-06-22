@@ -364,3 +364,6 @@ FodyWeavers.xsd
 
 #Test templates only
 /templates/
+
+appsettings.Production.json
+secrets.json
