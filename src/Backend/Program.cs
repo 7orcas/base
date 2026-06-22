@@ -1,6 +1,7 @@
 using Backend;
 using Backend.App.Machines;
 using Backend.Base.DataProtection;
+using Backend.Base.Template;
 using Backend.Base.Token.Ent;
 using Backend.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -150,6 +151,10 @@ builder.Services.AddScoped<PermissionServiceI, PermissionService>();
 builder.Services.AddScoped<RoleServiceI, RoleService>();
 builder.Services.AddScoped<RoleRepoI, RoleRepo>();
 builder.Services.AddScoped<EntityServiceI, EntityService>();
+builder.Services.AddScoped<TemplateServiceI, TemplateService>();
+builder.Services.AddScoped<PdfServiceI, PdfService>();
+builder.Services.AddScoped<EmailServiceI, EmailService>();
+
 
 //App Services
 builder.Services.AddScoped<MachineServiceI, MachineService>();
