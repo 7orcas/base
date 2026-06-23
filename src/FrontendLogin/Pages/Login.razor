@@ -62,8 +62,7 @@
             @if (options != null && options.Forgot)
             {
                 <div class="form-check mb-2">
-                    <InputCheckbox class="form-check-input" @bind-Value="options.Forgot" id="useSSO" />
-                    <label class="form-check-label" for="useSSO">Forgot</label>
+                    <a href="" @onclick="GoToForgot">Forgot</a>
                 </div>
             }
 
@@ -225,6 +224,13 @@
                                + (string.IsNullOrEmpty(autoOpen) ? "" : "&open=" + autoOpen)
                                + ("&urlLogin=" + AppSettings.LoginClientUrl + "/" + UrlSuffix),
                                true);
+    }
+
+    
+    private async void GoToForgot()
+    {
+        var client = HttpClientFactory.CreateClient(GC.HTTP_Client);
+        var response = await client.GetAsync(GC.URL_reset_request + "?email=js@7orcas.com");
     }
 
 

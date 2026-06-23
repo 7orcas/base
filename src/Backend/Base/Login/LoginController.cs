@@ -17,6 +17,8 @@ namespace Backend.Base.Login
     public class LoginController : BaseController
     {
         private readonly LoginServiceI _loginService;
+        private readonly TemplateServiceI _templateService;
+        private readonly EmailServiceI _emailService;
         private readonly CookieProtector _cookieProtector;
 
         /// <summary>
@@ -26,9 +28,13 @@ namespace Backend.Base.Login
         public LoginController(
             IServiceProvider serviceProvider,
             LoginServiceI loginService,
+            TemplateServiceI templateService,
+            EmailServiceI emailService,
             CookieProtector cookieProtector) : base(serviceProvider)
         {
             _loginService = loginService;
+            _templateService = templateService;
+            _emailService = emailService;
             _cookieProtector = cookieProtector;
         }
 
@@ -42,10 +48,10 @@ namespace Backend.Base.Login
 
             if (!res.Valid)
                 return Ok(new _ResponseDto
-                    {
-                        Valid = false,
-                        ErrorMessage = res.ErrorMessage,
-                    });
+                {
+                    Valid = false,
+                    ErrorMessage = res.ErrorMessage,
+                });
 
             //Remember me cookie - only if requested and login is successful.
             //This is used to pre-populate the login form for the user, it is not a security risk as it does not contain any token or similar, just the username and org for pre-population
@@ -54,7 +60,7 @@ namespace Backend.Base.Login
             {
                 cookie = "V=1" +
                     ",x=" + request.UrlSuffix +
-                    ",u=" + request.Username + 
+                    ",u=" + request.Username +
                     ",p=" + request.Password +
                     ",o=" + request.Org +
                     ",l=" + request.LangCode;
@@ -78,7 +84,8 @@ namespace Backend.Base.Login
             {
                 SuccessMessage = "Login Ok",
                 Valid = true,
-                Result = new LoginSuccessDto { 
+                Result = new LoginSuccessDto
+                {
                     Id = login.Id,
                     TokenKey = res.MfaRequired ? null : res.TokenKey,
                     MainUrl = res.MfaRequired ? null : res.MainUrl,
@@ -90,5 +97,25 @@ namespace Backend.Base.Login
             return Ok(r);
         }
 
+        [HttpGet("resetrequest")]
+        public async Task<IActionResult> ResetRequest([FromQuery] string email)
+        {
+            var login = await _loginService.GetLoginByEmail(email);
+
+            if (login != null 
+                && login.IsActive)
+            {
+                var template = await _templateService.GetResetRequestEmail (login);
+                await _emailService.SendEmailAsync("js@7orcas.com", "Reset", template);
+                var r = new _ResponseDto
+                {
+                    SuccessMessage = "Login Ok",
+                    Valid = true,
+                };
+                return Ok(r);
+            }
+            return null;
+        }
     }
+
 }

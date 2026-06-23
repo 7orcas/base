@@ -51,7 +51,8 @@ CREATE TABLE base.org (
     isactive BOOLEAN NOT NULL DEFAULT TRUE,
     langcode VARCHAR(4),
     langlabelvariant INTEGER,
-	mfarequired BOOLEAN DEFAULT FALSE
+	mfarequired BOOLEAN DEFAULT FALSE,
+	forgotenabled BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE base.zzz (
@@ -59,6 +60,8 @@ CREATE TABLE base.zzz (
     xxx VARCHAR(40) NOT NULL UNIQUE,
     yyy VARCHAR(100) NOT NULL,
 	email VARCHAR(100) NOT NULL,
+	orgnr INTEGER NOT NULL,
+    langcode VARCHAR(4),
     attempts INTEGER DEFAULT 0,
     lastlogin TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     isactive BOOLEAN NOT NULL DEFAULT TRUE,

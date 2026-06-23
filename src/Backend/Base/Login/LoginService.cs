@@ -43,7 +43,7 @@ namespace Backend.Base.Login
         {
             try
             {
-                var login = await GetLogin(userid);
+                var login = await GetLoginByUserid(userid);
                 UserAccountEnt? account = null;
 
                 if (login == null) 
@@ -113,7 +113,7 @@ namespace Backend.Base.Login
         }
 
         //Authenicate the user
-        private async Task<LoginEnt?> GetLogin(string userid)
+        private async Task<LoginEnt?> GetLoginByUserid(string userid)
         {
             var login = null as LoginEnt;
             if (ServiceAccount != null && userid.Equals(ServiceAccount.UserId))
@@ -121,7 +121,7 @@ namespace Backend.Base.Login
                 login = LoginEnt.GetServiceLogin();
                 login.Password = ServiceAccount.UserPw;
 
-                var loginX = await GetLogin(login.Id);
+                var loginX = await GetLoginById(login.Id);
                 if (loginX != null)
                 {
                     login.MfaEnabled = loginX.MfaEnabled;
@@ -149,15 +149,36 @@ namespace Backend.Base.Login
                 );
 
                 if (id != null)
-                    login = await GetLogin(id.Value);
+                    login = await GetLoginById(id.Value);
             }
             catch { }
 
             return login;
         }
-        
 
-        public async Task<LoginEnt?> GetLogin(long id)
+        public async Task<LoginEnt?> GetLoginByEmail(string email)
+        {
+            long id = -1;
+            try
+            {
+
+                await Sql.Run(
+                    "SELECT id FROM base.zzz " +
+                        "WHERE email = @email ",
+                    r =>
+                    {
+                        id = GetId(r);
+                    },
+                    new NpgsqlParameter("@email", email)
+                );
+            }
+            catch { }
+
+            return await GetLoginById(id);
+        }
+
+
+        public async Task<LoginEnt?> GetLoginById(long id)
         {
             var login = null as LoginEnt;
             var isService = ServiceAccount != null && id == GC.ServiceLoginId;
@@ -175,6 +196,8 @@ namespace Backend.Base.Login
                             Userid = GetString(r, "xxx"),
                             Email = GetString(r, "email"),
                             Password = GetString(r, "yyy"),
+                            OrgNr = GetOrgNr(r),
+                            LangCode = GetStringNull(r, "langCode"),
                             Attempts = GetIntNull(r, "attempts"),
                             Lastlogin = GetDateTime(r, "lastlogin"),
                             IsActive = GetBoolean(r, "isActive"),
@@ -215,7 +238,7 @@ namespace Backend.Base.Login
                         {
                             Id = GetId(r),
                             LoginId = GetId(r, "zzzId"),
-                            orgNr = GetOrgNr(r),
+                            OrgNr = GetOrgNr(r),
                             LangCode = GetStringNull(r, "langCode"),
                             Lastlogin = GetDateTime(r, "lastlogin"),
                             IsActive = IsActive(r),

@@ -12,25 +12,50 @@ namespace Backend.Base.Template
 {
     public class TemplateService : BaseService, TemplateServiceI
     {
-        public TemplateService(IServiceProvider serviceProvider)
+        private readonly OrgServiceI _orgService;
+
+
+        public TemplateService(IServiceProvider serviceProvider, 
+            OrgServiceI orgService)
             : base(serviceProvider)
         {
+            _orgService = orgService;
         }
 
-        //public byte[] GenerateDocument(string templatePath)
-        //{
-        //    using var doc = DocX.Load(templatePath);
+        public async Task<string?> GetResetRequestEmail(LoginEnt login)
+        {
+            try
+            {
+                var org = await _orgService.GetOrg(login.OrgNr);
+                if (org == null || !org.IsActive)
+                {
+                    return null;
+                }
 
-        //    doc.ReplaceText("{CustomerName}", "Acme Ltd");
-        //    doc.ReplaceText("{ContactFirstName}", "John");
-        //    doc.ReplaceText("{ReportDate}", DateTime.Now.ToShortDateString());
+                var request = new ResetRequestEmailTemplate(login);
+                var email = RenderTemplate(request);
+                return email;
+            }
+            catch { 
+                return null;
+            }
 
-        //    using var ms = new MemoryStream();
-        //    doc.SaveAs(ms);
+        }
 
-        //    return ms.ToArray();
-        //}
+        private string RenderTemplate(ResetRequestEmailTemplate request)
+        {
+            if (string.IsNullOrWhiteSpace(request.Template()))
+                throw new ArgumentException("Template cannot be empty");
 
+            var template = Scriban.Template.Parse(request.Template());
+
+            if (template.HasErrors)
+                throw new Exception("Template parsing failed");
+
+            var result = template.Render(request.Data, member => member.Name);
+
+            return result;
+        }
 
     }
 }

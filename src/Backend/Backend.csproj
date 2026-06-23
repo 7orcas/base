@@ -43,4 +43,8 @@
     <Folder Include="Logs\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="Base\Template\Templates\ResetRequestEmailTemplate.cs" />
+  </ItemGroup>
+
 </Project>

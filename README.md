@@ -51,3 +51,6 @@ Run Swagger
 1. Start backend
 2. URL https://localhost:6002/swagger/index.html
 
+
+Azure Notes:
+- Data protection keys need to be stored in blob
