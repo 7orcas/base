@@ -105,6 +105,22 @@ namespace Backend.Base.Login
             };
             return Ok(r);
         }
+
+        [HttpGet("resetaction")]
+        public async Task<IActionResult> ResetAction([FromQuery] string token)
+        {
+            var ipAddress = GetClientIp();
+
+            var success = _loginService.ResetAction(token, ipAddress);
+
+            var r = new _ResponseDto
+            {
+                SuccessMessage = "Reset Action Ok",
+                Valid = true,
+            };
+            return Ok(r);
+        }
+
     }
 
 }

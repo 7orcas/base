@@ -20,6 +20,7 @@ PWAt,Max. number of login attempts
 PWReset1,If an account is associated with the email address provided|| a password reset link will be sent shortly. 
 PWReset2,Please check your inbox and spam/junk folders. 
 PWReset3,For security reasons|| we cannot confirm whether an email address is registered.
+PWReset,Password Reset
 PWResetRsp,Your password change has been successful.
 LEx,Login Expired|| please log in again.
 BConf,Base Configuration

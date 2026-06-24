@@ -9,6 +9,8 @@
 
         public const string DateTimeFormat = "yyyy-MM-dd HH:mm:ss";
 
+        public const string URL_reset_action = "api/Login/resetaction";
+
         //IMemoryCache keys
         public const string CacheKeyTokenPrefix     = "TS_";
         public const string CacheKeyOrgPrefix       = "OS_";
@@ -16,6 +18,12 @@
         public const string CacheKeySessionPrefix   = "SS_";
         public const string CacheKeyLabelPrefix     = "LK_";
         public const string CacheKeyPermDic         = "PS_dic";
+
+        public enum TokenType
+        {
+            JWT = 1,
+            ResetRequest = 2,
+        }
 
         //Entity Type Id
         public const int EntityTypePermUser         = 10;
@@ -53,15 +61,15 @@
         };
 
         
-        public enum TemplateType
-        {
-            ResetRequestEmail = 1,
-            SomethingElseEmail = 2,
-        }
+public enum TemplateType
+{
+    ResetRequestEmail = 1,
+    SomethingElseEmail = 2,
+}
 
-        public static readonly object[] Templates = {
-            TemplateType.ResetRequestEmail, "Res",
-        };
+public static readonly object[] Templates = {
+    TemplateType.ResetRequestEmail, "Res",
+};
 
 
 

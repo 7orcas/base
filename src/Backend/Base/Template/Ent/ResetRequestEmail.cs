@@ -6,12 +6,9 @@ namespace Backend.Base.Template.Ent
     {
         public string Token { get; set; }
 
-        public ResetRequestEmail() : base(GC.TemplateType.ResetRequestEmail)
+        public ResetRequestEmail(OrgEnt org, LoginEnt login, string token) 
+            : base(GC.TemplateType.ResetRequestEmail)
         {            
-        }
-
-        public void initialise (OrgEnt org, LoginEnt login, string token)
-        {
             Token = token;
             if (login.LangCode != null) LangCode = login.LangCode;
             else if (org.LangCode != null) LangCode = org.LangCode;
@@ -22,14 +19,15 @@ namespace Backend.Base.Template.Ent
             Data.Add("ResetLink", ResetLink());
         }
 
-
         private string ResetLink()
         {
-            return "https://localhost:7289?token=" + Token;
+            return "https://localhost:7289" + GC.URL_reset_action + "?token=" + Token;
         }
 
         protected override string Template()
         {
+            if (LangCode == "de")
+                return TemplateDe();
             return TemplateEn();
         }
 
@@ -68,6 +66,40 @@ namespace Backend.Base.Template.Ent
                 </html>";
         }
 
+        private string TemplateDe()
+        {
+            return @"<!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset=""utf-8"" />
+                </head>
+                <body style=""font-family: Arial;"">
+
+                    Sehr geehrte/r {{Userid}},
+                    <p>
+                    wir haben eine Anfrage zum Zurücksetzen des Passworts für Ihr Konto erhalten.<br>
+                    Um mit dem Zurücksetzen Ihres Passworts fortzufahren, klicken Sie bitte auf den sicheren Link unten:<br>
+                    </p>
+                    <p>
+                    Link zum Zurücksetzen des Passworts: <a href=""{{ResetLink}}"">Passwort zurücksetzen</a>
+                    </p>
+                    <p>
+                    Bitte beachten Sie, dass dieser Link am [Ablaufdatum und -uhrzeit] abläuft.<br> 
+                    Nach diesem Zeitpunkt müssen Sie eine neue Anfrage zum Zurücksetzen des Passworts stellen.
+                    </p>
+                    <p>
+                    Falls Sie dieses Zurücksetzen des Passworts nicht angefordert haben, ignorieren Sie bitte diese E-Mail.<br>
+                    Zu Ihrer Sicherheit empfehlen wir, dass Sie sich umgehend an das IT-Support-Team wenden, um diese Aktivität zu melden.<br>
+                    Wenn Sie Unterstützung benötigen, zögern Sie bitte nicht, den IT-Support unter [Support-Kontaktdaten] zu kontaktieren.<br>
+                    </p>
+
+                    <p>
+                    Mit freundlichen Grüßen,<br>
+                    IT-Support-Team
+                    </p>
+                </body>
+                </html>";
+        }
 
     }
 }

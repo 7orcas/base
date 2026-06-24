@@ -1,6 +1,9 @@
 ﻿using Backend.Base.Token.Ent;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Npgsql;
+using Org.BouncyCastle.Asn1.Ocsp;
 using System.IO;
 using GC = Backend.GlobalConstants;
 
@@ -21,6 +24,7 @@ namespace Backend.Base.Login
         private readonly OrgServiceI _orgService;
         private readonly ConfigServiceI _configService;
         private readonly SessionServiceI _sessionService;
+        private readonly LabelServiceI _labelService;
         private readonly TemplateServiceI _templateService;
         private readonly EmailServiceI _emailService;
 
@@ -32,6 +36,7 @@ namespace Backend.Base.Login
             ConfigServiceI configService,
             PermissionServiceI permissionService,
             SessionServiceI sessionService,
+            LabelServiceI labelService,
             TemplateServiceI templateService,
             EmailServiceI emailService) 
             : base (serviceProvider)
@@ -41,6 +46,7 @@ namespace Backend.Base.Login
             _configService = configService;
             _permissionService = permissionService;
             _sessionService = sessionService;
+            _labelService = labelService;
             _templateService = templateService;
             _emailService = emailService;
         }
@@ -369,22 +375,56 @@ namespace Backend.Base.Login
             var login = await GetLoginByEmail(email);
 
             if (login == null || !login.IsActive)
+            {
+                var message = "Reset request by " + (login == null ? "non-existant" : "inactive");
+                _log.Warning(message + " email {Email} ipAddress {ipAddress}", email, ipAddress);
                 return false;
+            }
 
             var org = await _orgService.GetOrg(login.OrgNrDefault);
 
-            if (org == null || !org.IsActive)
+            if (org == null 
+                || !org.IsActive
+                || !org.Forgotenabled)
+            {
+                _log.Warning("Reset request invalid org, email {Email} ipAddress {ipAddress}", email, ipAddress);
                 return false;
+            }
 
+            var tv = new TokenValues
+            {
+                IpAddress = ipAddress,
+                Username = email,
+                SessionKey = "NoSession",
+                OrgNr = org.Nr,
+            };
 
-            var template = new ResetRequestEmail();
-            template.initialise(org, login, "123456");
+            var token = _tokenService.CreateResetRequestToken(tv);
 
-            await _emailService.SendEmailAsync("js@7orcas.com", "Reset", template.RenderTemplate());
+            var langCode = GC.LangCodeDefault;
+            if (login.LangCode != null) langCode = login.LangCode;
+            else if (org.LangCode != null) langCode = org.LangCode;
+            login.LangCode = langCode;
+
+            var dic = await _labelService.GetLangCodeDic(langCode, org.LangLabelVariant);
+            var subject = "Password Reset";
+            if (dic.TryGetValue("PWReset", out var value))
+                subject = value;
+
+            var template = new ResetRequestEmail(org, login, token);
+            await _emailService.SendEmailAsync(email, subject, template.RenderTemplate());
             
             return true;
         }
 
+        //ToDo test token values and reset
+        public async Task<bool> ResetAction(string token, string ipAddress)
+        {
+            var tv = _tokenService.DecodeToken(token);
+
+            return true;
+
+        }
 
     }
 }

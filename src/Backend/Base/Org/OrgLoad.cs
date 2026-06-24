@@ -24,6 +24,7 @@ namespace Backend.Base.Org
             org.LangLabelVariant = GetIntNull(r, "langLabelVariant");
             org.Encoded = GetEncoded(r);
             org.MfaRequired = GetBoolean(r, "mfaRequired");
+            org.Forgotenabled = GetBoolean(r, "forgotEnabled");
             org.Decode();
 
             if (org.LangCode == null) org.LangCode = GC.LangCodeDefault;

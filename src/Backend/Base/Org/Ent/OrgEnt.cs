@@ -20,7 +20,7 @@ namespace Backend.Base.Org.Ent
         public string? LangCode { get; set; }
         public int? LangLabelVariant { get; set; }
         public bool MfaRequired { get; set; }
-
+        public bool Forgotenabled { get; set; }
 
         public OrgEnc Encoding { get; set; }
 
