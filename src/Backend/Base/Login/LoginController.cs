@@ -17,8 +17,6 @@ namespace Backend.Base.Login
     public class LoginController : BaseController
     {
         private readonly LoginServiceI _loginService;
-        private readonly TemplateServiceI _templateService;
-        private readonly EmailServiceI _emailService;
         private readonly CookieProtector _cookieProtector;
 
         /// <summary>
@@ -28,13 +26,9 @@ namespace Backend.Base.Login
         public LoginController(
             IServiceProvider serviceProvider,
             LoginServiceI loginService,
-            TemplateServiceI templateService,
-            EmailServiceI emailService,
             CookieProtector cookieProtector) : base(serviceProvider)
         {
             _loginService = loginService;
-            _templateService = templateService;
-            _emailService = emailService;
             _cookieProtector = cookieProtector;
         }
 
@@ -100,21 +94,16 @@ namespace Backend.Base.Login
         [HttpGet("resetrequest")]
         public async Task<IActionResult> ResetRequest([FromQuery] string email)
         {
-            var login = await _loginService.GetLoginByEmail(email);
+            var ipAddress = GetClientIp();
 
-            if (login != null 
-                && login.IsActive)
+            var success = _loginService.ResetRequest(email, ipAddress);
+
+            var r = new _ResponseDto
             {
-                var template = await _templateService.GetResetRequestEmail (login);
-                await _emailService.SendEmailAsync("js@7orcas.com", "Reset", template);
-                var r = new _ResponseDto
-                {
-                    SuccessMessage = "Login Ok",
-                    Valid = true,
-                };
-                return Ok(r);
-            }
-            return null;
+                SuccessMessage = "Reset Request Ok",
+                Valid = true,
+            };
+            return Ok(r);
         }
     }
 

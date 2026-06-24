@@ -52,6 +52,20 @@
             EntityTypeMachine,          "Machine",
         };
 
+        
+        public enum TemplateType
+        {
+            ResetRequestEmail = 1,
+            SomethingElseEmail = 2,
+        }
+
+        public static readonly object[] Templates = {
+            TemplateType.ResetRequestEmail, "Res",
+        };
+
+
+
+
         //Service
         public const long ServiceLoginId             = -1L;
         public const long ServiceAccountId           = -1L;

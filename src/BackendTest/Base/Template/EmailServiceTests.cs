@@ -30,7 +30,7 @@ namespace BackendTest.Base.Template
         [TestMethod]
         public async Task GenerateDocument()
         {
-            var request = new EmailTemplateRequest();
+            var request = new ResetRequestEmail();
                 request.Data = new Dictionary<string, object>
                 {
                     { "name", "John boy" },

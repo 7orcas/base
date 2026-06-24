@@ -22,25 +22,31 @@ namespace Backend.Base.Template
             _orgService = orgService;
         }
 
-        public async Task<string?> GetResetRequestEmail(LoginEnt login)
-        {
-            try
-            {
-                var org = await _orgService.GetOrg(login.OrgNr);
-                if (org == null || !org.IsActive)
-                {
-                    return null;
-                }
+        //public async Task<string?> GetResetRequestEmail(LoginEnt login)
+        //{
 
-                var request = new ResetRequestEmailTemplate(login);
-                var email = RenderTemplate(request);
-                return email;
-            }
-            catch { 
-                return null;
-            }
+        //}
 
-        }
+
+        //public async Task<string?> GetResetRequestEmail(LoginEnt login)
+        //{
+        //    try
+        //    {
+        //        var org = await _orgService.GetOrg(login.OrgNrDefault);
+        //        if (org == null || !org.IsActive)
+        //        {
+        //            return null;
+        //        }
+
+        //        var request = new ResetRequestEmailTemplate(login);
+        //        var email = RenderTemplate(request);
+        //        return email;
+        //    }
+        //    catch { 
+        //        return null;
+        //    }
+
+        //}
 
         private string RenderTemplate(ResetRequestEmailTemplate request)
         {

@@ -8,5 +8,6 @@ namespace Backend.Base.Login
         Task<LoginEnt?> GetLoginByEmail(string email);
         Task<bool> SetMfaKey(long id, string key);
         Task<bool> EnableMfa(long id);
+        Task<bool> ResetRequest(string email, string ipAddress);
     }
 }

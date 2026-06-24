@@ -2,6 +2,6 @@
 {
     public interface TemplateServiceI
     {
-        Task<string?> GetResetRequestEmail(LoginEnt login);
+       // Task<string?> GetResetRequestEmail(LoginEnt login);
     }
 }

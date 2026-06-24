@@ -1,4 +1,5 @@
 ﻿using Backend.Base.Token.Ent;
+using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 using System.IO;
 using GC = Backend.GlobalConstants;
@@ -20,6 +21,9 @@ namespace Backend.Base.Login
         private readonly OrgServiceI _orgService;
         private readonly ConfigServiceI _configService;
         private readonly SessionServiceI _sessionService;
+        private readonly TemplateServiceI _templateService;
+        private readonly EmailServiceI _emailService;
+
         private AppServiceAccount ServiceAccount = AppSettings.ServiceAccount;
 
         public LoginService (IServiceProvider serviceProvider,
@@ -27,7 +31,9 @@ namespace Backend.Base.Login
             OrgServiceI orgService,
             ConfigServiceI configService,
             PermissionServiceI permissionService,
-            SessionServiceI sessionService) 
+            SessionServiceI sessionService,
+            TemplateServiceI templateService,
+            EmailServiceI emailService) 
             : base (serviceProvider)
         {
             _tokenService = tokenService;
@@ -35,6 +41,8 @@ namespace Backend.Base.Login
             _configService = configService;
             _permissionService = permissionService;
             _sessionService = sessionService;
+            _templateService = templateService;
+            _emailService = emailService;
         }
 
         // Get the user login and account details, validate the password
@@ -158,7 +166,7 @@ namespace Backend.Base.Login
 
         public async Task<LoginEnt?> GetLoginByEmail(string email)
         {
-            long id = -1;
+            long? id = null;
             try
             {
 
@@ -174,7 +182,10 @@ namespace Backend.Base.Login
             }
             catch { }
 
-            return await GetLoginById(id);
+            if (id == null)
+                return null;
+
+            return await GetLoginById(id.Value);
         }
 
 
@@ -196,7 +207,7 @@ namespace Backend.Base.Login
                             Userid = GetString(r, "xxx"),
                             Email = GetString(r, "email"),
                             Password = GetString(r, "yyy"),
-                            OrgNr = GetOrgNr(r),
+                            OrgNrDefault = GetInt(r, "orgnrdefault"),
                             LangCode = GetStringNull(r, "langCode"),
                             Attempts = GetIntNull(r, "attempts"),
                             Lastlogin = GetDateTime(r, "lastlogin"),
@@ -352,6 +363,28 @@ namespace Backend.Base.Login
                );
             return true;
         }
+
+        public async Task<bool> ResetRequest(string email, string ipAddress)
+        {
+            var login = await GetLoginByEmail(email);
+
+            if (login == null || !login.IsActive)
+                return false;
+
+            var org = await _orgService.GetOrg(login.OrgNrDefault);
+
+            if (org == null || !org.IsActive)
+                return false;
+
+
+            var template = new ResetRequestEmail();
+            template.initialise(org, login, "123456");
+
+            await _emailService.SendEmailAsync("js@7orcas.com", "Reset", template.RenderTemplate());
+            
+            return true;
+        }
+
 
     }
 }

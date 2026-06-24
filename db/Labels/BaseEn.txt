@@ -10,12 +10,17 @@ OrgNr,Org Nr
 OrgSub,Configuration of Organisation
 Conf,Configuration
 ConfSub,User Configuration
+ChgPw,Change Password
 PW,Password
 PWs,Passwords
 PWmc,Must be mixed case
 PWNonLet,Must contain non-letter
 PWNum,Must contain a number
 PWAt,Max. number of login attempts
+PWReset1,If an account is associated with the email address provided|| a password reset link will be sent shortly. 
+PWReset2,Please check your inbox and spam/junk folders. 
+PWReset3,For security reasons|| we cannot confirm whether an email address is registered.
+PWResetRsp,Your password change has been successful.
 LEx,Login Expired|| please log in again.
 BConf,Base Configuration
 Lang,Language
@@ -56,7 +61,6 @@ User,User
 UserRs,User Roles
 LDM,Light/Dark Mode
 Logout,Logout
-ChgPw,Change Password
 Audit,Audit
 ValE,Validation Error
 ValT,There are Validation Errors|| Save is unsuccessful.

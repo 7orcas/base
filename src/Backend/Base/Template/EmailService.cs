@@ -32,20 +32,20 @@ namespace Backend.Base.Template
         }
 
 
-        public string RenderTemplate(EmailTemplateRequest request)
-        {
-            if (string.IsNullOrWhiteSpace(request.Template()))
-                throw new ArgumentException("Template cannot be empty");
+        //public string RenderTemplate(ResetRequestEmail request)
+        //{
+        //    if (string.IsNullOrWhiteSpace(request.Template()))
+        //        throw new ArgumentException("Template cannot be empty");
 
-            var template = Scriban.Template.Parse(request.TemplateHtml());
+        //    var template = Scriban.Template.Parse(request.TemplateHtml());
 
-            if (template.HasErrors)
-                throw new Exception("Template parsing failed");
+        //    if (template.HasErrors)
+        //        throw new Exception("Template parsing failed");
 
-            var result = template.Render(request.Data, member => member.Name);
+        //    var result = template.Render(request.Data, member => member.Name);
 
-            return result;
-        }
+        //    return result;
+        //}
 
 
         public async Task SendEmailAsync(string toEmail, string subject, string htmlBody)

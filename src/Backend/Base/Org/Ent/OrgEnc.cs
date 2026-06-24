@@ -21,6 +21,7 @@ namespace Backend.Base.Org.Ent
 
         public PasswordRule PasswordRule { get; set; } = new PasswordRule();
 
+        public bool IsEmailHtml { get; set; } = true;
     }
 
     public class Language 

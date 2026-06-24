@@ -41,7 +41,7 @@ VALUES (3, 'Org 3', 'Org 3 Description', 'de', 1,
 -- -------------------------------------------------
 -- base.zzz
 -- -------------------------------------------------
-INSERT INTO base.zzz (id, xxx, yyy, email, orgnr, langcode)
+INSERT INTO base.zzz (id, xxx, yyy, email, orgnrdefault, langcode)
 VALUES
 (1, '1', '1', '1', 1, 'en'),
 (2, 'user', 'xx123', 'xx123', 1, 'en'),
@@ -50,11 +50,11 @@ VALUES
 -- -------------------------------------------------
 -- base.useracc
 -- -------------------------------------------------
-INSERT INTO base.useracc (id, zzzid, orgnr, langcode)
+INSERT INTO base.useracc (id, zzzid, orgnr)
 VALUES
-(1, 1, 1, 'de'),
-(2, 2, 1, 'en'),
-(3, 2, 2, 'de');
+(1, 1, 1),
+(2, 2, 1),
+(3, 2, 2);
 
 -- -------------------------------------------------
 -- base.role
