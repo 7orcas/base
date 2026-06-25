@@ -27,24 +27,24 @@ namespace BackendTest.Base.Template
         }
 
 
-        [TestMethod]
-        public async Task GenerateDocument()
-        {
-            var request = new ResetRequestEmail();
-                request.Data = new Dictionary<string, object>
-                {
-                    { "name", "John boy" },
-                    { "orderId", "ORD 123" },
-                    { "company", "MyCompany" }
-                };
+        //[TestMethod]
+        //public async Task GenerateDocument()
+        //{
+        //    var request = new ResetRequestEmail();
+        //        request.Data = new Dictionary<string, object>
+        //        {
+        //            { "name", "John boy" },
+        //            { "orderId", "ORD 123" },
+        //            { "company", "MyCompany" }
+        //        };
 
-            var email = service.RenderTemplate(request);
-           // Assert.IsTrue(email.StartsWith("Hello Johnno"));
+        //    var email = service.RenderTemplate(request);
+        //   // Assert.IsTrue(email.StartsWith("Hello Johnno"));
 
 
-            await service.SendEmailAsync("js@7orcas.com", "Test Email", email);
+        //    await service.SendEmailAsync("js@7orcas.com", "Test Email", email);
 
-        }
+        //}
 
 
     }

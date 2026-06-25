@@ -9,6 +9,6 @@ namespace Backend.Base.Login
         Task<bool> SetMfaKey(long id, string key);
         Task<bool> EnableMfa(long id);
         Task<bool> ResetRequest(string email, string ipAddress);
-        Task<bool> ResetAction(string token, string ipAddress);
+        Task<bool> ResetAction(string password, string token, string ipAddress);
     }
 }

@@ -2,7 +2,6 @@
 {
     public class AppSettings
     {
-        public static string BackendApiBaseUri {  get; set; }
-        public static string AuthorizedClientBaseUri { get; set; }
+        public static AppUrls Urls { get; set; }
     }
 }

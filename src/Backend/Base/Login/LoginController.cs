@@ -106,16 +106,17 @@ namespace Backend.Base.Login
             return Ok(r);
         }
 
-        [HttpGet("resetaction")]
-        public async Task<IActionResult> ResetAction([FromQuery] string token)
+        [HttpPost("resetaction")]
+        public async Task<IActionResult> ResetAction([FromBody] LoginResetActionDto action)
         {
             var ipAddress = GetClientIp();
 
-            var success = _loginService.ResetAction(token, ipAddress);
+            var success = await _loginService.ResetAction(action.Password, action.Token, ipAddress);
 
             var r = new _ResponseDto
             {
                 SuccessMessage = "Reset Action Ok",
+                Result = "",
                 Valid = true,
             };
             return Ok(r);

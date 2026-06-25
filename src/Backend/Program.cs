@@ -242,9 +242,18 @@ void LoadAppSettings(WebApplicationBuilder builder)
     AppSettings.CacheExpirationAddSeconds = int.Parse(builder.Configuration["Token:CacheExpirationAddSeconds"]);
     AppSettings.CacheExpirationGetSeconds = int.Parse(builder.Configuration["Token:CacheExpirationGetSeconds"]);
     AppSettings.AuthenticatorAppName = builder.Configuration["Mfa:AuthenticatorAppName"];
-    AppSettings.MainClientUrl = builder.Configuration["Urls:MainClientUrl"];
     AppSettings.CorsAllowedOrigins = builder.Configuration["Cors:AllowedOrigins"];
     AppSettings.PathBase = builder.Configuration["PathBase"];
+
+    try
+    {
+        var urls = new AppUrls();
+        urls.Api = builder.Configuration["Urls:Api"];
+        urls.Client = builder.Configuration["Urls:Client"];
+        urls.Login = builder.Configuration["Urls:Login"];
+        AppSettings.Urls = urls;
+    }
+    catch { }
 
     try
     {
@@ -283,7 +292,7 @@ void LogAppSettings(WebApplication app)
         AppSettings.MaxGetTokenCalls, 
         AppSettings.CacheExpirationAddSeconds, 
         AppSettings.CacheExpirationGetSeconds,
-        AppSettings.MainClientUrl,
+        AppSettings.Urls.Client,
         AppSettings.PathBase,
         (AppSettings.ServiceAccount != null ? "Yes" : "No"));
 

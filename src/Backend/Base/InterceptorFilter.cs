@@ -21,7 +21,7 @@ namespace Backend.Base
         private readonly AuditServiceI _auditService;
         private readonly string[] nonAuthorisedMethods = { "LoginOptions", "Login", "GetToken", 
             "RefreshExpiredToken", "RefreshCurrentToken",
-            "ResetRequest",
+            "ResetRequest", "ResetAction",
             "SetupMfa", "VerifyMfa"
         };
 

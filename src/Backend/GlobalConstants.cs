@@ -9,7 +9,8 @@
 
         public const string DateTimeFormat = "yyyy-MM-dd HH:mm:ss";
 
-        public const string URL_reset_action = "api/Login/resetaction";
+        //Login Reset Password
+        public const string URL_login_reset         = "reset-password";
 
         //IMemoryCache keys
         public const string CacheKeyTokenPrefix     = "TS_";

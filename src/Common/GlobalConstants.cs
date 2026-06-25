@@ -24,6 +24,7 @@ namespace Common
         public const int GetAndDisplayJWTtoken        = 1;
         public const string URL_login_option          = "api/LoginOption/get/";
         public const string URL_reset_request         = "api/Login/resetrequest";
+        public const string URL_reset_action          = "api/Login/resetaction";
         public const string URL_token                 = "api/Token/token";
         public const string URL_token_refresh_expired = "api/Token/refreshexpired";
         public const string URL_token_refresh_current = "api/Token/refreshcurrent";

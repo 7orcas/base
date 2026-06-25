@@ -1,4 +1,5 @@
 ﻿using Backend.Base.Token.Ent;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
@@ -110,7 +111,7 @@ namespace Backend.Base.Login
                 
                 login.Response.Valid = true;
                 login.Response.TokenKey = tokenKey;
-                login.Response.MainUrl = AppSettings.MainClientUrl;
+                login.Response.MainUrl = AppSettings.Urls.Client;
                 login.Response.LangCode = userConfig.LangCodeCurrent;
                 login.Response.MfaRequired = org.MfaRequired;
                 login.Response.MfaEnabled = login.MfaEnabled;
@@ -418,9 +419,32 @@ namespace Backend.Base.Login
         }
 
         //ToDo test token values and reset
-        public async Task<bool> ResetAction(string token, string ipAddress)
+        public async Task<bool> ResetAction(string password, string token, string ipAddress)
         {
             var tv = _tokenService.DecodeToken(token);
+
+            if (tv == null
+                || tv.IpAddress != ipAddress) 
+                return false;
+
+            var login = await GetLoginByEmail(tv.Username);
+            if (login == null || !login.IsActive)
+                return false;
+
+            var org = await _orgService.GetOrg(login.OrgNrDefault);
+
+            if (org == null
+                || !org.IsActive
+                || !org.Forgotenabled)
+                return false;
+            
+            login.Password = password;
+
+            await Sql.Execute(
+                  "UPDATE base.zzz "
+                  + "SET yyy = '" + password + "' "
+                  + "WHERE id = " + login.Id
+              );
 
             return true;
 

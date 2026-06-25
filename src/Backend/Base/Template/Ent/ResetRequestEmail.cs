@@ -21,7 +21,7 @@ namespace Backend.Base.Template.Ent
 
         private string ResetLink()
         {
-            return "https://localhost:7289" + GC.URL_reset_action + "?token=" + Token;
+            return AppSettings.Urls.Login + GC.URL_login_reset + "?token=" + Token;
         }
 
         protected override string Template()
