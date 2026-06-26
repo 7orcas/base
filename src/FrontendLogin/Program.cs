@@ -9,6 +9,8 @@ LoadAppSettings(builder);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 
+builder.Services.AddScoped<LabelService>();
+
 builder.Services.AddHttpClient(GC.HTTP_Client, client =>
 {
     client.BaseAddress = new Uri(AppSettings.Urls.Api); // Adjust base URL to your backend

@@ -12,7 +12,13 @@ Conf,Configuration
 ConfSub,User Configuration
 ChgPw,Change Password
 PW,Password
+PWn,New Password
+PWc,Confirm Password
+PWsw,Show Password
 PWs,Passwords
+PWx,Passwords do not match
+PWr,Password Rules
+PWsr,Show Password Rules
 PWmc,Must be mixed case
 PWNonLet,Must contain non-letter
 PWNum,Must contain a number
@@ -45,7 +51,7 @@ RoleEN,Edit Role Names
 MachSub,Machine record
 NAuth,Not Authorised
 NAuthX,You are not authorised to view this page
-NAuthA,Please see you system admin to give you access
+NAuthA,Please see your system admin to give you access
 UserPerm,User Permissions
 UserPermSub,User Permissions with respective CRUD (Create|| Read|| Update|| Delete) settings
 Perm,Permission
@@ -59,9 +65,12 @@ Crud.D,Delete
 PermAll,All Permissions
 PermEff,Effective Permissions
 User,User
+UserName,Username
+UserNameM,Masquerade Username
 UserRs,User Roles
 LDM,Light/Dark Mode
 Logout,Logout
+Login,Login
 Audit,Audit
 ValE,Validation Error
 ValT,There are Validation Errors|| Save is unsuccessful.
@@ -76,4 +85,8 @@ InvUD,This record has been changed since it was loaded (%%)
 Entity,Entity
 Field,Field
 Message,Message
+RemMe,Remember Me
+ForgotUP,Forgot Username / Password?
+SignUp,Sign Up
+Oops,Something went wrong! Please see your system admin
 <LAST>,<LAST LINE>

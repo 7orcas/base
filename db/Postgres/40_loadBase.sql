@@ -5,17 +5,17 @@ BEGIN;
 -- -------------------------------------------------
 -- cntrl.loginoption
 -- -------------------------------------------------
-INSERT INTO cntrl.loginoption (urlsuffix, isdefault, orgnrs, langcode, langlabelvariant, langcodes)
-VALUES ('blue', true, '1', 'en', 0, 'en');
+INSERT INTO cntrl.loginoption (urlsuffix, isdefault, orgnrs, langcode, langcodes)
+VALUES ('blue', true, '1', 'en', 'en');
 
-INSERT INTO cntrl.loginoption (urlsuffix, orgnrs, langcode, langlabelvariant, langcodes, mfa, rememberme, forgot, selfregistration)
-VALUES ('admin', '1,2', 'en', 0, 'en,de', 1, true, true, true);
+INSERT INTO cntrl.loginoption (urlsuffix, orgnrs, langcode, langcodes, mfa, rememberme, forgot, selfregistration, masquerade)
+VALUES ('admin', '1,2', 'en', 'en,de', 1, true, true, true, true);
 
 INSERT INTO cntrl.loginoption (urlsuffix, orgnrs, langcode, langlabelvariant, langcodes)
 VALUES ('all', '1,2,3', 'de', 1, 'en,de,es,xx');
 
-INSERT INTO cntrl.loginoption (urlsuffix, orgnrs, langcode, langlabelvariant, langcodes, successaction)
-VALUES ('api', '1', 'en', 0, 'en', 1);
+INSERT INTO cntrl.loginoption (urlsuffix, orgnrs, langcode, langcodes, successaction)
+VALUES ('api', '1', 'en', 'en', 1);
 
 -- -------------------------------------------------
 -- base.org

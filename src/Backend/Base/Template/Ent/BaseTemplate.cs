@@ -14,7 +14,9 @@ namespace Backend.Base.Template.Ent
         public GC.TemplateType TemplateType { get; }
 
         public Dictionary<string, object> Data { get; set; }
+        public int? OrgNr { get; set; }
         public string LangCode { get; set; }
+        public int? LangCodeVariant { get; set; }
         public bool IsHtml { get; set; }
 
         protected abstract string Template();

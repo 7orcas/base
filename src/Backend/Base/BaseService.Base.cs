@@ -74,4 +74,11 @@ public abstract class BaseService : SqlUtils
             ")";
     }
 
+    protected string GetLabel(string langKey, Dictionary<string, string> labels)
+    {
+        if (labels.ContainsKey(langKey))
+            return labels[langKey];
+        return langKey;
+    }
+
 }

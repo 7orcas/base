@@ -421,13 +421,15 @@ namespace Backend.Base.Login
         //ToDo test token values and reset
         public async Task<bool> ResetAction(string password, string token, string ipAddress)
         {
-            var tv = _tokenService.DecodeToken(token);
+            //var tv = _tokenService.DecodeToken(token);
 
-            if (tv == null
-                || tv.IpAddress != ipAddress) 
-                return false;
+            //if (tv == null
+            //    || tv.IpAddress != ipAddress) 
+            //    return false;
 
-            var login = await GetLoginByEmail(tv.Username);
+            //var login = await GetLoginByEmail(tv.Username);
+var login = await GetLoginByEmail("xx123");
+
             if (login == null || !login.IsActive)
                 return false;
 
@@ -438,6 +440,10 @@ namespace Backend.Base.Login
                 || !org.Forgotenabled)
                 return false;
             
+            if (!_orgService.ValidatePassword(password, org)) 
+                return false;
+
+
             login.Password = password;
 
             await Sql.Execute(

@@ -4,6 +4,12 @@ The .Net Backend is an API project.
 The Blazor frontend is made up of 2 Blazor server projects, a Login project and the Client project.
 I also will allow external clients to interact with my APIs (they will need to be logged in) 
 
+Labels
+Give me the German translation of the labels in the second column
+If you need to use a comma, then replace with ||
+:
+
+
 MFA
   - Give me step by step instructions to:
     - Add MFA to to my Login project

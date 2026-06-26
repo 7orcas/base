@@ -6,27 +6,37 @@
 @inject NavigationManager NavigationManager
 @inject IHttpClientFactory HttpClientFactory
 @inject IHttpContextAccessor HttpContextAccessor
+@inject LabelService LS
 @inject IJSRuntime JS
 
 <div class="d-flex justify-content-center align-items-center vh-100 bg-light">
     <div class="card shadow-lg p-4" style="width: 400px; border-radius: 12px;">
         
-        <h3 class="text-center mb-4">🔐 Login</h3>
+        <h3 class="text-center mb-4">🔐 @GetLabel("Login")</h3>
 
             <EditForm Model="@loginRequest" OnValidSubmit="@HandleLogin">
                 <DataAnnotationsValidator />
                 <ValidationSummary class="text-danger mb-3" />
 
                 <div class="mb-3">
-                    <label>Username:</label>
-                    <InputText @bind-Value="loginRequest.Username" />
+                    <label class="form-label">@GetLabel("UserName")</label>
+                    <InputText class="form-control" @bind-Value="loginRequest.Username" />
+                </div>
+
+                @if (options != null && options.Masquerade)
+                {
+                    <div class="mb-3">
+                        <label class="form-label">@GetLabel("UserNameM")</label>
+                        <InputText class="form-control" @bind-Value="loginRequest.Masquerade" />
+                    </div>
+                }
+
+                <div class="mb-3">
+                    <label class="form-label">@GetLabel("PW")</label>
+                    <InputText class="form-control" @bind-Value="loginRequest.Password" Type="password" />
                 </div>
                 <div class="mb-3">
-                    <label>Password:</label>
-                    <InputText @bind-Value="loginRequest.Password" Type="password" />
-                </div>
-                <div class="mb-3">
-                    <label>Org:</label>
+                <label class="form-label">@GetLabel("Org")</label>
                     <InputSelect class="form-select" @bind-Value="loginRequest.Org">
                         <option value="">-- Select Org --</option>
                         @foreach (var org in OrgList)
@@ -37,7 +47,7 @@
                 </div>
 
                 <div class="mb-3">
-                    <label>Language:</label>
+                    <label class="form-label">@GetLabel("Lang")</label>
                     <InputSelect class="form-select" @bind-Value="loginRequest.LangCode">
                         <option value="">-- Select Language --</option>
                         @foreach (var lang in LangList)
@@ -47,26 +57,41 @@
                     </InputSelect>
                 </div>
 
-                <button type="submit" class="btn btn-primary w-100">
-                    Login
-                </button>
+                
+                <div class="mt-3 mb-3">
+                    <label class="form-label"></label>
+                    <button type="submit" class="btn btn-primary w-100">
+                        @GetLabel("Login")
+                    </button>
+                </div>
+
+
             </EditForm>
                 
             @if (options != null && options.RememberMe)
             {
                 <div class="form-check mb-2">
                     <InputCheckbox class="form-check-input" @bind-Value="loginRequest.RememberMe" id="rememberMe" />
-                    <label class="form-check-label" for="rememberMe">Remember Me</label>
+                    <label class="form-check-label" for="rememberMe">@GetLabel("RemMe")</label>
                 </div>
             }
             @if (options != null && options.Forgot)
             {
                 <div class="form-check mb-2">
                     <button type="button" class="btn btn-link p-0" @onclick="GoToForgot">
-                        Forgot
+                        @GetLabel("ForgotUP")
                     </button>
                 </div>
             }
+        @if (options != null && options.SelfRegistration)
+        {
+            <div class="form-check mb-2">
+                <button type="button" class="btn btn-link p-0" @onclick="GoToSelfRegistration">
+                    @GetLabel("SignUp")
+                </button>
+            </div>
+        }
+
             @if (showForgotModal)
             {
 
@@ -167,6 +192,7 @@
     private LoginOptionDto options;
     private List<OrgItem> OrgList = new List<OrgItem>();
     private List<LangItem> LangList = new List<LangItem>();
+    private Dictionary<string, LangLabelDto> labels = new Dictionary<string, LangLabelDto>();
 
     //Fogot Password
     private bool showForgotModal = false;
@@ -299,13 +325,21 @@
         await InvokeAsync(StateHasChanged);
     }
 
-    
+    private void GoToSelfRegistration()
+    {
+
+    }
+
+
     private void CloseForgotModal()
     {
         showForgotModal = false;
     }
 
-
+    private string GetLabel(string key)
+    {
+        return LS.GetLabel(key, labels);
+    }
 
     private async Task TestPause()
     {
@@ -360,6 +394,9 @@
 
         cookie = options.RememberMeCookie;
         navigateToMain = options.SuccessAction == GC.NavigateToFrontendServer;
+
+        //labels = await InitialiseLabels(options);
+        labels = await LS.InitialiseLabels(options.LangCode, options.LangLabelVariant);
 
         //Load organisation options
         OrgList = new List<OrgItem>();

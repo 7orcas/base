@@ -10,8 +10,13 @@ namespace Backend.Base.Template.Ent
             : base(GC.TemplateType.ResetRequestEmail)
         {            
             Token = token;
+            OrgNr = org.Nr;
+            
             if (login.LangCode != null) LangCode = login.LangCode;
             else if (org.LangCode != null) LangCode = org.LangCode;
+
+            LangCodeVariant = org.LangLabelVariant;
+
             IsHtml = org.Encoding.IsEmailHtml;
 
             Data.Add("Userid", login.Userid);
@@ -21,7 +26,12 @@ namespace Backend.Base.Template.Ent
 
         private string ResetLink()
         {
-            return AppSettings.Urls.Login + GC.URL_login_reset + "?token=" + Token;
+            return AppSettings.Urls.Login 
+                + GC.URL_login_reset
+                + "?OrgNr=" + OrgNr
+                + "&LangCode=" + LangCode
+                + "&LangVariant=" + LangCodeVariant
+                + "&token=" + Token;
         }
 
         protected override string Template()

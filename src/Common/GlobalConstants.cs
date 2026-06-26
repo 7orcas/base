@@ -14,6 +14,8 @@ namespace Common
 
         public const int NewRecordId = -9000;
 
+        public const string LangCodeDefault = "en";
+
         public const int StatusCodeOk            = 200;
         public const int StatusCodeLoginExpired  = 401;
         public const int StatusCodeNotAuthorised = 403;
@@ -23,12 +25,14 @@ namespace Common
         public const int NavigateToFrontendServer     = 0;
         public const int GetAndDisplayJWTtoken        = 1;
         public const string URL_login_option          = "api/LoginOption/get/";
+        public const string URL_login_label           = "api/Login/loginlabels/";
         public const string URL_reset_request         = "api/Login/resetrequest";
         public const string URL_reset_action          = "api/Login/resetaction";
         public const string URL_token                 = "api/Token/token";
         public const string URL_token_refresh_expired = "api/Token/refreshexpired";
         public const string URL_token_refresh_current = "api/Token/refreshcurrent";
         public const string URL_token_test            = "api/Token/test";
+        
         public const string Cookie_RememberMe         = "remember_me_";
 
         //Service account

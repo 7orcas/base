@@ -1,47 +1,85 @@
-Org,OrganisationD
-Orgs,OrganisationsD
-Orgs-s,OrgsD
-OrgSub,Configuration of OrganisationD
-Conf,ConfigurationD
-ConfSub,User ConfigurationD
-PW,PasswordD
-PWs,PasswordsD
-PWmc,Must be mixed caseD
-PWNonLet,Must contain non-letterD
-PWNum,Must contain a numberD
-PWAt,Max. number of login attemptsD
-BConf,Base ConfigurationD
-Lang,LanguageD
-Langs,LanguagesD
-LangCodeV,Language VariantD
-Label,LabelD
-SaveRec,SaveD
-SaveChg,Save ChangesD
-Config,ConfigurationD
-ConfigG,General ConfigurationD
-UnsavedC,There are unsaved changes. Leave anyway?
-LenMax,Max Length
-LenMin,Min Length
-Nr,Number
-AdminM,AdminD
-Role,RoleD
-Roles,RolesD
-RoleSub,Roles contain permissions. Permissions are cumulative|| ie. they combine to give the user the maximum authorisationD
-MachSub,Machine recordD
-NAuth,Not AuthorisedD
-NAuthX,You are not authorised to view this pageD
-NAuthA,Please see you system admin to give you accessD
-UserPerm,User PermissionsD
-UserPermSub,User Permissions with respective CRUD (Create Read Update Delete) settingsD
-Perm,PermissionD
-Perms,PermissionsD
-PermNr,Permission NrD
-Crud,CRUD D
-PermAll,All PermissionsD
-PermEff,Effective PermissionsD
-User,UserD
-LDM,Light/Dark ModeD
-Logout,LogoutD
-ChgPw,Change PasswordD
-Audit,AuditD
+New,Neu
+Close,Schließen
+Delete,Löschen
+On,Ein
+Off,Aus
+Org,Organisation
+Orgs,Organisationen
+Orgs-s,Orgs
+OrgNr,Org.-Nr.
+OrgSub,Konfiguration der Organisation
+Conf,Konfiguration
+ConfSub,Benutzerkonfiguration
+ChgPw,Passwort ändern
+PW,Passwort
+PWs,Passwörter
+PWmc,Muss Groß- und Kleinbuchstaben enthalten
+PWNonLet,Muss Nicht-Buchstaben enthalten
+PWNum,Muss eine Zahl enthalten
+PWAt,Max. Anzahl der Anmeldeversuche
+PWReset1,Wenn ein Konto mit der angegebenen E-Mail-Adresse verknüpft ist|| wird in Kürze ein Link zum Zurücksetzen des Passworts gesendet.
+PWReset2,Bitte überprüfen Sie Ihren Posteingang sowie den Spam-/Junk-Ordner.
+PWReset3,Aus Sicherheitsgründen können wir nicht bestätigen|| ob eine E-Mail-Adresse registriert ist.
+PWReset,Passwort zurücksetzen
+PWResetRsp,Ihr Passwort wurde erfolgreich geändert.
+LEx,Anmeldung abgelaufen|| bitte erneut anmelden.
+BConf,Basiskonfiguration
+Lang,Sprache
+Langs,Sprachen
+LangCodeV,Sprachvariante
+Label,Bezeichnung
+SaveRec,Speichern
+SaveChg,Änderungen speichern
+Config,Konfiguration
+ConfigG,Allgemeine Konfiguration
+UnsavedC,Es gibt ungespeicherte Änderungen. Trotzdem verlassen?
+LenMax,Max. Länge
+LenMin,Min. Länge
+Nr,Nummer
+AdminM,Admin
+Role,Rolle
+Roles,Rollen
+RoleSub,Rollen enthalten Berechtigungen. Berechtigungen sind kumulativ|| d. h.|| sie kombinieren sich zur maximalen Autorisierung des Benutzers.
+RoleA,Neue Rolle hinzufügen
+RoleEN,Rollennamen bearbeiten
+MachSub,Maschinendatensatz
+NAuth,Nicht autorisiert
+NAuthX,Sie sind nicht berechtigt|| diese Seite anzusehen
+NAuthA,Bitte wenden Sie sich an Ihren Systemadministrator|| um Zugriff zu erhalten
+UserPerm,Benutzerberechtigungen
+UserPermSub,Benutzerberechtigungen mit entsprechenden CRUD- (Create|| Read|| Update|| Delete) Einstellungen
+Perm,Berechtigung
+Perms,Berechtigungen
+PermNr,Berechtigungs-Nr.
+Crud,CRUD
+Crud.C,Erstellen
+Crud.R,Lesen
+Crud.U,Aktualisieren
+Crud.D,Löschen
+PermAll,Alle Berechtigungen
+PermEff,Effektive Berechtigungen
+User,Benutzer
+UserName,Benutzername
+UserNameM,Maskierter Benutzername
+UserRs,Benutzerrollen
+LDM,Hell-/Dunkelmodus
+Logout,Abmelden
+Login,Anmelden
+Audit,Audit
+ValE,Validierungsfehler
+ValT,Es gibt Validierungsfehler|| Speichern nicht erfolgreich.
+ValTs,Bitte beheben Sie die Fehler und speichern Sie erneut.
+InvR,Ungültige Datensätze
+InvO,Ungültige Org.-Nr.
+InvF,Feld darf nicht leer sein
+InvL,Feld überschreitet die maximale Länge (%%)
+InvCE,Code existiert bereits
+InvCD,Doppelter Code
+InvUD,Dieser Datensatz wurde seit dem Laden geändert (%%)
+Entity,Entität
+Field,Feld
+Message,Nachricht
+RemMe,Angemeldet bleiben
+ForgotUP,Benutzername / Passwort vergessen?
+SignUp,Registrieren
 <LAST>,<LAST LINE>

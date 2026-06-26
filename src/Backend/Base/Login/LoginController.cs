@@ -1,5 +1,6 @@
 ﻿using Backend.Base.DataProtection;
 using Microsoft.AspNetCore.Mvc;
+using Serilog.Events;
 using GC = Backend.GlobalConstants;
 
 /// <summary>
@@ -17,6 +18,7 @@ namespace Backend.Base.Login
     public class LoginController : BaseController
     {
         private readonly LoginServiceI _loginService;
+        private readonly OrgServiceI _orgService;
         private readonly CookieProtector _cookieProtector;
 
         /// <summary>
@@ -26,9 +28,11 @@ namespace Backend.Base.Login
         public LoginController(
             IServiceProvider serviceProvider,
             LoginServiceI loginService,
+            OrgServiceI orgService,
             CookieProtector cookieProtector) : base(serviceProvider)
         {
             _loginService = loginService;
+            _orgService = orgService;
             _cookieProtector = cookieProtector;
         }
 
@@ -87,6 +91,50 @@ namespace Backend.Base.Login
                     MfaRequired = res.MfaRequired,
                     MfaEnabled = res.MfaEnabled
                 }
+            };
+            return Ok(r);
+        }
+
+        /// <summary>
+        /// Gets the passed in langCode's labels
+        /// The returned DTO objects contain minimal data
+        /// </summary>
+        /// <param name="langCode"></param>
+        /// <returns></returns>
+        [HttpGet("loginlabels")]
+        public async Task<IActionResult> LoginLabels([FromQuery] string langCode, [FromQuery] int? variant)
+        {
+            var labels = await _labelService.GetLanguageLabelList(langCode, variant);
+            var list = new List<LangLabelDto>();
+
+            foreach (var l in labels)
+            {
+                list.Add(new LangLabelDto
+                {
+                    Id = l.Id,
+                    LangKeyCode = l.LangKeyCode,
+                    Label = l.Code,
+                    Tooltip = l.Tooltip
+                });
+            }
+
+            var r = new _ResponseDto
+            {
+                SuccessMessage = "Ok",
+                Result = list
+            };
+            return Ok(r);
+        }
+
+        [HttpGet("passwordrules")]
+        public async Task<IActionResult> GetPasswordRules([FromQuery] string langCode, [FromQuery] int orgNr)
+        {
+            var rules = await _orgService.GetPasswordRules(langCode, orgNr);
+            var r = new _ResponseDto
+            {
+                SuccessMessage = "Ok",
+                Result = rules,
+                Valid = true,
             };
             return Ok(r);
         }

@@ -4,6 +4,7 @@
     {
         public string UrlSuffix { get; set; }
         public string LangCode { get; set; }
+        public int? LangLabelVariant { get; set; }
         public List<OrgDto> Orgs { get; set; }
         public List<LangCodeDto> LangCodes { get; set; }
         public int MFA { get; set; }

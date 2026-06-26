@@ -46,7 +46,7 @@ namespace Backend.Base.Login
                             UrlSuffix = GetString(r, "urlsuffix"),
                             OrgNrs = GetString(r, "orgnrs"),
                             LangCode = GetString(r, "langcode"),
-                            LangLabelVariant = GetInt(r, "langlabelvariant"),
+                            LangLabelVariant = GetIntNull(r, "langlabelvariant"),
                             LangCodes = GetString(r, "langcodes"),
                             MFA = GetInt(r, "mfa"),
                             SuccessAction = GetInt(r, "successaction"),
@@ -105,6 +105,7 @@ namespace Backend.Base.Login
             {
                 UrlSuffix = ent.UrlSuffix,
                 LangCode = ent.LangCode,
+                LangLabelVariant = ent.LangLabelVariant, 
                 Orgs = orgs,
                 LangCodes = langs,
                 MFA = ent.MFA,

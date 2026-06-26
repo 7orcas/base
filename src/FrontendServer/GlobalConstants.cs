@@ -28,7 +28,6 @@
         public const string URL_label_clientlist  = "api/Label/clientlist/";
         public const string URL_label_relatedlist = "api/Label/relatedlist/";
 
-
         public enum TextSize
         {
             None       = 0,

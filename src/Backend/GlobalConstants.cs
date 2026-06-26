@@ -4,8 +4,6 @@
     {
         public const string AppName  = "Blue";
         public const int BaseOrgNr   = 0;
-                
-        public const string LangCodeDefault = "en";
 
         public const string DateTimeFormat = "yyyy-MM-dd HH:mm:ss";
 
