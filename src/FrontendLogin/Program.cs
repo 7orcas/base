@@ -9,9 +9,11 @@ LoadAppSettings(builder);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 
+builder.Services.AddScoped<LabelService>();
+
 builder.Services.AddHttpClient(GC.HTTP_Client, client =>
 {
-    client.BaseAddress = new Uri(AppSettings.BackendApiBaseUri); // Adjust base URL to your backend
+    client.BaseAddress = new Uri(AppSettings.Urls.Api); // Adjust base URL to your backend
 });
 
 //Here for Remember Me cookie handling, as the cookie is set by the backend and we need to ensure it is included in requests
@@ -61,6 +63,9 @@ app.Run();
 
 void LoadAppSettings(WebApplicationBuilder builder)
 {
-    AppSettings.BackendApiBaseUri = builder.Configuration["Urls:BackendApiBaseUri"];
-    AppSettings.LoginClientUrl = builder.Configuration["Urls:LoginClientUrl"];
+    var urls = new AppUrls();
+    urls.Api = builder.Configuration["Urls:Api"];
+    urls.Login = builder.Configuration["Urls:Login"];
+    AppSettings.Urls = urls;
+
 }

@@ -1,5 +1,6 @@
 ﻿using Backend.Base.DataProtection;
 using Microsoft.AspNetCore.Mvc;
+using Serilog.Events;
 using GC = Backend.GlobalConstants;
 
 /// <summary>
@@ -17,6 +18,7 @@ namespace Backend.Base.Login
     public class LoginController : BaseController
     {
         private readonly LoginServiceI _loginService;
+        private readonly OrgServiceI _orgService;
         private readonly CookieProtector _cookieProtector;
 
         /// <summary>
@@ -26,9 +28,11 @@ namespace Backend.Base.Login
         public LoginController(
             IServiceProvider serviceProvider,
             LoginServiceI loginService,
+            OrgServiceI orgService,
             CookieProtector cookieProtector) : base(serviceProvider)
         {
             _loginService = loginService;
+            _orgService = orgService;
             _cookieProtector = cookieProtector;
         }
 
@@ -42,10 +46,10 @@ namespace Backend.Base.Login
 
             if (!res.Valid)
                 return Ok(new _ResponseDto
-                    {
-                        Valid = false,
-                        ErrorMessage = res.ErrorMessage,
-                    });
+                {
+                    Valid = false,
+                    ErrorMessage = res.ErrorMessage,
+                });
 
             //Remember me cookie - only if requested and login is successful.
             //This is used to pre-populate the login form for the user, it is not a security risk as it does not contain any token or similar, just the username and org for pre-population
@@ -54,7 +58,7 @@ namespace Backend.Base.Login
             {
                 cookie = "V=1" +
                     ",x=" + request.UrlSuffix +
-                    ",u=" + request.Username + 
+                    ",u=" + request.Username +
                     ",p=" + request.Password +
                     ",o=" + request.Org +
                     ",l=" + request.LangCode;
@@ -78,7 +82,8 @@ namespace Backend.Base.Login
             {
                 SuccessMessage = "Login Ok",
                 Valid = true,
-                Result = new LoginSuccessDto { 
+                Result = new LoginSuccessDto
+                {
                     Id = login.Id,
                     TokenKey = res.MfaRequired ? null : res.TokenKey,
                     MainUrl = res.MfaRequired ? null : res.MainUrl,
@@ -90,5 +95,105 @@ namespace Backend.Base.Login
             return Ok(r);
         }
 
+        /// <summary>
+        /// Gets the passed in langCode's labels
+        /// The returned DTO objects contain minimal data
+        /// </summary>
+        /// <param name="langCode"></param>
+        /// <returns></returns>
+        [HttpGet("loginlabels")]
+        public async Task<IActionResult> LoginLabels([FromQuery] string langCode, [FromQuery] int? variant)
+        {
+            var labels = await _labelService.GetLanguageLabelList(langCode, variant);
+            var list = new List<LangLabelDto>();
+
+            foreach (var l in labels)
+            {
+                list.Add(new LangLabelDto
+                {
+                    Id = l.Id,
+                    LangKeyCode = l.LangKeyCode,
+                    Label = l.Code,
+                    Tooltip = l.Tooltip
+                });
+            }
+
+            var r = new _ResponseDto
+            {
+                SuccessMessage = "Ok",
+                Result = list
+            };
+            return Ok(r);
+        }
+
+        /// <summary>
+        /// Get Org
+        /// </summary>
+        /// <param name="nr"></param>
+        /// <returns></returns>
+        [HttpGet("org")]
+        public async Task<IActionResult> LoginOrg([FromQuery] int orgNr)
+        {
+            var org = await _orgService.GetOrg(orgNr);
+
+            var r = new _ResponseDto
+            {
+                SuccessMessage = "Config Ok",
+                Result = new OrgDto
+                {
+                    Nr = org.Nr,
+                    Code = org.Code,
+                    Description = org.Description,
+                    Icon = org.Icon,
+                }
+            };
+            return Ok(r);
+        }
+
+        [HttpGet("passwordrules")]
+        public async Task<IActionResult> GetPasswordRules([FromQuery] string langCode, [FromQuery] int orgNr)
+        {
+            var rules = await _orgService.GetPasswordRules(langCode, orgNr);
+            var r = new _ResponseDto
+            {
+                SuccessMessage = "Ok",
+                Result = rules,
+                Valid = true,
+            };
+            return Ok(r);
+        }
+
+        [HttpGet("resetrequest")]
+        public async Task<IActionResult> ResetRequest([FromQuery] string email)
+        {
+            var ipAddress = GetClientIp();
+
+            var success = _loginService.ResetRequest(email, ipAddress);
+
+            var r = new _ResponseDto
+            {
+                SuccessMessage = "Reset Request Ok",
+                Valid = true,
+            };
+            return Ok(r);
+        }
+
+        [HttpPost("resetaction")]
+        public async Task<IActionResult> ResetAction([FromBody] LoginResetActionDto action)
+        {
+            var ipAddress = GetClientIp();
+
+            var rtn = await _loginService.ResetAction(action.Password, action.Token, ipAddress, action.OrgNr, action.LangCode);
+
+            var r = new _ResponseDto
+            {
+                SuccessMessage = "Reset Action",
+                Result = rtn.message,
+                Valid = rtn.success,
+            };
+            return Ok(r);
+        }
+
     }
+
 }

@@ -15,14 +15,6 @@
       }
     }
   },
-  "iisSettings DELETE": {
-    "windowsAuthentication": false,
-    "anonymousAuthentication": true,
-    "iisExpress": {
-      "applicationUrl": "http://localhost:18467",
-      "sslPort": 44398
-    }
-  },
   "iisSettings": {
     "windowsAuthentication": false,
     "anonymousAuthentication": true,

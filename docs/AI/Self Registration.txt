@@ -1,0 +1,197 @@
+I have a c# ,.Net, Blazor Server application.
+The .Net Backend is an API project.
+The Blazor frontend is made up of 2 Blazor server projects, a Login project and the Client project.
+I want to add a 'self registration' function to my login screen
+This will allow new users to create a login, password and a few defaults
+MFA may also be enabled by the customer - ie they may require new users to also setup mfa
+Give me a common workflow to allow the user to do this
+
+
+User clicks “Register” (Login App UI)
+Display a form:
+- Email / Username
+- Password + Confirm password
+- Optional defaults (e.g., Langcode)
+- Accept terms checkbox
+   I agree to the Terms of Service and Privacy Policy. 
+   I understand that my account may be subject to security measures such as multi-factor authentication where required.
+
+
+Email Verification 
+- Generate token
+- Send email with link:
+
+
+
+My thoughts:
+- Add: base.org emailrequired - Must users' email address be verified?
+- Add: base.zzz emailverified - Is user's email address verified?
+- Validate registration form (eg email unique, password rules, orgnr)
+- Send email verification
+- Create 'Accept Terms' link - open in dialog (Use DI to allow override)
+
+
+
+
+Terms of Use
+============
+Terms of Use
+By creating an account and using this application, you agree to the following terms:
+1. Account Responsibility
+
+You are responsible for maintaining the confidentiality of your login credentials.
+You must not share your account with others.
+You are responsible for all activities that occur under your account.
+
+
+2. Acceptable Use
+You agree to use the service only for lawful purposes and in accordance with these terms. You must not:
+
+Attempt to gain unauthorized access to the system
+Interfere with system security or performance
+Use the service for fraudulent or harmful activities
+
+
+3. Security and Authentication
+
+You may be required to use multi-factor authentication (MFA) to access your account.
+You are responsible for maintaining access to your authentication methods (e.g., authenticator apps).
+We are not responsible for loss of access due to failure to maintain MFA devices.
+
+
+4. Data and Privacy
+
+Your personal information will be handled in accordance with our Privacy Policy.
+You agree that we may store and process your data for the purpose of providing the service.
+
+
+5. Account Suspension or Termination
+We reserve the right to suspend or terminate accounts that:
+
+Violate these terms
+Pose a security risk
+Are involved in suspicious or illegal activity
+
+
+6. Service Availability
+
+We aim to provide reliable service but do not guarantee uninterrupted access.
+The system may be updated or temporarily unavailable for maintenance.
+
+
+7. Limitation of Liability
+
+The service is provided "as is" without warranties of any kind.
+We are not liable for any loss of data, access, or business interruption.
+
+
+8. Changes to Terms
+We may update these terms from time to time. Continued use of the service indicates acceptance of any changes.
+
+9. Contact
+If you have questions about these terms, please contact your system administrator or support team.
+
+
+
+✅ Privacy Policy
+=================
+Effective Date: [Insert Date]
+1. Introduction
+We are committed to protecting your privacy and ensuring that your personal information is handled in a safe and responsible manner. This Privacy Policy explains how we collect, use, and protect your information when you use our application.
+
+2. Information We Collect
+We may collect the following types of information:
+a. Account Information
+
+Name
+Email address
+Username
+Password (stored securely in hashed form)
+
+b. Authentication Data
+
+Multi-factor authentication (MFA) details (e.g., authentication secrets, verification status)
+Login activity and timestamps
+
+c. Usage Information
+
+Device and browser information
+IP address
+Interaction with the application (logs and diagnostics)
+
+
+3. How We Use Your Information
+We use your information to:
+
+Create and manage your account
+Authenticate and secure access to the application
+Provide and maintain our services
+Monitor and improve system performance and security
+Communicate important updates or service notifications
+
+
+4. Security of Your Information
+We take reasonable steps to protect your information, including:
+
+Encrypting sensitive data
+Storing passwords using secure hashing algorithms
+Implementing access controls and authentication safeguards
+Supporting multi-factor authentication (MFA) where required
+
+However, no system can be completely secure, and we cannot guarantee absolute security.
+
+5. Sharing of Information
+We do not sell your personal information.
+We may share your information only:
+
+With trusted service providers who assist in operating the system
+When required by law or regulatory obligations
+To protect the security and integrity of the application
+
+
+6. Data Retention
+We retain your information only as long as necessary to:
+
+Provide the service
+Comply with legal obligations
+Resolve disputes and enforce agreements
+
+Account data may be deleted or anonymized upon request, subject to system requirements.
+
+7. Your Rights
+Depending on your location, you may have the right to:
+
+Access your personal information
+Request correction of inaccurate data
+Request deletion of your data
+Restrict or object to certain processing
+
+To make a request, please contact us using the details below.
+
+8. Cookies and Tracking
+We may use cookies or similar technologies to:
+
+Maintain login sessions
+Improve user experience
+Analyze system usage
+
+You can control cookies through your browser settings.
+
+9. Third-Party Services
+Our application may rely on third-party services (e.g., hosting, authentication tools). These providers may process data on our behalf and are expected to maintain appropriate privacy protections.
+
+10. Changes to This Policy
+We may update this Privacy Policy from time to time. Changes will be posted within the application, and continued use indicates acceptance of the updated policy.
+
+11. Contact Us
+If you have questions or concerns about this Privacy Policy, please contact:
+[Your Company / Team Name]
+[Email Address]
+
+✅ Optional Add-ons (you may want)
+Depending on your app, you could also include:
+
+✅ NZ Privacy Act 2020 reference
+✅ Data storage location (e.g., Azure region)
+✅ GDPR wording if you support EU users
+✅ Breach notification commitment

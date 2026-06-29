@@ -5,17 +5,20 @@ BEGIN;
 -- -------------------------------------------------
 -- cntrl.loginoption
 -- -------------------------------------------------
-INSERT INTO cntrl.loginoption (urlsuffix, isdefault, orgnrs, langcode, langlabelvariant, langcodes)
-VALUES ('blue', true, '1', 'en', 0, 'en');
+INSERT INTO cntrl.loginoption (urlsuffix, isdefault, orgnr, orgnrs, langcode, langcodes)
+VALUES ('blue', true, 1, '1', 'en', 'en');
 
-INSERT INTO cntrl.loginoption (urlsuffix, orgnrs, langcode, langlabelvariant, langcodes, mfa, rememberme, forgot, selfregistration)
-VALUES ('admin', '1,2', 'en', 0, 'en,de', 1, true, true, true);
+INSERT INTO cntrl.loginoption (urlsuffix, orgnr, orgnrs, langcode, langcodes, mfa, rememberme, forgot, selfregistration, masquerade)
+VALUES ('admin', 1, '1,2', 'en', 'en,de', 1, true, true, true, true);
 
-INSERT INTO cntrl.loginoption (urlsuffix, orgnrs, langcode, langlabelvariant, langcodes)
-VALUES ('all', '1,2,3', 'de', 1, 'en,de,es,xx');
+INSERT INTO cntrl.loginoption (urlsuffix, orgnr, orgnrs, langcode, langlabelvariant, langcodes)
+VALUES ('all', 2, '1,2,3', 'de', 1, 'en,de,es,xx');
 
-INSERT INTO cntrl.loginoption (urlsuffix, orgnrs, langcode, langlabelvariant, langcodes, successaction)
-VALUES ('api', '1', 'en', 0, 'en', 1);
+INSERT INTO cntrl.loginoption (urlsuffix, orgnr, orgnrs, langcode, langcodes, successaction)
+VALUES ('api', 1, '1', 'en', 'en', 1);
+
+INSERT INTO cntrl.loginoption (urlsuffix, orgnr, orgnrs, langcode, langcodes, successaction)
+VALUES ('3', 3, '3', 'en', 'en', 1);
 
 -- -------------------------------------------------
 -- base.org
@@ -23,14 +26,14 @@ VALUES ('api', '1', 'en', 0, 'en', 1);
 INSERT INTO base.org (nr, code, descr)
 VALUES (0, 'Org Base', 'Base Organisation');
 
-INSERT INTO base.org (nr, code, descr, langcode, langlabelvariant, mfarequired, encoded)
+INSERT INTO base.org (nr, code, descr, langcode, langlabelvariant, mfarequired, forgotenabled, icon, encoded)
 VALUES
-(1, 'Org 1', 'Org 1 Description', 'en', 1, true,
+(1, 'Org 1', 'Org 1 Description', 'en', 1, true, true, '🏢',
  '{Languages:[{LangCode:"en",IsEditable:true},{LangCode:"de",IsEditable:true},{LangCode:"c1",IsEditable:false},{LangCode:"c2",IsEditable:false}]}');
 
-INSERT INTO base.org (nr, code, descr, langcode, langlabelvariant, encoded)
+INSERT INTO base.org (nr, code, descr, langcode, langlabelvariant, icon, encoded)
 VALUES
-(2, 'Org 2', 'Org 2 Description', 'en', 2,
+(2, 'Org 2', 'Org 2 Description', 'en', 2, '📁',
  '{Languages:[{LangCode:"de",IsEditable:true}]}');
 
 INSERT INTO base.org (nr, code, descr, langcode, langlabelvariant, encoded)
@@ -41,20 +44,20 @@ VALUES (3, 'Org 3', 'Org 3 Description', 'de', 1,
 -- -------------------------------------------------
 -- base.zzz
 -- -------------------------------------------------
-INSERT INTO base.zzz (id, xxx, yyy, email)
+INSERT INTO base.zzz (id, xxx, yyy, email, orgnrdefault, langcode)
 VALUES
-(1, '1', '1', '1'),
-(2, 'user', 'xx123', 'xx123'),
-(-1, '$', '$', 'js@7orcas.com');
+(1, '1', '1', '1', 1, 'en'),
+(2, 'user', 'xx123', 'xx123', 1, 'en'),
+(-1, '$', '$', 'js@7orcas.com', 1, 'en');
 
 -- -------------------------------------------------
 -- base.useracc
 -- -------------------------------------------------
-INSERT INTO base.useracc (id, zzzid, orgnr, langcode)
+INSERT INTO base.useracc (id, zzzid, orgnr)
 VALUES
-(1, 1, 1, 'de'),
-(2, 2, 1, 'en'),
-(3, 2, 2, 'de');
+(1, 1, 1),
+(2, 2, 1),
+(3, 2, 2);
 
 -- -------------------------------------------------
 -- base.role

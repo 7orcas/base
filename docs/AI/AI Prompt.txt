@@ -4,6 +4,12 @@ The .Net Backend is an API project.
 The Blazor frontend is made up of 2 Blazor server projects, a Login project and the Client project.
 I also will allow external clients to interact with my APIs (they will need to be logged in) 
 
+Labels
+Give me the German translation of the labels in the second column
+If you need to use a comma, then replace with ||
+:
+
+
 MFA
   - Give me step by step instructions to:
     - Add MFA to to my Login project
@@ -22,6 +28,33 @@ Login
     - Once successful login, the login app then redirects the user to a client blazor app.
     - The external work flow is the user browsers to the login blazor app to get a JWT token.
     - The token is then used to allow access to the REST api's.
+
+Template
+  - Word: Give me step by step instructions to:
+    - Use OpenXml
+    - Accept a word docx template with place holders
+	- Populate the place holders
+	- Out the new docx file to my local drive
+
+  - Pdf: 
+    I have a c# ,.Net, Blazor Server application.
+    The .Net Backend is an API project.
+    Give me step by step instructions to implement a service in the backend API:
+    - Accept a template with place holders
+	- Populate the place holders
+	- Output the new pdf file to my local drive
+	- I want to use QuestPDF 
+	- I will test the service using MSTest
+
+  - Email: 
+    I have a c# ,.Net, Blazor Server application.
+    The .Net Backend is an API project.
+    Give me step by step instructions to implement a service in the backend API:
+    - Accept a template with place holders
+	- Populate the place holders
+	- Output the email
+	- I want to use free libraries
+	- I will test the service using MSTest
 
 
 

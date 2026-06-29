@@ -34,7 +34,6 @@ namespace Backend.Base.Token
             _tokenRepo = tokenRepo;
         }
 
-
         /// <summary>
         /// Login process creates this JWT token, saves it to cache and returns a key to the token.
         /// The key is a one time use key to get the token from cache. The token is used to create a JWT token which is returned to the client.
@@ -42,6 +41,16 @@ namespace Backend.Base.Token
         /// <param name="tv"></param>
         /// <returns></returns>
         public string CreateJWToken(TokenValues tv)
+        {
+            return CreateToken(tv, GC.TokenType.JWT);
+        }
+
+        public string CreateResetRequestToken(TokenValues tv)
+        {
+            return CreateToken(tv, GC.TokenType.ResetRequest);
+        }
+
+        private string CreateToken(TokenValues tv, GC.TokenType type)
         {
             var claims = new[]
             {
@@ -63,8 +72,13 @@ namespace Backend.Base.Token
                 signingCredentials: creds
                 );
 
-            _log.Debug("CreateToken Username {Username} OrgNr {OrgNr} SessionKey {SessionKey}", tv.Username, tv.OrgNr, tv.SessionKey);
+            var tt = type == GC.TokenType.JWT ? "JWT" : "ResetResquest";
+            _log.Debug("CreateToken Type {Type} Username {Username} OrgNr {OrgNr} SessionKey {SessionKey}",
+                tt, tv.Username, tv.OrgNr, tv.SessionKey);
             var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+
+            if (type == GC.TokenType.ResetRequest)
+                return tokenString;
 
             var tokenKey = Guid.NewGuid().ToString();
             
@@ -85,7 +99,7 @@ namespace Backend.Base.Token
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
-        public TokenValues DecodeJWToken(string token)
+        public TokenValues DecodeToken(string token)
         {
             token = token.Trim();
             var tokenHandler = new JwtSecurityTokenHandler();

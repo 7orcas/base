@@ -27,7 +27,7 @@ namespace Backend.Base.Mfa
 
         public async Task<MfaSetup?> SetupMfa(long id)
         {
-            var login = await _loginService.GetLogin(id);
+            var login = await _loginService.GetLoginById(id);
 
             if (login == null || login.MfaEnabled || !string.IsNullOrEmpty(login.MfaSecret))
                 return null;
@@ -46,7 +46,7 @@ namespace Backend.Base.Mfa
 
         public async Task<bool> VerifyMfaCode(long id, string mfaCode)
         {
-            var login = await _loginService.GetLogin(id);
+            var login = await _loginService.GetLoginById(id);
 
             if (login == null || login.MfaSecret == null)
                 return false;

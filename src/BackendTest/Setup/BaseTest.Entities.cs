@@ -67,7 +67,7 @@ namespace BackendTest.Setup
             {
                 Id = userAccId,
                 Userid = GCT.UserName,
-                orgNr = orgNr,
+                OrgNr = orgNr,
                 LangCode = LANG_CODE_DEFAULT,
                 Classification = 0,
                 IsAdmin = false,

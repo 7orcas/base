@@ -4,10 +4,11 @@
     {
         public const string AppName  = "Blue";
         public const int BaseOrgNr   = 0;
-                
-        public const string LangCodeDefault = "en";
 
         public const string DateTimeFormat = "yyyy-MM-dd HH:mm:ss";
+
+        //Login Reset Password
+        public const string URL_login_reset         = "reset-password";
 
         //IMemoryCache keys
         public const string CacheKeyTokenPrefix     = "TS_";
@@ -16,6 +17,12 @@
         public const string CacheKeySessionPrefix   = "SS_";
         public const string CacheKeyLabelPrefix     = "LK_";
         public const string CacheKeyPermDic         = "PS_dic";
+
+        public enum TokenType
+        {
+            JWT = 1,
+            ResetRequest = 2,
+        }
 
         //Entity Type Id
         public const int EntityTypePermUser         = 10;
@@ -51,6 +58,20 @@
 
             EntityTypeMachine,          "Machine",
         };
+
+        
+public enum TemplateType
+{
+    ResetRequestEmail = 1,
+    SomethingElseEmail = 2,
+}
+
+public static readonly object[] Templates = {
+    TemplateType.ResetRequestEmail, "Res",
+};
+
+
+
 
         //Service
         public const long ServiceLoginId             = -1L;

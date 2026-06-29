@@ -83,6 +83,7 @@ namespace Backend.Base.Org
                     Nr = org.Nr,
                     Code = org.Code,
                     Description = org.Description,
+                    Icon = org.Icon,
                     Updated = org.Updated,
                     IsActive = org.IsActive,
                     LangCode = org.LangCode,

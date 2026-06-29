@@ -21,7 +21,7 @@
       "commandName": "Project",
       "dotnetRunMessages": false,
       "launchBrowser": true,
-      "launchUrl": "servicex",
+      "launchUrl": "admin",
       "applicationUrl": "https://localhost:7289;http://localhost:5217",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",

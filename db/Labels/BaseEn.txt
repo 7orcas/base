@@ -1,6 +1,8 @@
 New,New
 Close,Close
 Delete,Delete
+Send,Send
+Cancel,Cancel
 On,On
 Off,Off
 Org,Organisation
@@ -10,12 +12,32 @@ OrgNr,Org Nr
 OrgSub,Configuration of Organisation
 Conf,Configuration
 ConfSub,User Configuration
+ChgPw,Change Password
+PwChg,Password Changed
 PW,Password
+PWn,New Password
+PWc,Confirm Password
+PWsw,Show Password
 PWs,Passwords
+PWx,Passwords do not match
+PWr,Password Rules
+PWsr,Show Password Rules
+PWhr,Hide Password Rules
 PWmc,Must be mixed case
 PWNonLet,Must contain non-letter
 PWNum,Must contain a number
 PWAt,Max. number of login attempts
+PWReset0,Please enter your email address to request a password reset. 
+PWReset1,If an account is associated with the email address provided|| a password reset link will be sent shortly. 
+PWReset2,Please check your inbox and spam/junk folders. 
+PWReset3,For security reasons|| we cannot confirm whether an email address is registered.
+PWReset,Password Reset
+PWResetES,Password reset email sent
+PWResetRsp,Your password change has been successful.
+PWResetErr1,Invalid or expired token|| please retry
+PWResetErr2,Your account is inactive
+PWResetErr3,Invalid password|| it must follow the password rules
+PWResetErr4,Your email address is required
 LEx,Login Expired|| please log in again.
 BConf,Base Configuration
 Lang,Language
@@ -39,7 +61,7 @@ RoleEN,Edit Role Names
 MachSub,Machine record
 NAuth,Not Authorised
 NAuthX,You are not authorised to view this page
-NAuthA,Please see you system admin to give you access
+NAuthA,Please see your system admin to give you access
 UserPerm,User Permissions
 UserPermSub,User Permissions with respective CRUD (Create|| Read|| Update|| Delete) settings
 Perm,Permission
@@ -53,10 +75,12 @@ Crud.D,Delete
 PermAll,All Permissions
 PermEff,Effective Permissions
 User,User
+UserName,Username
+UserNameM,Masquerade Username
 UserRs,User Roles
 LDM,Light/Dark Mode
 Logout,Logout
-ChgPw,Change Password
+Login,Login
 Audit,Audit
 ValE,Validation Error
 ValT,There are Validation Errors|| Save is unsuccessful.
@@ -71,4 +95,8 @@ InvUD,This record has been changed since it was loaded (%%)
 Entity,Entity
 Field,Field
 Message,Message
+RemMe,Remember Me
+ForgotUP,Forgot your username and/or password?
+SignUp,Sign Up
+Oops,Something went wrong! Please see your system admin
 <LAST>,<LAST LINE>

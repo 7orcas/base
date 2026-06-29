@@ -19,11 +19,13 @@ namespace Backend.Base.Org
             org.Nr = GetInt(r, "nr");
             org.Code = GetCode(r);
             org.Description = GetDescription(r);
+            org.Icon = GetStringNull(r, "icon");
             org.Updated = GetUpdated(r);
             org.IsActive = IsActive(r);
             org.LangLabelVariant = GetIntNull(r, "langLabelVariant");
             org.Encoded = GetEncoded(r);
             org.MfaRequired = GetBoolean(r, "mfaRequired");
+            org.Forgotenabled = GetBoolean(r, "forgotEnabled");
             org.Decode();
 
             if (org.LangCode == null) org.LangCode = GC.LangCodeDefault;

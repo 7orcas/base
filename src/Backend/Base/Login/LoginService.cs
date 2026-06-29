@@ -1,5 +1,10 @@
 ﻿using Backend.Base.Token.Ent;
+using DocumentFormat.OpenXml.Office2010.Excel;
+using DocumentFormat.OpenXml.Spreadsheet;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Npgsql;
+using Org.BouncyCastle.Asn1.Ocsp;
 using System.IO;
 using GC = Backend.GlobalConstants;
 
@@ -20,6 +25,10 @@ namespace Backend.Base.Login
         private readonly OrgServiceI _orgService;
         private readonly ConfigServiceI _configService;
         private readonly SessionServiceI _sessionService;
+        private readonly LabelServiceI _labelService;
+        private readonly TemplateServiceI _templateService;
+        private readonly EmailServiceI _emailService;
+
         private AppServiceAccount ServiceAccount = AppSettings.ServiceAccount;
 
         public LoginService (IServiceProvider serviceProvider,
@@ -27,7 +36,10 @@ namespace Backend.Base.Login
             OrgServiceI orgService,
             ConfigServiceI configService,
             PermissionServiceI permissionService,
-            SessionServiceI sessionService) 
+            SessionServiceI sessionService,
+            LabelServiceI labelService,
+            TemplateServiceI templateService,
+            EmailServiceI emailService) 
             : base (serviceProvider)
         {
             _tokenService = tokenService;
@@ -35,6 +47,9 @@ namespace Backend.Base.Login
             _configService = configService;
             _permissionService = permissionService;
             _sessionService = sessionService;
+            _labelService = labelService;
+            _templateService = templateService;
+            _emailService = emailService;
         }
 
         // Get the user login and account details, validate the password
@@ -43,7 +58,7 @@ namespace Backend.Base.Login
         {
             try
             {
-                var login = await GetLogin(userid);
+                var login = await GetLoginByUserid(userid);
                 UserAccountEnt? account = null;
 
                 if (login == null) 
@@ -96,7 +111,7 @@ namespace Backend.Base.Login
                 
                 login.Response.Valid = true;
                 login.Response.TokenKey = tokenKey;
-                login.Response.MainUrl = AppSettings.MainClientUrl;
+                login.Response.MainUrl = AppSettings.Urls.Client;
                 login.Response.LangCode = userConfig.LangCodeCurrent;
                 login.Response.MfaRequired = org.MfaRequired;
                 login.Response.MfaEnabled = login.MfaEnabled;
@@ -113,7 +128,7 @@ namespace Backend.Base.Login
         }
 
         //Authenicate the user
-        private async Task<LoginEnt?> GetLogin(string userid)
+        private async Task<LoginEnt?> GetLoginByUserid(string userid)
         {
             var login = null as LoginEnt;
             if (ServiceAccount != null && userid.Equals(ServiceAccount.UserId))
@@ -121,7 +136,7 @@ namespace Backend.Base.Login
                 login = LoginEnt.GetServiceLogin();
                 login.Password = ServiceAccount.UserPw;
 
-                var loginX = await GetLogin(login.Id);
+                var loginX = await GetLoginById(login.Id);
                 if (loginX != null)
                 {
                     login.MfaEnabled = loginX.MfaEnabled;
@@ -149,15 +164,39 @@ namespace Backend.Base.Login
                 );
 
                 if (id != null)
-                    login = await GetLogin(id.Value);
+                    login = await GetLoginById(id.Value);
             }
             catch { }
 
             return login;
         }
-        
 
-        public async Task<LoginEnt?> GetLogin(long id)
+        public async Task<LoginEnt?> GetLoginByEmail(string email)
+        {
+            long? id = null;
+            try
+            {
+
+                await Sql.Run(
+                    "SELECT id FROM base.zzz " +
+                        "WHERE email = @email ",
+                    r =>
+                    {
+                        id = GetId(r);
+                    },
+                    new NpgsqlParameter("@email", email)
+                );
+            }
+            catch { }
+
+            if (id == null)
+                return null;
+
+            return await GetLoginById(id.Value);
+        }
+
+
+        public async Task<LoginEnt?> GetLoginById(long id)
         {
             var login = null as LoginEnt;
             var isService = ServiceAccount != null && id == GC.ServiceLoginId;
@@ -175,6 +214,8 @@ namespace Backend.Base.Login
                             Userid = GetString(r, "xxx"),
                             Email = GetString(r, "email"),
                             Password = GetString(r, "yyy"),
+                            OrgNrDefault = GetInt(r, "orgnrdefault"),
+                            LangCode = GetStringNull(r, "langCode"),
                             Attempts = GetIntNull(r, "attempts"),
                             Lastlogin = GetDateTime(r, "lastlogin"),
                             IsActive = GetBoolean(r, "isActive"),
@@ -215,7 +256,7 @@ namespace Backend.Base.Login
                         {
                             Id = GetId(r),
                             LoginId = GetId(r, "zzzId"),
-                            orgNr = GetOrgNr(r),
+                            OrgNr = GetOrgNr(r),
                             LangCode = GetStringNull(r, "langCode"),
                             Lastlogin = GetDateTime(r, "lastlogin"),
                             IsActive = IsActive(r),
@@ -328,6 +369,117 @@ namespace Backend.Base.Login
                    + "WHERE id = " + id
                );
             return true;
+        }
+
+        public async Task<bool> ResetRequest(string email, string ipAddress)
+        {
+            var login = await GetLoginByEmail(email);
+
+            if (login == null || !login.IsActive)
+            {
+                var message = "Reset request by " + (login == null ? "non-existant" : "inactive");
+                _log.Warning(message + " email {Email} ipAddress {ipAddress}", email, ipAddress);
+                return false;
+            }
+
+            var org = await _orgService.GetOrg(login.OrgNrDefault);
+
+            if (org == null 
+                || !org.IsActive
+                || !org.Forgotenabled)
+            {
+                _log.Warning("Reset request invalid org, email {Email} ipAddress {ipAddress}", email, ipAddress);
+                return false;
+            }
+
+            var tv = new TokenValues
+            {
+                IpAddress = ipAddress,
+                Username = email,
+                SessionKey = "NoSession",
+                OrgNr = org.Nr,
+            };
+
+            var token = _tokenService.CreateResetRequestToken(tv);
+
+            var langCode = GC.LangCodeDefault;
+            if (login.LangCode != null) langCode = login.LangCode;
+            else if (org.LangCode != null) langCode = org.LangCode;
+            login.LangCode = langCode;
+
+            var dic = await _labelService.GetLangCodeDic(langCode, org.LangLabelVariant);
+            var subject = "Password Reset";
+            if (dic.TryGetValue("PWReset", out var value))
+                subject = value;
+
+            var template = new ResetRequestEmail(org, login, token);
+            await _emailService.SendEmailAsync(email, subject, template.RenderTemplate());
+            
+            return true;
+        }
+
+        /*
+         * Returns:
+         * - success message
+         * - error message (if attempt is still valid)
+         * - emtpy string if suspicious (and logged)
+         */
+        public async Task<(bool success, string message)> ResetAction(string password, string token, string ipAddress, int orgNr, string langCode)
+        {
+            var dic = await _labelService.GetLangCodeDic(langCode, null);
+            var tv = _tokenService.DecodeToken(token);
+
+
+            //Check org
+            var org = await _orgService.GetOrg(orgNr);
+
+            if (org == null
+                || !org.IsActive
+                || !org.Forgotenabled)
+            {
+                var user = tv != null? tv.Username : "null";
+                _log.Warning("Invalid OrgNr when resetting password OrgNr {orgNr} Username {username}", orgNr, user);
+                return (false, "");
+            }
+
+            if (tv != null && tv.IpAddress != ipAddress)
+            {
+                _log.Warning("Ipaddress mismatch when resetting password ipAddress {ipAddress} token-ipAddress {token-ipAddress}", ipAddress, tv.IpAddress);
+                return (false, "");
+            }
+
+            if (tv == null)
+                return (false, GetLabel("PWResetErr1", dic));
+
+            var login = await GetLoginByEmail(tv.Username);
+
+            //TEST ONLY
+            //var login = await GetLoginByEmail("xx123"); 
+
+            if (login == null)
+                return (false, "");
+
+            if (!login.IsActive)
+                return (false, GetLabel("PWResetErr2", dic)); 
+
+            if (login.OrgNrDefault != orgNr)
+            {
+                _log.Warning("OrgNr mismatch when resetting password Userid {Userid} OrgNr {OrgNr}", login.Userid, orgNr);
+                return (false, "");
+            }
+
+            if (!_orgService.ValidatePassword(password, org))
+                return (false, GetLabel("PWResetErr3", dic));
+
+            login.Password = password;
+
+            await Sql.Execute(
+                  "UPDATE base.zzz "
+                  + "SET yyy = '" + password + "' "
+                  + "WHERE id = " + login.Id
+              );
+
+            return (true, GetLabel("PWResetRsp", dic));
         }
 
     }

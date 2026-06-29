@@ -1,6 +1,7 @@
 using Backend;
 using Backend.App.Machines;
 using Backend.Base.DataProtection;
+using Backend.Base.Template;
 using Backend.Base.Token.Ent;
 using Backend.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -9,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens; // For TokenValidationParameters
 using Microsoft.OpenApi.Models;
+using QuestPDF.Infrastructure;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
@@ -150,6 +152,12 @@ builder.Services.AddScoped<PermissionServiceI, PermissionService>();
 builder.Services.AddScoped<RoleServiceI, RoleService>();
 builder.Services.AddScoped<RoleRepoI, RoleRepo>();
 builder.Services.AddScoped<EntityServiceI, EntityService>();
+builder.Services.AddScoped<TemplateServiceI, TemplateService>();
+builder.Services.AddScoped<PdfServiceI, PdfService>();
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+builder.Services.AddScoped<EmailServiceI, EmailService>();
+builder.Services.AddScoped<WordServiceI, WordService>();
+
 
 //App Services
 builder.Services.AddScoped<MachineServiceI, MachineService>();
@@ -206,6 +214,8 @@ app.Use(async (context, next) =>
     await next();
 });
 
+QuestPDF.Settings.License = LicenseType.Community;
+
 RunOnStartup(app);
 app.Run();
 
@@ -232,9 +242,31 @@ void LoadAppSettings(WebApplicationBuilder builder)
     AppSettings.CacheExpirationAddSeconds = int.Parse(builder.Configuration["Token:CacheExpirationAddSeconds"]);
     AppSettings.CacheExpirationGetSeconds = int.Parse(builder.Configuration["Token:CacheExpirationGetSeconds"]);
     AppSettings.AuthenticatorAppName = builder.Configuration["Mfa:AuthenticatorAppName"];
-    AppSettings.MainClientUrl = builder.Configuration["Urls:MainClientUrl"];
     AppSettings.CorsAllowedOrigins = builder.Configuration["Cors:AllowedOrigins"];
     AppSettings.PathBase = builder.Configuration["PathBase"];
+
+    try
+    {
+        var urls = new AppUrls();
+        urls.Api = builder.Configuration["Urls:Api"];
+        urls.Client = builder.Configuration["Urls:Client"];
+        urls.Login = builder.Configuration["Urls:Login"];
+        AppSettings.Urls = urls;
+    }
+    catch { }
+
+    try
+    {
+        var email = new EmailSettings();
+        email.SmtpServer = builder.Configuration["Email:SmtpServer"];
+        email.Port = int.Parse(builder.Configuration["Email:Port"]);
+        email.SenderName = builder.Configuration["Email:SenderName"];
+        email.SenderEmail = builder.Configuration["Email:SenderEmail"];
+        email.Username = builder.Configuration["Email:Username"];
+        email.Password = builder.Configuration["Email:Password"];
+        AppSettings.EmailSettings = email;
+    }
+    catch { }
 
     //Do not log details!
     try
@@ -260,7 +292,7 @@ void LogAppSettings(WebApplication app)
         AppSettings.MaxGetTokenCalls, 
         AppSettings.CacheExpirationAddSeconds, 
         AppSettings.CacheExpirationGetSeconds,
-        AppSettings.MainClientUrl,
+        AppSettings.Urls.Client,
         AppSettings.PathBase,
         (AppSettings.ServiceAccount != null ? "Yes" : "No"));
 

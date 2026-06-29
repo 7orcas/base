@@ -1,0 +1,11 @@
+I have a c# ,.Net, Blazor Server application.
+The .Net Backend is an API project.
+The Blazor frontend is made up of 2 Blazor server projects, a Login project and the Client project.
+I want to add a 'masquerade' function to my login screen that will allow users (with permission) to logon as another user.
+Give me ideas and comments re this
+
+
+My thoughts
+- Logable, eg in Session object [username] + [masquerade name] - may need to refactor logs
+- Indicator: ⚠ You are currently impersonating John Smith (User ID: 25)
+- Log reason for masquerading - dialog box with reason entry

@@ -10,11 +10,11 @@ drop table if exists base.langKey;
 
 drop table if exists base.rolePermission;
 
-drop table if exists base.zzzRole;
 drop table if exists base.userAccRole;
 drop table if exists base.role;
 drop table if exists base.userAcc;
 drop table if exists base.zzz;
+drop table if exists base.template;
 
 drop sequence if exists cntrl.temp_id;
 drop table if exists base.org;

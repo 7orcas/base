@@ -15,12 +15,15 @@ namespace Backend.Base.Org
 {
     public class OrgService: BaseService, OrgServiceI
     {
+        private readonly LabelServiceI _labelService;
         private readonly IMemoryCache _memoryCache;
-        
+
         public OrgService(IServiceProvider serviceProvider,
+            LabelServiceI labelService,
             IMemoryCache memoryCache) 
             : base(serviceProvider) 
         {
+            _labelService = labelService;
             _memoryCache = memoryCache;
         }
 
@@ -78,6 +81,7 @@ namespace Backend.Base.Org
                         Update("encoded", org.Encoded) +
                         Update("updated", org.Updated) +
                         Update("isActive", org.IsActive) +
+                        Update("forgotenabled", org.Forgotenabled) +
                         Update("langCode", org.LangCode) +
                         NoComma(Update("langLabelVariant", org.LangLabelVariant)) +
                     " WHERE nr = " + org.Nr
@@ -99,6 +103,43 @@ namespace Backend.Base.Org
             };
 
             return orgDto;
+        }
+
+        public async Task<string> GetPasswordRules(string langCode, int orgNr)
+        {
+            var org = await GetOrg(orgNr);
+            var val = org.Encoding.PasswordRule;
+            var labels = await _labelService.GetLangCodeDic(langCode, org.LangLabelVariant);
+
+            var rules = "";
+            if (val.MinLength > 0) rules += "<br>" + GetLabel("LenMin", labels) + "=" + val.MinLength;
+            if (val.MaxLength > 0) rules += "<br>" + GetLabel("LenMax", labels) + "=" + val.MinLength;
+            if (val.IsMixedCase) rules += "<br>" + GetLabel("PWmc", labels);
+            if (val.IsNumber) rules += "<br>" + GetLabel("PWNum", labels);
+            if (val.IsNonLetter) rules += "<br>" + GetLabel("PWNonLet", labels);
+
+            if (!string.IsNullOrEmpty(rules))
+                rules = rules.Substring("<br>".Length);
+
+            return rules;
+        }
+
+
+        public bool ValidatePassword(string pw, OrgEnt org)
+        {
+            var val = org.Encoding.PasswordRule;
+
+            if (string.IsNullOrEmpty(pw))
+                return false;
+
+            if (val.MinLength > 0 && pw.Length < val.MinLength) return false;
+            if (val.MaxLength > 0 && pw.Length > val.MaxLength) return false;
+            if (val.IsMixedCase && !pw.Any(char.IsUpper)) return false;
+            if (val.IsMixedCase && !pw.Any(char.IsLower)) return false;
+            if (val.IsNumber && !pw.Any(char.IsDigit)) return false;
+            if (val.IsNonLetter && !pw.Any(c => !char.IsLetter(c))) return false;
+
+            return true;
         }
 
 

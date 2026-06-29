@@ -1,12 +1,13 @@
+using Common;
 using FrontendServer;
-using GC = FrontendServer.GlobalConstants;
+using FrontendServer.Base.Cache;
+using FrontendServer.Base.Config;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.AspNetCore.Components.Web;
 using MudBlazor.Services;
 using System.Net;
-using FrontendServer.Base.Cache;
-using FrontendServer.Base.Config;
+using GC = FrontendServer.GlobalConstants;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,7 +30,7 @@ builder.Services.AddMudServices();
 //ToDo is the ConfigurePrimaryHttpMessageHandler required?
 builder.Services.AddHttpClient(GC.UnAuthorizedClientKey, client =>
 {
-    client.BaseAddress = new Uri(AppSettings.BackendApiBaseUri); 
+    client.BaseAddress = new Uri(AppSettings.Urls.Api); 
 }).ConfigurePrimaryHttpMessageHandler(() =>
 {
     var handler = new HttpClientHandler();
@@ -40,7 +41,7 @@ builder.Services.AddHttpClient(GC.UnAuthorizedClientKey, client =>
 
 builder.Services.AddHttpClient(GC.AuthorizedClientKey, client =>
 {
-    client.BaseAddress = new Uri(AppSettings.AuthorizedClientBaseUri);
+    client.BaseAddress = new Uri(AppSettings.Urls.Api);
 }); //.AddHttpMessageHandler<AuthorizationMessageHandler>();
 builder.Services.AddHttpContextAccessor();
 
@@ -91,10 +92,9 @@ app.Run();
 
 void LoadAppSettings(WebApplicationBuilder builder)
 {
-    AppSettings.BackendApiBaseUri = builder.Configuration["Urls:BackendApiBaseUri"];
-    AppSettings.AuthorizedClientBaseUri = builder.Configuration["Urls:AuthorizedClientBaseUri"];
-
- 
+    var urls = new AppUrls();
+    urls.Api = builder.Configuration["Urls:Api"];
+    AppSettings.Urls = urls;
 }
 
 

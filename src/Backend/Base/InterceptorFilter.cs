@@ -19,8 +19,10 @@ namespace Backend.Base
         private readonly SessionServiceI _sessionService;
         private readonly PermissionServiceI _permissionService;
         private readonly AuditServiceI _auditService;
-        private readonly string[] nonAuthorisedMethods = { "LoginOptions", "Login", "GetToken", 
+        private readonly string[] nonAuthorisedMethods = { 
+            "LoginOptions", "Login", "GetToken", "LoginLabels", "LoginOrg",
             "RefreshExpiredToken", "RefreshCurrentToken",
+            "ResetRequest", "ResetAction", "GetPasswordRules",
             "SetupMfa", "VerifyMfa"
         };
 
@@ -54,7 +56,7 @@ namespace Backend.Base
             if (!string.IsNullOrEmpty(authorizationHeader) && authorizationHeader.StartsWith("Bearer"))
             {
                 var token = authorizationHeader.Substring("Bearer".Length);
-                var tv = _tokenService.DecodeJWToken(token);
+                var tv = _tokenService.DecodeToken(token);
 
                 if (tv == null)
                 {

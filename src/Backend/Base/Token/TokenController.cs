@@ -37,7 +37,7 @@ namespace Backend.Base.Token
                 return Unauthorized("No token found in session");
             }
 
-            var tv = _tokenService.DecodeJWToken(token);
+            var tv = _tokenService.DecodeToken(token);
             var refreshToken = await _tokenService.CreateRefreshToken(tv);
 
             var handler = new JwtSecurityTokenHandler();
