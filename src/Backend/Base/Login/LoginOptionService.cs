@@ -44,6 +44,7 @@ namespace Backend.Base.Login
                         loginOption = new LoginOptionEnt
                         {
                             UrlSuffix = GetString(r, "urlsuffix"),
+                            OrgNr = GetOrgNr(r),
                             OrgNrs = GetString(r, "orgnrs"),
                             LangCode = GetString(r, "langcode"),
                             LangLabelVariant = GetIntNull(r, "langlabelvariant"),
@@ -98,14 +99,20 @@ namespace Backend.Base.Login
         //Initialise login options 
         public async Task<LoginOptionDto> InitialiseLoginOptions(LoginOptionEnt ent)
         {
+            //Get the default org for this login option
+            var org = await _orgService.GetOrg(ent.OrgNr);
+            var icon = string.Empty;
+            if (!string.IsNullOrEmpty(org.Icon)) icon = org.Icon;
 
             var orgs = new List<OrgDto>();
             var langs = new List<LangCodeDto>();
             var dto = new LoginOptionDto
             {
                 UrlSuffix = ent.UrlSuffix,
+                Code = org.Code,
+                Icon = icon,
                 LangCode = ent.LangCode,
-                LangLabelVariant = ent.LangLabelVariant, 
+                LangLabelVariant = ent.LangLabelVariant,
                 Orgs = orgs,
                 LangCodes = langs,
                 MFA = ent.MFA,
@@ -113,7 +120,7 @@ namespace Backend.Base.Login
                 RememberMe = ent.RememberMe,
                 Forgot = ent.Forgot,
                 SelfRegistration = ent.SelfRegistration,
-                Masquerade= ent.Masquerade
+                Masquerade = ent.Masquerade
             };
 
             foreach (var part in ent.OrgNrs.Split(","))

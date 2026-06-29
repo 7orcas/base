@@ -32,22 +32,6 @@ namespace Backend.Base.Template
         }
 
 
-        //public string RenderTemplate(ResetRequestEmail request)
-        //{
-        //    if (string.IsNullOrWhiteSpace(request.Template()))
-        //        throw new ArgumentException("Template cannot be empty");
-
-        //    var template = Scriban.Template.Parse(request.TemplateHtml());
-
-        //    if (template.HasErrors)
-        //        throw new Exception("Template parsing failed");
-
-        //    var result = template.Render(request.Data, member => member.Name);
-
-        //    return result;
-        //}
-
-
         public async Task SendEmailAsync(string toEmail, string subject, string htmlBody)
         {
             var message = new MimeMessage();

@@ -20,7 +20,7 @@ namespace Backend.Base
         private readonly PermissionServiceI _permissionService;
         private readonly AuditServiceI _auditService;
         private readonly string[] nonAuthorisedMethods = { 
-            "LoginOptions", "Login", "GetToken", "LoginLabels",
+            "LoginOptions", "Login", "GetToken", "LoginLabels", "LoginOrg",
             "RefreshExpiredToken", "RefreshCurrentToken",
             "ResetRequest", "ResetAction", "GetPasswordRules",
             "SetupMfa", "VerifyMfa"

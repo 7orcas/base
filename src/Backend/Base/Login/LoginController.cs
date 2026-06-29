@@ -126,6 +126,30 @@ namespace Backend.Base.Login
             return Ok(r);
         }
 
+        /// <summary>
+        /// Get Org
+        /// </summary>
+        /// <param name="nr"></param>
+        /// <returns></returns>
+        [HttpGet("org")]
+        public async Task<IActionResult> LoginOrg([FromQuery] int orgNr)
+        {
+            var org = await _orgService.GetOrg(orgNr);
+
+            var r = new _ResponseDto
+            {
+                SuccessMessage = "Config Ok",
+                Result = new OrgDto
+                {
+                    Nr = org.Nr,
+                    Code = org.Code,
+                    Description = org.Description,
+                    Icon = org.Icon,
+                }
+            };
+            return Ok(r);
+        }
+
         [HttpGet("passwordrules")]
         public async Task<IActionResult> GetPasswordRules([FromQuery] string langCode, [FromQuery] int orgNr)
         {
@@ -159,13 +183,13 @@ namespace Backend.Base.Login
         {
             var ipAddress = GetClientIp();
 
-            var success = await _loginService.ResetAction(action.Password, action.Token, ipAddress);
+            var rtn = await _loginService.ResetAction(action.Password, action.Token, ipAddress, action.OrgNr, action.LangCode);
 
             var r = new _ResponseDto
             {
-                SuccessMessage = "Reset Action Ok",
-                Result = "",
-                Valid = true,
+                SuccessMessage = "Reset Action",
+                Result = rtn.message,
+                Valid = rtn.success,
             };
             return Ok(r);
         }

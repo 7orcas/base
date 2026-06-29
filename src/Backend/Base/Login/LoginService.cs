@@ -418,31 +418,58 @@ namespace Backend.Base.Login
             return true;
         }
 
-        //ToDo test token values and reset
-        public async Task<bool> ResetAction(string password, string token, string ipAddress)
+        /*
+         * Returns:
+         * - success message
+         * - error message (if attempt is still valid)
+         * - emtpy string if suspicious (and logged)
+         */
+        public async Task<(bool success, string message)> ResetAction(string password, string token, string ipAddress, int orgNr, string langCode)
         {
-            //var tv = _tokenService.DecodeToken(token);
+            var dic = await _labelService.GetLangCodeDic(langCode, null);
+            var tv = _tokenService.DecodeToken(token);
 
-            //if (tv == null
-            //    || tv.IpAddress != ipAddress) 
-            //    return false;
 
-            //var login = await GetLoginByEmail(tv.Username);
-var login = await GetLoginByEmail("xx123");
-
-            if (login == null || !login.IsActive)
-                return false;
-
-            var org = await _orgService.GetOrg(login.OrgNrDefault);
+            //Check org
+            var org = await _orgService.GetOrg(orgNr);
 
             if (org == null
                 || !org.IsActive
                 || !org.Forgotenabled)
-                return false;
-            
-            if (!_orgService.ValidatePassword(password, org)) 
-                return false;
+            {
+                var user = tv != null? tv.Username : "null";
+                _log.Warning("Invalid OrgNr when resetting password OrgNr {orgNr} Username {username}", orgNr, user);
+                return (false, "");
+            }
 
+            if (tv != null && tv.IpAddress != ipAddress)
+            {
+                _log.Warning("Ipaddress mismatch when resetting password ipAddress {ipAddress} token-ipAddress {token-ipAddress}", ipAddress, tv.IpAddress);
+                return (false, "");
+            }
+
+            if (tv == null)
+                return (false, GetLabel("PWResetErr1", dic));
+
+            var login = await GetLoginByEmail(tv.Username);
+
+            //TEST ONLY
+            //var login = await GetLoginByEmail("xx123"); 
+
+            if (login == null)
+                return (false, "");
+
+            if (!login.IsActive)
+                return (false, GetLabel("PWResetErr2", dic)); 
+
+            if (login.OrgNrDefault != orgNr)
+            {
+                _log.Warning("OrgNr mismatch when resetting password Userid {Userid} OrgNr {OrgNr}", login.Userid, orgNr);
+                return (false, "");
+            }
+
+            if (!_orgService.ValidatePassword(password, org))
+                return (false, GetLabel("PWResetErr3", dic));
 
             login.Password = password;
 
@@ -452,8 +479,7 @@ var login = await GetLoginByEmail("xx123");
                   + "WHERE id = " + login.Id
               );
 
-            return true;
-
+            return (true, GetLabel("PWResetRsp", dic));
         }
 
     }

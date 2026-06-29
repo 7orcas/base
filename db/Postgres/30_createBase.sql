@@ -14,7 +14,8 @@ CREATE SEQUENCE IF NOT EXISTS cntrl.temp_id
 CREATE TABLE cntrl.loginoption (
     urlsuffix TEXT PRIMARY KEY NOT NULL,
 	isdefault BOOLEAN NOT NULL DEFAULT FALSE,
-    orgnrs TEXT NOT NULL,
+    orgnr INTEGER NOT NULL,
+	orgnrs TEXT NOT NULL,
     isactive BOOLEAN NOT NULL DEFAULT TRUE,
     langcode VARCHAR(4) NOT NULL,
     langlabelvariant INTEGER,
@@ -51,6 +52,7 @@ CREATE TABLE base.org (
     isactive BOOLEAN NOT NULL DEFAULT TRUE,
     langcode VARCHAR(4),
     langlabelvariant INTEGER,
+	icon TEXT,
 	mfarequired BOOLEAN DEFAULT FALSE,
 	forgotenabled BOOLEAN DEFAULT FALSE
 );

@@ -1,6 +1,8 @@
 New,New
 Close,Close
 Delete,Delete
+Send,Send
+Cancel,Cancel
 On,On
 Off,Off
 Org,Organisation
@@ -11,6 +13,7 @@ OrgSub,Configuration of Organisation
 Conf,Configuration
 ConfSub,User Configuration
 ChgPw,Change Password
+PwChg,Password Changed
 PW,Password
 PWn,New Password
 PWc,Confirm Password
@@ -19,15 +22,22 @@ PWs,Passwords
 PWx,Passwords do not match
 PWr,Password Rules
 PWsr,Show Password Rules
+PWhr,Hide Password Rules
 PWmc,Must be mixed case
 PWNonLet,Must contain non-letter
 PWNum,Must contain a number
 PWAt,Max. number of login attempts
+PWReset0,Please enter your email address to request a password reset. 
 PWReset1,If an account is associated with the email address provided|| a password reset link will be sent shortly. 
 PWReset2,Please check your inbox and spam/junk folders. 
 PWReset3,For security reasons|| we cannot confirm whether an email address is registered.
 PWReset,Password Reset
+PWResetES,Password reset email sent
 PWResetRsp,Your password change has been successful.
+PWResetErr1,Invalid or expired token|| please retry
+PWResetErr2,Your account is inactive
+PWResetErr3,Invalid password|| it must follow the password rules
+PWResetErr4,Your email address is required
 LEx,Login Expired|| please log in again.
 BConf,Base Configuration
 Lang,Language
@@ -86,7 +96,7 @@ Entity,Entity
 Field,Field
 Message,Message
 RemMe,Remember Me
-ForgotUP,Forgot Username / Password?
+ForgotUP,Forgot your username and/or password?
 SignUp,Sign Up
 Oops,Something went wrong! Please see your system admin
 <LAST>,<LAST LINE>

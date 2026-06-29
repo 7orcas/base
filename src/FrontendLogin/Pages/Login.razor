@@ -12,7 +12,12 @@
 <div class="d-flex justify-content-center align-items-center vh-100 bg-light">
     <div class="card shadow-lg p-4" style="width: 400px; border-radius: 12px;">
         
-        <h3 class="text-center mb-4">🔐 @GetLabel("Login")</h3>
+        @if (options != null)
+        {
+            <h3 class="text-center mb-4">@options.Icon @options.Code</h3>
+        }
+
+        <h4 class="text-center mb-4">@GetLabel("Login")</h4>
 
             <EditForm Model="@loginRequest" OnValidSubmit="@HandleLogin">
                 <DataAnnotationsValidator />
@@ -70,14 +75,14 @@
                 
             @if (options != null && options.RememberMe)
             {
-                <div class="form-check mb-2">
+                <div class="mb-2">
                     <InputCheckbox class="form-check-input" @bind-Value="loginRequest.RememberMe" id="rememberMe" />
                     <label class="form-check-label" for="rememberMe">@GetLabel("RemMe")</label>
                 </div>
             }
             @if (options != null && options.Forgot)
             {
-                <div class="form-check mb-2">
+                <div class="mb-2">
                     <button type="button" class="btn btn-link p-0" @onclick="GoToForgot">
                         @GetLabel("ForgotUP")
                     </button>
@@ -85,16 +90,15 @@
             }
         @if (options != null && options.SelfRegistration)
         {
-            <div class="form-check mb-2">
+            <div class="mb-2">
                 <button type="button" class="btn btn-link p-0" @onclick="GoToSelfRegistration">
                     @GetLabel("SignUp")
                 </button>
             </div>
         }
 
-            @if (showForgotModal)
-            {
-
+        @if (showForgotModal)
+        {
             <div style="
                 position:fixed;
                 top:0;left:0;right:0;bottom:0;
@@ -106,59 +110,78 @@
                 ">
                 <div style="background:white;padding:20px;border-radius:8px;width:300px;">
 
-                    <h5>Reset Password</h5>
+                    <h5>@GetLabel("PWReset")</h5>
 
                     <div class="mb-2">
-                        <label>Email:</label>
+                        <label>@GetLabel("PWReset0")</label>
                         <input class="form-control" @bind="forgotEmail" />
                     </div>
 
-                    @if (!string.IsNullOrEmpty(forgotModalMessage))
-                    {
-                        <p>@forgotModalMessage</p>
-                    }
-
                     <div class="mt-3 d-flex justify-content-end gap-2">
                         <button class="btn btn-secondary" @onclick="CloseForgotModal">
-                            Cancel
+                            @GetLabel("Cancel")
                         </button>
 
                         <button class="btn btn-primary" @onclick="SubmitForgot">
-                            Send
+                            @GetLabel("Send")
                         </button>
                     </div>
 
                 </div>
             </div>
+        }
 
-            }
+        @if (showForgotSent)
+        {
+            <div style="
+                position:fixed;
+                top:0;left:0;right:0;bottom:0;
+                background:rgba(0,0,0,0.5);
+                display:flex;
+                justify-content:center;
+                align-items:center;
+                z-index:9999;
+                ">
+                <div style="background:white;padding:20px;border-radius:8px;width:300px;">
 
-            @if (showQr)
-            {
-                <div class="mt-4 text-center">
-                    <h5>Scan with Microsoft Authenticator</h5>
+                    <h5>@GetLabel("PWResetES")</h5>
+                    <p>@((MarkupString)forgotModalMessage)</p>
+                    <div class="mt-3 d-flex justify-content-end gap-2">
+                        <button class="btn btn-secondary" @onclick="CloseForgotModal">
+                            Close
+                        </button>
+                    </div>
 
-                    <img src="@qrCodeBase64" style="width:200px;height:200px;" />
-
-                    <p class="mt-2">
-                        Or enter this key manually:<br />
-                        <b>@manualKey</b>
-                    </p>
                 </div>
-            }
+            </div>
+        }
 
-            @if (showMfaInput)
-            {
-                <div class="mt-3">
-                    <label>Enter code from Microsoft Authenticator:</label>
+        @if (showQr)
+        {
+            <div class="mt-4 text-center">
+                <h5>Scan with Microsoft Authenticator</h5>
 
-                    <InputText @bind-Value="mfaCode" class="form-control" />
+                <img src="@qrCodeBase64" style="width:200px;height:200px;" />
 
-                    <button type="button" class="btn btn-success mt-2" @onclick="VerifyMfa">
-                        Verify
-                    </button>
-                </div>
-            }
+                <p class="mt-2">
+                    Or enter this key manually:<br />
+                    <b>@manualKey</b>
+                </p>
+            </div>
+        }
+
+        @if (showMfaInput)
+        {
+            <div class="mt-3">
+                <label>Enter code from Microsoft Authenticator:</label>
+
+                <InputText @bind-Value="mfaCode" class="form-control" />
+
+                <button type="button" class="btn btn-success mt-2" @onclick="VerifyMfa">
+                    Verify
+                </button>
+            </div>
+        }
             
 
         <p>@successMessage</p>
@@ -196,6 +219,7 @@
 
     //Fogot Password
     private bool showForgotModal = false;
+    private bool showForgotSent = false;
     private string forgotEmail = "";
     private string forgotModalMessage = "";
 
@@ -294,7 +318,7 @@
     
     private void GoToForgot()
     {
-        forgotEmail = "js@7orcas.com";             
+        forgotEmail = "";             
         forgotModalMessage = "";
         showForgotModal = true;
     }
@@ -303,7 +327,7 @@
     {
         @if (string.IsNullOrWhiteSpace(forgotEmail))
         {
-            forgotModalMessage = "Email is required";
+            forgotModalMessage = GetLabel("PWResetErr4");
             return;
         }
 
@@ -312,16 +336,13 @@
         var r = await response.Content.ReadAsStringAsync();
         var dto = JsonConvert.DeserializeObject<_ResponseDto>(r);
 
-        if (dto.Valid)
-        {
-            forgotModalMessage = "If an account is associated with the email address provided, a password reset link will be sent shortly.";
-        }
+        if (true) //dto.Valid)
+            forgotModalMessage = GetLabel("PWReset1") + "<br>" + GetLabel("PWReset2") + "<br>" + GetLabel("PWReset3");
         else
-        {
-            forgotModalMessage = "Problem with reset request: " + dto.ErrorMessage;
-        }
+            forgotModalMessage = GetLabel("Oops");
 
-        showForgotModal = true;
+        showForgotModal = false;
+        showForgotSent = true;
         await InvokeAsync(StateHasChanged);
     }
 
@@ -330,10 +351,10 @@
 
     }
 
-
     private void CloseForgotModal()
     {
         showForgotModal = false;
+        showForgotSent = false;
     }
 
     private string GetLabel(string key)

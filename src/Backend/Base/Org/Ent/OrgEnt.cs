@@ -19,6 +19,7 @@ namespace Backend.Base.Org.Ent
         public bool IsActive { get; set; }
         public string? LangCode { get; set; }
         public int? LangLabelVariant { get; set; }
+        public string? Icon { get; set; }
         public bool MfaRequired { get; set; }
         public bool Forgotenabled { get; set; }
 

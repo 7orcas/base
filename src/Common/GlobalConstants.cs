@@ -14,7 +14,8 @@ namespace Common
 
         public const int NewRecordId = -9000;
 
-        public const string LangCodeDefault = "en";
+        public const string LangCodeDefault      = "en";
+        public const int OrgNrDefault            = 0;
 
         public const int StatusCodeOk            = 200;
         public const int StatusCodeLoginExpired  = 401;
