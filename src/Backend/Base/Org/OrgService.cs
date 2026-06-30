@@ -81,7 +81,9 @@ namespace Backend.Base.Org
                         Update("encoded", org.Encoded) +
                         Update("updated", org.Updated) +
                         Update("isActive", org.IsActive) +
+                        Update("mfaRequired", org.MfaRequired) +
                         Update("forgotenabled", org.Forgotenabled) +
+                        Update("emailRequired", org.EmailRequired) +
                         Update("langCode", org.LangCode) +
                         NoComma(Update("langLabelVariant", org.LangLabelVariant)) +
                     " WHERE nr = " + org.Nr

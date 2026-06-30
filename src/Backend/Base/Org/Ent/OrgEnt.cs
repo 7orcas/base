@@ -22,6 +22,7 @@ namespace Backend.Base.Org.Ent
         public string? Icon { get; set; }
         public bool MfaRequired { get; set; }
         public bool Forgotenabled { get; set; }
+        public bool EmailRequired { get; set; }
 
         public OrgEnc Encoding { get; set; }
 

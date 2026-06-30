@@ -272,23 +272,25 @@ namespace Backend.Base.Login
 
             return account;
         }
-
-        //ToDo Language codes!
+        
         private async Task<string> Validate (LoginEnt l, string password, OrgEnt org)
         {
+            var langCode = l != null && l.LangCode != null ? l.LangCode : org.LangCode;
+            var dic = await _labelService.GetLangCodeDic(langCode, org.LangLabelVariant);
+
             if (l == null || l.Id == 0)
-                return "Invalid Username and/or Password.";
+                return GetLabel("LoginUP", "Invalid Username and/or Password", dic);
 
             await IncrementAttempts(l);
 
             if (string.IsNullOrEmpty(password) || !password.Equals(l.Password))
-                return "Invalid Username and/or Password";
-            
+                return GetLabel("LoginUP", "Invalid Username and/or Password", dic);
+
             if (l.Attempts > org.Encoding.MaxNumberLoginAttempts)
-                return "Max Attempts";
+                return GetLabel("LoginXP", "Max Attempts have been reached", dic);
 
             if (!l.IsActive)
-                return "In active Login";
+                return GetLabel("LoginIA", "Username is Inactive", dic);
 
             return null;
         }

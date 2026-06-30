@@ -74,11 +74,13 @@ public abstract class BaseService : SqlUtils
             ")";
     }
 
-    protected string GetLabel(string langKey, Dictionary<string, string> labels)
+    protected string GetLabel(string langKey, Dictionary<string, string> labels) => GetLabel(langKey, langKey, labels);
+    
+    protected string GetLabel(string langKey, string nullDefault, Dictionary<string, string> labels)
     {
         if (labels.ContainsKey(langKey))
             return labels[langKey];
-        return langKey;
+        return nullDefault;
     }
 
 }

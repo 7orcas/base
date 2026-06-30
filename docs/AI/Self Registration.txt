@@ -1,25 +1,31 @@
 I have a c# ,.Net, Blazor Server application.
 The .Net Backend is an API project.
 The Blazor frontend is made up of 2 Blazor server projects, a Login project and the Client project.
-I want to add a 'self registration' function to my login screen
-This will allow new users to create a login, password and a few defaults
-MFA may also be enabled by the customer - ie they may require new users to also setup mfa
-Give me a common workflow to allow the user to do this
+The process is a user goes to the Login project, logs in and if successful is directed to the Client project.
+I want to create a user registration screen (ie create new users) in both Blazor projects.
+In the Login project it will be self registration that will use defaults.
+In the Client project it will be an admin user adding new users - they will have more options during the setup.
+- Give me step by step instructions to:
+  - Create a common screen that can be used in both projects
+  - The backend api will be used to supply the setup options and defaults
 
 
 User clicks “Register” (Login App UI)
 Display a form:
-- Email / Username
+- Username
+- Email
 - Password + Confirm password
 - Optional defaults (e.g., Langcode)
 - Accept terms checkbox
    I agree to the Terms of Service and Privacy Policy. 
    I understand that my account may be subject to security measures such as multi-factor authentication where required.
 
-
 Email Verification 
 - Generate token
 - Send email with link:
+
+User Confirmation
+- Confirmation page in Login App
 
 
 

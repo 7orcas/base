@@ -1,6 +1,7 @@
 using Backend;
 using Backend.App.Machines;
 using Backend.Base.DataProtection;
+using Backend.Base.Registration;
 using Backend.Base.Template;
 using Backend.Base.Token.Ent;
 using Backend.Data;
@@ -144,6 +145,7 @@ builder.Services.AddScoped<LoginOptionServiceI, LoginOptionService>();
 builder.Services.AddScoped<MfaServiceI, MfaService>();
 builder.Services.AddScoped<MfaKeyProtector>();
 builder.Services.AddScoped<CookieProtector>();
+builder.Services.AddScoped<RegistrationServiceI, RegistrationService>();
 builder.Services.AddScoped<TokenServiceI, TokenService>();
 builder.Services.AddScoped<TokenRepoI, TokenRepo>();
 builder.Services.AddScoped<OrgServiceI, OrgService>();

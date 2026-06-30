@@ -1,3 +1,4 @@
+SysA,Please see your system admin
 New,New
 Close,Close
 Delete,Delete
@@ -81,6 +82,8 @@ UserRs,User Roles
 LDM,Light/Dark Mode
 Logout,Logout
 Login,Login
+LoginUP,Invalid Username and/or Password
+LoginXP,Max Attempts have been reached 
 Audit,Audit
 ValE,Validation Error
 ValT,There are Validation Errors|| Save is unsuccessful.

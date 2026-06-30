@@ -51,13 +51,13 @@ namespace Backend.Base.Login.Ent
     public class LoginResponse
     {
         public bool Valid { get; set; } = false;
-
         public string TokenKey { get; set; }
         public string MainUrl { get; set; }
         public string LangCode { get; set; }
         public string ErrorMessage { get; set; }
         public bool MfaRequired { get; set; } = false;
         public bool MfaEnabled { get; set; } = false;
+        public bool Emailverified { get; set; } = false;
     }
 
 }

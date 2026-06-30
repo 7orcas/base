@@ -26,6 +26,7 @@ namespace Backend.Base.Org
             org.Encoded = GetEncoded(r);
             org.MfaRequired = GetBoolean(r, "mfaRequired");
             org.Forgotenabled = GetBoolean(r, "forgotEnabled");
+            org.EmailRequired = GetBoolean(r, "emailRequired");
             org.Decode();
 
             if (org.LangCode == null) org.LangCode = GC.LangCodeDefault;

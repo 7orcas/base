@@ -54,7 +54,8 @@ CREATE TABLE base.org (
     langlabelvariant INTEGER,
 	icon TEXT,
 	mfarequired BOOLEAN DEFAULT FALSE,
-	forgotenabled BOOLEAN DEFAULT FALSE
+	forgotenabled BOOLEAN DEFAULT FALSE,
+	emailrequired BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE base.zzz (
@@ -62,6 +63,7 @@ CREATE TABLE base.zzz (
     xxx VARCHAR(40) NOT NULL UNIQUE,
     yyy VARCHAR(100) NOT NULL,
 	email VARCHAR(100) NOT NULL,
+	emailverified BOOLEAN DEFAULT FALSE,
 	orgnrdefault INTEGER NOT NULL,
     langcode VARCHAR(4),
     attempts INTEGER DEFAULT 0,

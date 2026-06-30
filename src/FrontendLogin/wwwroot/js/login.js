@@ -12,7 +12,7 @@
     });
 
     if (!response.ok) {
-        throw new Error("Login failed");
+        throw new Error("Login failed x");
     }
 
     return await response.json();

@@ -10,6 +10,20 @@ If you need to use a comma, then replace with ||
 :
 
 
+Sign Up
+	I have a c# ,.Net, Blazor Server application.
+	The .Net Backend is an API project.
+	The Blazor frontend is made up of 2 Blazor server projects, a Login project and the Client project.
+	The process is a user goes to the Login project, logs in and if successful is directed to the Client project.
+	I want to create a user registration screen (ie create new users) in both Blazor projects.
+	In the Login project it will be self registration that will use defaults.
+	In the Client project it will be an admin user addingg new users - they will have more options during the setup.
+	- Give me step by step instructions to:
+	  - Create a common screen that can be used in both projects
+	  - The backend api will be used to supply the setup options and defaults
+
+
+
 MFA
   - Give me step by step instructions to:
     - Add MFA to to my Login project
