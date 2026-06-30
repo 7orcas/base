@@ -24,7 +24,6 @@ namespace Backend.Base.Login
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="labelService"></param>
         public LoginController(
             IServiceProvider serviceProvider,
             LoginServiceI loginService,

@@ -286,6 +286,17 @@
                 urlX,
                 loginRequest);
 
+
+            // var response = await client.PostAsJsonAsync(url, loginRequest);
+            // if (!response.IsSuccessStatusCode)
+            // {
+            //     errorMessage = isMfa ? "Invalid MFA code" : "Invalid username or password";
+            //     return null;
+            // }
+            // var json = await response.Content.ReadAsStringAsync();
+            // var responseDto = JsonConvert.DeserializeObject<_ResponseDto>(json);
+
+
             if (!responseDto.Valid)
             {
                 errorMessage = responseDto.ErrorMessage;
