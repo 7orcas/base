@@ -25,8 +25,11 @@ namespace Backend.Base.Org
             org.LangLabelVariant = GetIntNull(r, "langLabelVariant");
             org.Encoded = GetEncoded(r);
             org.MfaRequired = GetBoolean(r, "mfaRequired");
-            org.Forgotenabled = GetBoolean(r, "forgotEnabled");
+            org.ForgotEnabled = GetBoolean(r, "forgotEnabled");
+            org.SignupEnabled = GetBoolean(r, "signupEnabled");
             org.EmailRequired = GetBoolean(r, "emailRequired");
+            org.EmailVerified = GetBoolean(r, "emailVerified");
+            org.IsEmailHtml = GetBoolean(r, "isEmailHtml");
             org.Decode();
 
             if (org.LangCode == null) org.LangCode = GC.LangCodeDefault;

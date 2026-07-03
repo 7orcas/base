@@ -111,6 +111,7 @@ namespace Backend.Base.Login
                 UrlSuffix = ent.UrlSuffix,
                 Code = org.Code,
                 Icon = icon,
+                OrgNr = ent.OrgNr,
                 LangCode = ent.LangCode,
                 LangLabelVariant = ent.LangLabelVariant,
                 Orgs = orgs,

@@ -40,7 +40,7 @@ namespace Backend.Base.Login
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
             var ipAddress = GetClientIp();
-            var login = await _loginService.LoginUser(ipAddress, request.Username, request.Password, request.Org, request.SourceApplication, request.LangCode, false);
+            var login = await _loginService.LoginUser(ipAddress, request.UserName, request.Password, request.Org, request.SourceApplication, request.LangCode, false);
             var res = login.Response;
 
             if (!res.Valid)
@@ -57,7 +57,7 @@ namespace Backend.Base.Login
             {
                 cookie = "V=1" +
                     ",x=" + request.UrlSuffix +
-                    ",u=" + request.Username +
+                    ",u=" + request.UserName +
                     ",p=" + request.Password +
                     ",o=" + request.Org +
                     ",l=" + request.LangCode;
@@ -103,7 +103,7 @@ namespace Backend.Base.Login
         [HttpGet("loginlabels")]
         public async Task<IActionResult> LoginLabels([FromQuery] string langCode, [FromQuery] int? variant)
         {
-            var labels = await _labelService.GetLanguageLabelList(langCode, variant);
+            var labels = await _labelService.GetLanguageLabelListForLogin(langCode, variant);
             var list = new List<LangLabelDto>();
 
             foreach (var l in labels)

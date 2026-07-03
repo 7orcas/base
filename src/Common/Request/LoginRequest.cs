@@ -8,7 +8,7 @@ namespace Common.Request
 {
     public class LoginRequest
     {
-        public string Username { get; set; }
+        public string UserName { get; set; }
         public string? Masquerade { get; set; }
         public string Password { get; set; }
         public string LangCode { get; set; }
@@ -22,7 +22,7 @@ namespace Common.Request
 
         public bool IsPopulated()
         {
-            return !string.IsNullOrEmpty(Username)
+            return !string.IsNullOrEmpty(UserName)
                 && !string.IsNullOrEmpty(Password)
                 && !string.IsNullOrEmpty(LangCode);
         }

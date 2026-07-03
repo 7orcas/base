@@ -23,7 +23,7 @@ namespace Backend.Base
             "LoginOptions", "Login", "GetToken", "LoginLabels", "LoginOrg",
             "RefreshExpiredToken", "RefreshCurrentToken",
             "ResetRequest", "ResetAction", "GetPasswordRules",
-            "SelfRegistration",
+            "Signup",
             "SetupMfa", "VerifyMfa"
         };
 

@@ -17,6 +17,9 @@ namespace Backend.Base.Label
     public class LabelService : BaseService, LabelServiceI
     {
         private readonly IMemoryCache cache;
+        private const string LangCodesCacheKey = "C";
+        private const string AllLabelsCacheKey = "A";
+        private const string LoginLabelsCacheKey = "L";
 
         public LabelService(IServiceProvider serviceProvider,
             IMemoryCache memoryCache) 
@@ -31,7 +34,7 @@ namespace Backend.Base.Label
 
         public async Task<Dictionary<string, LangLabel>> GetLanguageLabelDic(string langCode, int? variant)
         {
-            var key = CacheKey(langCode, variant, "l");
+            var key = CacheKey(langCode, variant, AllLabelsCacheKey);
             var dic = cache.Get<Dictionary<string, LangLabel>>(key);
             if (dic != null) return dic;
 
@@ -45,7 +48,7 @@ namespace Backend.Base.Label
 
         public async Task<Dictionary<string, string>> GetLangCodeDic(string langCode, int? variant)
         {
-            var key = CacheKey(langCode, variant, "c");
+            var key = CacheKey(langCode, variant, LangCodesCacheKey);
             var dic = cache.Get<Dictionary<string, string>>(key);
             if (dic != null) return dic;
 
@@ -57,9 +60,9 @@ namespace Backend.Base.Label
         }
 
 
-        private async Task SetLanguageLabelDic(string langCode, int? variant, List<LangLabel> list)
+        private async Task SetLanguageLabelDic(string langCode, int? variant, List<LangLabel> list, string type)
         {
-            var key = CacheKey(langCode, variant, "l");
+            var key = CacheKey(langCode, variant, type);
             var dic = list.ToDictionary(x => x.LangKeyCode, x => x);
             cache.Set(key, dic);
         }
@@ -72,7 +75,7 @@ namespace Backend.Base.Label
          */
         public async Task<List<LangLabel>> GetLanguageLabelList(string langCode, int? variant)
         {
-            var key = CacheKey(langCode, variant, "l");
+            var key = CacheKey(langCode, variant, AllLabelsCacheKey);
             var dic = cache.Get<Dictionary<string, LangLabel>>(key);
             if (dic != null) return dic.Values.ToList(); 
 
@@ -95,7 +98,83 @@ namespace Backend.Base.Label
                 }
             }
 
-            await SetLanguageLabelDic(langCode, variant, list);
+            await SetLanguageLabelDic(langCode, variant, list, AllLabelsCacheKey);
+            return list;
+        }
+
+        /*
+         * Get language list for passed in language code (eg 'en') for login page only
+         */
+        public async Task<List<LangLabel>> GetLanguageLabelListForLogin(string langCode, int? variant)
+        {
+            var key = CacheKey(langCode, variant, LoginLabelsCacheKey);
+            var dic = cache.Get<Dictionary<string, LangLabel>>(key);
+            if (dic != null) return dic.Values.ToList();
+
+            var list = await GetLabelList(null, langCode, null, null, null);
+
+            // Filter the list to only include login-related keys
+            var loginKeys = new HashSet<string>
+            {
+                "Login",
+                "UserName",
+                "UserNameM",
+                "Email",
+                "Org",
+                "Lang",
+                "RemMe",
+                "ForgotUP",
+                "SignUp",
+                "SignUpFail",
+                "SysA",
+                "NotRobot",
+                "NotRobotConfirm",
+                "ChgPw",
+                "PW",
+                "PWc",
+                "PWx",
+                "PWn",
+                "PWsw",
+                "PWhr",
+                "PWsr",
+                "PWReset",
+                "PWReset0",
+                "PWReset1",
+                "PWReset2",
+                "PWReset3",
+                "Cancel",
+                "Send",
+                "PWResetES",
+                "Mfa1",
+                "Mfa2",
+                "MfaEr",
+                "Verify",
+                "Close"
+            };
+
+            list = list
+                .Where(x => loginKeys.Contains(x.LangKeyCode))
+                .ToList();
+
+            if (variant.HasValue)
+            {
+                try
+                {
+                    var dict = list.ToDictionary(x => x.LangKeyCode, x => x);
+
+                    var listX = await GetLabelList(null, langCode, null, null, variant);
+                    foreach (var label in listX)
+                        dict[label.LangKeyCode] = label;
+
+                    list = dict.Values.ToList();
+                }
+                catch
+                {
+                    _log.Error("Can't get language variants");
+                }
+            }
+
+            await SetLanguageLabelDic(langCode, variant, list, LoginLabelsCacheKey);
             return list;
         }
 

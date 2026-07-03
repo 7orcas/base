@@ -5,6 +5,7 @@
         public string UrlSuffix { get; set; }
         public string Code { get; set; }
         public string Icon { get; set; }
+        public int OrgNr { get; set; }
         public string LangCode { get; set; }
         public int? LangLabelVariant { get; set; }
         public List<OrgDto> Orgs { get; set; }

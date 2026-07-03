@@ -1,4 +1,5 @@
 ﻿using Npgsql;
+using System.ComponentModel.DataAnnotations;
 using GC = Backend.GlobalConstants;
 
 namespace Backend.Base;
@@ -82,5 +83,12 @@ public abstract class BaseService : SqlUtils
             return labels[langKey];
         return nullDefault;
     }
+
+    public bool IsValidEmail(string email)
+    {
+        var validator = new EmailAddressAttribute();
+        return validator.IsValid(email);
+    }
+
 
 }

@@ -1,5 +1,4 @@
-﻿
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using QRCoder;
 using GC = FrontendLogin.GlobalConstants;
 
@@ -50,7 +49,7 @@ namespace FrontendLogin.Pages
                 }
             }
 
-            errorMessage = "Failed to load MFA setup";
+            errorMessage = GetLabel("MfaEr") + "<br>" + GetLabel("SysA");
         }
 
         private string GenerateQrCode(string uri)

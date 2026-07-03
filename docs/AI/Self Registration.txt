@@ -27,11 +27,24 @@ Email Verification
 User Confirmation
 - Confirmation page in Login App
 
+reCAPTCHA v2
+- How do I implement the reCAPTCHA v2 'Am I a robot' checkbox in my Blazor server web app
+  Answer
+  - Create a reCAPTCHA v2 site in Google Cloud.
+  - Add the reCAPTCHA JavaScript to your page.
+  - Render the checkbox widget.
+  - Capture the token returned by reCAPTCHA.
+  - Verify the token on the server using your secret key before processing the form. Google's reCAPTCHA v2 checkbox is specifically designed for this workflow.
+
+
 
 
 My thoughts:
 - Add: base.org emailrequired - Must users' email address be verified?
+- Add: base.org reptcharequired - Users must click a 'Am I a robot' checkbox
 - Add: base.zzz emailverified - Is user's email address verified?
+  Don't allow login for unverified users
+- In Login.razor add dialog to input username, email, password, password confirm  
 - Validate registration form (eg email unique, password rules, orgnr)
 - Send email verification
 - Create 'Accept Terms' link - open in dialog (Use DI to allow override)

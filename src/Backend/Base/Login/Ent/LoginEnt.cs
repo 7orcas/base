@@ -9,11 +9,17 @@
 
 namespace Backend.Base.Login.Ent
 {
+
     public class LoginEnt
     {
+        public const int UseridMaxLength = 40;
+        public const int PasswordMaxLength = 100;
+        public const int EmailMaxLength = 100;
+
         public long Id { get; set; }
         public string Userid { get; set; }
         public string Email { get; set; }
+        public bool Emailverified { get; set; }
         public string Password { get; set; }
         public int OrgNrDefault { get; set; }
         public string? LangCode { get; set; }

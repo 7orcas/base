@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 using Npgsql;
 using Org.BouncyCastle.Asn1.Ocsp;
 using System.IO;
+using System.Reflection.Emit;
 using GC = Backend.GlobalConstants;
 
 /// <summary>
@@ -76,7 +77,7 @@ namespace Backend.Base.Login
                 }
 
                 var org = await _orgService.GetOrg(orgNr);
-                var err = await Validate(login, password, org);
+                var err = await ValidateUser(login, password, org);
                 if (err != null)
                 {
                     login.Response.Valid = false;
@@ -213,6 +214,7 @@ namespace Backend.Base.Login
                             Id = GetId(r),
                             Userid = GetString(r, "xxx"),
                             Email = GetString(r, "email"),
+                            Emailverified = GetBoolean(r, "emailverified"),
                             Password = GetString(r, "yyy"),
                             OrgNrDefault = GetInt(r, "orgnrdefault"),
                             LangCode = GetStringNull(r, "langCode"),
@@ -273,24 +275,27 @@ namespace Backend.Base.Login
             return account;
         }
         
-        private async Task<string> Validate (LoginEnt l, string password, OrgEnt org)
+        private async Task<string> ValidateUser (LoginEnt login, string password, OrgEnt org)
         {
-            var langCode = l != null && l.LangCode != null ? l.LangCode : org.LangCode;
-            var dic = await _labelService.GetLangCodeDic(langCode, org.LangLabelVariant);
+            var langCode = login != null && login.LangCode != null ? login.LangCode : org.LangCode;
+            var labels = await _labelService.GetLangCodeDic(langCode, org.LangLabelVariant);
 
-            if (l == null || l.Id == 0)
-                return GetLabel("LoginUP", "Invalid Username and/or Password", dic);
+            if (login == null || login.Id == 0)
+                return GetLabel("LoginUP", "Invalid Username and/or Password", labels);
 
-            await IncrementAttempts(l);
+            if (org.EmailVerified && (string.IsNullOrEmpty(login.Email) || !login.Emailverified))
+                return GetLabel("EmailVL", "Your email address must be verified before you can login", labels);
 
-            if (string.IsNullOrEmpty(password) || !password.Equals(l.Password))
-                return GetLabel("LoginUP", "Invalid Username and/or Password", dic);
+            await IncrementAttempts(login);
 
-            if (l.Attempts > org.Encoding.MaxNumberLoginAttempts)
-                return GetLabel("LoginXP", "Max Attempts have been reached", dic);
+            if (string.IsNullOrEmpty(password) || !password.Equals(login.Password))
+                return GetLabel("LoginUP", "Invalid Username and/or Password", labels);
 
-            if (!l.IsActive)
-                return GetLabel("LoginIA", "Username is Inactive", dic);
+            if (login.Attempts > org.Encoding.MaxNumberLoginAttempts)
+                return GetLabel("LoginXP", "Max Attempts have been reached", labels);
+
+            if (!login.IsActive)
+                return GetLabel("LoginIA", "Username is Inactive", labels);
 
             return null;
         }
@@ -388,7 +393,7 @@ namespace Backend.Base.Login
 
             if (org == null 
                 || !org.IsActive
-                || !org.Forgotenabled)
+                || !org.ForgotEnabled)
             {
                 _log.Warning("Reset request invalid org, email {Email} ipAddress {ipAddress}", email, ipAddress);
                 return false;
@@ -428,7 +433,7 @@ namespace Backend.Base.Login
          */
         public async Task<(bool success, string message)> ResetAction(string password, string token, string ipAddress, int orgNr, string langCode)
         {
-            var dic = await _labelService.GetLangCodeDic(langCode, null);
+            var labels = await _labelService.GetLangCodeDic(langCode, null);
             var tv = _tokenService.DecodeToken(token);
 
 
@@ -437,7 +442,7 @@ namespace Backend.Base.Login
 
             if (org == null
                 || !org.IsActive
-                || !org.Forgotenabled)
+                || !org.ForgotEnabled)
             {
                 var user = tv != null? tv.Username : "null";
                 _log.Warning("Invalid OrgNr when resetting password OrgNr {orgNr} Username {username}", orgNr, user);
@@ -451,7 +456,7 @@ namespace Backend.Base.Login
             }
 
             if (tv == null)
-                return (false, GetLabel("PWResetErr1", dic));
+                return (false, GetLabel("PWResetErr1", labels));
 
             var login = await GetLoginByEmail(tv.Username);
 
@@ -462,7 +467,7 @@ namespace Backend.Base.Login
                 return (false, "");
 
             if (!login.IsActive)
-                return (false, GetLabel("PWResetErr2", dic)); 
+                return (false, GetLabel("PWResetErr2", labels)); 
 
             if (login.OrgNrDefault != orgNr)
             {
@@ -470,8 +475,9 @@ namespace Backend.Base.Login
                 return (false, "");
             }
 
-            if (!_orgService.ValidatePassword(password, org))
-                return (false, GetLabel("PWResetErr3", dic));
+            var r0 = _orgService.ValidatePassword(password, org, labels);
+            if (!r0.valid)
+                return (r0.valid, r0.message);
 
             login.Password = password;
 
@@ -481,7 +487,7 @@ namespace Backend.Base.Login
                   + "WHERE id = " + login.Id
               );
 
-            return (true, GetLabel("PWResetRsp", dic));
+            return (true, GetLabel("PWResetRsp", labels));
         }
 
     }

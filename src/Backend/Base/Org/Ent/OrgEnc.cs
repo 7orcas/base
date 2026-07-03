@@ -38,7 +38,7 @@ namespace Backend.Base.Org.Ent
         public int MaxAttempts { get; set; } = 3;
         public bool IsMixedCase { get; set; } = true;
         public bool IsNumber { get; set; } = true;
-        public bool IsNonLetter { get; set; } = true;
+        public bool IsSpecial { get; set; } = true;
     }
 
 }
