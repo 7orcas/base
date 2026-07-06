@@ -1,10 +1,4 @@
 ﻿
-
-
-using DocumentFormat.OpenXml.Office2010.Excel;
-using DocumentFormat.OpenXml.Spreadsheet;
-using Npgsql;
-
 /// <summary>
 /// Manage self registration process for user
 /// Created: July 2026
@@ -12,24 +6,26 @@ using Npgsql;
 /// Author: John Stewart
 /// </summary>
 
-
 namespace Backend.Base.Login
 {
     public class SignupService : BaseService, SignupServiceI
     {
         private readonly LoginServiceI _loginService;
+        private readonly LoginRepoI _loginRepo;
         private readonly LabelServiceI _labelService;
         private readonly OrgServiceI _orgService;
         private readonly EmailServiceI _emailService;
 
         public SignupService(IServiceProvider serviceProvider,
             LoginServiceI loginService,
+            LoginRepoI loginRepo,
             LabelServiceI labelService,
             OrgServiceI orgService,
             EmailServiceI emailService)
             : base(serviceProvider)
         {
             _loginService = loginService;
+            _loginRepo = loginRepo;
             _labelService = labelService;
             _orgService = orgService;
             _emailService = emailService;
@@ -52,98 +48,106 @@ namespace Backend.Base.Login
                 || !org.IsActive
                 || !org.SignupEnabled)
             {
-                _log.Warning("Invalid OrgNr in signup Ipaddress {ipaddress} OrgNr {orgNr} Username {username}", ipaddress, orgNr, username);
+                _log.Error("Invalid OrgNr in signup Ipaddress {ipaddress} OrgNr {orgNr} Username {username}", ipaddress, orgNr, username);
                 return (false, "");
             }
+            
+            var val = new BaseLabelValidation(labels);
 
-            //Validate password
+            //Validate inputs
             var r0 = _orgService.ValidatePassword(password, org, labels);
             if (!r0.valid)
-                return (r0.valid, r0.message);
+                val.AddBr(r0.message);
 
-            var r1 = IsValidUsername(username, labels);
+            var r1 = IsUsernameValid(username, labels);
             if (!r1.valid)
-                return (r1.valid, r1.message);
+                val.AddBr(r1.message);
 
-            if (!IsValidEmail(email))
-                return (false, GetLabel("EmailInvalid", labels));
+            r1 = IsEmailValid(email, labels);
+            if (!r1.valid)
+                val.AddBr(r1.message);
 
             //Check unique user name
-            try
-            {
-                long id = -987;
-                await Sql.Run(
-                    "SELECT id FROM base.zzz " +
-                        "WHERE xxx = @userid ",
-                    r =>
-                    {
-                        id = GetId(r);
-                    },
-                    new NpgsqlParameter("@userid", username)
-                );
-
-                if (id == -987)
-                    return (false, GetLabel("UserNameEx", labels));
-            }
-            catch 
-            {
-                return (false, GetLabel("Oops", labels));
-            }
-
+            if (!await _loginRepo.IsUniqueUsername(username))
+                val.AddBr("UserNameEx");
+            
             //Check unique email
-            try
-            {
-                long id = -987;
-                await Sql.Run(
-                    "SELECT id FROM base.zzz " +
-                        "WHERE email = @email ",
-                    r =>
-                    {
-                        id = GetId(r);
-                    },
-                    new NpgsqlParameter("@email", email)
-                );
+            if (!await _loginRepo.IsUniqueEmail(email))
+                val.AddBr("EmailEx");
 
-                if (id == -987)
-                    return (false, GetLabel("EmailEx", labels));
-            }
-            catch
+
+            if (!val.IsValid())
+                return (false, val.GetMessage());
+
+            var login = new LoginEnt
             {
+                Userid = username,
+                Password = password,
+                Email = email,
+                Emailverified = false,
+                OrgNrDefault = org.Nr,
+                LangCode = langCode,
+                IsActive = !org.EmailVerified
+            };
+
+            //Save and senf email
+            if (!await _loginRepo.CreateSignup(login))
                 return (false, GetLabel("Oops", labels));
-            }
 
-            return (true, "");
+            var m = new LabelMessage(labels)
+                    .AddBr("SignUp1");
+
+            if (org.EmailVerified)
+                m.AddBr("SignUp2");
+
+            return (true, m.GetMessage());
         }
 
-        private (bool valid, string message) IsValidUsername(string username, Dictionary<string, string>? labels)
+        private (bool valid, string message) IsUsernameValid(string username, Dictionary<string, string>? labels)
         {
-            bool isValid = true;
-            var m = "";
-            if (labels != null)
-                m = GetLabel("UserName", labels) + ": ";
-
+            var val = new BaseLabelValidation(labels)
+             .Initialize("UserName", ": ")
+             .SetLabelsLowerCase();
+            
 
             if (string.IsNullOrWhiteSpace(username))
-            {
-                if (labels != null)
-                    m += GetLabel("Val1", labels);
-                isValid = false;
-            }
+                val.Add("Val1");
             
+            if (username.Contains(' '))
+                val.Add("InvS");
+            
+            if (!username.Replace(" ", "").All(char.IsLetterOrDigit))
+                val.Add("InvSp");
+
             if (username.Length > LoginEnt.UseridMaxLength)
-            { 
-                if (!isValid)
-                    m += ", ";
-            
-                if (labels != null)
-                    m += GetLabel("InvL", labels).Replace("%%", LoginEnt.UseridMaxLength.ToString());
-                isValid = false;
-            }
+                val.Add("InvL", LoginEnt.UseridMaxLength);
 
-            return (isValid, m);
-
-
+            return (val.IsValid(), val.GetMessage());
         }
+
+        private (bool valid, string message) IsEmailValid(string email, Dictionary<string, string>? labels)
+        {
+            var val = new BaseLabelValidation(labels)
+             .Initialize("Email", ": ")
+             .SetLabelsLowerCase();
+
+            email = email ?? "";
+
+            if (string.IsNullOrWhiteSpace(email))
+                val.Add("Val1");
+
+            if (email.Contains(' '))
+                val.Add("InvS");
+
+            if (email.Length > LoginEnt.EmailMaxLength)
+                val.Add("InvL", LoginEnt.EmailMaxLength);
+
+            if (!IsEmailValid(email))
+                val.Add("EmailInvalid");
+
+            return (val.IsValid(), val.GetMessage());
+        }
+
 
     }
 }

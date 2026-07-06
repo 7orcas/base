@@ -319,7 +319,7 @@ namespace Backend.Base.Label
                     + (label.Tooltip != null ? "'" + label.Tooltip + "'" : "NULL")
                     + ")";
 
-            await Sql.Execute(sql);
+            await Sql.ExecuteAsync(sql);
             return true;
         }
 

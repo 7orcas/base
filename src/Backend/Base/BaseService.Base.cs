@@ -84,7 +84,7 @@ public abstract class BaseService : SqlUtils
         return nullDefault;
     }
 
-    public bool IsValidEmail(string email)
+    public bool IsEmailValid(string email)
     {
         var validator = new EmailAddressAttribute();
         return validator.IsValid(email);

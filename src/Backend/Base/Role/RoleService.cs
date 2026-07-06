@@ -188,7 +188,7 @@ namespace Backend.Base.Role
         private async Task UpdateRole(RoleEnt ent)
         {
             ent.Encode();
-            await Sql.Execute(
+            await Sql.ExecuteAsync(
                     "UPDATE base.role " +
                     "SET " + Update(ent) +
                     " WHERE id = " + ent.Id
@@ -219,18 +219,18 @@ namespace Backend.Base.Role
             }
             var sql = sb.ToString();
             if (!string.IsNullOrEmpty(sql))
-                await Sql.Execute(sql);
+                await Sql.ExecuteAsync(sql);
         }
 
         private async Task DeleteRole(RoleEnt ent)
         {
-            await Sql.Execute("DELETE FROM base.userAccRole WHERE roleId = " + ent.Id);
-            await Sql.Execute("DELETE FROM base.role WHERE Id = " + ent.Id);
+            await Sql.ExecuteAsync("DELETE FROM base.userAccRole WHERE roleId = " + ent.Id);
+            await Sql.ExecuteAsync("DELETE FROM base.role WHERE Id = " + ent.Id);
         }
 
         private async Task DeleteRolePermissions(RoleEnt ent)
         {
-            await Sql.Execute("DELETE FROM base.rolePermission WHERE roleId = " + ent.Id);
+            await Sql.ExecuteAsync("DELETE FROM base.rolePermission WHERE roleId = " + ent.Id);
         }
     }
 }

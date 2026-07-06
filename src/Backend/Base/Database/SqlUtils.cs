@@ -54,5 +54,12 @@ namespace Backend.Base.Database
         static public string Update(string column, DateTime? value) => column + "=" + (value != null ? "'" + value.Value.ToString(GC.DateTimeFormat) + "'" : "NULL") + ",";
         static public string Update(string column, bool? value) => column + "=" + (value != null ? (value.Value?"true":"false")  : "NULL") + ",";
         static public string NoComma(string column) => column.EndsWith(",")? column.Substring(0,column.Length-1) : column;
+
+        static public string Insert(string value) => value == null ? "NULL" : "'" + value + "',";
+        static public string Insert(int value) => value + ",";
+        static public string Insert(int? value) => (value == null ? "NULL" : value) + ",";
+        static public string Insert(bool value) => (!value? "false" : "true") + ",";
+        static public string Insert(bool? value) => value == null ? "NULL" : Insert(value);
+
     }
 }

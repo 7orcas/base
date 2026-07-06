@@ -74,7 +74,7 @@ namespace Backend.Base.Org
         public async Task UpdateOrg(OrgEnt org)
         {
             org.Encode();
-            await Sql.Execute(
+            await Sql.ExecuteAsync(
                     "UPDATE base.org " +
                     "SET " +
                         Update("code", org.Code) +
@@ -117,7 +117,7 @@ namespace Backend.Base.Org
 
             var rules = "";
             if (val.MinLength > 0) rules += "<br>" + GetLabel("LenMin", labels) + "=" + val.MinLength;
-            if (val.MaxLength > 0) rules += "<br>" + GetLabel("LenMax", labels) + "=" + val.MinLength;
+            if (val.MaxLength > 0) rules += "<br>" + GetLabel("LenMax", labels) + "=" + val.MaxLength;
             if (val.IsMixedCase) rules += "<br>" + GetLabel("PWmc", labels);
             if (val.IsNumber) rules += "<br>" + GetLabel("PWNum", labels);
             if (val.IsSpecial) rules += "<br>" + GetLabel("PWSp", labels);
@@ -131,56 +131,34 @@ namespace Backend.Base.Org
 
         public (bool valid, string message) ValidatePassword(string pw, OrgEnt org, Dictionary<string, string>? labels)
         {
-            bool isValid = true;
-            var m = "";
-            if (labels != null)
-                m = GetLabel("PW", labels) + ": ";
-
+            var m = new BaseLabelValidation(labels)
+             .Initialize("PW", ": ")
+             .SetLabelsLowerCase();
 
             var val = org.Encoding.PasswordRule;
 
             if (string.IsNullOrEmpty(pw))
             {
-                if (labels != null) m += GetLabel("Val0", labels);
-                return (false, m);
+                m.Add("Val0");
+                return (false, m.GetMessage());
             }
 
             if (val.MinLength > 0 && pw.Length < val.MinLength)
-            {
-                if (!isValid) m += ", ";
-                if (labels != null) m += GetLabel("LenMin", labels) + "=" + val.MinLength;
-                isValid = false;
-            }
+                m.Add(GetLabel("LenMin", labels) + "=" + val.MinLength);
             
             if (val.MaxLength > 0 && pw.Length > val.MaxLength)
-            {
-                if (!isValid) m += ", ";
-                if (labels != null) m += GetLabel("LenMax", labels) + "=" + val.MaxLength;
-                isValid = false;
-            }
+                m.Add(GetLabel("LenMax", labels) + "=" + val.MaxLength);
             
             if (val.IsMixedCase && (!pw.Any(char.IsUpper) || !pw.Any(char.IsLower)))
-            {
-                if (!isValid) m += ", ";
-                if (labels != null) m += GetLabel("PWmc", labels);
-                isValid = false;
-            }
+                m.Add("PWmc");
             
             if (val.IsNumber && !pw.Any(char.IsDigit))
-            {
-                if (!isValid) m += ", ";
-                if (labels != null) m += GetLabel("PWNum", labels);
-                isValid = false;
-            }
+                m.Add("PWNum");
 
-            if (val.IsSpecial && !pw.Any(c => !char.IsLetterOrDigit(c)))
-            {
-                if (!isValid) m += ", ";
-                if (labels != null) m += GetLabel("PWSp", labels);
-                isValid = false;
-            }
+            if (val.IsSpecial && !pw.Replace(" ", "").Any(c => !char.IsLetterOrDigit(c)))
+                m.Add("PWSp");
 
-            return (isValid, m);
+            return (m.IsValid(), m.GetMessage());
         }
 
 

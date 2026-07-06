@@ -25,7 +25,7 @@ namespace BackendTest.Setup
 
         protected static async Task InsertOrg(int idStart)
         {
-            await Sql.Execute(
+            await Sql.ExecuteAsync(
                 "INSERT INTO " + TOrg + " " +
                     "(nr, code, descr, langCode, langlabelvariant, encoded) " +
                 "VALUES (" +
@@ -40,7 +40,7 @@ namespace BackendTest.Setup
         }
         protected static async Task InsertUser(int idStart)
         {
-            await Sql.Execute(
+            await Sql.ExecuteAsync(
                 "INSERT INTO " + TUser + " " +
                     "(id, xxx, yyy)" + // orgs, langCode) " +
                 "VALUES (" +
@@ -53,7 +53,7 @@ namespace BackendTest.Setup
 
         protected static async Task InsertUserAcc(int idStart)
         {
-            await Sql.Execute(
+            await Sql.ExecuteAsync(
                 "INSERT INTO " + TUserAccount + " " +
                     "(id, zzzid, orgnr, langcode, isadmin)" + 
                 "VALUES (" +
@@ -68,7 +68,7 @@ namespace BackendTest.Setup
 
         protected static async Task InsertUserAccRole(int idStart)
         {
-            await Sql.Execute(
+            await Sql.ExecuteAsync(
                 "INSERT INTO " + TUserAccountRole + " " +
                     "(id, useraccid, roleid)" +
                 "VALUES (" +
@@ -81,7 +81,7 @@ namespace BackendTest.Setup
 
         protected static async Task InsertRole(int idStart)
         {
-            await Sql.Execute(
+            await Sql.ExecuteAsync(
                 "INSERT INTO " + TRole + " " +
                     "(id, orgnr, code)" +
                 "VALUES (" +
@@ -94,7 +94,7 @@ namespace BackendTest.Setup
 
         protected static async Task InsertRolePermission(int idStart)
         {
-            await Sql.Execute(
+            await Sql.ExecuteAsync(
                 "INSERT INTO " + TRolePermission + " " +
                     "(id, roleid, permissionnr, crud)" +
                 "VALUES (" +
@@ -117,7 +117,7 @@ namespace BackendTest.Setup
             //DELETE ME
             //foreach (var rec in perms)
             //    sql += "INSERT INTO " + tP + " (id, code) VALUES (" + rec.Nr + ",'" + rec.LangKey + "');";
-            //await Sql.Execute(IdentityInsert(tP, sql));
+            //await Sql.ExecuteAsync(IdentityInsert(tP, sql));
 
 
             RoleEnt[] roles = new RoleEnt[MaxRoles];
@@ -127,7 +127,7 @@ namespace BackendTest.Setup
             sql = "";
             foreach (var rec in roles)
                 sql += "INSERT INTO " + tR + " (id, code, orgNr) VALUES (" + rec.Id + ",'" + rec.Code + "'," + rec.OrgNr + ");";
-            await Sql.Execute(sql);
+            await Sql.ExecuteAsync(sql);
 
 
             string[] crud = { "c","r","u","d", "crud", "xyz", "crudcrudz", "ddddd" };
@@ -141,17 +141,17 @@ namespace BackendTest.Setup
                 foreach (var rec2 in perms)
                     sql += "INSERT INTO " + tRP + " (id, roleId, permissionnr, crud) VALUES (" + --idTest + "," + rec1.Id + "," + rec2.Nr + ",'" + c + "');";
             }
-            await Sql.Execute(sql);
+            await Sql.ExecuteAsync(sql);
 
             sql = "";
             foreach (var rec in roles)
                 sql += "INSERT INTO " + tUR + " (id, zzzId, roleId) VALUES (" + --idTest + "," +  UserId + "," + rec.Id + ");";
-            await Sql.Execute(sql);
+            await Sql.ExecuteAsync(sql);
         }
 
         protected static async Task InsertAudit(int idStart)
         {
-            await Sql.Execute(
+            await Sql.ExecuteAsync(
                 "INSERT INTO " + TAudit + " " +
                     "(id, orgnr, source, entityTypeId, userAccId, created)" +
                 "VALUES (" +
@@ -181,10 +181,10 @@ namespace BackendTest.Setup
             };
 
             foreach (var table in tables)
-                await Sql.Execute("Delete from " + table + " WHERE id >= " + idStart + " AND id < " + (idStart + IdStartRange));
+                await Sql.ExecuteAsync("Delete from " + table + " WHERE id >= " + idStart + " AND id < " + (idStart + IdStartRange));
 
             foreach (var table in tablesX)
-                await Sql.Execute("Delete from " + table + " WHERE nr >= " + idStart + " AND nr < " + (idStart + IdStartRange));
+                await Sql.ExecuteAsync("Delete from " + table + " WHERE nr >= " + idStart + " AND nr < " + (idStart + IdStartRange));
 
         }
 

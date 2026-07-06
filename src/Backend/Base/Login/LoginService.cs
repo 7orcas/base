@@ -21,6 +21,7 @@ namespace Backend.Base.Login
 {
     public class LoginService: BaseService, LoginServiceI
     {
+        private readonly LoginRepoI _loginRepo;
         private readonly PermissionServiceI _permissionService;
         private readonly TokenServiceI _tokenService;
         private readonly OrgServiceI _orgService;
@@ -33,6 +34,7 @@ namespace Backend.Base.Login
         private AppServiceAccount ServiceAccount = AppSettings.ServiceAccount;
 
         public LoginService (IServiceProvider serviceProvider,
+            LoginRepoI loginRepo,
             TokenServiceI tokenService,
             OrgServiceI orgService,
             ConfigServiceI configService,
@@ -43,6 +45,7 @@ namespace Backend.Base.Login
             EmailServiceI emailService) 
             : base (serviceProvider)
         {
+            _loginRepo = loginRepo;
             _tokenService = tokenService;
             _orgService = orgService;
             _configService = configService;
@@ -146,54 +149,12 @@ namespace Backend.Base.Login
 
                 return login;
             }
-
-            long? id = null;
-            try
-            {
-                //ToDo Log
-                if (!ValidateParameter(userid))
-                    throw new Exception();
-
-                await Sql.Run(
-                    "SELECT id FROM base.zzz " +
-                        "WHERE xxx = @userid ",
-                    r =>
-                    {
-                        id = GetId(r);
-                    },
-                    new NpgsqlParameter("@userid", userid)
-                );
-
-                if (id != null)
-                    login = await GetLoginById(id.Value);
-            }
-            catch { }
-
-            return login;
+            return await _loginRepo.GetLoginByUserid(userid);
         }
 
         public async Task<LoginEnt?> GetLoginByEmail(string email)
         {
-            long? id = null;
-            try
-            {
-
-                await Sql.Run(
-                    "SELECT id FROM base.zzz " +
-                        "WHERE email = @email ",
-                    r =>
-                    {
-                        id = GetId(r);
-                    },
-                    new NpgsqlParameter("@email", email)
-                );
-            }
-            catch { }
-
-            if (id == null)
-                return null;
-
-            return await GetLoginById(id.Value);
+            return await _loginRepo.GetLoginByEmail(email);
         }
 
 
@@ -329,7 +290,7 @@ namespace Backend.Base.Login
             if (id == GC.ServiceLoginId)
                 return SetAttemptsService(attempts);
 
-            await Sql.Execute(
+            await Sql.ExecuteAsync(
                    "UPDATE base.zzz "
                    + "SET Attempts = " + attempts + " "
                    + "WHERE id = " + id
@@ -360,7 +321,7 @@ namespace Backend.Base.Login
 
         public async Task<bool> SetMfaKey(long id, string key)
         {
-            await Sql.Execute(
+            await Sql.ExecuteAsync(
                    "UPDATE base.zzz "
                    + "SET mfasecret = '" + key + "' "
                    + "WHERE id = " + id
@@ -370,7 +331,7 @@ namespace Backend.Base.Login
 
         public async Task<bool> EnableMfa(long id)
         {
-            await Sql.Execute(
+            await Sql.ExecuteAsync(
                    "UPDATE base.zzz "
                    + "SET mfaenabled = true "
                    + "WHERE id = " + id
@@ -481,7 +442,7 @@ namespace Backend.Base.Login
 
             login.Password = password;
 
-            await Sql.Execute(
+            await Sql.ExecuteAsync(
                   "UPDATE base.zzz "
                   + "SET yyy = '" + password + "' "
                   + "WHERE id = " + login.Id

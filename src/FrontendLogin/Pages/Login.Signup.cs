@@ -45,6 +45,7 @@ namespace FrontendLogin.Pages
                 {
                     showSignUpModal = false;
                     showSignUpSuccess = true;
+                    signupRequest = new();
                 }
                 signupMessage = responseDto.Result.ToString();
             }

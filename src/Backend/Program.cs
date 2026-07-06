@@ -136,6 +136,12 @@ builder.Services.AddRouting(options =>
 builder.Services.AddSingleton<OrgConfigInitialiseServiceI, OrgConfigInitialiseService>();
 builder.Services.AddSingleton<PermissionInitialiseServiceI, PermissionInitialiseService>();
 
+//Base Repos
+builder.Services.AddScoped<LoginRepoI, LoginRepo>();
+builder.Services.AddScoped<RoleRepoI, RoleRepo>();
+builder.Services.AddScoped<TokenRepoI, TokenRepo>();
+
+
 //Base Services
 builder.Services.AddScoped<AuditServiceI, AuditService>();
 builder.Services.AddScoped<LabelServiceI, LabelService>();
@@ -148,12 +154,10 @@ builder.Services.AddScoped<MfaKeyProtector>();
 builder.Services.AddScoped<CookieProtector>();
 builder.Services.AddScoped<RegistrationServiceI, RegistrationService>();
 builder.Services.AddScoped<TokenServiceI, TokenService>();
-builder.Services.AddScoped<TokenRepoI, TokenRepo>();
 builder.Services.AddScoped<OrgServiceI, OrgService>();
 builder.Services.AddScoped<SessionServiceI, SessionService>();
 builder.Services.AddScoped<PermissionServiceI, PermissionService>();
 builder.Services.AddScoped<RoleServiceI, RoleService>();
-builder.Services.AddScoped<RoleRepoI, RoleRepo>();
 builder.Services.AddScoped<EntityServiceI, EntityService>();
 builder.Services.AddScoped<TemplateServiceI, TemplateService>();
 builder.Services.AddScoped<PdfServiceI, PdfService>();
