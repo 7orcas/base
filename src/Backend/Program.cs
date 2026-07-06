@@ -1,8 +1,8 @@
 using Backend;
 using Backend.App.Machines;
 using Backend.Base.DataProtection;
+using Backend.Base.Email;
 using Backend.Base.Registration;
-using Backend.Base.Template;
 using Backend.Base.Token.Ent;
 using Backend.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;

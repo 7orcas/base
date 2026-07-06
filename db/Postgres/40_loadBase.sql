@@ -27,9 +27,10 @@ INSERT INTO base.org (nr, code, descr)
 VALUES (0, 'Org Base', 'Base Organisation');
 
 INSERT INTO base.org (nr, code, descr, langcode, langlabelvariant, mfarequired, forgotenabled, signupenabled, 
-    emailrequired, emailverified, icon, encoded)
+    emailrequired, emailverified, 
+	icon, encoded)
 VALUES
-(1, 'Org 1', 'Org 1 Description', 'en', 1, true, true, false, true, true, '🏢',
+(1, 'Org 1', 'Org 1 Description', 'en', 1, true, true, true, true, true, '🏢',
  '{Languages:[{LangCode:"en",IsEditable:true},{LangCode:"de",IsEditable:true},{LangCode:"c1",IsEditable:false},{LangCode:"c2",IsEditable:false}]}');
 
 INSERT INTO base.org (nr, code, descr, langcode, langlabelvariant, icon, encoded)

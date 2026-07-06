@@ -8,5 +8,6 @@
         Task<LoginEnt?> GetLoginByEmail(string email);
         Task<LoginEnt?> GetLoginById(long id);
         Task<bool> CreateSignup(LoginEnt login);
+        Task<bool> UpdateSignup(LoginEnt login);
     }
 }

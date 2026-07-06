@@ -1,5 +1,4 @@
-﻿
-using MailKit.Net.Smtp;
+﻿using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.Extensions.Options;
 using MimeKit;
@@ -17,7 +16,7 @@ using GC = Backend.GlobalConstants;
 /// Author: John Stewart
 /// </summary>
 /// 
-namespace Backend.Base.Template
+namespace Backend.Base.Email
 {
     public class EmailService : BaseService, EmailServiceI
     {

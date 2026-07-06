@@ -1,11 +1,13 @@
 ﻿
+
+using Backend.Base.Email;
+
 /// <summary>
 /// Manage self registration process for user
 /// Created: July 2026
 /// [*Licence*]
 /// Author: John Stewart
 /// </summary>
-
 namespace Backend.Base.Login
 {
     public class SignupService : BaseService, SignupServiceI
@@ -97,11 +99,48 @@ namespace Backend.Base.Login
             var m = new LabelMessage(labels)
                     .AddBr("SignUp1");
 
-            if (org.EmailVerified)
-                m.AddBr("SignUp2");
+            var template = new SignupVerifyEmailAddress(org, login);
+            await _emailService.SendEmailAsync(email, GetLabel("EmailV", labels), template.RenderTemplate());
+
+            m.AddBr("SignUp2")
+             .AddBr("SignUp3");
 
             return (true, m.GetMessage());
         }
+
+        public async Task<(bool valid, string message)> VerifyEmail(string ipAddress, string email, int orgNr, string langCode)
+        {
+            var labels = await _labelService.GetLangCodeDic(langCode, null);
+            var org = await _orgService.GetOrg(orgNr);
+
+            //Check org
+            if (org == null
+                || !org.IsActive
+                || !org.SignupEnabled)
+            {
+                _log.Error("Invalid OrgNr in VerifyEmail Ipaddress {ipaddress} OrgNr {orgNr} Email {email}", ipAddress, orgNr, email);
+                return (false, "");
+            }
+
+            var login = await _loginRepo.GetLoginByEmail(email);
+
+            if (login == null)
+            {
+                _log.Error("Invalid email in VerifyEmail Ipaddress {ipaddress} OrgNr {orgNr} Email {email}", ipAddress, orgNr, email);
+                return (false, "");
+            }
+
+            login.Emailverified = true;
+            login.IsActive = true;
+
+            if (!await _loginRepo.UpdateSignup(login))
+                return (false, "LABELME cant update");
+
+            //ToDo Create account
+
+            return (true, "LABELME done");
+        }
+
 
         private (bool valid, string message) IsUsernameValid(string username, Dictionary<string, string>? labels)
         {

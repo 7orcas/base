@@ -120,7 +120,8 @@ SignUp,Sign Up
 SignUpSuccess,Your account request has been submitted successfully
 SignUpFail,Registration failed
 SignUp1,Success! A new account has been created. 
-SignUp2,An email has been sent to verify your registration. Please check your inbox and spam/junk folders. 
+SignUp2,An email has been sent to verify your registration.
+SignUp3,Please check your inbox and spam/junk folders. 
 Val0,Can''t be empty
 Val1,Can''t contain spaces
 <LAST>,<LAST LINE>

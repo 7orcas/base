@@ -1,4 +1,5 @@
-﻿using Backend.Base.Token.Ent;
+﻿using Backend.Base.Email;
+using Backend.Base.Token.Ent;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.AspNetCore.Mvc;
@@ -160,44 +161,15 @@ namespace Backend.Base.Login
 
         public async Task<LoginEnt?> GetLoginById(long id)
         {
-            var login = null as LoginEnt;
+            var login = await _loginRepo.GetLoginById(id);
             var isService = ServiceAccount != null && id == GC.ServiceLoginId;
 
-            try
+            if (login == null && isService)
             {
-                await Sql.Run(
-                    "SELECT * FROM base.zzz " +
-                        "WHERE id = @id ",
-                    r =>
-                    {
-                        login = new LoginEnt
-                        {
-                            Id = GetId(r),
-                            Userid = GetString(r, "xxx"),
-                            Email = GetString(r, "email"),
-                            Emailverified = GetBoolean(r, "emailverified"),
-                            Password = GetString(r, "yyy"),
-                            OrgNrDefault = GetInt(r, "orgnrdefault"),
-                            LangCode = GetStringNull(r, "langCode"),
-                            Attempts = GetIntNull(r, "attempts"),
-                            Lastlogin = GetDateTime(r, "lastlogin"),
-                            IsActive = GetBoolean(r, "isActive"),
-                            MfaSecret = GetStringNull(r, "mfasecret"),
-                            MfaEnabled = GetBoolean(r, "mfaenabled"),
-                        };
-                    },
-                    new NpgsqlParameter("@id", id)
-                );
-
-                if (login == null && isService)
-                {
-                    login = LoginEnt.GetServiceLogin();
-                    login.Email = ServiceAccount.UserEmail;
-                    login.Password = ServiceAccount.UserPw;
-                }
-
+                login = LoginEnt.GetServiceLogin();
+                login.Email = ServiceAccount.UserEmail;
+                login.Password = ServiceAccount.UserPw;
             }
-            catch { }
 
             return login;
         }

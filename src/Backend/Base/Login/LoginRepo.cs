@@ -137,6 +137,27 @@ namespace Backend.Base.Login
 
         }
 
+        public async Task<bool> UpdateSignup(LoginEnt login)
+        {
+            try
+            {
+                await Sql.ExecuteAsync(
+                        "UPDATE base.zzz " +
+                        "SET " +
+                            Update("emailverified", login.Emailverified) +
+                            Update("isActive", login.IsActive) +
+                            NoComma(Updatetime()) +
+                        " WHERE id = " + login.Id
+                );
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+
+        }
+
 
         private async Task<bool> IsUnique(string value, string field)
         {

@@ -1,4 +1,5 @@
-﻿using Backend.Base.Template.Ent;
+﻿using Backend.Base.Email;
+using Backend.Base.Template.Ent;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Superpower.Model;

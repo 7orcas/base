@@ -50,6 +50,22 @@ namespace Backend.Base.Login
             return Ok(r);
         }
 
+        [HttpGet("signupverifyemail")]
+        public async Task<IActionResult> VerifyEmail([FromQuery] int orgNr, [FromQuery] string langCode, [FromQuery] int langVariant, [FromQuery] string email)
+        {
+            var ipAddress = GetClientIp();
+
+            var rtn = await _signupService.VerifyEmail(ipAddress, email, orgNr, langCode);
+
+            var r = new _ResponseDto
+            {
+                SuccessMessage = "Verify Email",
+                Result = rtn.message,
+                Valid = rtn.valid,
+            };
+            return Ok(r);
+        }
+
     }
 
 }

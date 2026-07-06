@@ -7,7 +7,7 @@ namespace Backend.Base.Template.Ent
         public string Token { get; set; }
 
         public ResetRequestEmail(OrgEnt org, LoginEnt login, string token) 
-            : base(GC.TemplateType.ResetRequestEmail)
+            : base()
         {            
             Token = token;
             OrgNr = org.Nr;

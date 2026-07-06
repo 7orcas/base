@@ -91,6 +91,7 @@ CREATE TABLE base.zzz (
     isactive BOOLEAN NOT NULL DEFAULT TRUE,
 	mfasecret VARCHAR(100),
     mfaenabled BOOLEAN DEFAULT FALSE,
+	updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id)
 );
 
@@ -108,6 +109,7 @@ CREATE TABLE base.useracc (
     classification INTEGER DEFAULT 0,
     isadmin BOOLEAN NOT NULL DEFAULT FALSE,
     isactive BOOLEAN NOT NULL DEFAULT TRUE,
+	updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
     FOREIGN KEY (zzzid) REFERENCES base.zzz(id),
     FOREIGN KEY (orgnr) REFERENCES base.org(nr)

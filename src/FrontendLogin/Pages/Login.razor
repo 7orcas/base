@@ -345,7 +345,7 @@
     private bool showRules = false;
     private bool showPassword = false;
     private string rules = string.Empty;
-    private SignupRequest signupRequest = new();
+    private SignupRequest signupRequest;
     private string signupMessage = "";
 
 
@@ -465,7 +465,6 @@
         token = await tokenResponse.Content.ReadAsStringAsync();
     }
 
-
     protected override async Task OnInitializedAsync()
     {
         cookie = GetRememberMeCookie(GC.Cookie_RememberMe + $"{UrlSuffix}");
@@ -481,8 +480,7 @@
 
         options = JsonConvert.DeserializeObject<LoginOptionDto>(dto.Result.ToString());
 
-        signupRequest.OrgNr = options.OrgNr;
-        signupRequest.LangCode = options.LangCode;
+        initialiseSignupRequest();
 
         cookie = options.RememberMeCookie;
         navigateToMain = options.SuccessAction == GC.NavigateToFrontendServer;

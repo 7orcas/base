@@ -5,13 +5,10 @@ namespace Backend.Base.Template.Ent
     public abstract class BaseTemplate<E> 
     {
 
-        public BaseTemplate(GC.TemplateType templateType)
+        public BaseTemplate()
         {
-            TemplateType = templateType;
             Data = new Dictionary<string, object>();
         }
-
-        public GC.TemplateType TemplateType { get; }
 
         public Dictionary<string, object> Data { get; set; }
         public int? OrgNr { get; set; }

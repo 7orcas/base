@@ -9,6 +9,7 @@
 
         //Login Reset Password
         public const string URL_login_reset         = "reset-password";
+        public const string URL_signup_verify_email = "api/signup/signupverifyemail";
 
         //IMemoryCache keys
         public const string CacheKeyTokenPrefix     = "TS_";
@@ -58,20 +59,6 @@
 
             EntityTypeMachine,          "Machine",
         };
-
-        
-public enum TemplateType
-{
-    ResetRequestEmail = 1,
-    SomethingElseEmail = 2,
-}
-
-public static readonly object[] Templates = {
-    TemplateType.ResetRequestEmail, "Res",
-};
-
-
-
 
         //Service
         public const long ServiceLoginId             = -1L;

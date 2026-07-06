@@ -1,4 +1,4 @@
-﻿namespace Backend.Base.Template
+﻿namespace Backend.Base.Email
 {
     public interface EmailServiceI
     {

@@ -45,7 +45,7 @@ namespace FrontendLogin.Pages
                 {
                     showSignUpModal = false;
                     showSignUpSuccess = true;
-                    signupRequest = new();
+                    initialiseSignupRequest();
                 }
                 signupMessage = responseDto.Result.ToString();
             }
@@ -53,6 +53,14 @@ namespace FrontendLogin.Pages
             {
                 signupMessage = GetLabel("SignUpFail") + "<br>" + GetLabel("SysA");
             }
+        }
+
+        private void initialiseSignupRequest()
+        {
+            signupRequest = new();
+            signupRequest.OrgNr = options.OrgNr;
+            signupRequest.LangCode = options.LangCode;
+            showPassword = false;
         }
 
         private void GoToSelfRegistration()
