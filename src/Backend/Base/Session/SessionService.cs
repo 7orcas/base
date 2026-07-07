@@ -24,7 +24,7 @@ namespace Backend.Base.Session
 
         public async Task<SessionEnt> CreateSession(UserAccountEnt userAccount, OrgEnt org, UserConfig userConfig, int sourceApp)
         {
-            var key = userAccount.Userid + "-" + Guid.NewGuid().ToString();
+            var key = userAccount.Username + "-" + Guid.NewGuid().ToString();
             var ses = new SessionEnt
             {
                 Key = key,

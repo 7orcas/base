@@ -96,7 +96,7 @@ CREATE TABLE base.zzz (
 );
 
 COMMENT ON TABLE base.zzz IS 'User authentication (see base.useracc for authorisation)';
-COMMENT ON COLUMN base.zzz.xxx IS 'Userid (sometimes called username)';
+COMMENT ON COLUMN base.zzz.xxx IS 'Username';
 COMMENT ON COLUMN base.zzz.yyy IS 'User password';
 COMMENT ON COLUMN base.zzz.emailverified IS 'User''s email address has responded to verification';
 COMMENT ON COLUMN base.zzz.orgnrdefault IS 'Used for determining the user''s org settings, eg password reset';

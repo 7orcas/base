@@ -20,7 +20,7 @@ namespace Backend.Base.Login
         }
 
 
-        public async Task<LoginEnt?> GetLoginByUserid(string userid)
+        public async Task<LoginEnt?> GetLoginByUsername(string username)
         {
             var login = null as LoginEnt;
 
@@ -28,19 +28,19 @@ namespace Backend.Base.Login
             try
             {
                 //ToDo Log
-                if (!ValidateParameter(userid))
+                if (!ValidateParameter(username))
                     throw new Exception();
 
 
 
                 await Sql.Run(
                     "SELECT id FROM base.zzz " +
-                        "WHERE xxx = @userid ",
+                        "WHERE xxx = @username ",
                     r =>
                     {
                         id = GetId(r);
                     },
-                    new NpgsqlParameter("@userid", userid)
+                    new NpgsqlParameter("@username", username)
                 );
 
                 if (id != null)
@@ -90,7 +90,7 @@ namespace Backend.Base.Login
                         login = new LoginEnt
                         {
                             Id = GetId(r),
-                            Userid = GetString(r, "xxx"),
+                            Username = GetString(r, "xxx"),
                             Email = GetString(r, "email"),
                             Emailverified = GetBoolean(r, "emailverified"),
                             Password = GetString(r, "yyy"),
@@ -119,7 +119,7 @@ namespace Backend.Base.Login
                         "INSERT INTO base.zzz " +
                             "(xxx, yyy, email, emailverified, orgnrdefault, langcode, isactive) " +
                         "VALUES (" +
-                            Insert(login.Userid) +
+                            Insert(login.Username) +
                             Insert(login.Password) +
                             Insert(login.Email) +
                             Insert(login.Emailverified) +

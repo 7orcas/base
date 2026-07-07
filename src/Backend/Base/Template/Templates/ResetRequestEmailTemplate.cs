@@ -10,7 +10,7 @@ namespace Backend.Base.Template.Templates
 		{
 			Data = new Dictionary<string, object>
 				{
-					{ "AppName", "Blue" + login.Userid },
+					{ "AppName", "Blue" + login.Username },
 					{ "ResetLink", "resetrequest" }
 				};
 		}

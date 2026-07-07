@@ -16,7 +16,7 @@ namespace Backend.Base.Template.Ent
 
             IsHtml = org.Encoding.IsEmailHtml;
 
-            Data.Add("Userid", login.Userid);
+            Data.Add("Username", login.Username);
             Data.Add("Email", login.Email);
             Data.Add("OrgNr", org.Nr);
             Data.Add("VerifyLink", VerifyLink());
@@ -48,7 +48,7 @@ namespace Backend.Base.Template.Ent
                 </head>
                 <body style=""font-family: Arial;"">
                     
-                    Dear {{Userid}},
+                    Dear {{Username}},
 
                     <p>
                         Thank you for registering for an account.

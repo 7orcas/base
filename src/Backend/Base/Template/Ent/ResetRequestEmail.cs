@@ -19,7 +19,7 @@ namespace Backend.Base.Template.Ent
 
             IsHtml = org.Encoding.IsEmailHtml;
 
-            Data.Add("Userid", login.Userid);
+            Data.Add("Username", login.Username);
             Data.Add("OrgNr", org.Nr);
             Data.Add("ResetLink", ResetLink());
         }
@@ -50,7 +50,7 @@ namespace Backend.Base.Template.Ent
                 </head>
                 <body style=""font-family: Arial;"">
 
-                    Dear {{Userid}},
+                    Dear {{Username}},
                     <p>
                     We have received a request to reset the password for your account.<br>
                     To proceed with resetting your password, please click the secure link below:<br>
@@ -85,7 +85,7 @@ namespace Backend.Base.Template.Ent
                 </head>
                 <body style=""font-family: Arial;"">
 
-                    Sehr geehrte/r {{Userid}},
+                    Sehr geehrte/r {{Username}},
                     <p>
                     wir haben eine Anfrage zum Zurücksetzen des Passworts für Ihr Konto erhalten.<br>
                     Um mit dem Zurücksetzen Ihres Passworts fortzufahren, klicken Sie bitte auf den sicheren Link unten:<br>

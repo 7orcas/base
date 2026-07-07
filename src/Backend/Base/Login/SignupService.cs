@@ -83,7 +83,7 @@ namespace Backend.Base.Login
 
             var login = new LoginEnt
             {
-                Userid = username,
+                Username = username,
                 Password = password,
                 Email = email,
                 Emailverified = false,
@@ -158,8 +158,8 @@ namespace Backend.Base.Login
             if (!username.Replace(" ", "").All(char.IsLetterOrDigit))
                 val.Add("InvSp");
 
-            if (username.Length > LoginEnt.UseridMaxLength)
-                val.Add("InvL", LoginEnt.UseridMaxLength);
+            if (username.Length > LoginEnt.UsernameMaxLength)
+                val.Add("InvL", LoginEnt.UsernameMaxLength);
 
             return (val.IsValid(), val.GetMessage());
         }

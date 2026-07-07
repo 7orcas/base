@@ -12,12 +12,12 @@ namespace Backend.Base.Login.Ent
 
     public class LoginEnt
     {
-        public const int UseridMaxLength = 40;
+        public const int UsernameMaxLength = 40;
         public const int PasswordMaxLength = 100;
         public const int EmailMaxLength = 100;
 
         public long Id { get; set; }
-        public string Userid { get; set; }
+        public string Username { get; set; }
         public string Email { get; set; }
         public bool Emailverified { get; set; }
         public string Password { get; set; }
@@ -42,7 +42,7 @@ namespace Backend.Base.Login.Ent
             return new LoginEnt
             {
                 Id = GC.ServiceLoginId,
-                Userid = "service",
+                Username = "service",
                 Password = "",
                 Attempts = 0,
                 Lastlogin = DateTime.Now,

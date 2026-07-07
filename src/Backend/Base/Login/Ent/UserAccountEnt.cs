@@ -23,7 +23,7 @@ namespace Backend.Base.Login.Ent
         //Update note: Add to service
 
 
-        public string Userid { get; set; }
+        public string Username { get; set; }
         public override void Decode() { }
         public override void Encode() { }
 

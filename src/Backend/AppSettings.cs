@@ -22,14 +22,14 @@
 
     public class AppServiceAccount 
     {
-        public string UserId { get; set; }
+        public string Username { get; set; }
         public string UserEmail { get; set; }
         public string UserPw { get; set; }
         public string AttemptsFile { get; set; }
         
         public bool IsValid()
         {
-            return !string.IsNullOrEmpty(UserId) &&
+            return !string.IsNullOrEmpty(Username) &&
                 !string.IsNullOrEmpty(UserPw) &&
                 !string.IsNullOrEmpty(AttemptsFile);
         }

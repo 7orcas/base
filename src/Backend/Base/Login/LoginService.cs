@@ -59,11 +59,11 @@ namespace Backend.Base.Login
 
         // Get the user login and account details, validate the password
         // Return a tokenkey if valid and MFA is not required or MFA is enabled and validated 
-        public async Task<LoginEnt> LoginUser(string ipAddress, string userid, string password, int orgNr, int sourceAppNr, string? langCode, bool mfaValid)
+        public async Task<LoginEnt> LoginUser(string ipAddress, string username, string password, int orgNr, int sourceAppNr, string? langCode, bool mfaValid)
         {
             try
             {
-                var login = await GetLoginByUserid(userid);
+                var login = await GetLoginByUsername(username);
                 UserAccountEnt? account = null;
 
                 if (login == null) 
@@ -107,7 +107,7 @@ namespace Backend.Base.Login
                 var tv = new TokenValues
                 {
                     IpAddress = ipAddress,
-                    Username = userid,
+                    Username = username,
                     SessionKey = session.Key,
                     OrgNr = orgNr,
                 };
@@ -133,10 +133,10 @@ namespace Backend.Base.Login
         }
 
         //Authenicate the user
-        private async Task<LoginEnt?> GetLoginByUserid(string userid)
+        private async Task<LoginEnt?> GetLoginByUsername(string username)
         {
             var login = null as LoginEnt;
-            if (ServiceAccount != null && userid.Equals(ServiceAccount.UserId))
+            if (ServiceAccount != null && username.Equals(ServiceAccount.Username))
             {
                 login = LoginEnt.GetServiceLogin();
                 login.Password = ServiceAccount.UserPw;
@@ -150,7 +150,7 @@ namespace Backend.Base.Login
 
                 return login;
             }
-            return await _loginRepo.GetLoginByUserid(userid);
+            return await _loginRepo.GetLoginByUsername(username);
         }
 
         public async Task<LoginEnt?> GetLoginByEmail(string email)
@@ -216,7 +216,9 @@ namespace Backend.Base.Login
             if (login == null || login.Id == 0)
                 return GetLabel("LoginUP", "Invalid Username and/or Password", labels);
 
-            if (org.EmailVerified && (string.IsNullOrEmpty(login.Email) || !login.Emailverified))
+            if (!login.IsService() 
+                && org.EmailVerified 
+                && (string.IsNullOrEmpty(login.Email) || !login.Emailverified))
                 return GetLabel("EmailVL", "Your email address must be verified before you can login", labels);
 
             await IncrementAttempts(login);
@@ -237,7 +239,7 @@ namespace Backend.Base.Login
         public async Task InitialiseLogin(LoginEnt login, UserAccountEnt account, OrgEnt org, int sourceAppNr)
         {
             await SetAttempts(login.Id, 0);
-            account.Userid = login.Userid;
+            account.Username = login.Username;
             account.Permissions = await _permissionService.LoadEffectivePermissionsInt(account.Id, org.Nr);
             _auditService.LogInOut(sourceAppNr, org.Nr, account.Id, GC.EntityTypeLogin);
         }
@@ -404,7 +406,7 @@ namespace Backend.Base.Login
 
             if (login.OrgNrDefault != orgNr)
             {
-                _log.Warning("OrgNr mismatch when resetting password Userid {Userid} OrgNr {OrgNr}", login.Userid, orgNr);
+                _log.Warning("OrgNr mismatch when resetting password Username {Username} OrgNr {OrgNr}", login.Username, orgNr);
                 return (false, "");
             }
 
