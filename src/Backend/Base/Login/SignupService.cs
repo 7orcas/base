@@ -42,8 +42,8 @@ namespace Backend.Base.Login
          */
         public async Task<(bool success, string message)> SignupUser(string ipaddress, string username, string email, string password, int orgNr, string langCode)
         {
-            var labels = await _labelService.GetLangCodeDic(langCode, null);
             var org = await _orgService.GetOrg(orgNr);
+            var labels = await _labelService.GetLangCodeDic(langCode, org.LangLabelVariant);
 
             //Check org
             if (org == null

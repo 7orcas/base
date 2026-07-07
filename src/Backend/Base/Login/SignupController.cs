@@ -63,8 +63,67 @@ namespace Backend.Base.Login
                 Result = rtn.message,
                 Valid = rtn.valid,
             };
-            return Ok(r);
+            return Content(GetEmailVerifiedHtml(), "text/html");
         }
+
+        public static string GetEmailVerifiedHtml()
+        {
+            return """
+<!DOCTYPE html>
+<html lang=""en"">
+<head>
+    <meta charset=""UTF-8"">
+    <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
+    <title>Email Verified</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            text-align: center;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .icon {
+            font-size: 60px;
+            color: #28a745;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            margin: 0 0 10px;
+            color: #333;
+        }
+
+        p {
+            margin: 0;
+            color: #666;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class=""container"">
+        
+        <h1>Email Verified</h1>
+        <p>You are now able to log in.</p>
+    </div>
+</body>
+</html>
+""";
+        }
+
+
 
     }
 

@@ -115,7 +115,7 @@ namespace Backend.Base.Login
         {
             try
             {
-                await Sql.ExecuteAsync(
+                var id = await Sql.ExecuteAndReturnIdAsync(
                         "INSERT INTO base.zzz " +
                             "(xxx, yyy, email, emailverified, orgnrdefault, langcode, isactive) " +
                         "VALUES (" +
@@ -128,6 +128,18 @@ namespace Backend.Base.Login
                             NoComma(Insert(login.IsActive)) +
                             ")"
                 );
+                login.Id = id;
+
+                await Sql.ExecuteAsync(
+                        "INSERT INTO base.useracc " +
+                            "(zzzid, orgnr, isactive) " +
+                        "VALUES (" +
+                            Insert(id) +
+                            Insert(login.OrgNrDefault) +
+                            NoComma(Insert(login.IsActive)) +
+                            ")"
+                );
+
                 return true;
             }
             catch (Exception ex)
@@ -148,6 +160,13 @@ namespace Backend.Base.Login
                             Update("isActive", login.IsActive) +
                             NoComma(Updatetime()) +
                         " WHERE id = " + login.Id
+                );
+                await Sql.ExecuteAsync(
+                        "UPDATE base.useracc " +
+                        "SET " +
+                            Update("isActive", login.IsActive) +
+                            NoComma(Updatetime()) +
+                        " WHERE zzzid = " + login.Id
                 );
                 return true;
             }

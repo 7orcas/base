@@ -198,7 +198,7 @@ namespace Backend.Base.Role
         private async Task InsertRole(RoleEnt ent)
         {
             ent.Encode();
-            var id = await Sql.ExecuteAndReturnId("INSERT INTO base.role " + Insert(ent));
+            var id = await Sql.ExecuteAndReturnIdAsync("INSERT INTO base.role " + Insert(ent));
             ent.Id = id;
         }
 

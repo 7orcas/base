@@ -96,61 +96,36 @@ namespace Backend.Base.Database
 
         }
 
+        public static async Task<long> ExecuteAndReturnIdAsync(string sql)
+        {
+            sql += " RETURNING id;";
 
+            try
+            {
+                await using var connection = new NpgsqlConnection(AppSettings.DBMainConnection);
+                await connection.OpenAsync();
 
-        //DELETE ME
-        //static public async Task<bool> Run(string sqlString, Action<NpgsqlDataReader> action, params NpgsqlParameter[] parameters)
+                await using var command = new NpgsqlCommand(sql, connection);
+
+                var result = await command.ExecuteScalarAsync();
+
+                if (result == null || result == DBNull.Value)
+                    throw new InvalidOperationException("No ID was returned from the query.");
+
+                return Convert.ToInt64(result);
+            }
+            catch (Exception ex)
+            {
+                Log.Logger.Error(ex, "Failed to execute SQL: {Sql}", sql);
+                throw;
+            }
+        }
+
+        //static public async Task<long> ExecuteAndReturnId(string sqlString)
         //{
-        //    return await Task.Run(() =>
-        //    {
+        //    //sqlString += "; SELECT SCOPE_IDENTITY();"; //Sql
+        //    sqlString += " RETURNING id;";  //Postgres
 
-        //        //Thread.Sleep(400);
-        //        var connectionString = AppSettings.DBMainConnection;
-
-        //        NpgsqlConnection connection = null;
-        //        NpgsqlDataReader reader = null;
-        //        try
-        //        {
-        //            connection = new NpgsqlConnection(connectionString);
-        //            connection.Open();
-        //            var command = new NpgsqlCommand(sqlString, connection);
-
-        //            if (parameters != null && parameters.Length > 0)
-        //                command.Parameters.AddRange(parameters);
-
-        //            reader = command.ExecuteReader();
-        //            while (reader.Read())
-        //            {
-        //                action(reader);
-        //            }
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            Console.WriteLine(ex.Message);
-
-        //            var p = "";
-        //            for (int i = 0; parameters != null && i < parameters.Length; i++)
-        //                p += (p.Length > 0 ? "," : "") + parameters[i].NpgsqlDbType + ":" + parameters[i].Value.ToString();
-
-        //            if (p.Length > 0) p = " p -> (" + p + ")";
-
-        //            Log.Logger.Error(sqlString +
-        //                p +
-        //                " -> " + ex.Message);
-        //            throw;
-        //        }
-        //        finally
-        //        {
-        //            if (reader != null) reader.Close();
-        //            if (connection != null) connection.Close();
-        //        }
-
-        //        return true;
-        //    });
-        //}
-
-        //static public async Task<bool> Execute(string sqlString)
-        //{
         //    return await Task.Run(() =>
         //    {
 
@@ -163,7 +138,8 @@ namespace Backend.Base.Database
         //            connection = new NpgsqlConnection(connectionString);
         //            connection.Open();
         //            var command = new NpgsqlCommand(sqlString, connection);
-        //            command.ExecuteNonQuery();
+        //            object result = command.ExecuteScalar();
+        //            return Convert.ToInt64(result); // ✅ ID returned
         //        }
         //        catch (Exception ex)
         //        {
@@ -175,43 +151,8 @@ namespace Backend.Base.Database
         //        {
         //            if (connection != null) connection.Close();
         //        }
-
-        //        return true;
         //    });
         //}
-
-        static public async Task<long> ExecuteAndReturnId(string sqlString)
-        {
-            //sqlString += "; SELECT SCOPE_IDENTITY();"; //Sql
-            sqlString += " RETURNING id;";  //Postgres
-
-            return await Task.Run(() =>
-            {
-
-                //Thread.Sleep(400);
-                var connectionString = AppSettings.DBMainConnection;
-
-                NpgsqlConnection connection = null;
-                try
-                {
-                    connection = new NpgsqlConnection(connectionString);
-                    connection.Open();
-                    var command = new NpgsqlCommand(sqlString, connection);
-                    object result = command.ExecuteScalar();
-                    return Convert.ToInt64(result); // ✅ ID returned
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                    Log.Logger.Error(sqlString + " -> " + ex.Message);
-                    throw;
-                }
-                finally
-                {
-                    if (connection != null) connection.Close();
-                }
-            });
-        }
 
         static public async Task<long> ExecuteAndReturnId(string sqlString, object parameters)
         {
