@@ -68,7 +68,7 @@ namespace Backend.Base.Label
         }
 
         private string CacheKey(string langCode, int? variant, string type) =>
-            GC.CacheKeyLabelPrefix + langCode + (variant.HasValue ? variant : 0) + type;
+            GC.CacheKeyLabelPrefix + langCode + (variant.HasValue ? variant : GC.LangLabelVariantDefault) + type;
         
         /*
          * Get language list for passed in language code (eg 'en')

@@ -47,7 +47,7 @@ namespace Backend.Base.Login
                             OrgNr = GetOrgNr(r),
                             OrgNrs = GetString(r, "orgnrs"),
                             LangCode = GetString(r, "langcode"),
-                            LangLabelVariant = GetIntNull(r, "langlabelvariant"),
+                            LangLabelVariant = GetInt(r, "langlabelvariant"),
                             LangCodes = GetString(r, "langcodes"),
                             MFA = GetInt(r, "mfa"),
                             SuccessAction = GetInt(r, "successaction"),

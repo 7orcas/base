@@ -106,7 +106,7 @@
                                 <NumericNullField Width=GC.TextFieldWidth.Short
                                             LangCode="LangCodeV"
                                             Value="@orgDto.LangLabelVariant"
-                                            ValueChanged="@((int? val) => orgDto.LangLabelVariant = val)"
+                                            ValueChanged="@((int? val) => orgDto.LangLabelVariant = val ?? 0)"
                                             ValueExpression="() => orgDto.LangLabelVariant" />
  
                             </div>

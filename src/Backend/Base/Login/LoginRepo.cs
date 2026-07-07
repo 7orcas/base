@@ -95,7 +95,7 @@ namespace Backend.Base.Login
                             Emailverified = GetBoolean(r, "emailverified"),
                             Password = GetString(r, "yyy"),
                             OrgNrDefault = GetInt(r, "orgnrdefault"),
-                            LangCode = GetStringNull(r, "langCode"),
+                            LangCode = GetString(r, "langCode"),
                             Attempts = GetIntNull(r, "attempts"),
                             Lastlogin = GetDateTime(r, "lastlogin"),
                             IsActive = GetBoolean(r, "isActive"),

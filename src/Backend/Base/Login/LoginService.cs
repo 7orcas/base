@@ -59,7 +59,7 @@ namespace Backend.Base.Login
 
         // Get the user login and account details, validate the password
         // Return a tokenkey if valid and MFA is not required or MFA is enabled and validated 
-        public async Task<LoginEnt> LoginUser(string ipAddress, string username, string password, int orgNr, int sourceAppNr, string? langCode, bool mfaValid)
+        public async Task<LoginEnt> LoginUser(string ipAddress, string username, string password, int orgNr, int sourceAppNr, string langCode, bool mfaValid)
         {
             try
             {
@@ -99,7 +99,7 @@ namespace Backend.Base.Login
                 }
 
                 //Continue with login process and return tokenkey
-                langCode = !string.IsNullOrEmpty(langCode) ? langCode : account.LangCode;
+                langCode = !string.IsNullOrEmpty(langCode) ? langCode : account.LangCode; //Delete me
                 await InitialiseLogin(login, account, org, sourceAppNr);
                 var userConfig = _configService.CreateUserConfig(account, org, langCode);
                 var session = await _sessionService.CreateSession(account, org, userConfig, sourceAppNr);
@@ -192,7 +192,6 @@ namespace Backend.Base.Login
                             Id = GetId(r),
                             LoginId = GetId(r, "zzzId"),
                             OrgNr = GetOrgNr(r),
-                            LangCode = GetStringNull(r, "langCode"),
                             Lastlogin = GetDateTime(r, "lastlogin"),
                             IsActive = IsActive(r),
                             IsAdmin = GetBoolean(r, "isAdmin"),
@@ -344,6 +343,7 @@ namespace Backend.Base.Login
 
             var token = _tokenService.CreateResetRequestToken(tv);
 
+            //Delete me???
             var langCode = GC.LangCodeDefault;
             if (login.LangCode != null) langCode = login.LangCode;
             else if (org.LangCode != null) langCode = org.LangCode;

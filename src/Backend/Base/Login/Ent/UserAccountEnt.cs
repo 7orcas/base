@@ -15,7 +15,7 @@ namespace Backend.Base.Login.Ent
         public long Id { get; set; }
         public long LoginId { get; set; }
         public int OrgNr { get; set; }
-        public string? LangCode { get; set; }
+        public string LangCode { get; set; }
         public int? Classification {  get; set; }
         public DateTime Lastlogin { get; set; }
         public bool IsActive { get; set; }

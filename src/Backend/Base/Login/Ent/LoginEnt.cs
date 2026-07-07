@@ -22,7 +22,7 @@ namespace Backend.Base.Login.Ent
         public bool Emailverified { get; set; }
         public string Password { get; set; }
         public int OrgNrDefault { get; set; }
-        public string? LangCode { get; set; }
+        public string LangCode { get; set; }
         public int? Attempts { get; set; }
         public DateTime Lastlogin { get; set; }
         public bool IsActive { get; set; }

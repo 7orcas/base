@@ -15,7 +15,7 @@ namespace Backend.Base.Login.Ent
         public int OrgNr { get; set; }
         public string OrgNrs { get; set; }
         public string LangCode { get; set; }
-        public int? LangLabelVariant { get; set; }
+        public int LangLabelVariant { get; set; }
         public string LangCodes { get; set; }
         public int MFA { get; set; }
         public int SuccessAction { get; set; }

@@ -22,7 +22,7 @@ namespace Backend.Base.Org
             org.Icon = GetStringNull(r, "icon");
             org.Updated = GetUpdated(r);
             org.IsActive = IsActive(r);
-            org.LangLabelVariant = GetIntNull(r, "langLabelVariant");
+            org.LangLabelVariant = GetInt(r, "langLabelVariant");
             org.Encoded = GetEncoded(r);
             org.MfaRequired = GetBoolean(r, "mfaRequired");
             org.ForgotEnabled = GetBoolean(r, "forgotEnabled");

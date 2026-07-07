@@ -5,26 +5,26 @@ BEGIN;
 -- -------------------------------------------------
 -- cntrl.loginoption
 -- -------------------------------------------------
-INSERT INTO cntrl.loginoption (urlsuffix, isdefault, orgnr, orgnrs, langcode, langcodes)
-VALUES ('blue', true, 1, '1', 'en', 'en');
+INSERT INTO cntrl.loginoption (urlsuffix, isdefault, orgnr, orgnrs, langcode, langlabelvariant, langcodes)
+VALUES ('blue', true, 1, '1', 'en', 0, 'en');
 
-INSERT INTO cntrl.loginoption (urlsuffix, orgnr, orgnrs, langcode, langcodes, mfa, rememberme, forgot, selfregistration, masquerade)
-VALUES ('admin', 1, '1,2', 'en', 'en,de', 1, true, true, true, true);
+INSERT INTO cntrl.loginoption (urlsuffix, orgnr, orgnrs, langcode, langlabelvariant, langcodes, mfa, rememberme, forgot, selfregistration, masquerade)
+VALUES ('admin', 1, '1,2', 'en', 0, 'en,de', 1, true, true, true, true);
 
 INSERT INTO cntrl.loginoption (urlsuffix, orgnr, orgnrs, langcode, langlabelvariant, langcodes)
 VALUES ('all', 2, '1,2,3', 'de', 1, 'en,de,es,xx');
 
-INSERT INTO cntrl.loginoption (urlsuffix, orgnr, orgnrs, langcode, langcodes, successaction)
-VALUES ('api', 1, '1', 'en', 'en', 1);
+INSERT INTO cntrl.loginoption (urlsuffix, orgnr, orgnrs, langcode, langlabelvariant, langcodes, successaction)
+VALUES ('api', 1, '1', 'en', 0, 'en', 1);
 
-INSERT INTO cntrl.loginoption (urlsuffix, orgnr, orgnrs, langcode, langcodes, successaction)
-VALUES ('3', 3, '3', 'en', 'en', 1);
+INSERT INTO cntrl.loginoption (urlsuffix, orgnr, orgnrs, langcode, langlabelvariant, langcodes, successaction)
+VALUES ('3', 3, '3', 'en', 0, 'en', 1);
 
 -- -------------------------------------------------
 -- base.org
 -- -------------------------------------------------
-INSERT INTO base.org (nr, code, descr)
-VALUES (0, 'Org Base', 'Base Organisation');
+INSERT INTO base.org (nr, code, descr, langcode, langlabelvariant)
+VALUES (0, 'Org Base', 'Base Organisation', 'en', 0);
 
 INSERT INTO base.org (nr, code, descr, langcode, langlabelvariant, 
     mfarequired, forgotenabled, signupenabled, emailrequired, emailverified, 

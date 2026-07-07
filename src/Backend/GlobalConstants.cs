@@ -6,6 +6,7 @@
         public const int BaseOrgNr   = 0;
 
         public const string DateTimeFormat = "yyyy-MM-dd HH:mm:ss";
+        public const int LangLabelVariantDefault = 0;
 
         //Login Reset Password
         public const string URL_login_reset         = "reset-password";
