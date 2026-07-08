@@ -1,6 +1,7 @@
 ﻿
 
 using Backend.Base.Email;
+using Backend.Base.Template.Forms;
 
 /// <summary>
 /// Manage self registration process for user
@@ -13,6 +14,7 @@ namespace Backend.Base.Login
     public class SignupService : BaseService, SignupServiceI
     {
         private readonly LoginServiceI _loginService;
+        private readonly LoginOptionServiceI _loginOptionService;
         private readonly LoginRepoI _loginRepo;
         private readonly LabelServiceI _labelService;
         private readonly OrgServiceI _orgService;
@@ -20,6 +22,7 @@ namespace Backend.Base.Login
 
         public SignupService(IServiceProvider serviceProvider,
             LoginServiceI loginService,
+            LoginOptionServiceI loginOptionService,
             LoginRepoI loginRepo,
             LabelServiceI labelService,
             OrgServiceI orgService,
@@ -27,6 +30,7 @@ namespace Backend.Base.Login
             : base(serviceProvider)
         {
             _loginService = loginService;
+            _loginOptionService = loginOptionService;
             _loginRepo = loginRepo;
             _labelService = labelService;
             _orgService = orgService;
@@ -99,7 +103,7 @@ namespace Backend.Base.Login
             var m = new LabelMessage(labels)
                     .AddBr("SignUp1");
 
-            var template = new SignupVerifyEmailAddress(org, login);
+            var template = new Template.Emails.SignupVerify(org, login, labels);
             await _emailService.SendEmailAsync(email, GetLabel("EmailV", labels), template.RenderTemplate());
 
             m.AddBr("SignUp2")
@@ -138,7 +142,12 @@ namespace Backend.Base.Login
 
             //ToDo Create account
 
-            return (true, "LABELME done");
+            //Create html form to display 
+
+            var option = await _loginOptionService.GetLoginOptionDefault(orgNr);
+            var template = new EmailAddressVerified(org, langCode, labels, option.UrlSuffix);
+            
+            return (true, template.RenderTemplate());
         }
 
 
@@ -186,7 +195,6 @@ namespace Backend.Base.Login
 
             return (val.IsValid(), val.GetMessage());
         }
-
 
     }
 }

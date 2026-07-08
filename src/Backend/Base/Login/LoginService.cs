@@ -349,12 +349,12 @@ namespace Backend.Base.Login
             else if (org.LangCode != null) langCode = org.LangCode;
             login.LangCode = langCode;
 
-            var dic = await _labelService.GetLangCodeDic(langCode, org.LangLabelVariant);
+            var labels = await _labelService.GetLangCodeDic(langCode, org.LangLabelVariant);
             var subject = "Password Reset";
-            if (dic.TryGetValue("PWReset", out var value))
+            if (labels.TryGetValue("PWReset", out var value))
                 subject = value;
 
-            var template = new ResetRequestEmail(org, login, token);
+            var template = new ResetPasswordRequest(org, login, token, labels);
             await _emailService.SendEmailAsync(email, subject, template.RenderTemplate());
             
             return true;

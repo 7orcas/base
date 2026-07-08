@@ -1,11 +1,11 @@
 ﻿using GC = Backend.GlobalConstants;
 
-namespace Backend.Base.Template.Ent
+namespace Backend.Base.Template.Emails
 {
-    public class SignupVerifyEmailAddress : BaseTemplate<SignupVerifyEmailAddress>
+    public class SignupVerify : BaseTemplate<SignupVerify>
     {
-        public SignupVerifyEmailAddress(OrgEnt org, LoginEnt login) 
-            : base()
+        public SignupVerify(OrgEnt org, LoginEnt login, Dictionary<string, string> labels) 
+            : base(labels)
         {            
             OrgNr = org.Nr;
             

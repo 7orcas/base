@@ -50,6 +50,8 @@ EmailInvalid,Invalid Email
 EmailEx,Email already exists
 EmailVL,Your email address must be verified before you can login
 EmailV,Verify your email address
+EmailVS,Email address verified
+EmailVM,You are now able to log in
 Mfa1,Scan with Microsoft Authenticator
 Mfa2,Or enter this key manually
 Mfa3,Enter code from Microsoft Authenticator

@@ -8,7 +8,8 @@ BEGIN;
 INSERT INTO cntrl.loginoption (urlsuffix, isdefault, orgnr, orgnrs, langcode, langlabelvariant, langcodes)
 VALUES ('blue', true, 1, '1', 'en', 0, 'en');
 
-INSERT INTO cntrl.loginoption (urlsuffix, orgnr, orgnrs, langcode, langlabelvariant, langcodes, mfa, rememberme, forgot, selfregistration, masquerade)
+INSERT INTO cntrl.loginoption (urlsuffix, orgnr, orgnrs, langcode, langlabelvariant, langcodes, mfa, 
+	rememberme, forgot, selfregistration, masquerade)
 VALUES ('admin', 1, '1,2', 'en', 0, 'en,de', 1, true, true, true, true);
 
 INSERT INTO cntrl.loginoption (urlsuffix, orgnr, orgnrs, langcode, langlabelvariant, langcodes)

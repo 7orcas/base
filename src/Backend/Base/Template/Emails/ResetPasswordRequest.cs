@@ -1,13 +1,13 @@
 ﻿using GC = Backend.GlobalConstants;
 
-namespace Backend.Base.Template.Ent
+namespace Backend.Base.Template.Emails
 {
-    public class ResetRequestEmail : BaseTemplate<ResetRequestEmail>
+    public class ResetPasswordRequest : BaseTemplate<ResetPasswordRequest>
     {
         public string Token { get; set; }
 
-        public ResetRequestEmail(OrgEnt org, LoginEnt login, string token) 
-            : base()
+        public ResetPasswordRequest(OrgEnt org, LoginEnt login, string token, Dictionary<string, string> labels) 
+            : base(labels)
         {            
             Token = token;
             OrgNr = org.Nr;

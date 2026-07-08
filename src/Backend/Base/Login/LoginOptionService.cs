@@ -17,6 +17,27 @@ namespace Backend.Base.Login
             _labelService = labelService;
         }
 
+        public async Task<LoginOptionEnt> GetLoginOptionDefault(int orgNr)
+        {
+            var loginOption = null as LoginOptionEnt;
+            try
+            {
+                await Sql.Run(
+                    "SELECT * FROM cntrl.loginoption " +
+                        "WHERE orgnr = @orgNr " +
+                        "AND isdefault IS TRUE",
+                    r =>
+                    {
+                        loginOption = Load(r);
+                    },
+                    new NpgsqlParameter("@orgNr", orgNr)
+                );
+            }
+            catch { }
+            return loginOption;
+        }
+
+
         //Login options for the passed in login nr
         public async Task<LoginOptionEnt> GetLoginOptions(string urlSuffix)
         {
@@ -41,22 +62,7 @@ namespace Backend.Base.Login
                         "WHERE " + whereSql,
                     r =>
                     {
-                        loginOption = new LoginOptionEnt
-                        {
-                            UrlSuffix = GetString(r, "urlsuffix"),
-                            OrgNr = GetOrgNr(r),
-                            OrgNrs = GetString(r, "orgnrs"),
-                            LangCode = GetString(r, "langcode"),
-                            LangLabelVariant = GetInt(r, "langlabelvariant"),
-                            LangCodes = GetString(r, "langcodes"),
-                            MFA = GetInt(r, "mfa"),
-                            SuccessAction = GetInt(r, "successaction"),
-                            RememberMe = GetBoolean(r, "rememberme"),
-                            Forgot = GetBoolean(r, "forgot"),
-                            SelfRegistration = GetBoolean(r, "selfregistration"),
-                            Masquerade = GetBoolean(r, "masquerade"),
-                            IsActive = GetBoolean(r, "isActive")
-                        };
+                        loginOption = Load(r);
                     },
                     new NpgsqlParameter("@urlsuffix", urlSuffix)
                 );
@@ -68,6 +74,27 @@ namespace Backend.Base.Login
 
             return loginOption;
         }
+
+        static public LoginOptionEnt Load(NpgsqlDataReader r)
+        {
+            return new LoginOptionEnt
+            {
+                UrlSuffix = GetString(r, "urlsuffix"),
+                OrgNr = GetOrgNr(r),
+                OrgNrs = GetString(r, "orgnrs"),
+                LangCode = GetString(r, "langcode"),
+                LangLabelVariant = GetInt(r, "langlabelvariant"),
+                LangCodes = GetString(r, "langcodes"),
+                MFA = GetInt(r, "mfa"),
+                SuccessAction = GetInt(r, "successaction"),
+                RememberMe = GetBoolean(r, "rememberme"),
+                Forgot = GetBoolean(r, "forgot"),
+                SelfRegistration = GetBoolean(r, "selfregistration"),
+                Masquerade = GetBoolean(r, "masquerade"),
+                IsActive = GetBoolean(r, "isActive")
+            };
+        }
+
 
         private async Task<LoginOptionEnt> GetLoginOptionsService()
         {
