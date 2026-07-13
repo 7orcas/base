@@ -15,7 +15,7 @@ namespace Common.DTO
         public int orgNr { get; set; }
         public string Code { get; set; }
         public string? Description { get; set; }
-        public DateTime Updated { get; set; }
+        public DateTimeOffset Updated { get; set; }
         public bool IsActive { get; set; }
 
         public bool IsNew() => Id < 0;

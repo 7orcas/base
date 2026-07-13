@@ -15,7 +15,7 @@ namespace Common.DTO.Base
         public string LangCode { get; set; }
         public string Label { get; set; }
         public string? Tooltip { get; set; }
-        public DateTime Updated { get; set; }
+        public DateTimeOffset Updated { get; set; }
 
         public bool IsUpdateable { get; set; } = false;
     }

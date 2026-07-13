@@ -17,7 +17,7 @@ namespace Backend.Base.Login.Ent
         public int OrgNr { get; set; }
         public string LangCode { get; set; }
         public int? Classification {  get; set; }
-        public DateTime Lastlogin { get; set; }
+        public DateTimeOffset? Lastlogin { get; set; }
         public bool IsActive { get; set; }
         public bool IsAdmin { get; set; }
         //Update note: Add to service

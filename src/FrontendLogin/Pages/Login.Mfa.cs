@@ -13,11 +13,18 @@ namespace FrontendLogin.Pages
 {
     public partial class Login
     {
+
+        private void initialiseMfaInput()
+        {
+            showMfaInput = options.Mfa;
+            StateHasChanged();
+        }
+
         private async Task MfaCheck(LoginSuccessDto login)
         {
             loginRequest.Id = login.Id;
 
-            if (!login.MfaEnabled)
+            if (!login.IsMfaEnabled)
                 await LoadMfaQr(); //Show the QR code to set up MFA
             else
             {
@@ -31,7 +38,7 @@ namespace FrontendLogin.Pages
         {
             var client = HttpClientFactory.CreateClient(GC.HTTP_Client);
 
-            var response = await client.PostAsJsonAsync(GC.URL_mfa_setup, loginRequest.Id);
+            var response = await client.PostAsJsonAsync(GC.URL_mfa_setup, loginRequest);
             if (response.IsSuccessStatusCode)
             {
                 var result = await response.Content.ReadAsStringAsync();
@@ -82,7 +89,7 @@ namespace FrontendLogin.Pages
                 }
 
                 //API clients just get the token
-                await GetToken(login.TokenKey);
+                await GetAndDisplayToken(login.TokenKey);
             }
             catch (Exception ex)
             {

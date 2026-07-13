@@ -48,7 +48,7 @@ public abstract class BaseService : SqlUtils
             Update("code", ent.Code) + 
             Update("descr", ent.Description) + 
             Update("encoded", ent.Encoded) + 
-            Update("updated", DateTime.Now) +
+            Update("updated", DateTimeOffset.Now) +
             NoComma(Update("isActive", ent.IsActive));
     }
 
@@ -82,6 +82,15 @@ public abstract class BaseService : SqlUtils
         if (labels.ContainsKey(langKey))
             return labels[langKey];
         return nullDefault;
+    }
+
+    protected string ReplaceLabelParameter(string label, string parameter1)
+    {
+        if (string.IsNullOrEmpty(label))
+            return label;
+        if (label.Contains(GC.LabelParameterPrefix))
+            return label.Replace(GC.LabelParameterPrefix, parameter1);
+        return label;
     }
 
     public bool IsEmailValid(string email)

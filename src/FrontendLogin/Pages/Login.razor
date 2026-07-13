@@ -364,7 +364,7 @@
                 return;
 
             //MFA is an extra step
-            if (login.MfaRequired)
+            if (login.IsMfaRequired)
             {
                 await MfaCheck(login);
                 return;
@@ -378,7 +378,7 @@
             }
 
             //API clients just get the token
-            await GetToken(login.TokenKey);
+            await GetAndDisplayToken(login.TokenKey);
 
         }
         catch (Exception ex)
@@ -457,7 +457,7 @@
     }
 
     //For API login's, display the bearer token
-    private async Task GetToken(string key)
+    private async Task GetAndDisplayToken(string key)
     {
         tokenkey = key;
         var client = HttpClientFactory.CreateClient(GC.HTTP_Client);
@@ -480,6 +480,7 @@
 
         options = JsonConvert.DeserializeObject<LoginOptionDto>(dto.Result.ToString());
 
+        initialiseMfaInput();
         initialiseSignupRequest();
 
         cookie = options.RememberMeCookie;

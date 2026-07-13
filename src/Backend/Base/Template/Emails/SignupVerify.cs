@@ -4,6 +4,9 @@ namespace Backend.Base.Template.Emails
 {
     public class SignupVerify : BaseTemplate<SignupVerify>
     {
+        private bool IsExpiry = false;
+        private bool IsItSupport = false;
+
         public SignupVerify(OrgEnt org, LoginEnt login, Dictionary<string, string> labels) 
             : base(labels)
         {            
@@ -15,6 +18,19 @@ namespace Backend.Base.Template.Emails
             LangCodeVariant = org.LangLabelVariant;
 
             IsHtml = org.Encoding.IsEmailHtml;
+
+            if (org.Encoding.SignupExpiryDays > 0)
+            {
+                IsExpiry = true;
+                var expiry = DateTime.UtcNow.AddDays(org.Encoding.SignupExpiryDays);
+                Data.Add("Expiry", expiry.ToString(org.Encoding.DateTimeFormatDMY));
+            }
+
+            if (!string.IsNullOrEmpty(org.Encoding.SupportIT))
+            {
+                IsItSupport = true;
+                Data.Add("ITSupport", org.Encoding.SupportIT);
+            }
 
             Data.Add("Username", login.Username);
             Data.Add("Email", login.Email);
@@ -41,7 +57,7 @@ namespace Backend.Base.Template.Emails
 
         private string TemplateEn()
         {
-            return @"<!DOCTYPE html>
+            var t = @"<!DOCTYPE html>
                 <html>
                 <head>
                     <meta charset=""utf-8"" />
@@ -60,12 +76,7 @@ namespace Backend.Base.Template.Emails
                         Verify Email Address: <a href=""{{VerifyLink}}"">Verify My Email</a>
                     </p>
 
-                    <p>
-                        Please note that this verification link will expire on
-                        [Expiry Date and Time].
-                        If the link expires before it is used, you will need to request
-                        a new verification email.
-                    </p>
+                    XX1
 
                     <p>
                         If you did not create an account using this email address,
@@ -77,13 +88,30 @@ namespace Backend.Base.Template.Emails
                         at [Support Contact Details].
                     </p>
 
-                    <p>
-                        Kind regards,<br />
-                        IT Support Team
-                    </p>
+                    XX2
 
                 </body>
                 </html>";
+
+            if (IsExpiry)
+                t = t.Replace("XX1",
+               @"<p>
+                    This verification link will expire on {{Expiry}}.
+                    If the link expires before it is used, you will need to re-register.
+                 </p>");
+            else
+                t = t.Replace("XX1", "");
+
+            if (IsItSupport)
+                t = t.Replace("XX2",
+                               @"<p>
+                    Kind regards,<br />
+                    {{ITSupport}}
+                 </p>");
+            else
+                t = t.Replace("XX2", "");
+
+            return t;
         }
 
         private string TemplateDe()

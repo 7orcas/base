@@ -52,7 +52,7 @@ namespace Backend.Base.Login
             //Check org
             if (org == null
                 || !org.IsActive
-                || !org.SignupEnabled)
+                || !org.IsSignupEnabled)
             {
                 _log.Error("Invalid OrgNr in signup Ipaddress {ipaddress} OrgNr {orgNr} Username {username}", ipaddress, orgNr, username);
                 return (false, "");
@@ -90,10 +90,10 @@ namespace Backend.Base.Login
                 Username = username,
                 Password = password,
                 Email = email,
-                Emailverified = false,
+                IsEmailVerified = false,
                 OrgNrDefault = org.Nr,
                 LangCode = langCode,
-                IsActive = !org.EmailVerified
+                IsActive = true
             };
 
             //Save and senf email
@@ -120,7 +120,7 @@ namespace Backend.Base.Login
             //Check org
             if (org == null
                 || !org.IsActive
-                || !org.SignupEnabled)
+                || !org.IsSignupEnabled)
             {
                 _log.Error("Invalid OrgNr in VerifyEmail Ipaddress {ipaddress} OrgNr {orgNr} Email {email}", ipAddress, orgNr, email);
                 return (false, "");
@@ -134,16 +134,29 @@ namespace Backend.Base.Login
                 return (false, "");
             }
 
-            login.Emailverified = true;
-            login.IsActive = true;
+            if (login.IsEmailVerified)
+            {
+                _log.Warning("Email already verified, Ipaddress {ipaddress} OrgNr {orgNr} Email {email}", ipAddress, orgNr, email);
+                return (false, GetLabel("EmailVSX", "Email address is already verified", labels));
+            }
 
-            if (!await _loginRepo.UpdateSignup(login))
-                return (false, "LABELME cant update");
+            if (org.Encoding.SignupExpiryDays > 0)
+            {
+                var expiry = login.Updated.AddDays(org.Encoding.SignupExpiryDays);
+                if (expiry < DateTime.UtcNow)
+                {
+                    _log.Error("Expired action in VerifyEmail Ipaddress {ipaddress} OrgNr {orgNr} Email {email}", ipAddress, orgNr, email);
+                    return (false, GetLabel("EmailVX", "Email verification has expired", labels));
+                }
+            }
 
-            //ToDo Create account
+            login.IsEmailVerified = true;
+
+            if (!await _loginRepo.VerifySignup(login))
+                return (false, GetLabel("Oops", "Something went wrong! Please see your system admin.", labels));
+
 
             //Create html form to display 
-
             var option = await _loginOptionService.GetLoginOptionDefault(orgNr);
             var template = new EmailAddressVerified(org, langCode, labels, option.UrlSuffix);
             

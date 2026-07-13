@@ -1,8 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
-using OtpNet;
-using GC = Backend.GlobalConstants;
 
 /// <summary>
 /// Multifactor authentication controller for any client
@@ -39,9 +36,9 @@ namespace Backend.Base.Mfa
         /// </summary>
         /// <returns></returns>
         [HttpPost("SetupMfa")]
-        public async Task<IActionResult> SetupMfa([FromBody] long id)
+        public async Task<IActionResult> SetupMfa([FromBody] Common.Request.LoginRequest loginRequest)
         {
-            var key = await _MfaService.SetupMfa(id);
+            var key = await _MfaService.SetupMfa(loginRequest.Id.Value, loginRequest.UserName);
 
             if (key == null)
                 return Ok(new _ResponseDto
@@ -63,7 +60,7 @@ namespace Backend.Base.Mfa
         }
 
         [HttpPost("VerifyMfa")]
-        public async Task<IActionResult> VerifyMfa([FromBody] LoginRequest request) 
+        public async Task<IActionResult> VerifyMfa([FromBody] Common.Request.LoginRequest request) 
         {
             var result = await _MfaService.VerifyMfaCode(request.Id.Value, request.MfaCode);
             
@@ -88,8 +85,8 @@ namespace Backend.Base.Mfa
                     TokenKey = res.TokenKey,
                     MainUrl = res.MainUrl,
                     LangCode = res.LangCode,
-                    MfaRequired = res.MfaRequired,
-                    MfaEnabled = res.MfaEnabled
+                    IsMfaRequired = res.IsMfaRequired,
+                    IsMfaEnabled = res.IsMfaEnabled
                 };
 
             var r = new _ResponseDto

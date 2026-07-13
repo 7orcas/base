@@ -147,6 +147,7 @@ namespace Backend.Base.Label
                 "PWResetES",
                 "Mfa1",
                 "Mfa2",
+                "Mfa3",
                 "MfaEr",
                 "Verify",
                 "Close"

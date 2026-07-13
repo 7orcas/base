@@ -10,7 +10,7 @@ namespace Backend.Base.Audit.Ent
         public int EntityTypeId {  get; set; }
         public long? EntityId { get; set; }
         public long UserId { get; set; }
-        public DateTime Created {  get; set; }
+        public DateTimeOffset Created {  get; set; }
 	    public string? Crud {  get; set; }
         public string? Details { get; set; }
         

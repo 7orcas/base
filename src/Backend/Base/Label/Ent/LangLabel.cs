@@ -35,7 +35,7 @@ namespace Backend.Base.Label.Ent
         /// <summary>
         /// Last date/time of update.
         /// </summary>
-        public DateTime Updated { get; set; }
+        public DateTimeOffset Updated { get; set; }
 
 
         /// <summary>

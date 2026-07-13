@@ -43,7 +43,7 @@ namespace Backend.Base.Login
             var login = await _loginService.LoginUser(ipAddress, request.UserName, request.Password, request.Org, request.SourceApplication, request.LangCode, false);
             var res = login.Response;
 
-            if (!res.Valid)
+            if (!res.IsValid)
                 return Ok(new _ResponseDto
                 {
                     Valid = false,
@@ -84,11 +84,11 @@ namespace Backend.Base.Login
                 Result = new LoginSuccessDto
                 {
                     Id = login.Id,
-                    TokenKey = res.MfaRequired ? null : res.TokenKey,
-                    MainUrl = res.MfaRequired ? null : res.MainUrl,
+                    TokenKey = res.IsMfaRequired ? null : res.TokenKey,
+                    MainUrl = res.IsMfaRequired ? null : res.MainUrl,
                     LangCode = res.LangCode,
-                    MfaRequired = res.MfaRequired,
-                    MfaEnabled = res.MfaEnabled
+                    IsMfaRequired = res.IsMfaRequired,
+                    IsMfaEnabled = res.IsMfaEnabled
                 }
             };
             return Ok(r);
@@ -167,12 +167,12 @@ namespace Backend.Base.Login
         {
             var ipAddress = GetClientIp();
 
-            var success = _loginService.ResetRequest(email, ipAddress);
+            var success = await _loginService.ResetRequest(email, ipAddress);
 
             var r = new _ResponseDto
             {
-                SuccessMessage = "Reset Request Ok",
-                Valid = true,
+                SuccessMessage = "Reset Request",
+                Valid = success,
             };
             return Ok(r);
         }

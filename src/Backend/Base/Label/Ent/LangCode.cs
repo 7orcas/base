@@ -26,7 +26,7 @@ namespace Backend.Base.Label.Ent
         /// </summary>
         public string? Description { get; set; }
 
-        public DateTime Updated { get; set; }
+        public DateTimeOffset Updated { get; set; }
 
         /// <summary>
         /// Is language code active

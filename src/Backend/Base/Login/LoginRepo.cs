@@ -92,15 +92,17 @@ namespace Backend.Base.Login
                             Id = GetId(r),
                             Username = GetString(r, "xxx"),
                             Email = GetString(r, "email"),
-                            Emailverified = GetBoolean(r, "emailverified"),
+                            IsEmailVerified = GetBoolean(r, "isEmailVerified"),
                             Password = GetString(r, "yyy"),
                             OrgNrDefault = GetInt(r, "orgnrdefault"),
                             LangCode = GetString(r, "langCode"),
                             Attempts = GetIntNull(r, "attempts"),
-                            Lastlogin = GetDateTime(r, "lastlogin"),
+                            Updated = GetDateTime(r, "updated"),
+                            Lastlogin = GetDateTimeNull(r, "lastlogin"),
                             IsActive = GetBoolean(r, "isActive"),
                             MfaSecret = GetStringNull(r, "mfasecret"),
-                            MfaEnabled = GetBoolean(r, "mfaenabled"),
+                            IsMfaEnabled = GetBoolean(r, "isMfaEnabled"),
+                            IsMfaRequired = GetBoolean(r, "isMfaRequired"),
                         };
                     },
                     new NpgsqlParameter("@id", id)
@@ -111,18 +113,74 @@ namespace Backend.Base.Login
             return login;
         }
 
+        public async Task<UserAccountEnt?> GetAccount(long loginId, int orgNr)
+        {
+            var account = null as UserAccountEnt;
+
+            try
+            {
+                await Sql.Run(
+                    "SELECT * FROM base.userAcc " +
+                        "WHERE zzzId = @zzzId " +
+                        "AND orgNr = @orgNr",
+                    r =>
+                    {
+                        account = new UserAccountEnt
+                        {
+                            Id = GetId(r),
+                            LoginId = GetId(r, "zzzId"),
+                            OrgNr = GetOrgNr(r),
+                            Lastlogin = GetDateTimeNull(r, "lastlogin"),
+                            IsActive = IsActive(r),
+                            IsAdmin = GetBoolean(r, "isAdmin"),
+                            Classification = GetIntNull(r, "classification")
+                        };
+                    },
+                    new NpgsqlParameter("@zzzId", loginId),
+                    new NpgsqlParameter("@orgNr", orgNr)
+                );
+            }
+            catch { }
+
+            return account;
+        }
+
+        public async Task<bool> SetAttempts(long id, int attempts)
+        {
+            await Sql.ExecuteAsync(
+                   "UPDATE base.zzz "
+                   + "SET Attempts = " + attempts + " "
+                   + "WHERE id = " + id
+               );
+            return true;
+        }
+
+        public async Task UpdateLastLogin(long id, long accountId)
+        {
+            await Sql.ExecuteAsync(
+                   "UPDATE base.zzz "
+                   + "SET lastlogin = CURRENT_TIMESTAMP "
+                   + "WHERE id = " + id
+               );
+            await Sql.ExecuteAsync(
+                   "UPDATE base.useracc "
+                   + "SET lastlogin = CURRENT_TIMESTAMP "
+                   + "WHERE id = " + accountId
+               );
+        }
+
         public async Task<bool> CreateSignup(LoginEnt login)
         {
             try
             {
                 var id = await Sql.ExecuteAndReturnIdAsync(
                         "INSERT INTO base.zzz " +
-                            "(xxx, yyy, email, emailverified, orgnrdefault, langcode, isactive) " +
+                            "(xxx, yyy, email, isEmailVerified, orgnrDefault, langcode, isActive) " +
                         "VALUES (" +
                             Insert(login.Username) +
                             Insert(login.Password) +
                             Insert(login.Email) +
-                            Insert(login.Emailverified) +
+                            Insert(login.IsEmailVerified) +
                             Insert(login.OrgNrDefault) +
                             Insert(login.LangCode) +
                             NoComma(Insert(login.IsActive)) +
@@ -132,7 +190,7 @@ namespace Backend.Base.Login
 
                 await Sql.ExecuteAsync(
                         "INSERT INTO base.useracc " +
-                            "(zzzid, orgnr, isactive) " +
+                            "(zzzid, orgnr, isActive) " +
                         "VALUES (" +
                             Insert(id) +
                             Insert(login.OrgNrDefault) +
@@ -149,14 +207,14 @@ namespace Backend.Base.Login
 
         }
 
-        public async Task<bool> UpdateSignup(LoginEnt login)
+        public async Task<bool> VerifySignup(LoginEnt login)
         {
             try
             {
                 await Sql.ExecuteAsync(
                         "UPDATE base.zzz " +
                         "SET " +
-                            Update("emailverified", login.Emailverified) +
+                            Update("isEmailVerified", login.IsEmailVerified) +
                             Update("isActive", login.IsActive) +
                             NoComma(Updatetime()) +
                         " WHERE id = " + login.Id
@@ -202,6 +260,27 @@ namespace Backend.Base.Login
             }
             return false;
         }
+
+        public async Task<bool> SetMfaKey(long id, string key)
+        {
+            await Sql.ExecuteAsync(
+                   "UPDATE base.zzz "
+                   + "SET mfasecret = '" + key + "' "
+                   + "WHERE id = " + id
+               );
+            return true;
+        }
+
+        public async Task<bool> EnableMfa(long id)
+        {
+            await Sql.ExecuteAsync(
+                   "UPDATE base.zzz "
+                   + "SET ismfaenabled = true "
+                   + "WHERE id = " + id
+               );
+            return true;
+        }
+
 
     }
 }

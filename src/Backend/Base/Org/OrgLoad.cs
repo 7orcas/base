@@ -24,11 +24,13 @@ namespace Backend.Base.Org
             org.IsActive = IsActive(r);
             org.LangLabelVariant = GetInt(r, "langLabelVariant");
             org.Encoded = GetEncoded(r);
-            org.MfaRequired = GetBoolean(r, "mfaRequired");
-            org.ForgotEnabled = GetBoolean(r, "forgotEnabled");
-            org.SignupEnabled = GetBoolean(r, "signupEnabled");
-            org.EmailRequired = GetBoolean(r, "emailRequired");
-            org.EmailVerified = GetBoolean(r, "emailVerified");
+            org.Mfa = GetInt(r, "mfa");
+            org.IsRememberMeEnabled = GetBoolean(r, "isRememberMeEnabled");
+            org.IsMasqueradeEnabled = GetBoolean(r, "isMasqueradeEnabled");
+            org.IsForgotEnabled = GetBoolean(r, "isForgotEnabled");
+            org.IsSignupEnabled = GetBoolean(r, "isSignupEnabled");
+            org.IsEmailRequired = GetBoolean(r, "isEmailRequired");
+            org.IsEmailVerified = GetBoolean(r, "isEmailVerified");
             org.IsEmailHtml = GetBoolean(r, "isEmailHtml");
             org.Decode();
 

@@ -15,7 +15,7 @@ namespace Common.DTO.Base
         public string TokenKey { get; set; }
         public string MainUrl { get; set; }
         public string LangCode { get; set; }
-        public bool MfaRequired { get; set; }
-        public bool MfaEnabled { get; set; }
+        public bool IsMfaRequired { get; set; }
+        public bool IsMfaEnabled { get; set; }
     }
 }

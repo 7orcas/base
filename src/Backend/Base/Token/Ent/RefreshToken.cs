@@ -4,10 +4,10 @@
     {
         public long Id { get; set; }
         public Guid Token { get; set; }
-        public DateTime Created { get; set; }
-        public DateTime Expires { get; set; }
+        public DateTimeOffset Created { get; set; }
+        public DateTimeOffset Expires { get; set; }
         public string? CreatedByIp { get; set; }
-        public DateTime? Revoked { get; set; }
+        public DateTimeOffset? Revoked { get; set; }
         public string? RevokedBy { get; set; }
         public string Username { get; set; }
         public string SessionKey { get; set; }

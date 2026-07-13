@@ -22,6 +22,10 @@ namespace Backend.Base.Org.Ent
         public PasswordRule PasswordRule { get; set; } = new PasswordRule();
 
         public bool IsEmailHtml { get; set; } = true;
+
+        public int SignupExpiryDays { get; set; } = 30; // Number of days a signup registration email address must be verified before it expires
+        public string DateTimeFormatDMY { get; set; } = "dd MMM yyyy";
+        public string SupportIT { get; set; } = "The IT support team";
     }
 
     public class Language 

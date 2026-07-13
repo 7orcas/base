@@ -64,11 +64,14 @@
         //Service
         public const long ServiceLoginId             = -1L;
         public const long ServiceAccountId           = -1L;
+        public const string ServiceUsername          = "$";
         public const string ServiceAccountName       = "Service";
 
-        //MFA
-        public const int MFAinactive = 0;
-        public const int MFAactive   = 1;
+        //MFA - Order is important, as it is used in the OrgEnt.Mfa property
+        public const int MfaInactive          = 0;
+        public const int MfaOptionalEachDay   = 1;
+        public const int MfaRequiredEachLogin = 2;
+        public const int MfaRequiredEachDay   = 3;
 
     }
 }

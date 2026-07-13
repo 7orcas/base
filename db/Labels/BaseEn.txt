@@ -51,7 +51,9 @@ EmailEx,Email already exists
 EmailVL,Your email address must be verified before you can login
 EmailV,Verify your email address
 EmailVS,Email address verified
+EmailVSX,Email address is already verified
 EmailVM,You are now able to log in
+EmailVX,Email verification has expired|| please contact IT support
 Mfa1,Scan with Microsoft Authenticator
 Mfa2,Or enter this key manually
 Mfa3,Enter code from Microsoft Authenticator
@@ -100,6 +102,9 @@ Logout,Logout
 Login,Login
 LoginUP,Invalid Username and/or Password
 LoginXP,Max Attempts have been reached 
+LoginIL,Your login is inactive
+LoginAS,You are not setup to access %%
+LoginIA,Your account into %% is inactive
 Audit,Audit
 ValE,Validation Error
 ValT,There are Validation Errors|| Save is unsuccessful.
