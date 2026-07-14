@@ -75,8 +75,8 @@ namespace Backend.Base
 
                 sessionKey = tv.SessionKey;
                 session = _sessionService.GetSession(sessionKey);
-                context.HttpContext.Items["session"] = session;
-                _diagnosticContext.Set("SessionKey", sessionKey);
+                //context.HttpContext.Items["session"] = session;
+                //_diagnosticContext.Set("SessionKey", sessionKey);
             }
 
 //methodInfo.GetCustomAttribute<AllowAnonymousAttribute>()
@@ -135,16 +135,16 @@ namespace Backend.Base
         {
             // Intercept after the controller action executes
             
-            if (context.Exception != null)
-            {
-                var r = new _ResponseDto
-                {
-                    Valid = false,
-                    ErrorMessage = context.Exception.Message,
-                    StatusCode = 500 
-                };
-                context.Result = new OkObjectResult(r);
-            }
+            //if (context.Exception != null)
+            //{
+            //    var r = new _ResponseDto
+            //    {
+            //        Valid = false,
+            //        ErrorMessage = context.Exception.Message,
+            //        StatusCode = 500 
+            //    };
+            //    context.Result = new OkObjectResult(r);
+            //}
 
         }
 

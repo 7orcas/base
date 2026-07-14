@@ -35,7 +35,7 @@ LoadAppSettings(builder);
 
 builder.Services.AddControllers(options =>
 {
-    options.Filters.Add<InterceptorFilter>();
+   // options.Filters.Add<InterceptorFilter>();
 });
 //builder.Services.AddScoped<InterceptorFilter>();
 
@@ -173,7 +173,12 @@ var app = builder.Build();
 
 LogAppSettings(app);
 
+app.UsePathBase(AppSettings.PathBase);
+app.UseRouting();
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseMiddleware<SessionMiddleware>();
+app.UseMiddleware<AuthorizationMiddleware>();
+app.UseMiddleware<AuditMiddleware>();
 
 app.UseSerilogRequestLogging(options =>
 {
@@ -183,8 +188,6 @@ app.UseSerilogRequestLogging(options =>
         diagnosticContext.Set("RequestMethod", httpContext.Request.Method);
     };
 });
-
-app.UsePathBase(AppSettings.PathBase);
 
 app.UseHttpsRedirection();
 
