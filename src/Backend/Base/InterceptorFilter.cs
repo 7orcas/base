@@ -19,6 +19,8 @@ namespace Backend.Base
         private readonly SessionServiceI _sessionService;
         private readonly PermissionServiceI _permissionService;
         private readonly AuditServiceI _auditService;
+
+        //Change to [AllowAnonymous]
         private readonly string[] nonAuthorisedMethods = { 
             "LoginOptions", "Login", "GetToken", "LoginLabels", "LoginOrg",
             "RefreshExpiredToken", "RefreshCurrentToken",
@@ -76,7 +78,10 @@ namespace Backend.Base
                 context.HttpContext.Items["session"] = session;
                 _diagnosticContext.Set("SessionKey", sessionKey);
             }
-           
+
+//methodInfo.GetCustomAttribute<AllowAnonymousAttribute>()
+
+
             //Test permissions
             if (context.ActionDescriptor is ControllerActionDescriptor controllerActionDescriptor)
             {
@@ -112,7 +117,7 @@ namespace Backend.Base
                         ErrorMessage = "Not Authorised",  //ToDo label 'NAuth'
                         StatusCode = GC.StatusCodeNotAuthorised // HTTP status code
                     };
-                    context.Result = new OkObjectResult(r);
+                    context.Result = new UnauthorizedObjectResult(r); //TEST ME
                 }
 
                 //Audit list action
