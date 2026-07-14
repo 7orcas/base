@@ -31,7 +31,7 @@ INSERT INTO base.org (nr, code, descr, langcode, langlabelvariant, mfa,
     isforgotenabled, issignupenabled, isemailrequired, isemailverified, icon, 
 	encoded)
 VALUES
-(1, 'Org 1', 'Org 1 Description', 'en', 1, 1, 
+(1, 'Org 1', 'Org 1 Description', 'en', 1, 0, 
   true, true, true, true, '🏢',
  '{Languages:[{LangCode:"en",IsEditable:true},{LangCode:"de",IsEditable:true},{LangCode:"c1",IsEditable:false},{LangCode:"c2",IsEditable:false}]}');
 
@@ -50,7 +50,7 @@ VALUES (3, 'Org 3', 'Org 3 Description', 'de', 1,
 -- -------------------------------------------------
 INSERT INTO base.zzz (id, xxx, yyy, email, orgnrdefault, langcode, isemailverified, ismfarequired)
 VALUES
-(1, '1', '1', '1', 1, 'en', true, true);
+(1, '1', '1', '1', 1, 'en', true, false);
 INSERT INTO base.zzz (id, xxx, yyy, email, orgnrdefault, langcode)
 VALUES
 (2, 'user', 'xx123', 'xx123', 1, 'en'),

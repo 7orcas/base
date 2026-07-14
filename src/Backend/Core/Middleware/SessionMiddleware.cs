@@ -20,47 +20,47 @@ namespace Backend.Core.Middleware
             _log = Log.Logger;
         }
 
-        //public async Task InvokeAsync(
-        //    HttpContext context,
-        //    TokenServiceI _tokenService,
-        //    SessionServiceI _sessionService)
-        //{
-        //    try
-        //    {
-        //        var authorizationHeader = context.Request.Headers.Authorization.ToString();
+        public async Task InvokeAsync(
+            HttpContext context,
+            TokenServiceI _tokenService,
+            SessionServiceI _sessionService)
+        {
+            try
+            {
+                var authorizationHeader = context.Request.Headers.Authorization.ToString();
 
-        //        if (!string.IsNullOrWhiteSpace(authorizationHeader) &&
-        //            authorizationHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
-        //        {
-        //            var token = authorizationHeader["Bearer ".Length..].Trim();
+                if (!string.IsNullOrWhiteSpace(authorizationHeader) &&
+                    authorizationHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+                {
+                    var token = authorizationHeader["Bearer ".Length..].Trim();
 
-        //            var tv = _tokenService.DecodeToken(token);
+                    var tv = _tokenService.DecodeToken(token);
 
-        //            if (tv != null)
-        //            {
-        //                var session = _sessionService.GetSession(tv.SessionKey);
+                    if (tv != null)
+                    {
+                        var session = _sessionService.GetSession(tv.SessionKey);
 
-        //                if (session != null)
-        //                {
-        //                    // context.Items["session"] = session;
+                        if (session != null)
+                        {
+                            // context.Items["session"] = session;
 
-        //                    using (LogContext.PushProperty("SessionKey", tv.SessionKey))
-        //                    {
-        //                        await _next(context);
-        //                        return;
-        //                    }
-        //                }
-        //            }
-        //        }
+                            using (LogContext.PushProperty("SessionKey", tv.SessionKey))
+                            {
+                                await _next(context);
+                                return;
+                            }
+                        }
+                    }
+                }
 
-        //        await _next(context);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _log.Error(ex, "Error loading session");
+                await _next(context);
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex, "Error loading session");
 
-        //        throw;
-        //    }
-        //}
+                throw;
+            }
+        }
     }
 }

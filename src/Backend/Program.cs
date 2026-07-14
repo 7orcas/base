@@ -173,7 +173,7 @@ var app = builder.Build();
 
 LogAppSettings(app);
 
-//app.UseMiddleware<SessionMiddleware>();
+app.UseMiddleware<SessionMiddleware>();
 
 app.UseSerilogRequestLogging(options =>
 {
