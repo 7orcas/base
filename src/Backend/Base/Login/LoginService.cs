@@ -1,4 +1,5 @@
-﻿using Backend.Base.Token.Ent;
+﻿using Backend.Base.Email;
+using Backend.Base.Token.Ent;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.AspNetCore.Mvc;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 using Npgsql;
 using Org.BouncyCastle.Asn1.Ocsp;
 using System.IO;
+using System.Reflection.Emit;
 using GC = Backend.GlobalConstants;
 
 /// <summary>
@@ -20,6 +22,7 @@ namespace Backend.Base.Login
 {
     public class LoginService: BaseService, LoginServiceI
     {
+        private readonly LoginRepoI _loginRepo;
         private readonly PermissionServiceI _permissionService;
         private readonly TokenServiceI _tokenService;
         private readonly OrgServiceI _orgService;
@@ -32,6 +35,7 @@ namespace Backend.Base.Login
         private AppServiceAccount ServiceAccount = AppSettings.ServiceAccount;
 
         public LoginService (IServiceProvider serviceProvider,
+            LoginRepoI loginRepo,
             TokenServiceI tokenService,
             OrgServiceI orgService,
             ConfigServiceI configService,
@@ -42,6 +46,7 @@ namespace Backend.Base.Login
             EmailServiceI emailService) 
             : base (serviceProvider)
         {
+            _loginRepo = loginRepo;
             _tokenService = tokenService;
             _orgService = orgService;
             _configService = configService;
@@ -54,47 +59,75 @@ namespace Backend.Base.Login
 
         // Get the user login and account details, validate the password
         // Return a tokenkey if valid and MFA is not required or MFA is enabled and validated 
-        public async Task<LoginEnt> LoginUser(string ipAddress, string userid, string password, int orgNr, int sourceAppNr, string? langCode, bool mfaValid)
+        public async Task<LoginEnt> LoginUser(string ipAddress, string username, string password, int orgNr, int sourceAppNr, string langCode, bool isMfaValid)
         {
             try
             {
-                var login = await GetLoginByUserid(userid);
-                UserAccountEnt? account = null;
+                var loginErr = new LoginEnt();
+                loginErr.Response.IsValid = false;
+                //loginErr.Response.ErrorMessage = null; By default no message to avoid giving hints to hackers
 
-                if (login == null) 
-                    login = new LoginEnt();
-                else if (ServiceAccount != null && login.IsService())
+
+                var login = await GetLoginByUsername(username);
+                var org = await _orgService.GetOrg(orgNr);
+                if (login == null || org == null)
+                    return loginErr;
+
+
+                var labels = await _labelService.GetLangCodeDic(langCode, org.LangLabelVariant);
+
+                if (!login.IsActive)
+                {
+                    loginErr.Response.ErrorMessage = GetLabel("LoginIL", "Your login is inactive", labels);
+                    return loginErr;
+                }
+
+                UserAccountEnt? account = null;
+                if (ServiceAccount != null && login.IsService())
                     account = UserAccountEnt.GetServiceAccount(orgNr);
                 else
-                    account = await GetAccount(login.Id, orgNr);
+                    account = await _loginRepo.GetAccount(login.Id, orgNr);
 
-                if (!login.IsActive ||
-                    account == null ||
-                    !account.IsActive)
+                if (account == null)
                 {
-                    return login;
+                    var label = GetLabel("LoginAS", "You are not setup to access %%", labels);
+                    label = ReplaceLabelParameter(label, org.Code);
+                    loginErr.Response.ErrorMessage = label;
+                    return loginErr;
+                }
+                else if (!account.IsActive)
+                {
+                    var label = GetLabel("LoginIA", "Your account into %% is inactive", labels);
+                    label = ReplaceLabelParameter(label, org.Code);
+                    loginErr.Response.ErrorMessage = label;
+                    return loginErr;
                 }
 
-                var org = await _orgService.GetOrg(orgNr);
-                var err = await Validate(login, password, org);
+                var err = await ValidateUser(login, password, org);
                 if (err != null)
                 {
-                    login.Response.Valid = false;
-                    login.Response.ErrorMessage = err;
-                    return login;
+                    loginErr.Response.ErrorMessage = err;
+                    return loginErr;
                 }
 
-                //Return only that the user / pw / orgnr is valid.
-                if (!mfaValid && org.MfaRequired)
+                //Is Mfa required?
+                var isMfaRequired = false;
+                var daysSinceLastLogin = login.Lastlogin.HasValue ? (DateTime.Today - login.Lastlogin.Value.Date).TotalDays : 100;
+                if (org.Mfa == GC.MfaRequiredEachLogin) isMfaRequired = true;
+                if (org.Mfa == GC.MfaRequiredEachDay && daysSinceLastLogin > 0) isMfaRequired = true;
+                if (org.Mfa == GC.MfaOptionalEachDay && daysSinceLastLogin > 0 && login.IsMfaRequired) isMfaRequired = true;
+                if (login.IsService()) isMfaRequired = true; //Service account always requires MFA
+
+                if (!isMfaValid && isMfaRequired)
                 {
-                    login.Response.Valid = true;
-                    login.Response.MfaRequired = true;
-                    login.Response.MfaEnabled = login.MfaEnabled;
+                    login.Response.IsValid = true;
+                    login.Response.IsMfaRequired = true;
+                    login.Response.IsMfaEnabled = login.IsMfaEnabled;
                     return login;
                 }
 
                 //Continue with login process and return tokenkey
-                langCode = !string.IsNullOrEmpty(langCode) ? langCode : account.LangCode;
+                langCode = !string.IsNullOrEmpty(langCode) ? langCode : account.LangCode; //Delete me
                 await InitialiseLogin(login, account, org, sourceAppNr);
                 var userConfig = _configService.CreateUserConfig(account, org, langCode);
                 var session = await _sessionService.CreateSession(account, org, userConfig, sourceAppNr);
@@ -102,193 +135,98 @@ namespace Backend.Base.Login
                 var tv = new TokenValues
                 {
                     IpAddress = ipAddress,
-                    Username = userid,
+                    Username = username,
                     SessionKey = session.Key,
                     OrgNr = orgNr,
                 };
 
                 var tokenKey = _tokenService.CreateJWToken(tv);
                 
-                login.Response.Valid = true;
+                login.Response.IsValid = true;
                 login.Response.TokenKey = tokenKey;
                 login.Response.MainUrl = AppSettings.Urls.Client;
                 login.Response.LangCode = userConfig.LangCodeCurrent;
-                login.Response.MfaRequired = org.MfaRequired;
-                login.Response.MfaEnabled = login.MfaEnabled;
+                login.Response.IsMfaRequired = isMfaRequired;
+                login.Response.IsMfaEnabled = login.IsMfaEnabled;
 
                 return login;
             }
             catch 
             {
                 var login = new LoginEnt();
-                login.Response.Valid = false;
+                login.Response.IsValid = false;
                 login.Response.ErrorMessage = "Unknown Error";
                 return login;
             }
         }
 
         //Authenicate the user
-        private async Task<LoginEnt?> GetLoginByUserid(string userid)
+        private async Task<LoginEnt?> GetLoginByUsername(string username)
         {
             var login = null as LoginEnt;
-            if (ServiceAccount != null && userid.Equals(ServiceAccount.UserId))
+            if (ServiceAccount != null && username.Equals(ServiceAccount.Username))
             {
                 login = LoginEnt.GetServiceLogin();
                 login.Password = ServiceAccount.UserPw;
+                login.IsMfaRequired = true;
 
                 var loginX = await GetLoginById(login.Id);
                 if (loginX != null)
                 {
-                    login.MfaEnabled = loginX.MfaEnabled;
+                    login.IsMfaEnabled = loginX.IsMfaEnabled;
                     login.MfaSecret = loginX.MfaSecret;
                 }
 
                 return login;
             }
-
-            long? id = null;
-            try
-            {
-                //ToDo Log
-                if (!ValidateParameter(userid))
-                    throw new Exception();
-
-                await Sql.Run(
-                    "SELECT id FROM base.zzz " +
-                        "WHERE xxx = @userid ",
-                    r =>
-                    {
-                        id = GetId(r);
-                    },
-                    new NpgsqlParameter("@userid", userid)
-                );
-
-                if (id != null)
-                    login = await GetLoginById(id.Value);
-            }
-            catch { }
-
-            return login;
+            return await _loginRepo.GetLoginByUsername(username);
         }
 
         public async Task<LoginEnt?> GetLoginByEmail(string email)
         {
-            long? id = null;
-            try
-            {
-
-                await Sql.Run(
-                    "SELECT id FROM base.zzz " +
-                        "WHERE email = @email ",
-                    r =>
-                    {
-                        id = GetId(r);
-                    },
-                    new NpgsqlParameter("@email", email)
-                );
-            }
-            catch { }
-
-            if (id == null)
-                return null;
-
-            return await GetLoginById(id.Value);
+            return await _loginRepo.GetLoginByEmail(email);
         }
 
 
         public async Task<LoginEnt?> GetLoginById(long id)
         {
-            var login = null as LoginEnt;
+            var login = await _loginRepo.GetLoginById(id);
             var isService = ServiceAccount != null && id == GC.ServiceLoginId;
 
-            try
+            if (login == null && isService)
             {
-                await Sql.Run(
-                    "SELECT * FROM base.zzz " +
-                        "WHERE id = @id ",
-                    r =>
-                    {
-                        login = new LoginEnt
-                        {
-                            Id = GetId(r),
-                            Userid = GetString(r, "xxx"),
-                            Email = GetString(r, "email"),
-                            Password = GetString(r, "yyy"),
-                            OrgNrDefault = GetInt(r, "orgnrdefault"),
-                            LangCode = GetStringNull(r, "langCode"),
-                            Attempts = GetIntNull(r, "attempts"),
-                            Lastlogin = GetDateTime(r, "lastlogin"),
-                            IsActive = GetBoolean(r, "isActive"),
-                            MfaSecret = GetStringNull(r, "mfasecret"),
-                            MfaEnabled = GetBoolean(r, "mfaenabled"),
-                        };
-                    },
-                    new NpgsqlParameter("@id", id)
-                );
-
-                if (login == null && isService)
-                {
-                    login = LoginEnt.GetServiceLogin();
-                    login.Email = ServiceAccount.UserEmail;
-                    login.Password = ServiceAccount.UserPw;
-                }
-
+                login = LoginEnt.GetServiceLogin();
+                login.Email = ServiceAccount.UserEmail;
+                login.Password = ServiceAccount.UserPw;
             }
-            catch { }
 
             return login;
         }
 
 
-        private async Task<UserAccountEnt?> GetAccount(long loginId, int orgNr)
+        private async Task<string> ValidateUser (LoginEnt login, string password, OrgEnt org)
         {
-            var account = null as UserAccountEnt;
+            var langCode = login != null && login.LangCode != null ? login.LangCode : org.LangCode;
+            var labels = await _labelService.GetLangCodeDic(langCode, org.LangLabelVariant);
 
-            try
-            {
-                await Sql.Run(
-                    "SELECT * FROM base.userAcc " +
-                        "WHERE zzzId = @zzzId " +
-                        "AND orgNr = @orgNr",
-                    r =>
-                    {
-                        account = new UserAccountEnt
-                        {
-                            Id = GetId(r),
-                            LoginId = GetId(r, "zzzId"),
-                            OrgNr = GetOrgNr(r),
-                            LangCode = GetStringNull(r, "langCode"),
-                            Lastlogin = GetDateTime(r, "lastlogin"),
-                            IsActive = IsActive(r),
-                            IsAdmin = GetBoolean(r, "isAdmin"),
-                            Classification = GetIntNull(r, "classification")
-                        };
-                    },
-                    new NpgsqlParameter("@zzzId", loginId),
-                    new NpgsqlParameter("@orgNr", orgNr)
-                );
-            }
-            catch { }
+            if (login == null || login.Id == 0)
+                return GetLabel("LoginUP", "Invalid Username and/or Password", labels);
 
-            return account;
-        }
+            if (!login.IsService() 
+                && org.IsEmailVerified 
+                && (string.IsNullOrEmpty(login.Email) || !login.IsEmailVerified))
+                return GetLabel("EmailVL", "Your email address must be verified before you can login", labels);
 
-        //ToDo Language codes!
-        private async Task<string> Validate (LoginEnt l, string password, OrgEnt org)
-        {
-            if (l == null || l.Id == 0)
-                return "Invalid Username and/or Password.";
+            await IncrementAttempts(login);
 
-            await IncrementAttempts(l);
+            if (string.IsNullOrEmpty(password) || !password.Equals(login.Password))
+                return GetLabel("LoginUP", "Invalid Username and/or Password", labels);
 
-            if (string.IsNullOrEmpty(password) || !password.Equals(l.Password))
-                return "Invalid Username and/or Password";
-            
-            if (l.Attempts > org.Encoding.MaxNumberLoginAttempts)
-                return "Max Attempts";
+            if (login.Attempts > org.Encoding.MaxNumberLoginAttempts)
+                return GetLabel("LoginXP", "Max Attempts have been reached", labels);
 
-            if (!l.IsActive)
-                return "In active Login";
+            if (!login.IsActive)
+                return GetLabel("LoginIA", "Username is Inactive", labels);
 
             return null;
         }
@@ -296,8 +234,15 @@ namespace Backend.Base.Login
 
         public async Task InitialiseLogin(LoginEnt login, UserAccountEnt account, OrgEnt org, int sourceAppNr)
         {
-            await SetAttempts(login.Id, 0);
-            account.Userid = login.Userid;
+            if (login.Id == GC.ServiceLoginId)
+                SetAttemptsService(0);
+            else
+            {
+                await _loginRepo.SetAttempts(login.Id, 0);
+                await _loginRepo.UpdateLastLogin(login.Id, account.Id);
+            }
+
+            account.Username = login.Username;
             account.Permissions = await _permissionService.LoadEffectivePermissionsInt(account.Id, org.Nr);
             _auditService.LogInOut(sourceAppNr, org.Nr, account.Id, GC.EntityTypeLogin);
         }
@@ -314,20 +259,7 @@ namespace Backend.Base.Login
             if (l.IsService())
                 return SetAttemptsService(l.Attempts.Value);
 
-            return await SetAttempts(l.Id, l.Attempts.Value);
-        }
-
-        private async Task<bool> SetAttempts(long id, int attempts)
-        {
-            if (id == GC.ServiceLoginId)
-                return SetAttemptsService(attempts);
-
-            await Sql.Execute(
-                   "UPDATE base.zzz "
-                   + "SET Attempts = " + attempts + " "
-                   + "WHERE id = " + id
-               );
-            return true;
+            return await _loginRepo.SetAttempts(l.Id, l.Attempts.Value);
         }
 
         private void GetAttemptsService(LoginEnt l)
@@ -351,26 +283,6 @@ namespace Backend.Base.Login
             return true;
         }
 
-        public async Task<bool> SetMfaKey(long id, string key)
-        {
-            await Sql.Execute(
-                   "UPDATE base.zzz "
-                   + "SET mfasecret = '" + key + "' "
-                   + "WHERE id = " + id
-               );
-            return true;
-        }
-
-        public async Task<bool> EnableMfa(long id)
-        {
-            await Sql.Execute(
-                   "UPDATE base.zzz "
-                   + "SET mfaenabled = true "
-                   + "WHERE id = " + id
-               );
-            return true;
-        }
-
         public async Task<bool> ResetRequest(string email, string ipAddress)
         {
             var login = await GetLoginByEmail(email);
@@ -386,7 +298,7 @@ namespace Backend.Base.Login
 
             if (org == null 
                 || !org.IsActive
-                || !org.Forgotenabled)
+                || !org.IsForgotEnabled)
             {
                 _log.Warning("Reset request invalid org, email {Email} ipAddress {ipAddress}", email, ipAddress);
                 return false;
@@ -402,17 +314,18 @@ namespace Backend.Base.Login
 
             var token = _tokenService.CreateResetRequestToken(tv);
 
+            //Delete me???
             var langCode = GC.LangCodeDefault;
             if (login.LangCode != null) langCode = login.LangCode;
             else if (org.LangCode != null) langCode = org.LangCode;
             login.LangCode = langCode;
 
-            var dic = await _labelService.GetLangCodeDic(langCode, org.LangLabelVariant);
+            var labels = await _labelService.GetLangCodeDic(langCode, org.LangLabelVariant);
             var subject = "Password Reset";
-            if (dic.TryGetValue("PWReset", out var value))
+            if (labels.TryGetValue("PWReset", out var value))
                 subject = value;
 
-            var template = new ResetRequestEmail(org, login, token);
+            var template = new ResetPasswordRequest(org, login, token, labels);
             await _emailService.SendEmailAsync(email, subject, template.RenderTemplate());
             
             return true;
@@ -426,7 +339,7 @@ namespace Backend.Base.Login
          */
         public async Task<(bool success, string message)> ResetAction(string password, string token, string ipAddress, int orgNr, string langCode)
         {
-            var dic = await _labelService.GetLangCodeDic(langCode, null);
+            var labels = await _labelService.GetLangCodeDic(langCode, null);
             var tv = _tokenService.DecodeToken(token);
 
 
@@ -435,7 +348,7 @@ namespace Backend.Base.Login
 
             if (org == null
                 || !org.IsActive
-                || !org.Forgotenabled)
+                || !org.IsForgotEnabled)
             {
                 var user = tv != null? tv.Username : "null";
                 _log.Warning("Invalid OrgNr when resetting password OrgNr {orgNr} Username {username}", orgNr, user);
@@ -449,7 +362,7 @@ namespace Backend.Base.Login
             }
 
             if (tv == null)
-                return (false, GetLabel("PWResetErr1", dic));
+                return (false, GetLabel("PWResetErr1", labels));
 
             var login = await GetLoginByEmail(tv.Username);
 
@@ -460,26 +373,27 @@ namespace Backend.Base.Login
                 return (false, "");
 
             if (!login.IsActive)
-                return (false, GetLabel("PWResetErr2", dic)); 
+                return (false, GetLabel("PWResetErr2", labels)); 
 
             if (login.OrgNrDefault != orgNr)
             {
-                _log.Warning("OrgNr mismatch when resetting password Userid {Userid} OrgNr {OrgNr}", login.Userid, orgNr);
+                _log.Warning("OrgNr mismatch when resetting password Username {Username} OrgNr {OrgNr}", login.Username, orgNr);
                 return (false, "");
             }
 
-            if (!_orgService.ValidatePassword(password, org))
-                return (false, GetLabel("PWResetErr3", dic));
+            var r0 = _orgService.ValidatePassword(password, org, labels);
+            if (!r0.valid)
+                return (r0.valid, r0.message);
 
             login.Password = password;
 
-            await Sql.Execute(
+            await Sql.ExecuteAsync(
                   "UPDATE base.zzz "
                   + "SET yyy = '" + password + "' "
                   + "WHERE id = " + login.Id
               );
 
-            return (true, GetLabel("PWResetRsp", dic));
+            return (true, GetLabel("PWResetRsp", labels));
         }
 
     }

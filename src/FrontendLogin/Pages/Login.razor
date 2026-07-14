@@ -1,5 +1,6 @@
 ﻿@page "/{UrlSuffix}"
 @using Newtonsoft.Json;
+@using System.ComponentModel.DataAnnotations
 @using GC = FrontendLogin.GlobalConstants;
 @using Common.DTO.Base;
 @inject HttpClient HttpClient
@@ -25,7 +26,7 @@
 
                 <div class="mb-3">
                     <label class="form-label">@GetLabel("UserName")</label>
-                    <InputText class="form-control" @bind-Value="loginRequest.Username" />
+                    <InputText class="form-control" @bind-Value="loginRequest.UserName" />
                 </div>
 
                 @if (options != null && options.Masquerade)
@@ -148,7 +149,117 @@
                     <p>@((MarkupString)forgotModalMessage)</p>
                     <div class="mt-3 d-flex justify-content-end gap-2">
                         <button class="btn btn-secondary" @onclick="CloseForgotModal">
-                            Close
+                            @GetLabel("Close")
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        }
+
+        @if (showSignUpModal)
+        {
+            <div style="
+                position:fixed;
+                top:0;left:0;right:0;bottom:0;
+                background:rgba(0,0,0,0.5);
+                display:flex;
+                justify-content:center;
+                align-items:center;
+                z-index:9999;">
+
+                <div style="background:white;padding:20px;border-radius:8px;width:400px;">
+
+                    <h5>@GetLabel("SignUp")</h5>
+
+                    <EditForm Model="@signupRequest" OnValidSubmit="SubmitSignup">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+
+                        <div class="mb-2">
+                            <label>@GetLabel("UserName")</label>
+                            <InputText class="form-control"
+                                       @bind-Value="signupRequest.UserName" />
+                        </div>
+
+                        <div class="mb-2">
+                            <label>@GetLabel("Email")</label>
+                            <InputText class="form-control"
+                                       @bind-Value="signupRequest.Email" />
+                        </div>
+
+                        <div class="mb-2">
+                            <label>@GetLabel("PW")</label>
+                            <InputText class="form-control" @bind-Value="signupRequest.Password" type="@passwordInputType"/>
+                        </div>
+
+                        <div class="mb-2">
+                            <label>@GetLabel("PWc")</label>
+                            <InputText class="form-control" @bind-Value="signupRequest.ConfirmPassword" type="@passwordInputType" />
+                        </div>
+
+                        <div class="mb-3">
+                            <InputCheckbox class="form-check-input" @bind-Value="signupRequest.NotRobot" id="notRobot" />
+                            <label class="form-check-label ms-2" for="notRobot">
+                                @GetLabel("NotRobot")
+                            </label>
+                        </div>
+
+                        <div class="form-check mb-2">
+                            <InputCheckbox class="form-check-input" @bind-Value="showPassword" id="showPassword" />
+                            <label class="form-check-label" for="showPassword">@GetLabel("PWsw")</label>
+                        </div>
+
+                        <div class="mb-3">
+                            <p class="text-danger">@((MarkupString)signupMessage)</p>
+                        </div>
+
+                        <div class="mt-3 d-flex justify-content-end gap-2">
+                            <button type="button"
+                                    class="btn btn-secondary"
+                                    @onclick="CloseSignupModal">
+                                @GetLabel("Cancel")
+                            </button>
+
+                            <button type="submit"
+                                    class="btn btn-primary">
+                                @GetLabel("SignUp")
+                            </button>
+                        </div>
+
+                    </EditForm>
+
+                    <div class="mb-2">
+                        <button type="button" class="btn btn-link p-0" @onclick="ShowRules">
+                            @GetPasswordRulesLabel()
+                        </button>
+                    </div>
+
+                    <p class="small">@((MarkupString)rules)</p>
+
+                </div>
+            </div>
+        }
+
+        @if (showSignUpSuccess)
+        {
+            <div style="
+                position:fixed;
+                top:0;left:0;right:0;bottom:0;
+                background:rgba(0,0,0,0.5);
+                display:flex;
+                justify-content:center;
+                align-items:center;
+                z-index:9999;">
+
+                <div style="background:white;padding:20px;border-radius:8px;width:350px;">
+
+                    <p>@((MarkupString)signupMessage)</p>
+
+                    <div class="d-flex justify-content-end">
+                        <button class="btn btn-secondary"
+                                @onclick="CloseSignupModal">
+                            @GetLabel("Close")
                         </button>
                     </div>
 
@@ -159,12 +270,11 @@
         @if (showQr)
         {
             <div class="mt-4 text-center">
-                <h5>Scan with Microsoft Authenticator</h5>
+                <h5>@GetLabel("Mfa1")</h5>
 
                 <img src="@qrCodeBase64" style="width:200px;height:200px;" />
 
-                <p class="mt-2">
-                    Or enter this key manually:<br />
+                <p class="mt-2">@GetLabel("Mfa2"):<br />
                     <b>@manualKey</b>
                 </p>
             </div>
@@ -173,19 +283,18 @@
         @if (showMfaInput)
         {
             <div class="mt-3">
-                <label>Enter code from Microsoft Authenticator:</label>
+                <label>@GetLabel("Mfa3"):</label>
 
                 <InputText @bind-Value="mfaCode" class="form-control" />
 
                 <button type="button" class="btn btn-success mt-2" @onclick="VerifyMfa">
-                    Verify
+                    @GetLabel("Verify")
                 </button>
             </div>
         }
             
-
-        <p>@successMessage</p>
-        <p>@errorMessage</p>
+        <p class="small">@((MarkupString)successMessage)</p>
+        <p class="small text-danger">@((MarkupString)errorMessage)</p>
         <p>@tokenkey</p>
         <p>@token</p>
         <p>@cookie</p>
@@ -205,7 +314,7 @@
     };
     private string errorMessage = string.Empty;
     private string successMessage = string.Empty;
-
+    private bool isDev = false;
 
     private string tokenkey;
     private string token;
@@ -223,14 +332,22 @@
     private string forgotEmail = "";
     private string forgotModalMessage = "";
 
-
-
     //MFA
     private string qrCodeBase64;
     private bool showQr = false;
     private string manualKey;
     private string mfaCode;
     private bool showMfaInput = false; // for future use if no QR
+
+    // Self Registration
+    private bool showSignUpModal = false;
+    private bool showSignUpSuccess = false;
+    private bool showRules = false;
+    private bool showPassword = false;
+    private string rules = string.Empty;
+    private SignupRequest signupRequest;
+    private string signupMessage = "";
+
 
     private string cookie;
 
@@ -247,7 +364,7 @@
                 return;
 
             //MFA is an extra step
-            if (login.MfaRequired)
+            if (login.IsMfaRequired)
             {
                 await MfaCheck(login);
                 return;
@@ -261,7 +378,7 @@
             }
 
             //API clients just get the token
-            await GetToken(login.TokenKey);
+            await GetAndDisplayToken(login.TokenKey);
 
         }
         catch (Exception ex)
@@ -285,6 +402,17 @@
                 "login",
                 urlX,
                 loginRequest);
+
+
+            // var response = await client.PostAsJsonAsync(url, loginRequest);
+            // if (!response.IsSuccessStatusCode)
+            // {
+            //     errorMessage = isMfa ? "Invalid MFA code" : "Invalid username or password";
+            //     return null;
+            // }
+            // var json = await response.Content.ReadAsStringAsync();
+            // var responseDto = JsonConvert.DeserializeObject<_ResponseDto>(json);
+
 
             if (!responseDto.Valid)
             {
@@ -314,57 +442,9 @@
                                true);
     }
 
-    
-    
-    private void GoToForgot()
-    {
-        forgotEmail = "";             
-        forgotModalMessage = "";
-        showForgotModal = true;
-    }
-
-    private async Task SubmitForgot()
-    {
-        @if (string.IsNullOrWhiteSpace(forgotEmail))
-        {
-            forgotModalMessage = GetLabel("PWResetErr4");
-            return;
-        }
-
-        var client = HttpClientFactory.CreateClient(GC.HTTP_Client);
-        var response = await client.GetAsync($"{GC.URL_reset_request}?email={forgotEmail}");
-        var r = await response.Content.ReadAsStringAsync();
-        var dto = JsonConvert.DeserializeObject<_ResponseDto>(r);
-
-        if (true) //dto.Valid)
-            forgotModalMessage = GetLabel("PWReset1") + "<br>" + GetLabel("PWReset2") + "<br>" + GetLabel("PWReset3");
-        else
-            forgotModalMessage = GetLabel("Oops");
-
-        showForgotModal = false;
-        showForgotSent = true;
-        await InvokeAsync(StateHasChanged);
-    }
-
-    private void GoToSelfRegistration()
-    {
-
-    }
-
-    private void CloseForgotModal()
-    {
-        showForgotModal = false;
-        showForgotSent = false;
-    }
-
     private string GetLabel(string key)
     {
-        return LS.GetLabel(key, labels);
-    }
-
-    private async Task TestPause()
-    {
-        await Task.Delay(3000);
+        return LS.GetLabel(key, labels, isDev);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -377,25 +457,12 @@
     }
 
     //For API login's, display the bearer token
-    private async Task GetToken(string key)
+    private async Task GetAndDisplayToken(string key)
     {
         tokenkey = key;
         var client = HttpClientFactory.CreateClient(GC.HTTP_Client);
         var tokenResponse = await client.GetAsync(GC.URL_token + "?key=" + key);
         token = await tokenResponse.Content.ReadAsStringAsync();
-    }
-
-    private string GetRememberMeCookie(string cookie)
-    {
-        try
-        {
-            HttpContextAccessor.HttpContext.Request.Cookies.TryGetValue(cookie, out var value);
-            return value;
-        }
-        catch
-        {
-            return null;
-        }
     }
 
     protected override async Task OnInitializedAsync()
@@ -412,6 +479,9 @@
         var dto = JsonConvert.DeserializeObject<_ResponseDto>(r);
 
         options = JsonConvert.DeserializeObject<LoginOptionDto>(dto.Result.ToString());
+
+        initialiseMfaInput();
+        initialiseSignupRequest();
 
         cookie = options.RememberMeCookie;
         navigateToMain = options.SuccessAction == GC.NavigateToFrontendServer;
@@ -450,7 +520,7 @@
 
         // Get a specific query parameter value
         if (query.TryGetValue("u", out var user))
-            loginRequest.Username = user.ToString();
+            loginRequest.UserName = user.ToString();
         if (query.TryGetValue("p", out var pw))
             loginRequest.Password = pw.ToString();
         if (query.TryGetValue("o", out var org))
@@ -473,47 +543,10 @@
         //The remember me cookie overrides all other inputs 
         if (string.IsNullOrEmpty(cookie))
             return;
+
         parseCookie(cookie);
     }
-
-    
-    
-    private void parseCookie(string cookie)
-    {
-        if (string.IsNullOrWhiteSpace(cookie))
-            return;
-
-        loginRequest.RememberMe = true; // if cookie exists, it means RememberMe was checked
-        var parts = cookie.Split(',');
-
-        foreach (var part in parts)
-        {
-            var kv = part.Split('=', 2); // split only once
-            if (kv.Length != 2) continue;
-
-            var key = kv[0].Trim();
-            var value = kv[1].Trim();
-
-            switch (key)
-            {
-                case "u":
-                    loginRequest.Username = value;
-                    break;
-                case "p":
-                    loginRequest.Password = value;
-                    break;
-                case "o":
-                    loginRequest.Org = int.Parse(value);
-                    break;
-                case "l":
-                    loginRequest.LangCode = value;
-                    break;
-            }
-        }
-    }
-
-
-
+       
 
     /**
      * Passed in parameters via launchSettings.json
@@ -526,8 +559,10 @@
             || !dev.Equals("Development"))
             return;
 
+        isDev = true;
+
         var user = Environment.GetEnvironmentVariable("USER");
-        loginRequest.Username = user.ToString();
+        loginRequest.UserName = user.ToString();
 
         var pw = Environment.GetEnvironmentVariable("PASSWORD");
         loginRequest.Password = pw.ToString();
@@ -543,6 +578,11 @@
 
         var openValue = Environment.GetEnvironmentVariable("OPEN");
         autoOpen = openValue?.ToString();
+    }
+
+    private async Task TestPause()
+    {
+        await Task.Delay(3000);
     }
 
     

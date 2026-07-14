@@ -24,7 +24,6 @@ namespace Backend.Base.Login
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="labelService"></param>
         public LoginController(
             IServiceProvider serviceProvider,
             LoginServiceI loginService,
@@ -41,10 +40,10 @@ namespace Backend.Base.Login
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
             var ipAddress = GetClientIp();
-            var login = await _loginService.LoginUser(ipAddress, request.Username, request.Password, request.Org, request.SourceApplication, request.LangCode, false);
+            var login = await _loginService.LoginUser(ipAddress, request.UserName, request.Password, request.Org, request.SourceApplication, request.LangCode, false);
             var res = login.Response;
 
-            if (!res.Valid)
+            if (!res.IsValid)
                 return Ok(new _ResponseDto
                 {
                     Valid = false,
@@ -58,7 +57,7 @@ namespace Backend.Base.Login
             {
                 cookie = "V=1" +
                     ",x=" + request.UrlSuffix +
-                    ",u=" + request.Username +
+                    ",u=" + request.UserName +
                     ",p=" + request.Password +
                     ",o=" + request.Org +
                     ",l=" + request.LangCode;
@@ -85,11 +84,11 @@ namespace Backend.Base.Login
                 Result = new LoginSuccessDto
                 {
                     Id = login.Id,
-                    TokenKey = res.MfaRequired ? null : res.TokenKey,
-                    MainUrl = res.MfaRequired ? null : res.MainUrl,
+                    TokenKey = res.IsMfaRequired ? null : res.TokenKey,
+                    MainUrl = res.IsMfaRequired ? null : res.MainUrl,
                     LangCode = res.LangCode,
-                    MfaRequired = res.MfaRequired,
-                    MfaEnabled = res.MfaEnabled
+                    IsMfaRequired = res.IsMfaRequired,
+                    IsMfaEnabled = res.IsMfaEnabled
                 }
             };
             return Ok(r);
@@ -104,7 +103,7 @@ namespace Backend.Base.Login
         [HttpGet("loginlabels")]
         public async Task<IActionResult> LoginLabels([FromQuery] string langCode, [FromQuery] int? variant)
         {
-            var labels = await _labelService.GetLanguageLabelList(langCode, variant);
+            var labels = await _labelService.GetLanguageLabelListForLogin(langCode, variant);
             var list = new List<LangLabelDto>();
 
             foreach (var l in labels)
@@ -168,12 +167,12 @@ namespace Backend.Base.Login
         {
             var ipAddress = GetClientIp();
 
-            var success = _loginService.ResetRequest(email, ipAddress);
+            var success = await _loginService.ResetRequest(email, ipAddress);
 
             var r = new _ResponseDto
             {
-                SuccessMessage = "Reset Request Ok",
-                Valid = true,
+                SuccessMessage = "Reset Request",
+                Valid = success,
             };
             return Ok(r);
         }

@@ -6,9 +6,11 @@
         public const int BaseOrgNr   = 0;
 
         public const string DateTimeFormat = "yyyy-MM-dd HH:mm:ss";
+        public const int LangLabelVariantDefault = 0;
 
         //Login Reset Password
         public const string URL_login_reset         = "reset-password";
+        public const string URL_signup_verify_email = "api/signup/signupverifyemail";
 
         //IMemoryCache keys
         public const string CacheKeyTokenPrefix     = "TS_";
@@ -59,28 +61,17 @@
             EntityTypeMachine,          "Machine",
         };
 
-        
-public enum TemplateType
-{
-    ResetRequestEmail = 1,
-    SomethingElseEmail = 2,
-}
-
-public static readonly object[] Templates = {
-    TemplateType.ResetRequestEmail, "Res",
-};
-
-
-
-
         //Service
         public const long ServiceLoginId             = -1L;
         public const long ServiceAccountId           = -1L;
+        public const string ServiceUsername          = "$";
         public const string ServiceAccountName       = "Service";
 
-        //MFA
-        public const int MFAinactive = 0;
-        public const int MFAactive   = 1;
+        //MFA - Order is important, as it is used in the OrgEnt.Mfa property
+        public const int MfaInactive          = 0;
+        public const int MfaOptionalEachDay   = 1;
+        public const int MfaRequiredEachLogin = 2;
+        public const int MfaRequiredEachDay   = 3;
 
     }
 }

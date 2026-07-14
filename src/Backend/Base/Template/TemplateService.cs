@@ -48,20 +48,20 @@ namespace Backend.Base.Template
 
         //}
 
-        private string RenderTemplate(ResetRequestEmailTemplate request)
-        {
-            if (string.IsNullOrWhiteSpace(request.Template()))
-                throw new ArgumentException("Template cannot be empty");
+        //private string RenderTemplate(ResetRequestEmailTemplate request)
+        //{
+        //    if (string.IsNullOrWhiteSpace(request.Template()))
+        //        throw new ArgumentException("Template cannot be empty");
 
-            var template = Scriban.Template.Parse(request.Template());
+        //    var template = Scriban.Template.Parse(request.Template());
 
-            if (template.HasErrors)
-                throw new Exception("Template parsing failed");
+        //    if (template.HasErrors)
+        //        throw new Exception("Template parsing failed");
 
-            var result = template.Render(request.Data, member => member.Name);
+        //    var result = template.Render(request.Data, member => member.Name);
 
-            return result;
-        }
+        //    return result;
+        //}
 
     }
 }

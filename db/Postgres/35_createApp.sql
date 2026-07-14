@@ -7,7 +7,7 @@ CREATE TABLE app.machinegroup (
     code VARCHAR(100) NOT NULL,
     descr TEXT,
     encoded TEXT,
-    updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     isactive BOOLEAN NOT NULL DEFAULT TRUE,
     PRIMARY KEY (id),
     FOREIGN KEY (orgnr) REFERENCES base.org(nr)
@@ -22,7 +22,7 @@ CREATE TABLE app.machine (
     code VARCHAR(100) NOT NULL,
     descr TEXT,
     encoded TEXT,
-    updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     isactive BOOLEAN NOT NULL DEFAULT TRUE,
     PRIMARY KEY (id),
     FOREIGN KEY (orgnr) REFERENCES base.org(nr),

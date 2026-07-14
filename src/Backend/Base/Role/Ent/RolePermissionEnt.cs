@@ -6,7 +6,7 @@
         public long RoleId { get; set; }
         public int PermissionNr { get; set; }
         public string Crud { get; set; }
-        public DateTime Updated { get; set; }
+        public DateTimeOffset Updated { get; set; }
         public bool IsActive { get; set; }
 
         public RoleEnt Role { get; set; }  

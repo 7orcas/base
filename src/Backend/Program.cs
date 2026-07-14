@@ -1,7 +1,8 @@
 using Backend;
 using Backend.App.Machines;
 using Backend.Base.DataProtection;
-using Backend.Base.Template;
+using Backend.Base.Email;
+using Backend.Base.Registration;
 using Backend.Base.Token.Ent;
 using Backend.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -135,22 +136,28 @@ builder.Services.AddRouting(options =>
 builder.Services.AddSingleton<OrgConfigInitialiseServiceI, OrgConfigInitialiseService>();
 builder.Services.AddSingleton<PermissionInitialiseServiceI, PermissionInitialiseService>();
 
+//Base Repos
+builder.Services.AddScoped<LoginRepoI, LoginRepo>();
+builder.Services.AddScoped<RoleRepoI, RoleRepo>();
+builder.Services.AddScoped<TokenRepoI, TokenRepo>();
+
+
 //Base Services
 builder.Services.AddScoped<AuditServiceI, AuditService>();
 builder.Services.AddScoped<LabelServiceI, LabelService>();
 builder.Services.AddScoped<ConfigServiceI, ConfigService>();
-builder.Services.AddScoped<LoginServiceI, LoginService>();
 builder.Services.AddScoped<LoginOptionServiceI, LoginOptionService>();
+builder.Services.AddScoped<LoginServiceI, LoginService>();
+builder.Services.AddScoped<SignupServiceI, SignupService>();
 builder.Services.AddScoped<MfaServiceI, MfaService>();
 builder.Services.AddScoped<MfaKeyProtector>();
 builder.Services.AddScoped<CookieProtector>();
+builder.Services.AddScoped<RegistrationServiceI, RegistrationService>();
 builder.Services.AddScoped<TokenServiceI, TokenService>();
-builder.Services.AddScoped<TokenRepoI, TokenRepo>();
 builder.Services.AddScoped<OrgServiceI, OrgService>();
 builder.Services.AddScoped<SessionServiceI, SessionService>();
 builder.Services.AddScoped<PermissionServiceI, PermissionService>();
 builder.Services.AddScoped<RoleServiceI, RoleService>();
-builder.Services.AddScoped<RoleRepoI, RoleRepo>();
 builder.Services.AddScoped<EntityServiceI, EntityService>();
 builder.Services.AddScoped<TemplateServiceI, TemplateService>();
 builder.Services.AddScoped<PdfServiceI, PdfService>();
@@ -272,7 +279,7 @@ void LoadAppSettings(WebApplicationBuilder builder)
     try
     {
         var acc = new AppServiceAccount();
-        acc.UserId = builder.Configuration["ServiceAccount:UserId"];
+        acc.Username = builder.Configuration["ServiceAccount:Username"];
         acc.UserEmail = builder.Configuration["ServiceAccount:Email"];
         acc.UserPw = builder.Configuration["ServiceAccount:PW"];
         acc.AttemptsFile = builder.Configuration["ServiceAccount:AttemptsFile"];

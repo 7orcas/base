@@ -6,6 +6,7 @@ namespace Backend.Base.Label
     {
         Task<List<LangCode>> GetLangCodeList();
         Task<List<LangLabel>> GetLanguageLabelList(string langCode, int? variant);
+        Task<List<LangLabel>> GetLanguageLabelListForLogin(string langCode, int? variant);
         Task<Dictionary<string, LangLabel>> GetLanguageLabelDic(SessionEnt session);
         Task<Dictionary<string, LangLabel>> GetLanguageLabelDic(string langCode, int? variant);
         Task<Dictionary<string, string>> GetLangCodeDic(SessionEnt session);

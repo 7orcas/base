@@ -68,6 +68,7 @@ namespace Common
         public const int PerUser    = 6;
         public const int PerAudit   = 7;
         public const int PerConfig  = 8;
+        public const int PerReg     = 9;
 
         public const int PerMach    = 101;
         public const int PerPerm1   = 102;

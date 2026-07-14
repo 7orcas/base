@@ -14,7 +14,7 @@ namespace Common.DTO.Base
         public string EntityType { get; set; }
         public long? EntityId { get; set; }
         public string? User { get; set; }
-        public DateTime Created { get; set; }
+        public DateTimeOffset Created { get; set; }
         public string Crud { get; set; }
         public string? Details { get; set; }
     }

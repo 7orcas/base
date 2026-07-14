@@ -1,4 +1,5 @@
 ﻿using Npgsql;
+using System.ComponentModel.DataAnnotations;
 using GC = Backend.GlobalConstants;
 
 namespace Backend.Base;
@@ -47,7 +48,7 @@ public abstract class BaseService : SqlUtils
             Update("code", ent.Code) + 
             Update("descr", ent.Description) + 
             Update("encoded", ent.Encoded) + 
-            Update("updated", DateTime.Now) +
+            Update("updated", DateTimeOffset.Now) +
             NoComma(Update("isActive", ent.IsActive));
     }
 
@@ -74,11 +75,29 @@ public abstract class BaseService : SqlUtils
             ")";
     }
 
-    protected string GetLabel(string langKey, Dictionary<string, string> labels)
+    protected string GetLabel(string langKey, Dictionary<string, string> labels) => GetLabel(langKey, langKey, labels);
+    
+    protected string GetLabel(string langKey, string nullDefault, Dictionary<string, string> labels)
     {
         if (labels.ContainsKey(langKey))
             return labels[langKey];
-        return langKey;
+        return nullDefault;
     }
+
+    protected string ReplaceLabelParameter(string label, string parameter1)
+    {
+        if (string.IsNullOrEmpty(label))
+            return label;
+        if (label.Contains(GC.LabelParameterPrefix))
+            return label.Replace(GC.LabelParameterPrefix, parameter1);
+        return label;
+    }
+
+    public bool IsEmailValid(string email)
+    {
+        var validator = new EmailAddressAttribute();
+        return validator.IsValid(email);
+    }
+
 
 }

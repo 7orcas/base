@@ -37,9 +37,9 @@ namespace Backend.Base.Database
         static public Guid GetGuid(NpgsqlDataReader r, string column) => r.GetGuid(r.GetOrdinal(column));
 
 
-        static public DateTime GetUpdated(NpgsqlDataReader r) => GetDateTime(r, "updated");
-        static public DateTime GetDateTime(NpgsqlDataReader r, string column) => r[column] == DBNull.Value ? DateTime.MinValue : (DateTime)r[column];
-        static public DateTime? GetDateTimeNull(NpgsqlDataReader r, string column) => r[column] == DBNull.Value ? null : (DateTime)r[column];
+        static public DateTimeOffset GetUpdated(NpgsqlDataReader r) => GetDateTime(r, "updated");
+        static public DateTimeOffset GetDateTime(NpgsqlDataReader r, string column) => r[column] == DBNull.Value ? DateTime.MinValue : (DateTime)r[column];
+        static public DateTimeOffset? GetDateTimeNull(NpgsqlDataReader r, string column) => r[column] == DBNull.Value ? null : (DateTime)r[column];
 
 
         static public bool IsActive(NpgsqlDataReader r) => GetBoolean(r, "isActive");
@@ -51,8 +51,17 @@ namespace Backend.Base.Database
         static public string Update(string column, int? value) => column + "=" + (value != null? value : "NULL") + ",";
         static public string Update(string column, int value) => column + "=" + value + ",";
         static public string Update(string column, string? value) => column + "=" + (value != null ? "'" + value + "'": "NULL") + ",";
-        static public string Update(string column, DateTime? value) => column + "=" + (value != null ? "'" + value.Value.ToString(GC.DateTimeFormat) + "'" : "NULL") + ",";
+        static public string Update(string column, DateTimeOffset? value) => column + "=" + (value != null ? "'" + value.Value.ToString(GC.DateTimeFormat) + "'" : "NULL") + ",";
         static public string Update(string column, bool? value) => column + "=" + (value != null ? (value.Value?"true":"false")  : "NULL") + ",";
+        static public string Updatetime() => "updated='" + DateTimeOffset.Now.ToString(GC.DateTimeFormat) + "',";
         static public string NoComma(string column) => column.EndsWith(",")? column.Substring(0,column.Length-1) : column;
+
+        static public string Insert(string value) => value == null ? "NULL" : "'" + value + "',";
+        static public string Insert(int value) => value + ",";
+        static public string Insert(int? value) => (value == null ? "NULL" : value) + ",";
+        static public string Insert(long value) => value + ",";
+        static public string Insert(bool value) => (!value? "false" : "true") + ",";
+        static public string Insert(bool? value) => value == null ? "NULL" : Insert(value);
+
     }
 }

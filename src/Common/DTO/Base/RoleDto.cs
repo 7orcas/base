@@ -12,7 +12,7 @@
         public int PermissionNr { get; set; }
         public string Permission { get; set; }
         public string Crud { get; set; }
-        public DateTime Updated { get; set; }
+        public DateTimeOffset Updated { get; set; }
         public bool IsActive { get; set; }
     }
 

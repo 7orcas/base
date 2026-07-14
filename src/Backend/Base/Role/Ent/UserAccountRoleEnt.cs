@@ -15,7 +15,7 @@ namespace Backend.Base.Role.Ent
         public long Id { get; set; }
         public long RoleId { set; get; }
         public long UserAccountId { set; get; }
-        public DateTime Updated { get; set; }
+        public DateTimeOffset Updated { get; set; }
         public bool IsActive { get; set; }
 
         [NotMapped] public string? Code { get; set; }

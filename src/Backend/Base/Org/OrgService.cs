@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+﻿using DocumentFormat.OpenXml.Wordprocessing;
+using Microsoft.Extensions.Caching.Memory;
 using Npgsql;
 using Superpower.Model;
 using GC = Backend.GlobalConstants;
@@ -73,7 +74,7 @@ namespace Backend.Base.Org
         public async Task UpdateOrg(OrgEnt org)
         {
             org.Encode();
-            await Sql.Execute(
+            await Sql.ExecuteAsync(
                     "UPDATE base.org " +
                     "SET " +
                         Update("code", org.Code) +
@@ -81,7 +82,13 @@ namespace Backend.Base.Org
                         Update("encoded", org.Encoded) +
                         Update("updated", org.Updated) +
                         Update("isActive", org.IsActive) +
-                        Update("forgotenabled", org.Forgotenabled) +
+                        Update("mfa", org.Mfa) +
+                        Update("isRememberMeEnabled", org.IsRememberMeEnabled) +
+                        Update("isMasqueradeEnabled", org.IsMasqueradeEnabled) +
+                        Update("isForgotenabled", org.IsForgotEnabled) +
+                        Update("isSignupenabled", org.IsSignupEnabled) +
+                        Update("isEmailRequired", org.IsEmailRequired) +
+                        Update("isEmailHtml", org.IsEmailHtml) +
                         Update("langCode", org.LangCode) +
                         NoComma(Update("langLabelVariant", org.LangLabelVariant)) +
                     " WHERE nr = " + org.Nr
@@ -113,10 +120,10 @@ namespace Backend.Base.Org
 
             var rules = "";
             if (val.MinLength > 0) rules += "<br>" + GetLabel("LenMin", labels) + "=" + val.MinLength;
-            if (val.MaxLength > 0) rules += "<br>" + GetLabel("LenMax", labels) + "=" + val.MinLength;
+            if (val.MaxLength > 0) rules += "<br>" + GetLabel("LenMax", labels) + "=" + val.MaxLength;
             if (val.IsMixedCase) rules += "<br>" + GetLabel("PWmc", labels);
             if (val.IsNumber) rules += "<br>" + GetLabel("PWNum", labels);
-            if (val.IsNonLetter) rules += "<br>" + GetLabel("PWNonLet", labels);
+            if (val.IsSpecial) rules += "<br>" + GetLabel("PWSp", labels);
 
             if (!string.IsNullOrEmpty(rules))
                 rules = rules.Substring("<br>".Length);
@@ -125,21 +132,36 @@ namespace Backend.Base.Org
         }
 
 
-        public bool ValidatePassword(string pw, OrgEnt org)
+        public (bool valid, string message) ValidatePassword(string pw, OrgEnt org, Dictionary<string, string>? labels)
         {
+            var m = new BaseLabelValidation(labels)
+             .Initialize("PW", ": ")
+             .SetLabelsLowerCase();
+
             var val = org.Encoding.PasswordRule;
 
             if (string.IsNullOrEmpty(pw))
-                return false;
+            {
+                m.Add("Val0");
+                return (false, m.GetMessage());
+            }
 
-            if (val.MinLength > 0 && pw.Length < val.MinLength) return false;
-            if (val.MaxLength > 0 && pw.Length > val.MaxLength) return false;
-            if (val.IsMixedCase && !pw.Any(char.IsUpper)) return false;
-            if (val.IsMixedCase && !pw.Any(char.IsLower)) return false;
-            if (val.IsNumber && !pw.Any(char.IsDigit)) return false;
-            if (val.IsNonLetter && !pw.Any(c => !char.IsLetter(c))) return false;
+            if (val.MinLength > 0 && pw.Length < val.MinLength)
+                m.Add(GetLabel("LenMin", labels) + "=" + val.MinLength);
+            
+            if (val.MaxLength > 0 && pw.Length > val.MaxLength)
+                m.Add(GetLabel("LenMax", labels) + "=" + val.MaxLength);
+            
+            if (val.IsMixedCase && (!pw.Any(char.IsUpper) || !pw.Any(char.IsLower)))
+                m.Add("PWmc");
+            
+            if (val.IsNumber && !pw.Any(char.IsDigit))
+                m.Add("PWNum");
 
-            return true;
+            if (val.IsSpecial && !pw.Replace(" ", "").Any(c => !char.IsLetterOrDigit(c)))
+                m.Add("PWSp");
+
+            return (m.IsValid(), m.GetMessage());
         }
 
 

@@ -1,3 +1,5 @@
+SysA,Please see your system admin
+Oops,Something went wrong! Please see your system admin.
 New,New
 Close,Close
 Delete,Delete
@@ -5,6 +7,9 @@ Send,Send
 Cancel,Cancel
 On,On
 Off,Off
+SaveRec,Save
+SaveChg,Save Changes
+Verify,Verify
 Org,Organisation
 Orgs,Organisations
 Orgs-s,Orgs
@@ -24,7 +29,7 @@ PWr,Password Rules
 PWsr,Show Password Rules
 PWhr,Hide Password Rules
 PWmc,Must be mixed case
-PWNonLet,Must contain non-letter
+PWSp,Must contain a special charcter
 PWNum,Must contain a number
 PWAt,Max. number of login attempts
 PWReset0,Please enter your email address to request a password reset. 
@@ -38,14 +43,27 @@ PWResetErr1,Invalid or expired token|| please retry
 PWResetErr2,Your account is inactive
 PWResetErr3,Invalid password|| it must follow the password rules
 PWResetErr4,Your email address is required
+NotRobot,I am not a robot
+NotRobotConfirm,Please confirm that you are not a robot
+Email,Email
+EmailInvalid,Invalid Email
+EmailEx,Email already exists
+EmailVL,Your email address must be verified before you can login
+EmailV,Verify your email address
+EmailVS,Email address verified
+EmailVSX,Email address is already verified
+EmailVM,You are now able to log in
+EmailVX,Email verification has expired|| please contact IT support
+Mfa1,Scan with Microsoft Authenticator
+Mfa2,Or enter this key manually
+Mfa3,Enter code from Microsoft Authenticator
+MfaEr,Failed to load MFA setup
 LEx,Login Expired|| please log in again.
 BConf,Base Configuration
 Lang,Language
 Langs,Languages
 LangCodeV,Language Variant
 Label,Label
-SaveRec,Save
-SaveChg,Save Changes
 Config,Configuration
 ConfigG,General Configuration
 UnsavedC,There are unsaved changes. Leave anyway?
@@ -75,12 +93,18 @@ Crud.D,Delete
 PermAll,All Permissions
 PermEff,Effective Permissions
 User,User
-UserName,Username
-UserNameM,Masquerade Username
+UserName,User name
+UserNameM,Masquerade User name
+UserNameEx,User name already exists
 UserRs,User Roles
 LDM,Light/Dark Mode
 Logout,Logout
 Login,Login
+LoginUP,Invalid Username and/or Password
+LoginXP,Max Attempts have been reached 
+LoginIL,Your login is inactive
+LoginAS,You are not setup to access %%
+LoginIA,Your account into %% is inactive
 Audit,Audit
 ValE,Validation Error
 ValT,There are Validation Errors|| Save is unsuccessful.
@@ -89,6 +113,8 @@ InvR,Invalid Records
 InvO,Invalid Org Nr
 InvF,Field can't be empty
 InvL,Field exceeds maximum length (%%)
+InvS,Field can't contain a space
+InvSp,Field can't contain a special charcter
 InvCE,Code already exists
 InvCD,Duplicate Code
 InvUD,This record has been changed since it was loaded (%%)
@@ -98,5 +124,11 @@ Message,Message
 RemMe,Remember Me
 ForgotUP,Forgot your username and/or password?
 SignUp,Sign Up
-Oops,Something went wrong! Please see your system admin
+SignUpSuccess,Your account request has been submitted successfully
+SignUpFail,Registration failed
+SignUp1,Success! A new account has been created. 
+SignUp2,An email has been sent to verify your registration.
+SignUp3,Please check your inbox and spam/junk folders. 
+Val0,Can''t be empty
+Val1,Can''t contain spaces
 <LAST>,<LAST LINE>

@@ -9,5 +9,6 @@
         public const string URL_show_password_rules = "api/Login/passwordrules";
         public const string URL_mfa_verify          = "api/Mfa/verifyMfa";
         public const string URL_mfa_setup           = "api/Mfa/setupMfa";
+        public const string URL_signup              = "api/Signup/signup";
     }
 }

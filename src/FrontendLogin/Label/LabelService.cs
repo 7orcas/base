@@ -45,7 +45,10 @@ namespace FrontendLogin.Label
 
         public bool IsLabel(string labelCode, Dictionary<string, LangLabelDto> labels) => labels != null && labelCode != null && labels.ContainsKey(labelCode);
 
-        public string GetLabel(string labelCode, Dictionary<string, LangLabelDto> labels) => IsLabel(labelCode, labels) ? labels[labelCode].Label : "[" + labelCode + "]";
+        public string GetLabel(string labelCode, Dictionary<string, LangLabelDto> labels, bool isDev) => 
+            IsLabel(labelCode, labels) ? 
+            labels[labelCode].Label : 
+            (isDev?"[":"") + labelCode + (isDev ? "]" : "");
 
     }
 }

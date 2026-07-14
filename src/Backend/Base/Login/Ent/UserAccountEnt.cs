@@ -15,15 +15,15 @@ namespace Backend.Base.Login.Ent
         public long Id { get; set; }
         public long LoginId { get; set; }
         public int OrgNr { get; set; }
-        public string? LangCode { get; set; }
+        public string LangCode { get; set; }
         public int? Classification {  get; set; }
-        public DateTime Lastlogin { get; set; }
+        public DateTimeOffset? Lastlogin { get; set; }
         public bool IsActive { get; set; }
         public bool IsAdmin { get; set; }
         //Update note: Add to service
 
 
-        public string Userid { get; set; }
+        public string Username { get; set; }
         public override void Decode() { }
         public override void Encode() { }
 

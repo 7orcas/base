@@ -66,7 +66,7 @@ namespace BackendTest.Setup
             var acc = new UserAccountEnt
             {
                 Id = userAccId,
-                Userid = GCT.UserName,
+                Username = GCT.UserName,
                 OrgNr = orgNr,
                 LangCode = LANG_CODE_DEFAULT,
                 Classification = 0,

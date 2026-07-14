@@ -125,7 +125,7 @@ namespace Backend.Base.Audit
             string crud, 
             string details)
         {
-            await Sql.Execute(
+            await Sql.ExecuteAsync(
                     "INSERT INTO base.Audit " +
                         "(orgNr, source, entityTypeId, entityId, userAccId, crud, details) " +
                     "VALUES (" + 

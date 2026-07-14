@@ -96,7 +96,7 @@ namespace Backend.Base.Org
                         MinLength = enc.PasswordRule.MinLength,
                         MaxLength = enc.PasswordRule.MaxLength,
                         IsMixedCase = enc.PasswordRule.IsMixedCase,
-                        IsNonLetter = enc.PasswordRule.IsNonLetter,
+                        IsNonLetter = enc.PasswordRule.IsSpecial,
                         IsNumber = enc.PasswordRule.IsNumber,
                     }
                 }
@@ -129,7 +129,7 @@ namespace Backend.Base.Org
                 MinLength = dto.PasswordRule.MinLength,
                 MaxLength = dto.PasswordRule.MaxLength,
                 IsMixedCase = dto.PasswordRule.IsMixedCase,
-                IsNonLetter = dto.PasswordRule.IsNonLetter,
+                IsSpecial = dto.PasswordRule.IsNonLetter,
                 IsNumber = dto.PasswordRule.IsNumber,
             };
 

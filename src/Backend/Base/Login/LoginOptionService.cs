@@ -1,4 +1,5 @@
-﻿using Npgsql;
+﻿using Microsoft.Extensions.Options;
+using Npgsql;
 using GC = Backend.GlobalConstants;
 
 namespace Backend.Base.Login
@@ -16,6 +17,28 @@ namespace Backend.Base.Login
             _orgService = orgService;
             _labelService = labelService;
         }
+
+        public async Task<LoginOptionEnt> GetLoginOptionDefault(int orgNr)
+        {
+            var loginOption = null as LoginOptionEnt;
+            try
+            {
+                await Sql.Run(
+                    "SELECT * FROM cntrl.loginoption " +
+                        "WHERE orgnr = @orgNr " +
+                        "AND isdefault IS TRUE",
+                    r =>
+                    {
+                        loginOption = Load(r);
+                    },
+                    new NpgsqlParameter("@orgNr", orgNr)
+                );
+            }
+            catch { }
+
+            return loginOption;
+        }
+
 
         //Login options for the passed in login nr
         public async Task<LoginOptionEnt> GetLoginOptions(string urlSuffix)
@@ -41,22 +64,7 @@ namespace Backend.Base.Login
                         "WHERE " + whereSql,
                     r =>
                     {
-                        loginOption = new LoginOptionEnt
-                        {
-                            UrlSuffix = GetString(r, "urlsuffix"),
-                            OrgNr = GetOrgNr(r),
-                            OrgNrs = GetString(r, "orgnrs"),
-                            LangCode = GetString(r, "langcode"),
-                            LangLabelVariant = GetIntNull(r, "langlabelvariant"),
-                            LangCodes = GetString(r, "langcodes"),
-                            MFA = GetInt(r, "mfa"),
-                            SuccessAction = GetInt(r, "successaction"),
-                            RememberMe = GetBoolean(r, "rememberme"),
-                            Forgot = GetBoolean(r, "forgot"),
-                            SelfRegistration = GetBoolean(r, "selfregistration"),
-                            Masquerade = GetBoolean(r, "masquerade"),
-                            IsActive = GetBoolean(r, "isActive")
-                        };
+                        loginOption = Load(r);
                     },
                     new NpgsqlParameter("@urlsuffix", urlSuffix)
                 );
@@ -66,8 +74,73 @@ namespace Backend.Base.Login
             if (loginOption == null && !string.IsNullOrEmpty(urlSuffix))
                 return await GetLoginOptions("");
 
+            ReconcileOptionsWithOrgs(loginOption);
+
             return loginOption;
         }
+
+        //Make sure the options are enabled in at least one of the org numbers
+        private void ReconcileOptionsWithOrgs(LoginOptionEnt options)
+        {
+            var test = new LoginOptionEnt
+            {
+                IsMfa = true,
+                IsRememberMe = false,
+                IsForgot = false,
+                IsSelfRegistration = false,
+                IsMasquerade = false,
+            };
+
+            ReconcileOptionsWithOrg(test, options.OrgNr);
+
+            var orgNrs = options.OrgNrs.Split(",");
+            foreach (string nr in orgNrs)
+            {
+                if (int.TryParse(nr, out int orgNr))
+                    ReconcileOptionsWithOrg(test, orgNr);
+            }
+
+            if (!test.IsMfa) options.IsMfa = false;
+            if (!test.IsRememberMe) options.IsRememberMe = false;
+            if (!test.IsForgot) options.IsForgot = false;
+            if (!test.IsSelfRegistration) options.IsSelfRegistration = false;
+            if (!test.IsMasquerade) options.IsMasquerade = false;
+        }
+
+        private async void ReconcileOptionsWithOrg(LoginOptionEnt test, int orgNr)
+        {
+            var org = await _orgService.GetOrg(orgNr);
+
+            if (org == null || !org.IsActive) return;
+
+            if (org.Mfa > GC.MfaInactive) test.IsMfa = true;
+            if (org.IsRememberMeEnabled) test.IsRememberMe = true;
+            if (org.IsMasqueradeEnabled) test.IsMasquerade = true;
+            if (org.IsForgotEnabled) test.IsForgot = true;
+            if (org.IsSignupEnabled) test.IsSelfRegistration = true;
+        }
+
+
+        static public LoginOptionEnt Load(NpgsqlDataReader r)
+        {
+            return new LoginOptionEnt
+            {
+                UrlSuffix = GetString(r, "urlsuffix"),
+                OrgNr = GetOrgNr(r),
+                OrgNrs = GetString(r, "orgnrs"),
+                LangCode = GetString(r, "langcode"),
+                LangLabelVariant = GetInt(r, "langlabelvariant"),
+                LangCodes = GetString(r, "langcodes"),
+                SuccessAction = GetInt(r, "successaction"),
+                IsMfa = GetBoolean(r, "isMfa"),
+                IsRememberMe = GetBoolean(r, "isRememberMe"),
+                IsForgot = GetBoolean(r, "isForgot"),
+                IsSelfRegistration = GetBoolean(r, "isSelfRegistration"),
+                IsMasquerade = GetBoolean(r, "isMasquerade"),
+                IsActive = GetBoolean(r, "isActive")
+            };
+        }
+
 
         private async Task<LoginOptionEnt> GetLoginOptionsService()
         {
@@ -83,12 +156,12 @@ namespace Backend.Base.Login
                 LangCode = GC.LangCodeDefault,
                 LangLabelVariant = 0,
                 LangCodes = langs,
-                MFA = GC.MFAactive,
                 SuccessAction = GC.NavigateToFrontendServer,
-                RememberMe = true,
-                Forgot = true,
-                SelfRegistration = true,
-                Masquerade = true,
+                IsMfa = true,
+                IsRememberMe = true,
+                IsForgot = true,
+                IsSelfRegistration = true,
+                IsMasquerade = true,
                 IsActive = true
             };
             
@@ -111,16 +184,17 @@ namespace Backend.Base.Login
                 UrlSuffix = ent.UrlSuffix,
                 Code = org.Code,
                 Icon = icon,
+                OrgNr = ent.OrgNr,
                 LangCode = ent.LangCode,
                 LangLabelVariant = ent.LangLabelVariant,
                 Orgs = orgs,
                 LangCodes = langs,
-                MFA = ent.MFA,
                 SuccessAction = ent.SuccessAction,
-                RememberMe = ent.RememberMe,
-                Forgot = ent.Forgot,
-                SelfRegistration = ent.SelfRegistration,
-                Masquerade = ent.Masquerade
+                Mfa = ent.IsMfa,
+                RememberMe = ent.IsRememberMe,
+                Forgot = ent.IsForgot,
+                SelfRegistration = ent.IsSelfRegistration,
+                Masquerade = ent.IsMasquerade
             };
 
             foreach (var part in ent.OrgNrs.Split(","))
