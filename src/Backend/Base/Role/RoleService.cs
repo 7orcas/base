@@ -95,12 +95,12 @@ namespace Backend.Base.Role
                 var by = " ORDER BY r.code ";
 
                 await Sql.Run(sql + "WHERE r.orgNr = @orgNr" + by,
-                    r =>  list.Add(ReadBaseEntity<RoleEnt>(r)),
+                    r =>  list.Add(GetBaseEntity<RoleEnt>(r)),
                     new NpgsqlParameter("@orgNr", session.Org.Nr)
                 );
 
                 await Sql.Run(sql + "WHERE r.orgNr = " + GC.BaseOrgNr + by,
-                    r => list.Add(ReadBaseEntity<RoleEnt>(r))
+                    r => list.Add(GetBaseEntity<RoleEnt>(r))
                 );
 
                 return list.OrderBy(r => r.Code).ToList();
@@ -125,7 +125,7 @@ namespace Backend.Base.Role
 
                 RoleEnt ent = null;
                 await Sql.Run(sql,
-                    r => ent = ReadBaseEntity<RoleEnt>(r),
+                    r => ent = GetBaseEntity<RoleEnt>(r),
                     new NpgsqlParameter("@id", roleId)
                 );
                 ent.RolePermissions = new List<RolePermissionEnt>();
@@ -178,7 +178,8 @@ namespace Backend.Base.Role
             {
                 //await InsertRole(ent);
                 ent.Id = 0;
-                ent.Updated = DateTime.UtcNow;
+                ent.Updated = DateTimeOffset.UtcNow;
+                ent.Version = 1;
                 //ent.RolePermissions = new List<RolePermissionEnt>(); //not needed
                 var entX = await _roleRepo.Create(ent);
                 await InsertRolePermissions(entX);
@@ -188,11 +189,7 @@ namespace Backend.Base.Role
         private async Task UpdateRole(RoleEnt ent)
         {
             ent.Encode();
-            await Sql.ExecuteAsync(
-                    "UPDATE base.role " +
-                    "SET " + Update(ent) +
-                    " WHERE id = " + ent.Id
-            );
+            await Sql.ExecuteAsync(UpdateVersion(ent, "base.role"));
         }
 
         private async Task InsertRole(RoleEnt ent)

@@ -1,4 +1,7 @@
 ﻿
+
+using System.ComponentModel.DataAnnotations;
+
 /// <summary>
 /// Base entity for application entities
 /// Created: March 2025
@@ -15,6 +18,9 @@ namespace Backend.Base.Entity
         public string Code { get; set; }
         public string? Description { get; set; }
         public DateTimeOffset Updated { get; set; }
+
+        [ConcurrencyCheck]
+        public int Version { get; set; }
         public bool IsActive { get; set; }
 
         public BaseEntity() { }

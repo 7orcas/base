@@ -59,6 +59,7 @@ CREATE TABLE base.org (
     descr TEXT NOT NULL,
     encoded TEXT,
     updated TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	version INTEGER NOT NULL DEFAULT 1,
     isactive BOOLEAN NOT NULL DEFAULT TRUE,
     langcode VARCHAR(4) NOT NULL,
     langlabelvariant INTEGER NOT NULL,
@@ -96,6 +97,7 @@ CREATE TABLE base.zzz (
 	ismfaenabled BOOLEAN DEFAULT FALSE,
 	mfasecret VARCHAR(100),	
 	updated TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	version INTEGER NOT NULL DEFAULT 1,
     PRIMARY KEY (id)
 );
 
@@ -115,6 +117,7 @@ CREATE TABLE base.useracc (
     isadmin BOOLEAN NOT NULL DEFAULT FALSE,
     isactive BOOLEAN NOT NULL DEFAULT TRUE,
 	updated TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	version INTEGER NOT NULL DEFAULT 1,
     PRIMARY KEY (id),
     FOREIGN KEY (zzzid) REFERENCES base.zzz(id),
     FOREIGN KEY (orgnr) REFERENCES base.org(nr)
@@ -127,6 +130,7 @@ CREATE TABLE base.role (
     descr TEXT,
     encoded TEXT,
     updated TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	version INTEGER NOT NULL DEFAULT 1,
     isactive BOOLEAN NOT NULL DEFAULT TRUE,
     PRIMARY KEY (id),
     UNIQUE (orgnr, code),
@@ -139,6 +143,7 @@ CREATE TABLE base.rolepermission (
     permissionnr INTEGER NOT NULL,
     crud VARCHAR(10) NOT NULL,
     updated TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	version INTEGER NOT NULL DEFAULT 1,
     isactive BOOLEAN NOT NULL DEFAULT TRUE,
     PRIMARY KEY (id),
     UNIQUE (roleid, permissionnr),
@@ -150,6 +155,7 @@ CREATE TABLE base.useraccrole (
     useraccid BIGINT NOT NULL,
     roleid BIGINT NOT NULL,
     updated TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	version INTEGER NOT NULL DEFAULT 1,
     isactive BOOLEAN NOT NULL DEFAULT TRUE,
     PRIMARY KEY (id),
     UNIQUE (useraccid, roleid),
@@ -163,6 +169,7 @@ CREATE TABLE base.langcode (
     descr TEXT NOT NULL,
     encoded TEXT,
     updated TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	version INTEGER NOT NULL DEFAULT 1,
     isactive BOOLEAN NOT NULL DEFAULT TRUE
 );
 
@@ -172,7 +179,8 @@ CREATE TABLE base.langkey (
     code VARCHAR(100) NOT NULL UNIQUE,
     descr TEXT,
     encoded TEXT,
-    updated TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+    updated TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	version INTEGER NOT NULL DEFAULT 1
 );
 
 CREATE TABLE base.langlabel (
@@ -184,6 +192,7 @@ CREATE TABLE base.langlabel (
     tooltip TEXT,
     encoded TEXT,
     updated TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	version INTEGER NOT NULL DEFAULT 1,
     UNIQUE (langkeyid, langcode, variant),
     FOREIGN KEY (langkeyid) REFERENCES base.langkey(id)
 );

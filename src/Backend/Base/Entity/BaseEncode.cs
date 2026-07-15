@@ -20,13 +20,6 @@ namespace Backend.Base.Entity
         {
             if (Encoded == null) return new T();
             return JsonConvert.DeserializeObject<T>(Encoded) ?? new T();
-            //DELETE ME
-            //try
-            //{
-            //    return JsonConvert.DeserializeObject<T>(Encoded) ?? new T();
-            //}
-            //catch
-            //{ return new T(); }
         }
 
         public void Encode<T>(T enc)

@@ -17,7 +17,7 @@ namespace Backend.App.Machines
                     "FROM app.Machine m " +
                     "WHERE m.orgNr = " + session.Org.Nr,
                     r => {
-                        var m = ReadBaseEntity<Machine>(r);
+                        var m = GetBaseEntity<Machine>(r);
                         m.StationPairs = GetInt(r, "stationPairs");
                         machines.Add(m);
                     }

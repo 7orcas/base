@@ -22,20 +22,21 @@ public abstract class BaseService : SqlUtils
         _auditService = scope.ServiceProvider.GetRequiredService<AuditServiceI>();
     }
 
-    public T ReadBaseEntity<T>(NpgsqlDataReader r) where T : BaseEntity<T>, new()
-    {
-        var entity = new T();
-        entity.OrgNr = GetOrgNr(r);
-        entity.Id = GetId(r);
-        entity.Code = GetCode(r);
-        entity.Description = GetDescription(r);
-        entity.Encoded = GetEncoded(r);
-        //entity.Encoded = (string)r["Encoded"]; // Force Error, testing
-        entity.Updated = GetUpdated(r);
-        entity.IsActive = IsActive(r);
+    //public T ReadBaseEntity<T>(NpgsqlDataReader r) where T : BaseEntity<T>, new()
+    //{
+    //    var entity = new T();
+    //    entity.OrgNr = GetOrgNr(r);
+    //    entity.Id = GetId(r);
+    //    entity.Code = GetCode(r);
+    //    entity.Description = GetDescription(r);
+    //    entity.Encoded = GetEncoded(r);
+    //    //entity.Encoded = (string)r["Encoded"]; // Force Error, testing
+    //    entity.Updated = GetUpdated(r);
+    //    entity.Version = GetVersion(r);
+    //    entity.IsActive = IsActive(r);
 
-        return entity;
-    }
+    //    return entity;
+    //}
 
     public void TestDelaySeconds (int seconds)
     {

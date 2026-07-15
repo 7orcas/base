@@ -54,6 +54,7 @@ namespace Backend.Base
             dto.Code = e.Code;
             dto.Description = e.Description;
             dto.Updated = e.Updated;
+            dto.Version = e.Version;
             dto.IsActive = e.IsActive;
             return dto;
         }
@@ -68,6 +69,7 @@ namespace Backend.Base
             ent.Code = dto.Code;
             ent.Description = dto.Description;
             ent.Updated = dto.Updated;
+            ent.Version = dto.Version;
             ent.IsActive = dto.IsActive;
             return ent;
         }

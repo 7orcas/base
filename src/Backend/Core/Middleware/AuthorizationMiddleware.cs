@@ -6,7 +6,7 @@ namespace Backend.Core.Middleware
 {
     public class AuthorizationMiddleware
     {
-
+        //do this
         //Change to [AllowAnonymous]
         private readonly string[] nonAuthorisedMethods = {
             "LoginOptions", "Login", "GetToken", "LoginLabels", "LoginOrg",
