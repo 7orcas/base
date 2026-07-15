@@ -11,6 +11,11 @@ namespace Backend.Base
     /// <summary>
     /// Intercept all calls
     /// </summary>
+    /// 
+
+
+    //DELETE ME
+
     public class InterceptorFilter : ActionFilterAttribute
     {
         private readonly Serilog.ILogger _log;
@@ -51,83 +56,86 @@ namespace Backend.Base
         /// <param name="context"></param>
         public override void OnActionExecuting(ActionExecutingContext context)
         {   
-            var sessionKey = null as string;
-            var session = null as SessionEnt;
 
-            // Extract the token and get session
-            var authorizationHeader = context.HttpContext.Request.Headers["Authorization"].ToString();
-            if (!string.IsNullOrEmpty(authorizationHeader) && authorizationHeader.StartsWith("Bearer"))
-            {
-                var token = authorizationHeader.Substring("Bearer".Length);
-                var tv = _tokenService.DecodeToken(token);
+            throw new NotImplementedException();
 
-                if (tv == null)
-                {
-                    var r = new _ResponseDto
-                    {
-                        Valid = false,
-                        ErrorMessage = "No token - may have expired",  //ToDo label 'NToken'
-                        StatusCode = GC.StatusCodeNotAuthorised // HTTP status code
-                    };
-                    context.Result = new OkObjectResult(r);
-                    return;
-                }
+//            var sessionKey = null as string;
+//            var session = null as SessionEnt;
 
-                sessionKey = tv.SessionKey;
-                session = _sessionService.GetSession(sessionKey);
-                //context.HttpContext.Items["session"] = session;
-                //_diagnosticContext.Set("SessionKey", sessionKey);
-            }
+//            // Extract the token and get session
+//            var authorizationHeader = context.HttpContext.Request.Headers["Authorization"].ToString();
+//            if (!string.IsNullOrEmpty(authorizationHeader) && authorizationHeader.StartsWith("Bearer"))
+//            {
+//                var token = authorizationHeader.Substring("Bearer".Length);
+//                var tv = _tokenService.DecodeToken(token);
 
-//methodInfo.GetCustomAttribute<AllowAnonymousAttribute>()
+//                if (tv == null)
+//                {
+//                    var r = new _ResponseDto
+//                    {
+//                        Valid = false,
+//                        ErrorMessage = "No token - may have expired",  //ToDo label 'NToken'
+//                        StatusCode = GC.StatusCodeNotAuthorised // HTTP status code
+//                    };
+//                    context.Result = new OkObjectResult(r);
+//                    return;
+//                }
+
+//                sessionKey = tv.SessionKey;
+//                session = _sessionService.GetSession(sessionKey);
+//                //context.HttpContext.Items["session"] = session;
+//                //_diagnosticContext.Set("SessionKey", sessionKey);
+//            }
+
+////methodInfo.GetCustomAttribute<AllowAnonymousAttribute>()
 
 
-            //Test permissions
-            if (context.ActionDescriptor is ControllerActionDescriptor controllerActionDescriptor)
-            {
-                var authorised = false;
-                //Method assign permission
-                MethodInfo methodInfo = controllerActionDescriptor.MethodInfo;
+//            //Test permissions
+//            if (context.ActionDescriptor is ControllerActionDescriptor controllerActionDescriptor)
+//            {
+//                var authorised = false;
+//                //Method assign permission
+//                MethodInfo methodInfo = controllerActionDescriptor.MethodInfo;
                 
-                if (session == null)
-                {
-                    authorised = nonAuthorisedMethods.Contains(methodInfo.Name);
-                }
-                else
-                {
-                    var perm = methodInfo.GetCustomAttribute<PermissionAtt>();
-                    var crud = methodInfo.GetCustomAttribute<CrudAtt>();
+//                if (session == null)
+//                {
+//                    authorised = nonAuthorisedMethods.Contains(methodInfo.Name);
+//                }
+//                else
+//                {
+//                    var perm = methodInfo.GetCustomAttribute<PermissionAtt>();
+//                    var crud = methodInfo.GetCustomAttribute<CrudAtt>();
 
-                    //Class assign permission
-                    if (perm == null)
-                    {
-                        Type controllerType = controllerActionDescriptor.ControllerTypeInfo.AsType();
-                        perm = controllerType.GetCustomAttribute<PermissionAtt>();
-                    }
-                    authorised = _permissionService.IsAuthorizedToAccessEndPoint(session, perm, crud);
-                }
+//                    //Class assign permission
+//                    if (perm == null)
+//                    {
+//                        Type controllerType = controllerActionDescriptor.ControllerTypeInfo.AsType();
+//                        perm = controllerType.GetCustomAttribute<PermissionAtt>();
+//                    }
+//                    authorised = _permissionService.IsAuthorizedToAccessEndPoint(session, perm, crud);
+//                }
                 
 
-                if (!authorised)
-                {
-                    Log(LogEventLevel.Error, "InterceptorNotAuthorised", context, sessionKey);
-                    var r = new _ResponseDto
-                    {
-                        Valid = false,
-                        ErrorMessage = "Not Authorised",  //ToDo label 'NAuth'
-                        StatusCode = GC.StatusCodeNotAuthorised // HTTP status code
-                    };
-                    context.Result = new UnauthorizedObjectResult(r); //TEST ME
-                }
+//                if (!authorised)
+//                {
+//                    Log(LogEventLevel.Error, "InterceptorNotAuthorised", context, sessionKey);
+//                    var r = new _ResponseDto
+//                    {
+//                        Valid = false,
+//                        ErrorMessage = "Not Authorised",  //ToDo label 'NAuth'
+//                        StatusCode = GC.StatusCodeNotAuthorised // HTTP status code
+//                    };
+//                    context.Result = new UnauthorizedObjectResult(r); //TEST ME
+//                }
 
-                //Audit list action
-                var audit = methodInfo.GetCustomAttribute<AuditListAtt>();
-                if (audit != null)
-                    _auditService.ReadList(session, audit.EntityTypeId, null);
-            }
+//                //Audit list action
+//                var audit = methodInfo.GetCustomAttribute<AuditListAtt>();
+//                if (audit != null)
+//                    _auditService.ReadList(session, audit.EntityTypeId, null);
+//            }
 
-            if (_log.IsEnabled(LogEventLevel.Debug))
-                Log(LogEventLevel.Debug, "Interceptor", context, sessionKey);
+//            if (_log.IsEnabled(LogEventLevel.Debug))
+//                Log(LogEventLevel.Debug, "Interceptor", context, sessionKey);
 
         }
 

@@ -1,26 +1,18 @@
-﻿using Microsoft.AspNetCore.Mvc.Controllers;
+﻿using DocumentFormat.OpenXml.InkML;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Controllers;
+using Org.BouncyCastle.Security;
 using System.Reflection;
 using GC = Backend.GlobalConstants;
 
 namespace Backend.Core.Middleware
 {
-    public class AuthorizationMiddleware
+    public class AuthorizationMiddleware : BaseMiddleware
     {
-        //do this
-        //Change to [AllowAnonymous]
-        private readonly string[] nonAuthorisedMethods = {
-            "LoginOptions", "Login", "GetToken", "LoginLabels", "LoginOrg",
-            "RefreshExpiredToken", "RefreshCurrentToken",
-            "ResetRequest", "ResetAction", "GetPasswordRules",
-            "Signup", "VerifyEmail",
-            "SetupMfa", "VerifyMfa"
-        };
-
         private readonly RequestDelegate _next;
         private readonly Serilog.ILogger _log;
 
-        public AuthorizationMiddleware(
-            RequestDelegate next)
+        public AuthorizationMiddleware(RequestDelegate next)
         {
             _next = next;
             _log = Log.Logger;
@@ -29,67 +21,75 @@ namespace Backend.Core.Middleware
 
         public async Task InvokeAsync(
            HttpContext context,
+           LabelServiceI _labelService,
            PermissionServiceI _permissionService)
         {
-            try
+            var endpoint = context.GetEndpoint();
+            var allowAnonymous = endpoint?.Metadata.GetMetadata<IAllowAnonymous>() != null;
+
+            if (allowAnonymous)
             {
-                var endpoint = context.GetEndpoint();
-                var controllerActionDescriptor = endpoint?.Metadata.GetMetadata<ControllerActionDescriptor>();
-
-                if (controllerActionDescriptor != null)
-                {
-                    var authorised = false;
-                    var session = context.Items["session"] as SessionEnt;
-                    
-                    //Method assign permission
-                    MethodInfo methodInfo = controllerActionDescriptor.MethodInfo;
-
-                    if (session == null)
-                    {
-                        authorised = nonAuthorisedMethods.Contains(methodInfo.Name);
-                    }
-                    else
-                    {
-                        var perm = methodInfo.GetCustomAttribute<PermissionAtt>();
-                        var crud = methodInfo.GetCustomAttribute<CrudAtt>();
-
-                        //Class assign permission
-                        if (perm == null)
-                        {
-                            Type controllerType = controllerActionDescriptor.ControllerTypeInfo.AsType();
-                            perm = controllerType.GetCustomAttribute<PermissionAtt>();
-                        }
-                        authorised = _permissionService.IsAuthorizedToAccessEndPoint(session, perm, crud);
-                    }
-
-                    if (authorised)
-                    {
-                        await _next(context);
-                        return;
-                    }
-
-                    var key = session?.Key ?? "NoSession";
-                    _log.Error("InterceptorNotAuthorised", context, key);
-                    var r = new _ResponseDto
-                    {
-                        Valid = false,
-                        ErrorMessage = "Not Authorised",  //ToDo label 'NAuth'
-                        StatusCode = GC.StatusCodeNotAuthorised // HTTP status code
-                    };
-                    await context.Response.WriteAsJsonAsync(r); //TEST ME
-                    return;
-                }
-
                 await _next(context);
                 return;
             }
-            catch (Exception ex)
+
+            var controllerActionDescriptor = endpoint?.Metadata.GetMetadata<ControllerActionDescriptor>();
+            if (controllerActionDescriptor == null 
+                && context.Request.Path == "/api/Login/login")  //FIX ME I don't know why/how this call is being made
             {
-                _log.Error(ex, "Error authorisation");
-                throw;
+                await _next(context);
+                return;
             }
+            else if (controllerActionDescriptor == null)
+            {
+                var rx = await HandleException(null, context, _labelService);
+                await context.Response.WriteAsJsonAsync(rx);
+                return;
+            }
+
+
+            var session = context.Items["session"] as SessionEnt;
+            if (session != null)
+            {
+                //Method assigns permissions
+                MethodInfo methodInfo = controllerActionDescriptor.MethodInfo;
+                var perm = methodInfo.GetCustomAttribute<PermissionAtt>();
+                var crud = methodInfo.GetCustomAttribute<CrudAtt>();
+
+                //Class assign permission
+                if (perm == null)
+                {
+                    Type controllerType = controllerActionDescriptor.ControllerTypeInfo.AsType();
+                    perm = controllerType.GetCustomAttribute<PermissionAtt>();
+                }
+                    
+                if (_permissionService.IsAuthorizedToAccessEndPoint(session, perm, crud))
+                {
+                    await _next(context);
+                    return;
+                }
+            }
+
+            var r = await HandleException(session, context, _labelService);
+            await context.Response.WriteAsJsonAsync(r);
         }
 
+        private async Task<_ResponseDto> HandleException(SessionEnt session, HttpContext context, LabelServiceI _labelService)
+        {
+            var labels = await _labelService.GetLangCodeDic(GC.LangCodeDefault, GC.LangLabelVariantDefault);
+            
+            var key = session?.Key ?? "NoSession";
+            _log.Error("Not Authorised, path {Path} session {key} ", context.Request.Path, key);
+
+            var r = new _ResponseDto
+            {
+                Valid = false,
+                ErrorMessage = GetLabel("NAuthX", "Not Authorised", labels),
+                StatusCode = GC.StatusCodeNotAuthorised // HTTP status code
+            };
+
+            return r;
+        }
 
     }
 }

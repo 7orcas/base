@@ -22,32 +22,23 @@ namespace Backend.Core.Middleware
             TokenServiceI _tokenService,
             SessionServiceI _sessionService)
         {
-            try
-            {
-                var authorizationHeader = context.Request.Headers.Authorization.ToString();
+            var authorizationHeader = context.Request.Headers.Authorization.ToString();
 
-                if (!string.IsNullOrWhiteSpace(authorizationHeader) &&
-                    authorizationHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+            if (!string.IsNullOrWhiteSpace(authorizationHeader) &&
+                authorizationHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+            {
+                var token = authorizationHeader["Bearer ".Length..].Trim();
+
+                var tv = _tokenService.DecodeToken(token);
+                if (tv != null)
                 {
-                    var token = authorizationHeader["Bearer ".Length..].Trim();
-
-                    var tv = _tokenService.DecodeToken(token);
-                    if (tv != null)
-                    {
-                        _diagnosticContext.Set("SessionKey", tv.SessionKey);
-                        var session = _sessionService.GetSession(tv.SessionKey);
-                        if (session != null)
-                            context.Items["session"] = session;
-                    }
+                    _diagnosticContext.Set("SessionKey", tv.SessionKey);
+                    var session = _sessionService.GetSession(tv.SessionKey);
+                    if (session != null)
+                        context.Items["session"] = session;
                 }
-                await _next(context);
             }
-            catch (Exception ex)
-            {
-                _log.Error(ex, "Error loading session");
-                throw;
-            }
+            await _next(context);
         }
-
     }
 }

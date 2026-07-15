@@ -1,8 +1,9 @@
 ﻿using System.Net;
+using GC = Backend.GlobalConstants;
 
 namespace Backend.Core.Middleware
 {
-    public class ExceptionMiddleware
+    public class ExceptionMiddleware : BaseMiddleware
     {
         private readonly RequestDelegate _next;
         private readonly Serilog.ILogger _log;
@@ -17,7 +18,9 @@ namespace Backend.Core.Middleware
             _log = Log.Logger;
         }
 
-        public async Task InvokeAsync(HttpContext context)
+        public async Task InvokeAsync(
+            HttpContext context,
+            LabelServiceI _labelService)
         {
             try
             {
@@ -25,18 +28,25 @@ namespace Backend.Core.Middleware
             }
             catch (Exception ex)
             {
-                _log.Error("Unhandled exception while processing {Method} {Path}",
-                    context.Request.Method,
-                    context.Request.Path);
+                var id = Guid.NewGuid().ToString();
 
-                await HandleExceptionAsync(context, ex);
+                _log.Error(ex, "Unhandled exception while processing {Method} {Path} Error Id:{id}",
+                    context.Request.Method,
+                    context.Request.Path,
+                    id);
+
+                await HandleExceptionAsync(context, ex, id, _labelService);
             }
         }
 
         private async Task HandleExceptionAsync(
             HttpContext context,
-            Exception ex)
+            Exception ex,
+            string id,
+            LabelServiceI _labelService)
         {
+            var labels = await _labelService.GetLangCodeDic(GC.LangCodeDefault, GC.LangLabelVariantDefault);
+
             var r = new _ResponseDto
             {
                 Valid = false,
@@ -44,14 +54,14 @@ namespace Backend.Core.Middleware
             };
 
 
-            if (_environment.IsDevelopment())
+            if (!_environment.IsDevelopment())
             {
-                r.ErrorMessage = ex.ToString();
+                r.ErrorMessage = "[" + id + "]  " + ex.ToString();
                 context.Response.ContentType = "application/problem+json";
             }
             else
             {
-                r.ErrorMessage = "An unexpected error occurred";
+                r.ErrorMessage = GetLabel("UnKnError", "An unexpected error occurred", labels) + " (id:" + id + ")";
             }
 
             await context.Response.WriteAsJsonAsync(r);

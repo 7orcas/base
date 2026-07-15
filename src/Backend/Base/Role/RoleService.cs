@@ -211,7 +211,7 @@ namespace Backend.Base.Role
                         ent.Id + "," +
                         p.PermissionNr + "," +
                         (p.Crud != null ? "'" + p.Crud + "'," : "") +
-                        "'" + DateTime.Now.ToString(GC.DateTimeFormat) + "'" +
+                        "'" + DateTimeOffset.Now.ToString(GC.DateTimeFormat) + "'" +
                         ");");
             }
             var sql = sb.ToString();

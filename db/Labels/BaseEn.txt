@@ -1,5 +1,6 @@
 SysA,Please see your system admin
 Oops,Something went wrong! Please see your system admin.
+UnKnError,An unexpected error occurred.
 New,New
 Close,Close
 Delete,Delete

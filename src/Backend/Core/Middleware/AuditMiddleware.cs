@@ -39,14 +39,14 @@ namespace Backend.Core.Middleware
                     
                 }
 
-                await _next(context);
-                return;
             }
             catch (Exception ex)
             {
-                _log.Error(ex, "Error audit");
-                throw;
+                _log.Error(ex, "Error AuditMiddleware");
             }
+
+            //Continue
+            await _next(context);
         }
     }
 }

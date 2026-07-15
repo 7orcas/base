@@ -25,6 +25,7 @@ namespace Backend.Base.Token
             _tokenService = tokenService;
         }
 
+        [AllowAnonymous]
         [HttpGet("token")]
         public async Task<IActionResult> GetToken([FromQuery] string key)
         {
@@ -59,6 +60,7 @@ namespace Backend.Base.Token
             return Ok(r);
         }
 
+        [AllowAnonymous]
         [HttpGet("refreshcurrent/{refreshTokenString}")]
         public async Task<IActionResult> RefreshCurrentToken(string refreshTokenString)
         {
@@ -66,6 +68,7 @@ namespace Backend.Base.Token
             return Ok(dto);
         }
 
+        [AllowAnonymous]
         [HttpGet("refreshexpired/{refreshTokenString}")]
         public async Task<IActionResult> RefreshExpiredToken(string refreshTokenString)
         {
