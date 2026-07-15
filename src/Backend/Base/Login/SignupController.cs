@@ -1,4 +1,5 @@
 ﻿using Backend.Base.DataProtection;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Serilog.Events;
 using GC = Backend.GlobalConstants;
@@ -35,6 +36,7 @@ namespace Backend.Base.Login
         }
 
 
+        [AllowAnonymous]
         [HttpPost("signup")]
         public async Task<IActionResult> Signup([FromBody] SignupRequest request)
         {
@@ -50,6 +52,7 @@ namespace Backend.Base.Login
             return Ok(r);
         }
 
+        [AllowAnonymous]
         [HttpGet("signupverifyemail")]
         public async Task<IActionResult> VerifyEmail([FromQuery] int orgNr, [FromQuery] string langCode, [FromQuery] int langVariant, [FromQuery] string email)
         {

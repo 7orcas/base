@@ -21,6 +21,7 @@ namespace Backend.Base.Org
             org.Description = GetDescription(r);
             org.Icon = GetStringNull(r, "icon");
             org.Updated = GetUpdated(r);
+            org.Version = GetVersion(r);
             org.IsActive = IsActive(r);
             org.LangLabelVariant = GetInt(r, "langLabelVariant");
             org.Encoded = GetEncoded(r);

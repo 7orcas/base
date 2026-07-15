@@ -1,13 +1,5 @@
 ﻿using Backend.Base.Email;
 using Backend.Base.Token.Ent;
-using DocumentFormat.OpenXml.Office2010.Excel;
-using DocumentFormat.OpenXml.Spreadsheet;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Controllers;
-using Npgsql;
-using Org.BouncyCastle.Asn1.Ocsp;
-using System.IO;
-using System.Reflection.Emit;
 using GC = Backend.GlobalConstants;
 
 /// <summary>
@@ -22,6 +14,7 @@ namespace Backend.Base.Login
 {
     public class LoginService: BaseService, LoginServiceI
     {
+        private readonly IHostEnvironment _environment;
         private readonly LoginRepoI _loginRepo;
         private readonly PermissionServiceI _permissionService;
         private readonly TokenServiceI _tokenService;
@@ -34,7 +27,9 @@ namespace Backend.Base.Login
 
         private AppServiceAccount ServiceAccount = AppSettings.ServiceAccount;
 
-        public LoginService (IServiceProvider serviceProvider,
+        public LoginService (
+            IHostEnvironment environment,
+            IServiceProvider serviceProvider,
             LoginRepoI loginRepo,
             TokenServiceI tokenService,
             OrgServiceI orgService,
@@ -46,6 +41,7 @@ namespace Backend.Base.Login
             EmailServiceI emailService) 
             : base (serviceProvider)
         {
+            _environment = environment;
             _loginRepo = loginRepo;
             _tokenService = tokenService;
             _orgService = orgService;
@@ -116,7 +112,7 @@ namespace Backend.Base.Login
                 if (org.Mfa == GC.MfaRequiredEachLogin) isMfaRequired = true;
                 if (org.Mfa == GC.MfaRequiredEachDay && daysSinceLastLogin > 0) isMfaRequired = true;
                 if (org.Mfa == GC.MfaOptionalEachDay && daysSinceLastLogin > 0 && login.IsMfaRequired) isMfaRequired = true;
-                if (login.IsService()) isMfaRequired = true; //Service account always requires MFA
+                if (login.IsService()) isMfaRequired = !_environment.IsDevelopment(); //Service account always requires MFA
 
                 if (!isMfaValid && isMfaRequired)
                 {

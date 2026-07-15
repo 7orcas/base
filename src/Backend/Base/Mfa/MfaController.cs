@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.Data;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 
 /// <summary>
@@ -35,6 +36,7 @@ namespace Backend.Base.Mfa
         /// This is a mix of organisation and user account Mfa
         /// </summary>
         /// <returns></returns>
+        [AllowAnonymous]
         [HttpPost("SetupMfa")]
         public async Task<IActionResult> SetupMfa([FromBody] Common.Request.LoginRequest loginRequest)
         {
@@ -59,6 +61,7 @@ namespace Backend.Base.Mfa
 
         }
 
+        [AllowAnonymous]
         [HttpPost("VerifyMfa")]
         public async Task<IActionResult> VerifyMfa([FromBody] Common.Request.LoginRequest request) 
         {

@@ -216,14 +216,14 @@ namespace Backend.Base.Login
                         "SET " +
                             Update("isEmailVerified", login.IsEmailVerified) +
                             Update("isActive", login.IsActive) +
-                            NoComma(Updatetime()) +
+                            NoComma(UpdateDatetimeNow()) +
                         " WHERE id = " + login.Id
                 );
                 await Sql.ExecuteAsync(
                         "UPDATE base.useracc " +
                         "SET " +
                             Update("isActive", login.IsActive) +
-                            NoComma(Updatetime()) +
+                            NoComma(UpdateDatetimeNow()) +
                         " WHERE zzzid = " + login.Id
                 );
                 return true;

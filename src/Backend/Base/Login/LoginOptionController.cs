@@ -1,4 +1,5 @@
 ﻿using Backend.Base.DataProtection;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using GC = Backend.GlobalConstants;
 
@@ -34,6 +35,7 @@ namespace Backend.Base.Login
         /// </summary>
         /// <param name="urlSuffix"></param>
         /// <returns></returns>
+        [AllowAnonymous]
         [CrudAtt(GC.CrudIgnore)] 
         [HttpGet("get/{urlSuffix}")]
         public async Task<IActionResult> LoginOptions([FromRoute] string urlSuffix, [FromQuery] string? encryptedCookie)

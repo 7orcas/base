@@ -1,4 +1,5 @@
 ﻿using Backend.Base.DataProtection;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Serilog.Events;
 using GC = Backend.GlobalConstants;
@@ -35,7 +36,7 @@ namespace Backend.Base.Login
             _cookieProtector = cookieProtector;
         }
 
-
+        [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
@@ -100,6 +101,7 @@ namespace Backend.Base.Login
         /// </summary>
         /// <param name="langCode"></param>
         /// <returns></returns>
+        [AllowAnonymous]
         [HttpGet("loginlabels")]
         public async Task<IActionResult> LoginLabels([FromQuery] string langCode, [FromQuery] int? variant)
         {
@@ -130,6 +132,7 @@ namespace Backend.Base.Login
         /// </summary>
         /// <param name="nr"></param>
         /// <returns></returns>
+        [AllowAnonymous]    
         [HttpGet("org")]
         public async Task<IActionResult> LoginOrg([FromQuery] int orgNr)
         {
@@ -149,6 +152,7 @@ namespace Backend.Base.Login
             return Ok(r);
         }
 
+        [AllowAnonymous]
         [HttpGet("passwordrules")]
         public async Task<IActionResult> GetPasswordRules([FromQuery] string langCode, [FromQuery] int orgNr)
         {
@@ -162,6 +166,7 @@ namespace Backend.Base.Login
             return Ok(r);
         }
 
+        [AllowAnonymous]
         [HttpGet("resetrequest")]
         public async Task<IActionResult> ResetRequest([FromQuery] string email)
         {
@@ -177,6 +182,7 @@ namespace Backend.Base.Login
             return Ok(r);
         }
 
+        [AllowAnonymous]
         [HttpPost("resetaction")]
         public async Task<IActionResult> ResetAction([FromBody] LoginResetActionDto action)
         {

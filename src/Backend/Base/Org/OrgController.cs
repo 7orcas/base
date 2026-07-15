@@ -85,6 +85,7 @@ namespace Backend.Base.Org
                     Description = org.Description,
                     Icon = org.Icon,
                     Updated = org.Updated,
+                    Version = org.Version,
                     IsActive = org.IsActive,
                     LangCode = org.LangCode,
                     LangLabelVariant = org.LangLabelVariant,

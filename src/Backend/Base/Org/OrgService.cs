@@ -81,6 +81,7 @@ namespace Backend.Base.Org
                         Update("descr", org.Description) +
                         Update("encoded", org.Encoded) +
                         Update("updated", org.Updated) +
+                        Update("version", org.Version + 1) +
                         Update("isActive", org.IsActive) +
                         Update("mfa", org.Mfa) +
                         Update("isRememberMeEnabled", org.IsRememberMeEnabled) +
@@ -104,6 +105,7 @@ namespace Backend.Base.Org
                 Code = org.Code,
                 Description = org.Description,
                 Updated = org.Updated,
+                Version = org.Version,
                 IsActive = org.IsActive,
                 LangCode = org.LangCode,
                 LangLabelVariant = org.LangLabelVariant,
