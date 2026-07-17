@@ -74,50 +74,43 @@ namespace Backend.Base.Login
             if (loginOption == null && !string.IsNullOrEmpty(urlSuffix))
                 return await GetLoginOptions("");
 
-            ReconcileOptionsWithOrgs(loginOption);
-
             return loginOption;
         }
 
         //Make sure the options are enabled in at least one of the org numbers
-        private void ReconcileOptionsWithOrgs(LoginOptionEnt options)
+        private async Task ReconcileOptionsWithOrgs(LoginOptionDto options)
         {
-            var test = new LoginOptionEnt
+            var test = new LoginOptionDto
             {
-                IsMfa = true,
-                IsRememberMe = false,
-                IsForgot = false,
-                IsSelfRegistration = false,
-                IsMasquerade = false,
+                Mfa = true,
+                RememberMe = false,
+                Forgot = false,
+                SelfRegistration = false,
+                Masquerade = false,
             };
 
-            ReconcileOptionsWithOrg(test, options.OrgNr);
-
-            var orgNrs = options.OrgNrs.Split(",");
-            foreach (string nr in orgNrs)
+            foreach (var orgDto in options.Orgs)
             {
-                if (int.TryParse(nr, out int orgNr))
-                    ReconcileOptionsWithOrg(test, orgNr);
+                var org = await _orgService.GetOrg(orgDto.Nr);
+                ReconcileOptionsWithOrg(test, org);
             }
 
-            if (!test.IsMfa) options.IsMfa = false;
-            if (!test.IsRememberMe) options.IsRememberMe = false;
-            if (!test.IsForgot) options.IsForgot = false;
-            if (!test.IsSelfRegistration) options.IsSelfRegistration = false;
-            if (!test.IsMasquerade) options.IsMasquerade = false;
+            if (!test.Mfa) options.Mfa = false;
+            if (!test.RememberMe) options.RememberMe = false;
+            if (!test.Forgot) options.Forgot = false;
+            if (!test.SelfRegistration) options.SelfRegistration = false;
+            if (!test.Masquerade) options.Masquerade = false;
         }
 
-        private async void ReconcileOptionsWithOrg(LoginOptionEnt test, int orgNr)
+        private void ReconcileOptionsWithOrg(LoginOptionDto test, OrgEnt org)
         {
-            var org = await _orgService.GetOrg(orgNr);
-
             if (org == null || !org.IsActive) return;
 
-            if (org.Mfa > GC.MfaInactive) test.IsMfa = true;
-            if (org.IsRememberMeEnabled) test.IsRememberMe = true;
-            if (org.IsMasqueradeEnabled) test.IsMasquerade = true;
-            if (org.IsPasswordResetEnabled) test.IsForgot = true;
-            if (org.IsSignupEnabled) test.IsSelfRegistration = true;
+            if (org.Mfa > GC.MfaInactive) test.Mfa = true;
+            if (org.IsRememberMeEnabled) test.RememberMe = true;
+            if (org.IsMasqueradeEnabled) test.Masquerade = true;
+            if (org.IsPasswordResetEnabled) test.Forgot = true;
+            if (org.IsSignupEnabled) test.SelfRegistration = true;
         }
 
 
@@ -132,11 +125,6 @@ namespace Backend.Base.Login
                 LangLabelVariant = GetInt(r, "langlabelvariant"),
                 LangCodes = GetString(r, "langcodes"),
                 SuccessAction = GetInt(r, "successaction"),
-                IsMfa = GetBoolean(r, "isMfa"),
-                IsRememberMe = GetBoolean(r, "isRememberMe"),
-                IsForgot = GetBoolean(r, "isForgot"),
-                IsSelfRegistration = GetBoolean(r, "isSelfRegistration"),
-                IsMasquerade = GetBoolean(r, "isMasquerade"),
                 IsActive = GetBoolean(r, "isActive")
             };
         }
@@ -157,11 +145,6 @@ namespace Backend.Base.Login
                 LangLabelVariant = 0,
                 LangCodes = langs,
                 SuccessAction = GC.NavigateToFrontendServer,
-                IsMfa = true,
-                IsRememberMe = true,
-                IsForgot = true,
-                IsSelfRegistration = true,
-                IsMasquerade = true,
                 IsActive = true
             };
             
@@ -190,11 +173,11 @@ namespace Backend.Base.Login
                 Orgs = orgs,
                 LangCodes = langs,
                 SuccessAction = ent.SuccessAction,
-                Mfa = ent.IsMfa,
-                RememberMe = ent.IsRememberMe,
-                Forgot = ent.IsForgot,
-                SelfRegistration = ent.IsSelfRegistration,
-                Masquerade = ent.IsMasquerade
+                Mfa = org.Mfa > GC.MfaInactive,
+                RememberMe = org.IsRememberMeEnabled,
+                Forgot = org.IsPasswordResetEnabled,
+                SelfRegistration = org.IsSignupEnabled,
+                Masquerade = org.IsMasqueradeEnabled
             };
 
             foreach (var part in ent.OrgNrs.Split(","))
@@ -209,6 +192,8 @@ namespace Backend.Base.Login
                 });
 
             }
+
+            await ReconcileOptionsWithOrgs(dto);
 
             var list = await _labelService.GetLangCodeList();
             foreach (var part in ent.LangCodes.Split(","))

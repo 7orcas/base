@@ -17,12 +17,7 @@ namespace Backend.Base.Login.Ent
         public string LangCode { get; set; }
         public int LangLabelVariant { get; set; }
         public string LangCodes { get; set; }
-        public bool IsMfa { get; set; }
         public int SuccessAction { get; set; }
-        public bool IsRememberMe { get; set; }
-        public bool IsForgot { get; set; }
-        public bool IsSelfRegistration { get; set; }
-        public bool IsMasquerade { get; set; }
 
         [NotMapped]
         public bool IsService { get; set; }
