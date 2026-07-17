@@ -116,7 +116,7 @@ namespace Backend.Base.Login
             if (org.Mfa > GC.MfaInactive) test.IsMfa = true;
             if (org.IsRememberMeEnabled) test.IsRememberMe = true;
             if (org.IsMasqueradeEnabled) test.IsMasquerade = true;
-            if (org.IsForgotEnabled) test.IsForgot = true;
+            if (org.IsPasswordResetEnabled) test.IsForgot = true;
             if (org.IsSignupEnabled) test.IsSelfRegistration = true;
         }
 

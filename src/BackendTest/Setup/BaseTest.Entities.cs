@@ -139,9 +139,9 @@ namespace BackendTest.Setup
         {
             return new List<LanguageConfig>
             {
-                new LanguageConfig { LangCode = LANG_CODE_EN, IsReadonly = false, IsEditable = true },
-                new LanguageConfig { LangCode = LANG_CODE_DE, IsReadonly = true, IsEditable = false },
-                new LanguageConfig { LangCode = LANG_CODE_ES, IsReadonly = false, IsEditable = false }
+                new LanguageConfig { LangCode = LANG_CODE_EN, IsVisible = false, IsEditable = true },
+                new LanguageConfig { LangCode = LANG_CODE_DE, IsVisible = true, IsEditable = false },
+                new LanguageConfig { LangCode = LANG_CODE_ES, IsVisible = false, IsEditable = false }
             };
         }
 

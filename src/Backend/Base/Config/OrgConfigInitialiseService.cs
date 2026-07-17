@@ -88,7 +88,7 @@ namespace Backend.Base.Config
             return new LanguageConfig()
             {
                 LangCode = orgLang.LangCode,
-                IsReadonly = orgLang.IsReadonly,
+                IsVisible = orgLang.IsVisible,
                 IsEditable = orgLang.IsEditable,
             };
         }

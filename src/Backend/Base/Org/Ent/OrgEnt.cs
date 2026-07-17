@@ -24,10 +24,14 @@ namespace Backend.Base.Org.Ent
         public int Mfa { get; set; }
         public bool IsRememberMeEnabled { get; set; }
         public bool IsMasqueradeEnabled { get; set; }
-        public bool IsForgotEnabled { get; set; }
+        public bool IsPasswordResetEnabled { get; set; }
         public bool IsSignupEnabled { get; set; }
         public bool IsEmailRequired { get; set; }
         public bool IsEmailVerified { get; set; }
+
+        /// <summary>
+        /// If true, emails sent to users will be in HTML format. If false, the email will be in plain text format.
+        /// </summary>
         public bool IsEmailHtml { get; set; }
 
         public OrgEnc Encoding { get; set; }

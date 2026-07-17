@@ -97,6 +97,7 @@ namespace Backend.Base.Login
                             OrgNrDefault = GetInt(r, "orgnrdefault"),
                             LangCode = GetString(r, "langCode"),
                             Attempts = GetIntNull(r, "attempts"),
+                            AttemptsLockout = GetDateTimeNull(r, "attemptsLockout"),
                             Updated = GetDateTime(r, "updated"),
                             Lastlogin = GetDateTimeNull(r, "lastlogin"),
                             IsActive = GetBoolean(r, "isActive"),
@@ -147,9 +148,21 @@ namespace Backend.Base.Login
 
         public async Task<bool> SetAttempts(long id, int attempts)
         {
+            var unlockSql = attempts == 0 ? ", attemptslockout = NULL " : "";
             await Sql.ExecuteAsync(
                    "UPDATE base.zzz "
-                   + "SET Attempts = " + attempts + " "
+                   + "SET attempts = " + attempts + " "
+                   + unlockSql +
+                   "WHERE id = " + id
+               );
+            return true;
+        }
+
+        public async Task<bool> SetLockoutTimestamp(long id, DateTimeOffset lockout)
+        {
+            await Sql.ExecuteAsync(
+                   "UPDATE base.zzz "
+                   + "SET attemptslockout = " + NoComma(Set(lockout)) + " "
                    + "WHERE id = " + id
                );
             return true;

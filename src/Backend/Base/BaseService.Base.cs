@@ -100,5 +100,6 @@ public abstract class BaseService : SqlUtils
         return validator.IsValid(email);
     }
 
+    public DateTimeOffset Now () => DateTimeOffset.Now;
 
 }

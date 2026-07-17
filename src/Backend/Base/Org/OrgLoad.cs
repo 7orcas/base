@@ -28,7 +28,7 @@ namespace Backend.Base.Org
             org.Mfa = GetInt(r, "mfa");
             org.IsRememberMeEnabled = GetBoolean(r, "isRememberMeEnabled");
             org.IsMasqueradeEnabled = GetBoolean(r, "isMasqueradeEnabled");
-            org.IsForgotEnabled = GetBoolean(r, "isForgotEnabled");
+            org.IsPasswordResetEnabled = GetBoolean(r, "isPasswordResetEnabled");
             org.IsSignupEnabled = GetBoolean(r, "isSignupEnabled");
             org.IsEmailRequired = GetBoolean(r, "isEmailRequired");
             org.IsEmailVerified = GetBoolean(r, "isEmailVerified");

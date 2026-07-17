@@ -86,7 +86,7 @@ namespace Backend.Base.Org
                         Update("mfa", org.Mfa) +
                         Update("isRememberMeEnabled", org.IsRememberMeEnabled) +
                         Update("isMasqueradeEnabled", org.IsMasqueradeEnabled) +
-                        Update("isForgotenabled", org.IsForgotEnabled) +
+                        Update("isForgotenabled", org.IsPasswordResetEnabled) +
                         Update("isSignupenabled", org.IsSignupEnabled) +
                         Update("isEmailRequired", org.IsEmailRequired) +
                         Update("isEmailHtml", org.IsEmailHtml) +

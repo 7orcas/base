@@ -67,7 +67,7 @@ CREATE TABLE base.org (
 	mfa INTEGER NOT NULL DEFAULT 0,
 	isremembermeenabled BOOLEAN DEFAULT FALSE,
 	ismasqueradeenabled BOOLEAN DEFAULT FALSE,
-	isforgotenabled BOOLEAN DEFAULT FALSE,
+	ispasswordresetenabled BOOLEAN DEFAULT FALSE,
 	issignupenabled BOOLEAN DEFAULT FALSE,
 	isemailrequired BOOLEAN DEFAULT FALSE,
 	isemailverified BOOLEAN DEFAULT FALSE,
@@ -76,7 +76,7 @@ CREATE TABLE base.org (
 
 COMMENT ON TABLE base.org IS 'Organisation entity (system can have mulitple Organisations';
 COMMENT ON COLUMN base.org.mfa IS '0 = inactive, 1 = optional per day, 2 = required per day, 3 = required each login';
-COMMENT ON COLUMN base.org.isforgotenabled IS 'Users can request a password reset via email';
+COMMENT ON COLUMN base.org.ispasswordresetenabled IS 'Users can request a password reset via email';
 COMMENT ON COLUMN base.org.issignupenabled IS 'Self registration is enabled, ie users can sign up';
 COMMENT ON COLUMN base.org.isemailrequired IS 'Users must have an email address';
 COMMENT ON COLUMN base.org.isemailverified IS 'User''s emails must be verified before they can login for the first time';
@@ -91,6 +91,7 @@ CREATE TABLE base.zzz (
 	orgnrdefault INTEGER NOT NULL,
     langcode VARCHAR(4) NOT NULL,
     attempts INTEGER DEFAULT 0,
+	attemptslockout TIMESTAMPTZ,
     lastlogin TIMESTAMPTZ,
     isactive BOOLEAN NOT NULL DEFAULT TRUE,
 	ismfarequired BOOLEAN DEFAULT FALSE,
@@ -104,6 +105,8 @@ CREATE TABLE base.zzz (
 COMMENT ON TABLE base.zzz IS 'User authentication (see base.useracc for authorisation)';
 COMMENT ON COLUMN base.zzz.xxx IS 'Username';
 COMMENT ON COLUMN base.zzz.yyy IS 'User password';
+COMMENT ON COLUMN base.zzz.attempts IS 'Current number of consecutive login fails';
+COMMENT ON COLUMN base.zzz.attemptslockout IS 'The start timestamp of a login lockout';
 COMMENT ON COLUMN base.zzz.isemailverified IS 'User''s email address has been verified';
 COMMENT ON COLUMN base.zzz.orgnrdefault IS 'Used for determining the user''s org settings, eg password reset';
 COMMENT ON COLUMN base.zzz.ismfarequired IS 'Depends on the org, if org = optional then mfa is used if true';

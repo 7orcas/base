@@ -70,7 +70,7 @@ namespace Backend.Base.Org
                 langDtos.Add(new OrgLangDto
                 {
                     LangCode = lang.LangCode,
-                    IsReadonly = lang.IsReadonly,
+                    IsReadonly = lang.IsVisible,
                     IsEditable = lang.IsEditable,
                 });
             }
@@ -93,12 +93,20 @@ namespace Backend.Base.Org
 
                     PasswordRule = new PasswordRuleDto
                     {
-                        MaxNumberLoginAttempts = enc.MaxNumberLoginAttempts,
                         MinLength = enc.PasswordRule.MinLength,
                         MaxLength = enc.PasswordRule.MaxLength,
                         IsMixedCase = enc.PasswordRule.IsMixedCase,
                         IsNonLetter = enc.PasswordRule.IsSpecial,
                         IsNumber = enc.PasswordRule.IsNumber,
+                    },
+
+                    LoginAttemptRule = new LoginAttemptRuleDto
+                    {
+                        WarningAttempts = enc.LoginAttemptRule.WarningAttempts,
+                        LockoutAttempts = enc.LoginAttemptRule.LockoutAttempts,
+                        WarningLockoutMinutes = enc.LoginAttemptRule.WarningLockoutMinutes,
+                        LockoutPasswordResetLink = enc.LoginAttemptRule.LockoutPasswordResetLink,
+                        WarningPasswordResetLink = enc.LoginAttemptRule.WarningPasswordResetLink,
                     }
                 }
             };
@@ -121,7 +129,7 @@ namespace Backend.Base.Org
                 langs.Add(new Language
                 {
                     LangCode = langDto.LangCode,
-                    IsReadonly = langDto.IsReadonly,
+                    IsVisible = langDto.IsReadonly,
                     IsEditable = langDto.IsEditable,
                 });
             }
@@ -132,6 +140,15 @@ namespace Backend.Base.Org
                 IsMixedCase = dto.PasswordRule.IsMixedCase,
                 IsSpecial = dto.PasswordRule.IsNonLetter,
                 IsNumber = dto.PasswordRule.IsNumber,
+            };
+
+            var attempts = new LoginAttemptRule()
+            {
+                WarningAttempts = dto.LoginAttemptRule.WarningAttempts,
+                LockoutAttempts = dto.LoginAttemptRule.LockoutAttempts,
+                WarningLockoutMinutes = dto.LoginAttemptRule.WarningLockoutMinutes,
+                LockoutPasswordResetLink = dto.LoginAttemptRule.LockoutPasswordResetLink,
+                WarningPasswordResetLink = dto.LoginAttemptRule.WarningPasswordResetLink,
             };
 
             var org = new OrgEnt
@@ -146,9 +163,9 @@ namespace Backend.Base.Org
             };
             org.Encoding = new OrgEnc
             {
-                MaxNumberLoginAttempts = dto.PasswordRule.MaxNumberLoginAttempts,
                 Languages = langs,
                 PasswordRule = pw,
+                LoginAttemptRule = attempts,
             };
 
             await _orgService.UpdateOrg(org);

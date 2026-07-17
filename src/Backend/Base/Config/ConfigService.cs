@@ -94,7 +94,7 @@ namespace Backend.Base.Config
 
                 langList.Add(new LanguageConfig { 
                     LangCode = cl.LangCode,
-                    IsReadonly = userAccount.IsService() || cl.IsReadonly,
+                    IsVisible = userAccount.IsService() || cl.IsVisible,
                     IsEditable = up
                 });
             }
