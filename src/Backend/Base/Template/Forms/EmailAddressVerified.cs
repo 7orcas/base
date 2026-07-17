@@ -9,7 +9,7 @@ namespace Backend.Base.Template.Forms
         {
             OrgNr = org.Nr;
             LangCode = langCode;
-            IsHtml = org.Encoding.IsEmailHtml;
+            IsHtml = org.IsEmailHtml;
 
             Data.Add("Title", GetLabel("EmailVS", "Email address verified"));
             Data.Add("Message", GetLabel("EmailVM", "You are now able to log in"));

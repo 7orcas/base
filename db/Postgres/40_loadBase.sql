@@ -28,7 +28,7 @@ INSERT INTO base.org (nr, code, descr, langcode, langlabelvariant)
 VALUES (0, 'Org Base', 'Base Organisation', 'en', 0);
 
 INSERT INTO base.org (nr, code, descr, langcode, langlabelvariant, mfa,
-    isforgotenabled, issignupenabled, isemailrequired, isemailverified, icon, 
+    ispasswordresetenabled, issignupenabled, isemailrequired, isemailverified, icon, 
 	encoded)
 VALUES
 (1, 'Org 1', 'Org 1 Description', 'en', 1, 0, 
