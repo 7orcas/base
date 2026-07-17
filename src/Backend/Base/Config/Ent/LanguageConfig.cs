@@ -11,10 +11,10 @@ namespace Backend.Base.Config.Ent
     public class LanguageConfig
     {
         public string LangCode { get; set; }
-        public bool IsReadonly { get; set; } = false;
+        public bool IsVisible { get; set; } = false;
         public bool IsEditable { get; set; } = false;
 
-        public bool IsActive() => IsReadonly || IsEditable;
+        public bool IsActive() => IsVisible || IsEditable;
         
     }
 }

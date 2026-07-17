@@ -14,6 +14,7 @@
 
         public List<OrgLangDto> Languages { get; set; }
         public PasswordRuleDto PasswordRule { get; set; }
+        public LoginAttemptRuleDto LoginAttemptRule { get; set; }
     }
 
     public class OrgLangDto
@@ -25,12 +26,20 @@
 
     public class PasswordRuleDto
     {
-        public int MaxNumberLoginAttempts { get; set; }
         public int MinLength { get; set; }
         public int MaxLength { get; set; }
         public bool IsMixedCase { get; set; }
         public bool IsNumber { get; set; }
         public bool IsNonLetter { get; set; }
+    }
+
+    public class LoginAttemptRuleDto
+    {
+        public int WarningAttempts { get; set; } 
+        public bool WarningPasswordResetLink { get; set; }
+        public int WarningLockoutMinutes { get; set; }
+        public int LockoutAttempts { get; set; } 
+        public bool LockoutPasswordResetLink { get; set; }
     }
 
 }

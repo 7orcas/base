@@ -17,7 +17,7 @@ namespace Backend.Base.Template.Emails
 
             LangCodeVariant = org.LangLabelVariant;
 
-            IsHtml = org.Encoding.IsEmailHtml;
+            IsHtml = org.IsEmailHtml;
 
             Data.Add("Username", login.Username);
             Data.Add("OrgNr", org.Nr);

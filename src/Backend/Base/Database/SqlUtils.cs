@@ -143,6 +143,14 @@ namespace Backend.Base.Database
 
 
         /// <summary>
+        /// SQL Update statement for an date time column with time zones (can be null)
+        /// </summary>
+        static public string Set(DateTimeOffset? value) => (value != null ? "'" + value.Value.ToString(GC.DateTimeFormat) + "'" : "NULL") + ",";
+
+
+
+
+        /// <summary>
         /// Update SQL statement for an entities version and timestamp
         /// </summary>
         static public string UpdateVersion<T>(T ent, string table) where T : BaseEntity<T>

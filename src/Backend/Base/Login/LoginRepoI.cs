@@ -9,6 +9,7 @@
         Task<LoginEnt?> GetLoginById(long id);
         Task<UserAccountEnt?> GetAccount(long loginId, int orgNr);
         Task<bool> SetAttempts(long id, int attempts);
+        Task<bool> SetLockoutTimestamp(long id, DateTimeOffset lockout);
         Task UpdateLastLogin(long id, long accountId);
 
         Task<bool> CreateSignup(LoginEnt login);

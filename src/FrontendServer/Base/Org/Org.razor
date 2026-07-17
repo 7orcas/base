@@ -154,11 +154,6 @@
                                               ValueChanged="@((int val) => orgDto.PasswordRule.MaxLength = val)"
                                               ValueExpression="() => orgDto.PasswordRule.MaxLength" />
                                 
-                                <NumericField Width=GC.TextFieldWidth.Short
-                                              LangCode="PWAt"
-                                              Value="@orgDto.PasswordRule.MaxNumberLoginAttempts"
-                                              ValueChanged="@((int val) => orgDto.PasswordRule.MaxNumberLoginAttempts = val)"
-                                              ValueExpression="() => orgDto.PasswordRule.MaxNumberLoginAttempts" />
 
                             </div>
                             <CheckboxField LangCode="PWmc"

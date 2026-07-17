@@ -102,7 +102,11 @@ LDM,Light/Dark Mode
 Logout,Logout
 Login,Login
 LoginUP,Invalid Username and/or Password
-LoginXP,Max Attempts have been reached 
+LoginXPX,Maximum login attempts have been reached|| your login is locked.
+LoginWP,Warning you have been reached %% attempts.
+LoginAX,Maximum login attempts are %%.
+LoginWPX,Your login is locked for %% minutes.
+LoginLO,Your login is locked out until %%
 LoginIL,Your login is inactive
 LoginAS,You are not setup to access %%
 LoginIA,Your account into %% is inactive

@@ -24,6 +24,7 @@ namespace Backend.Base.Login.Ent
         public int OrgNrDefault { get; set; }
         public string LangCode { get; set; }
         public int? Attempts { get; set; }
+        public DateTimeOffset? AttemptsLockout { get; set; }
         public DateTimeOffset Updated { get; set; }
         public DateTimeOffset? Lastlogin { get; set; }
         public bool IsActive { get; set; }
@@ -66,6 +67,7 @@ namespace Backend.Base.Login.Ent
         public bool IsMfaRequired { get; set; } = false;
         public bool IsMfaEnabled { get; set; } = false;
         public bool IsEmailVerified { get; set; } = false;
+        public bool ShowResetLink { get; set; } = false;
     }
 
 }

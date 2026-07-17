@@ -1,5 +1,6 @@
 ﻿using Backend.Base.Email;
 using Backend.Base.Token.Ent;
+using System.Reflection.Metadata.Ecma335;
 using GC = Backend.GlobalConstants;
 
 /// <summary>
@@ -71,12 +72,9 @@ namespace Backend.Base.Login
 
 
                 var labels = await _labelService.GetLangCodeDic(langCode, org.LangLabelVariant);
-
-                if (!login.IsActive)
-                {
-                    loginErr.Response.ErrorMessage = GetLabel("LoginIL", "Your login is inactive", labels);
+                if (!await ValidateLogin(login, loginErr, password, org, labels))
                     return loginErr;
-                }
+
 
                 UserAccountEnt? account = null;
                 if (ServiceAccount != null && login.IsService())
@@ -96,13 +94,6 @@ namespace Backend.Base.Login
                     var label = GetLabel("LoginIA", "Your account into %% is inactive", labels);
                     label = ReplaceLabelParameter(label, org.Code);
                     loginErr.Response.ErrorMessage = label;
-                    return loginErr;
-                }
-
-                var err = await ValidateUser(login, password, org);
-                if (err != null)
-                {
-                    loginErr.Response.ErrorMessage = err;
                     return loginErr;
                 }
 
@@ -165,6 +156,7 @@ namespace Backend.Base.Login
                 login = LoginEnt.GetServiceLogin();
                 login.Password = ServiceAccount.UserPw;
                 login.IsMfaRequired = true;
+                GetAttemptsService(login);
 
                 var loginX = await GetLoginById(login.Id);
                 if (loginX != null)
@@ -200,31 +192,130 @@ namespace Backend.Base.Login
         }
 
 
-        private async Task<string> ValidateUser (LoginEnt login, string password, OrgEnt org)
+        private async Task<bool> ValidateLogin (LoginEnt login, LoginEnt loginErr, string password, OrgEnt org, Dictionary<string, string> labels)
         {
-            var langCode = login != null && login.LangCode != null ? login.LangCode : org.LangCode;
-            var labels = await _labelService.GetLangCodeDic(langCode, org.LangLabelVariant);
 
+            //Check login exists
             if (login == null || login.Id == 0)
-                return GetLabel("LoginUP", "Invalid Username and/or Password", labels);
+            {
+                loginErr.Response.ErrorMessage = GetLabel("LoginUP", "Invalid Username and/or Password", labels);
+                return false;
+            }
+            
+            var validPassword = !string.IsNullOrEmpty(password)  && password.Equals(login.Password);
+            
 
+            //Check is user's email is verified if org requires it. 
             if (!login.IsService() 
                 && org.IsEmailVerified 
                 && (string.IsNullOrEmpty(login.Email) || !login.IsEmailVerified))
-                return GetLabel("EmailVL", "Your email address must be verified before you can login", labels);
+            {
+                loginErr.Response.ErrorMessage = GetLabel("EmailVL", "Your email address must be verified before you can login", labels);
+                return false;
+            }
 
-            await IncrementAttempts(login);
-
-            if (string.IsNullOrEmpty(password) || !password.Equals(login.Password))
-                return GetLabel("LoginUP", "Invalid Username and/or Password", labels);
-
-            if (login.Attempts > org.Encoding.MaxNumberLoginAttempts)
-                return GetLabel("LoginXP", "Max Attempts have been reached", labels);
-
+            //Inactive users cannot login. This is a hard rule.
             if (!login.IsActive)
-                return GetLabel("LoginIA", "Username is Inactive", labels);
+            {
+                loginErr.Response.ErrorMessage = GetLabel("LoginIA", "Username is Inactive", labels);
+                return false;
+            }
 
-            return null;
+            var attempts = login.Attempts.HasValue ? login.Attempts.Value : 0;
+
+            //Service attempts are a hard limit. No warnings are given.
+            if (login.IsService() && attempts > 3)
+            {
+                await IncrementAttempts(login);
+                loginErr.Response.ErrorMessage = GetLabel("LoginXPX", "Max Attempts have been reached", labels);
+                return false;
+            }
+
+            var attemptsRule = org.Encoding.LoginAttemptRule;
+            var isLockedOut = attemptsRule.LockoutAttempts > 0 && attempts > attemptsRule.LockoutAttempts;
+
+            //Lockout is a hard limit, if set. The user can no longer login until the lockout is removed by an admin.
+            if (isLockedOut)
+            {
+                await IncrementAttempts(login);
+                loginErr.Response.ErrorMessage = GetLabel("LoginXPX", "Max Attempts have been reached, your login is locked", labels);
+                loginErr.Response.ShowResetLink = attemptsRule.LockoutPasswordResetLink && org.IsPasswordResetEnabled;
+                return false;
+            }
+
+            var isWarning = attemptsRule.WarningAttempts > 0 && !isLockedOut && attempts > attemptsRule.WarningAttempts;
+
+            //Warning lockout is a hard limit until the warning lockout period has expired. 
+            if (isWarning && 
+                login.AttemptsLockout.HasValue &&
+                attemptsRule.WarningLockoutMinutes > 0)
+            {
+                if (Now() < login.AttemptsLockout.Value)
+                {
+                    string formatted = login.AttemptsLockout.Value.AddMinutes(1).ToLocalTime().ToString(org.Encoding.DateTimeFormatDMY);
+                    var label = GetLabel("LoginLO", "Your login is locked out until %%.", labels);
+                    label = ReplaceLabelParameter(label, formatted);
+                    loginErr.Response.ErrorMessage = label;
+                    return false;
+                }
+            }
+
+
+            //If valid password then set attempts to 0, if invalid increment attempts and check if the user has reached the hard limit or warning limit.
+            if (!validPassword ) 
+                attempts = await IncrementAttempts(login);
+            else
+                attempts = 0;
+
+
+            //Recheck attempts after incrementing. If the user has reached the hard limit, they cannot login until an admin removes the lockout.
+            isLockedOut = attemptsRule.LockoutAttempts > 0 && attempts > attemptsRule.LockoutAttempts;
+            isWarning = attemptsRule.WarningAttempts > 0 && !isLockedOut && attempts > attemptsRule.WarningAttempts;
+
+
+            //Lockout is a hard limit, if set. The user can no longer login until the lockout is removed by an admin.
+            if (isLockedOut)
+            {
+                loginErr.Response.ErrorMessage = GetLabel("LoginXPX", "Max Attempts have been reached, your login is locked", labels);
+                loginErr.Response.ShowResetLink = attemptsRule.LockoutPasswordResetLink && org.IsPasswordResetEnabled;
+                return false;
+            }
+
+            //Warning attempts is a soft limit, if set. The user can still login but will be warned that they have reached the warning attempts.
+            if (isWarning)
+            {
+                var label = GetLabel("LoginWP", "Warning have been reached %% attempts.", labels);
+                label = ReplaceLabelParameter(label, attempts.ToString());
+
+                if (attemptsRule.LockoutAttempts > 0)
+                {
+                    var label1 = GetLabel("LoginAX", "Max login attempts are %%.", labels);
+                    label1 = ReplaceLabelParameter(label1, attemptsRule.LockoutAttempts.ToString());
+                    label += " " + label1;
+                }
+
+                loginErr.Response.ErrorMessage = label;
+                
+                loginErr.Response.ShowResetLink = attemptsRule.WarningPasswordResetLink && org.IsPasswordResetEnabled;
+
+                if (attemptsRule.WarningLockoutMinutes > 0)
+                {
+                    label = GetLabel("LoginWPX", "Your login is locked for %% minutes.", labels);
+                    label = ReplaceLabelParameter(label, attemptsRule.WarningLockoutMinutes.ToString());
+                    loginErr.Response.ErrorMessage += " " + label;
+                    await _loginRepo.SetLockoutTimestamp(login.Id, DateTimeOffset.Now.AddMinutes(attemptsRule.WarningLockoutMinutes));
+                }
+
+                return false;
+            }
+
+            if (!validPassword)
+            {
+                loginErr.Response.ErrorMessage = GetLabel("LoginUP", "Invalid Username and/or Password", labels);
+                return false;
+            }
+
+            return validPassword;
         }
 
 
@@ -243,7 +334,7 @@ namespace Backend.Base.Login
             _auditService.LogInOut(sourceAppNr, org.Nr, account.Id, GC.EntityTypeLogin);
         }
 
-        private async Task<bool> IncrementAttempts(LoginEnt l)
+        private async Task<int> IncrementAttempts(LoginEnt l)
         {
             if (l.IsService())
                 GetAttemptsService(l);
@@ -253,9 +344,10 @@ namespace Backend.Base.Login
             l.Attempts++;
 
             if (l.IsService())
-                return SetAttemptsService(l.Attempts.Value);
+                SetAttemptsService(l.Attempts.Value);
 
-            return await _loginRepo.SetAttempts(l.Id, l.Attempts.Value);
+            await _loginRepo.SetAttempts(l.Id, l.Attempts.Value);
+            return l.Attempts.Value;
         }
 
         private void GetAttemptsService(LoginEnt l)
@@ -294,7 +386,7 @@ namespace Backend.Base.Login
 
             if (org == null 
                 || !org.IsActive
-                || !org.IsForgotEnabled)
+                || !org.IsPasswordResetEnabled)
             {
                 _log.Warning("Reset request invalid org, email {Email} ipAddress {ipAddress}", email, ipAddress);
                 return false;
@@ -344,7 +436,7 @@ namespace Backend.Base.Login
 
             if (org == null
                 || !org.IsActive
-                || !org.IsForgotEnabled)
+                || !org.IsPasswordResetEnabled)
             {
                 var user = tv != null? tv.Username : "null";
                 _log.Warning("Invalid OrgNr when resetting password OrgNr {orgNr} Username {username}", orgNr, user);

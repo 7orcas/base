@@ -17,13 +17,13 @@ namespace Backend.Base.Template.Emails
 
             LangCodeVariant = org.LangLabelVariant;
 
-            IsHtml = org.Encoding.IsEmailHtml;
+            IsHtml = org.IsEmailHtml;
 
             if (org.Encoding.SignupExpiryDays > 0)
             {
                 IsExpiry = true;
                 var expiry = DateTime.UtcNow.AddDays(org.Encoding.SignupExpiryDays);
-                Data.Add("Expiry", expiry.ToString(org.Encoding.DateTimeFormatDMY));
+                Data.Add("Expiry", expiry.ToString(org.Encoding.DateFormatDMY));
             }
 
             if (!string.IsNullOrEmpty(org.Encoding.SupportIT))
