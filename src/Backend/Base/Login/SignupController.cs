@@ -1,8 +1,5 @@
-﻿using Backend.Base.DataProtection;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Serilog.Events;
-using GC = Backend.GlobalConstants;
 
 /// <summary>
 /// Self Registration controller for the blazor client

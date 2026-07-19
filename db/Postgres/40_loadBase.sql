@@ -9,7 +9,7 @@ INSERT INTO cntrl.loginoption (urlsuffix, orgnr, orgnrs, langcode, langlabelvari
 VALUES ('blue', 1, '1', 'en', 0, 'en', true);
 
 INSERT INTO cntrl.loginoption (urlsuffix, orgnr, orgnrs, langcode, langlabelvariant, langcodes, isdefault)
-VALUES ('admin', 2, '2', 'en', 0, 'en,de', false);
+VALUES ('admin', 1, '1,2', 'en', 0, 'en,de', false);
 
 INSERT INTO cntrl.loginoption (urlsuffix, orgnr, orgnrs, langcode, langlabelvariant, langcodes)
 VALUES ('all', 2, '1,2,3', 'de', 1, 'en,de,es,xx');

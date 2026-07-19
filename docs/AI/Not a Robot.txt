@@ -1,0 +1,4 @@
+I have an existing Blazor Server app and a C# .net backend API
+Give me step by step instrctions to:
+- Implement a "I am not a robot' checkbox
+
