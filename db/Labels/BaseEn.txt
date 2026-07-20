@@ -134,6 +134,9 @@ SignUpFail,Registration failed
 SignUp1,Success! A new account has been created. 
 SignUp2,An email has been sent to verify your registration.
 SignUp3,Please check your inbox and spam/junk folders. 
+CaptchaS,ReCAPTCHA verified successfully
+CaptchaE,Failed to verify reCAPTCHA
+CaptchaR,ReCAPTCHA is required
 Val0,Can''t be empty
 Val1,Can''t contain spaces
 <LAST>,<LAST LINE>

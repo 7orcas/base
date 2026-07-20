@@ -35,12 +35,12 @@ namespace Backend.Base.Login
         [HttpPost("iamnotarobot")]
         public async Task<IActionResult> NotRobot([FromBody] RobotRequest request)
         {
-            var ipAddress = GetClientIp();
-            var res = await _robotService.Verify(request.CaptchaToken);
+            var res = await _robotService.Verify(request.CaptchaToken, request.LangCode);
 
             var r = new _ResponseDto
             {
-                SuccessMessage = "Not Robot process",
+                SuccessMessage = res.success ? res.message : null,
+                ErrorMessage = !res.success ? res.message : null,
                 Valid = res.success,
                 Result = res.message
             };

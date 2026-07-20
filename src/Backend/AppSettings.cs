@@ -18,6 +18,7 @@
         public static AppServiceAccount? ServiceAccount { get; set; }
         public static EmailSettings? EmailSettings { get; set; }
         public static AppUrls Urls { get; set; }
+        public static ReCaptcha ReCaptcha { get; set; }
     }
 
     public class AppServiceAccount 
@@ -43,6 +44,12 @@
         public string SenderEmail { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }
+    }
+
+    public class ReCaptcha
+    {
+        public string SiteKey { get; set; }
+        public string SecretKey { get; set; }
     }
 
 }

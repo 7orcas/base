@@ -18,38 +18,46 @@ namespace FrontendLogin.Pages
         {
             signupMessage = "";
 
-            var robotClient = HttpClientFactory.CreateClient(GC.HTTP_Client);
-            var token = await _captcha.GetToken();
-            if (string.IsNullOrWhiteSpace(token)) 
-            {
-                signupMessage = GetLabel("CaptchaRequired");
-                return;
-            }
-            var robotResponse = await robotClient.PostAsJsonAsync(
-                GC.URL_robot,
-                new RobotRequest
-                {
-                    Name = "_robotModel.Name",
-                    CaptchaToken = token
-                });
-            //await robotClient.SubmitAsync(new RobotRequest { 
-            //    Name = _robotModel.Name, 
-            //    CaptchaToken = token
-            //});
-
-
             if (signupRequest.Password != signupRequest.ConfirmPassword)
             {
                 signupMessage = GetLabel("PWx"); 
                 return;
             }
 
-            if (!signupRequest.NotRobot)
+            var robotClient = HttpClientFactory.CreateClient(GC.HTTP_Client);
+            var token = await _captcha.GetToken();
+            if (string.IsNullOrWhiteSpace(token)) 
             {
-                signupMessage = GetLabel("NotRobotConfirm");
+                signupMessage = GetLabel("CaptchaR");
                 return;
             }
+            var robotResponse = await robotClient.PostAsJsonAsync(
+                GC.URL_robot,
+                new RobotRequest
+                {
+                    LangCode = options.LangCode,
+                    AppClient = GC.AppClient,
+                    CaptchaToken = token
+                });
+            
+            if (!robotResponse.IsSuccessStatusCode)
+            {
+                signupMessage = GetLabel("CaptchaE");
+                return;
+            }
+            else
+            {
+                var result = await robotResponse.Content.ReadAsStringAsync();
+                var responseDto = JsonConvert.DeserializeObject<_ResponseDto>(result);
 
+                signupRequest.NotRobot = responseDto.Valid;
+                signupMessage = responseDto.Result.ToString();
+
+                if(!responseDto.Valid)
+                    return;
+            }
+
+    
             var client = HttpClientFactory.CreateClient(GC.HTTP_Client);
 
             var response = await client.PostAsJsonAsync(

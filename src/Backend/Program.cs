@@ -296,6 +296,15 @@ void LoadAppSettings(WebApplicationBuilder builder)
             AppSettings.ServiceAccount = acc;
     }
     catch { }
+
+    try
+    {
+        var recaptcha = new ReCaptcha();
+        recaptcha.SiteKey = builder.Configuration["ReCaptcha:SiteKey"];
+        recaptcha.SecretKey = builder.Configuration["ReCaptcha:SecretKey"];
+        AppSettings.ReCaptcha = recaptcha;
+    }
+    catch { }
 }
 
 void LogAppSettings(WebApplication app)

@@ -198,13 +198,6 @@
                             <InputText class="form-control" @bind-Value="signupRequest.ConfirmPassword" type="@passwordInputType" />
                         </div>
 
-                        <div class="mb-3">
-                            <InputCheckbox class="form-check-input" @bind-Value="signupRequest.NotRobot" id="notRobot" />
-                            <label class="form-check-label ms-2" for="notRobot">
-                                @GetLabel("NotRobot")
-                            </label>
-                        </div>
-
                         <ReCaptcha @ref="_captcha" SiteKey="@SiteKey" />
                         <br />
 

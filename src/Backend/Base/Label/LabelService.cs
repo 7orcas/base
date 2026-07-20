@@ -150,6 +150,9 @@ namespace Backend.Base.Label
                 "Mfa3",
                 "MfaEr",
                 "Verify",
+                "CaptchaS",
+                "CaptchaE",
+                "CaptchaR",
                 "Close"
             };
 

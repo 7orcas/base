@@ -8,7 +8,8 @@ namespace Common.Request
 {
     public class RobotRequest
     {
-        public string Name { get; set; }
+        public string LangCode { get; set; }
+        public int AppClient { get; set; }
         public string CaptchaToken { get; set; }
     }
 }

@@ -25,6 +25,11 @@ namespace Backend.Base.Token
             _tokenService = tokenService;
         }
 
+        /// <summary>
+        /// Get refresh token from the login key.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         [AllowAnonymous]
         [HttpGet("token")]
         public async Task<IActionResult> GetToken([FromQuery] string key)
@@ -39,6 +44,13 @@ namespace Backend.Base.Token
             }
 
             var tv = _tokenService.DecodeToken(token);
+
+            if (tv.IpAddress != ipAddress)
+            {
+                _log.Error("IP adress mismatch, Token {Token} ipAddress {ipAddress}", token, ipAddress);
+                return Unauthorized("IP address mismatch");
+            }
+
             var refreshToken = await _tokenService.CreateRefreshToken(tv);
 
             var handler = new JwtSecurityTokenHandler();

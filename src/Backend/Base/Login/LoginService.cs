@@ -117,7 +117,7 @@ namespace Backend.Base.Login
                 langCode = !string.IsNullOrEmpty(langCode) ? langCode : account.LangCode; //Delete me
                 await InitialiseLogin(login, account, org, sourceAppNr);
                 var userConfig = _configService.CreateUserConfig(account, org, langCode);
-                var session = await _sessionService.CreateSession(account, org, userConfig, sourceAppNr);
+                var session = await _sessionService.CreateSession(account, org, userConfig, sourceAppNr, ipAddress);
 
                 var tv = new TokenValues
                 {
