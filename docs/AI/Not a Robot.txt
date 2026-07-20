@@ -2,3 +2,13 @@ I have an existing Blazor Server app and a C# .net backend API
 Give me step by step instrctions to:
 - Implement a "I am not a robot' checkbox
 
+
+Solution:
+- https://www.google.com/recaptcha/admin
+- Create new: reCAPTCHA v2
+- Domain: 7orcas.com
+- Site key [appsettings]
+- Secret key [appsettings]
+- Google Cloud https://console.cloud.google.com/security/recaptcha/6LfX7VstAAAAAPIBO5h0cDYzxGmQ1D81nnyr6p5s/overview?project=blue-1784501905806&authuser=0&pli=1
+
+- Add reCAPTCHA script to Blazor in _Host.cshtml

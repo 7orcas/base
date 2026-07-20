@@ -7,6 +7,7 @@ namespace Backend.Base.Token
     {
         public string CreateJWToken(TokenValues tokenValues);
         public string CreateResetRequestToken(TokenValues tokenValues);
+        public string CreateCaptchaToken(TokenValues tokenValues);
         string? GetJWToken(string key);
         TokenValues DecodeToken(string token);
 

@@ -50,6 +50,11 @@ namespace Backend.Base.Token
             return CreateToken(tv, GC.TokenType.ResetRequest);
         }
 
+        public string CreateCaptchaToken(TokenValues tv)
+        {
+            return CreateToken(tv, GC.TokenType.Captcha);
+        }
+
         private string CreateToken(TokenValues tv, GC.TokenType type)
         {
             var claims = new[]
@@ -72,12 +77,30 @@ namespace Backend.Base.Token
                 signingCredentials: creds
                 );
 
-            var tt = type == GC.TokenType.JWT ? "JWT" : "ResetResquest";
+            var tt = "??";
+            var returnJwt = false;
+
+            switch (type)
+            {
+                case GC.TokenType.JWT:
+                    tt = "JWT";
+                    //returns a ket for the token in cache, not the token itself
+                    break;
+                case GC.TokenType.ResetRequest:
+                    tt = "ResetResquest";
+                    returnJwt = true;
+                    break;
+                case GC.TokenType.Captcha:
+                    tt = "ReCaptcha";
+                    returnJwt = true;
+                    break;
+            }
+
             _log.Debug("CreateToken Type {Type} Username {Username} OrgNr {OrgNr} SessionKey {SessionKey}",
                 tt, tv.Username, tv.OrgNr, tv.SessionKey);
             var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
 
-            if (type == GC.TokenType.ResetRequest)
+            if (returnJwt)
                 return tokenString;
 
             var tokenKey = Guid.NewGuid().ToString();

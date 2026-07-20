@@ -24,10 +24,53 @@ namespace FrontendLogin.Pages
                 return;
             }
 
-            if (!signupRequest.NotRobot)
+            isProcessing = true;
+
+            if (options.SelfRegistrationCaptcha)
             {
-                signupMessage = GetLabel("NotRobotConfirm");
-                return;
+                var robotClient = HttpClientFactory.CreateClient(GC.HTTP_Client);
+                var token = await _captcha.GetToken();
+                if (string.IsNullOrWhiteSpace(token))
+                {
+                    signupMessage = GetLabel("CaptchaR");
+                    return;
+                }
+                var robotResponse = await robotClient.PostAsJsonAsync(
+                    GC.URL_robot,
+                    new RobotRequest
+                    {
+                        LangCode = options.LangCode,
+                        AppClient = GC.AppClient,
+                        CaptchaToken = token
+                    });
+
+                if (!robotResponse.IsSuccessStatusCode)
+                {
+                    signupMessage = GetLabel("CaptchaE");
+                    isProcessing = false;
+                    return;
+                }
+                else
+                {
+                    var result = await robotResponse.Content.ReadAsStringAsync();
+                    var responseDto = JsonConvert.DeserializeObject<_ResponseDto>(result);
+                    var robot = JsonConvert.DeserializeObject<RobotDto>(responseDto.Result.ToString());
+
+                    signupRequest.NotRobot = responseDto.Valid;
+                    signupRequest.Token = robot.Token;
+                    signupMessage = robot.Message;
+
+                    if (!responseDto.Valid)
+                    {
+                        isProcessing = false;
+                        return;
+                    }
+                }
+            }
+            else
+            {
+                signupRequest.NotRobot = false;
+                signupRequest.Token = string.Empty;
             }
 
             var client = HttpClientFactory.CreateClient(GC.HTTP_Client);
@@ -47,12 +90,14 @@ namespace FrontendLogin.Pages
                     showSignUpSuccess = true;
                     initialiseSignupRequest();
                 }
-                signupMessage = responseDto.Result.ToString();
+                signupMessage = responseDto.Result?.ToString();
             }
             else
             {
                 signupMessage = GetLabel("SignUpFail") + "<br>" + GetLabel("SysA");
             }
+
+            isProcessing = false;
         }
 
         private void initialiseSignupRequest()
@@ -60,6 +105,8 @@ namespace FrontendLogin.Pages
             signupRequest = new();
             signupRequest.OrgNr = options.OrgNr;
             signupRequest.LangCode = options.LangCode;
+            signupRequest.Token = string.Empty;
+            signupRequest.NotRobot = false;
             showPassword = false;
         }
 
@@ -104,7 +151,11 @@ namespace FrontendLogin.Pages
         }
 
         private string passwordInputType => showPassword ? "text" : "password";
-        
+
+        public class RobotModel
+        {
+            public string Name { get; set; }
+        }
 
     }
 }

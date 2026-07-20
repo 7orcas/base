@@ -150,7 +150,11 @@ namespace Backend.Base.Label
                 "Mfa3",
                 "MfaEr",
                 "Verify",
-                "Close"
+                "CaptchaS",
+                "CaptchaE",
+                "CaptchaR",
+                "Close",
+                "PWait"
             };
 
             list = list

@@ -17,6 +17,7 @@ namespace Backend.Base.Session.Ent
         public UserAccountEnt UserAccount { get; set; }
         public UserConfig UserConfig { get; set; }
         public int SourceApp {  get; set; }
+        public string IpAddress { get; set; } = string.Empty;
 
         /// <summary>
         /// Return the user's crud value for the permission

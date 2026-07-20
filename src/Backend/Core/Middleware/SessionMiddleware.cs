@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Serilog;
-using Serilog.Context;
-
+﻿
 namespace Backend.Core.Middleware
 {
     public class SessionMiddleware
@@ -40,5 +37,6 @@ namespace Backend.Core.Middleware
             }
             await _next(context);
         }
+
     }
 }

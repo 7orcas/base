@@ -36,6 +36,12 @@ namespace Backend.Base.Org.Ent
         public int SignupExpiryDays { get; set; } = 30;
 
         /// <summary>
+        /// Google recaptcha enabled flag for signup.
+        /// </summary>
+        [NotMapped]
+        public bool IsSignupCaptchaEnabled { get; set; } = true;
+
+        /// <summary>
         /// The date format for this org (default is "dd MMM yyyy").
         /// </summary>
         [NotMapped]

@@ -29,6 +29,7 @@ namespace Common.Request
         public string LangCode { get; set; }
 
         public bool NotRobot { get; set; }
+        public string Token { get; set; }
     }
 
 }

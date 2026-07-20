@@ -10,5 +10,6 @@
         public const string URL_mfa_verify          = "api/Mfa/verifyMfa";
         public const string URL_mfa_setup           = "api/Mfa/setupMfa";
         public const string URL_signup              = "api/Signup/signup";
+        public const string URL_robot               = "api/Robot/iamnotarobot";
     }
 }

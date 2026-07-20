@@ -10,7 +10,7 @@ namespace Common
 {
     public class GlobalConstants
     {
-        public const int AppClient = 1; //defined in FrontendLogin as well
+        public const int AppClient = 1; 
 
         public const int NewRecordId = -9000;
 
