@@ -1,0 +1,39 @@
+﻿@inject IJSRuntime JS
+
+<div id="@CaptchaId"></div>
+
+@code {
+
+    [Parameter]
+    public string SiteKey { get; set; }
+
+    public string CaptchaId { get; set; } =
+        $"captcha-{Guid.NewGuid()}";
+
+    private int _widgetId;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _widgetId = await JS.InvokeAsync<int>(
+                "recaptchaFunctions.renderRecaptcha",
+                CaptchaId,
+                SiteKey);
+        }
+    }
+
+    public async Task<string> GetToken()
+    {
+        return await JS.InvokeAsync<string>(
+            "recaptchaFunctions.getResponse",
+            _widgetId);
+    }
+
+    public async Task Reset()
+    {
+        await JS.InvokeVoidAsync(
+            "recaptchaFunctions.reset",
+            _widgetId);
+    }
+}

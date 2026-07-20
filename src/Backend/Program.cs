@@ -132,6 +132,8 @@ builder.Services.AddRouting(options =>
     options.LowercaseUrls = true;
 });
 
+builder.Services.AddHttpClient();
+
 //Base Services (start up)
 builder.Services.AddSingleton<OrgConfigInitialiseServiceI, OrgConfigInitialiseService>();
 builder.Services.AddSingleton<PermissionInitialiseServiceI, PermissionInitialiseService>();
@@ -149,6 +151,7 @@ builder.Services.AddScoped<ConfigServiceI, ConfigService>();
 builder.Services.AddScoped<LoginOptionServiceI, LoginOptionService>();
 builder.Services.AddScoped<LoginServiceI, LoginService>();
 builder.Services.AddScoped<SignupServiceI, SignupService>();
+builder.Services.AddScoped<RobotServiceI, RobotService>();
 builder.Services.AddScoped<MfaServiceI, MfaService>();
 builder.Services.AddScoped<MfaKeyProtector>();
 builder.Services.AddScoped<CookieProtector>();

@@ -18,6 +18,26 @@ namespace FrontendLogin.Pages
         {
             signupMessage = "";
 
+            var robotClient = HttpClientFactory.CreateClient(GC.HTTP_Client);
+            var token = await _captcha.GetToken();
+            if (string.IsNullOrWhiteSpace(token)) 
+            {
+                signupMessage = GetLabel("CaptchaRequired");
+                return;
+            }
+            var robotResponse = await robotClient.PostAsJsonAsync(
+                GC.URL_robot,
+                new RobotRequest
+                {
+                    Name = "_robotModel.Name",
+                    CaptchaToken = token
+                });
+            //await robotClient.SubmitAsync(new RobotRequest { 
+            //    Name = _robotModel.Name, 
+            //    CaptchaToken = token
+            //});
+
+
             if (signupRequest.Password != signupRequest.ConfirmPassword)
             {
                 signupMessage = GetLabel("PWx"); 
@@ -104,7 +124,11 @@ namespace FrontendLogin.Pages
         }
 
         private string passwordInputType => showPassword ? "text" : "password";
-        
+
+        public class RobotModel
+        {
+            public string Name { get; set; }
+        }
 
     }
 }

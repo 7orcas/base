@@ -205,6 +205,9 @@
                             </label>
                         </div>
 
+                        <ReCaptcha @ref="_captcha" SiteKey="@SiteKey" />
+                        <br />
+
                         <div class="form-check mb-2">
                             <InputCheckbox class="form-check-input" @bind-Value="showPassword" id="showPassword" />
                             <label class="form-check-label" for="showPassword">@GetLabel("PWsw")</label>
@@ -348,6 +351,10 @@
     private SignupRequest signupRequest;
     private string signupMessage = "";
 
+    //Not a Robot
+    private ReCaptcha _captcha;
+    private string SiteKey = "6LfX7VstAAAAAPIBO5h0cDYzxGmQ1D81nnyr6p5s";
+    private RobotModel _robotModel = new();
 
     private string cookie;
 
