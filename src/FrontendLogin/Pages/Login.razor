@@ -13,12 +13,22 @@
 <div class="d-flex justify-content-center align-items-center vh-100 bg-light">
     <div class="card shadow-lg p-4" style="width: 400px; border-radius: 12px;">
         
-        @if (options != null)
+        @if (isProcessing)
         {
-            <h3 class="text-center mb-4">@options.Icon @options.Code</h3>
+            <div class="text-center">
+                <div class="processing-spinner"></div>
+                <p>@GetLabel("PWait")</p>
+            </div>
         }
+        else
+        {
 
-        <h4 class="text-center mb-4">@GetLabel("Login")</h4>
+            @if (options != null)
+            {
+                <h3 class="text-center mb-4">@options.Icon @options.Code</h3>
+            }
+
+            <h4 class="text-center mb-4">@GetLabel("Login")</h4>
 
             <EditForm Model="@loginRequest" OnValidSubmit="@HandleLogin">
                 <DataAnnotationsValidator />
@@ -42,7 +52,7 @@
                     <InputText class="form-control" @bind-Value="loginRequest.Password" Type="password" />
                 </div>
                 <div class="mb-3">
-                <label class="form-label">@GetLabel("Org")</label>
+                    <label class="form-label">@GetLabel("Org")</label>
                     <InputSelect class="form-select" @bind-Value="loginRequest.Org">
                         <option value="">-- Select Org --</option>
                         @foreach (var org in OrgList)
@@ -63,7 +73,7 @@
                     </InputSelect>
                 </div>
 
-                
+
                 <div class="mt-3 mb-3">
                     <label class="form-label"></label>
                     <button type="submit" class="btn btn-primary w-100">
@@ -73,7 +83,7 @@
 
 
             </EditForm>
-                
+
             @if (options != null && options.RememberMe)
             {
                 <div class="mb-2">
@@ -89,211 +99,215 @@
                     </button>
                 </div>
             }
-        @if (options != null && options.SelfRegistration)
-        {
-            <div class="mb-2">
-                <button type="button" class="btn btn-link p-0" @onclick="GoToSelfRegistration">
-                    @GetLabel("SignUp")
-                </button>
-            </div>
-        }
-
-        @if (showForgotModal)
-        {
-            <div style="
-                position:fixed;
-                top:0;left:0;right:0;bottom:0;
-                background:rgba(0,0,0,0.5);
-                display:flex;
-                justify-content:center;
-                align-items:center;
-                z-index:9999;
-                ">
-                <div style="background:white;padding:20px;border-radius:8px;width:300px;">
-
-                    <h5>@GetLabel("PWReset")</h5>
-
-                    <div class="mb-2">
-                        <label>@GetLabel("PWReset0")</label>
-                        <input class="form-control" @bind="forgotEmail" />
-                    </div>
-
-                    <div class="mt-3 d-flex justify-content-end gap-2">
-                        <button class="btn btn-secondary" @onclick="CloseForgotModal">
-                            @GetLabel("Cancel")
-                        </button>
-
-                        <button class="btn btn-primary" @onclick="SubmitForgot">
-                            @GetLabel("Send")
-                        </button>
-                    </div>
-
+            @if (options != null && options.SelfRegistration)
+            {
+                <div class="mb-2">
+                    <button type="button" class="btn btn-link p-0" @onclick="GoToSelfRegistration">
+                        @GetLabel("SignUp")
+                    </button>
                 </div>
-            </div>
-        }
+            }
 
-        @if (showForgotSent)
-        {
-            <div style="
-                position:fixed;
-                top:0;left:0;right:0;bottom:0;
-                background:rgba(0,0,0,0.5);
-                display:flex;
-                justify-content:center;
-                align-items:center;
-                z-index:9999;
+            @if (showForgotModal)
+            {
+                <div style="
+                    position:fixed;
+                    top:0;left:0;right:0;bottom:0;
+                    background:rgba(0,0,0,0.5);
+                    display:flex;
+                    justify-content:center;
+                    align-items:center;
+                    z-index:9999;
                 ">
-                <div style="background:white;padding:20px;border-radius:8px;width:300px;">
+                    <div style="background:white;padding:20px;border-radius:8px;width:300px;">
 
-                    <h5>@GetLabel("PWResetES")</h5>
-                    <p>@((MarkupString)forgotModalMessage)</p>
-                    <div class="mt-3 d-flex justify-content-end gap-2">
-                        <button class="btn btn-secondary" @onclick="CloseForgotModal">
-                            @GetLabel("Close")
-                        </button>
-                    </div>
-
-                </div>
-            </div>
-        }
-
-        @if (showSignUpModal)
-        {
-            <div style="
-                position:fixed;
-                top:0;left:0;right:0;bottom:0;
-                background:rgba(0,0,0,0.5);
-                display:flex;
-                justify-content:center;
-                align-items:center;
-                z-index:9999;">
-
-                <div style="background:white;padding:20px;border-radius:8px;width:400px;">
-
-                    <h5>@GetLabel("SignUp")</h5>
-
-                    <EditForm Model="@signupRequest" OnValidSubmit="SubmitSignup">
-                        <DataAnnotationsValidator />
-                        <ValidationSummary />
+                        <h5>@GetLabel("PWReset")</h5>
 
                         <div class="mb-2">
-                            <label>@GetLabel("UserName")</label>
-                            <InputText class="form-control"
-                                       @bind-Value="signupRequest.UserName" />
-                        </div>
-
-                        <div class="mb-2">
-                            <label>@GetLabel("Email")</label>
-                            <InputText class="form-control"
-                                       @bind-Value="signupRequest.Email" />
-                        </div>
-
-                        <div class="mb-2">
-                            <label>@GetLabel("PW")</label>
-                            <InputText class="form-control" @bind-Value="signupRequest.Password" type="@passwordInputType"/>
-                        </div>
-
-                        <div class="mb-2">
-                            <label>@GetLabel("PWc")</label>
-                            <InputText class="form-control" @bind-Value="signupRequest.ConfirmPassword" type="@passwordInputType" />
-                        </div>
-
-                        <ReCaptcha @ref="_captcha" SiteKey="@SiteKey" />
-                        <br />
-
-                        <div class="form-check mb-2">
-                            <InputCheckbox class="form-check-input" @bind-Value="showPassword" id="showPassword" />
-                            <label class="form-check-label" for="showPassword">@GetLabel("PWsw")</label>
-                        </div>
-
-                        <div class="mb-3">
-                            <p class="text-danger">@((MarkupString)signupMessage)</p>
+                            <label>@GetLabel("PWReset0")</label>
+                            <input class="form-control" @bind="forgotEmail" />
                         </div>
 
                         <div class="mt-3 d-flex justify-content-end gap-2">
-                            <button type="button"
-                                    class="btn btn-secondary"
-                                    @onclick="CloseSignupModal">
+                            <button class="btn btn-secondary" @onclick="CloseForgotModal">
                                 @GetLabel("Cancel")
                             </button>
 
-                            <button type="submit"
-                                    class="btn btn-primary">
-                                @GetLabel("SignUp")
+                            <button class="btn btn-primary" @onclick="SubmitForgot">
+                                @GetLabel("Send")
                             </button>
                         </div>
 
-                    </EditForm>
-
-                    <div class="mb-2">
-                        <button type="button" class="btn btn-link p-0" @onclick="ShowRules">
-                            @GetPasswordRulesLabel()
-                        </button>
                     </div>
-
-                    <p class="small">@((MarkupString)rules)</p>
-
                 </div>
-            </div>
-        }
+            }
 
-        @if (showSignUpSuccess)
-        {
-            <div style="
-                position:fixed;
-                top:0;left:0;right:0;bottom:0;
-                background:rgba(0,0,0,0.5);
-                display:flex;
-                justify-content:center;
-                align-items:center;
-                z-index:9999;">
+            @if (showForgotSent)
+            {
+                <div style="
+                    position:fixed;
+                    top:0;left:0;right:0;bottom:0;
+                    background:rgba(0,0,0,0.5);
+                    display:flex;
+                    justify-content:center;
+                    align-items:center;
+                    z-index:9999;
+                ">
+                    <div style="background:white;padding:20px;border-radius:8px;width:300px;">
 
-                <div style="background:white;padding:20px;border-radius:8px;width:350px;">
+                        <h5>@GetLabel("PWResetES")</h5>
+                        <p>@((MarkupString)forgotModalMessage)</p>
+                        <div class="mt-3 d-flex justify-content-end gap-2">
+                            <button class="btn btn-secondary" @onclick="CloseForgotModal">
+                                @GetLabel("Close")
+                            </button>
+                        </div>
 
-                    <p>@((MarkupString)signupMessage)</p>
+                    </div>
+                </div>
+            }
 
-                    <div class="d-flex justify-content-end">
-                        <button class="btn btn-secondary"
+            @if (showSignUpModal)
+            {
+                <div style="
+                    position:fixed;
+                    top:0;left:0;right:0;bottom:0;
+                    background:rgba(0,0,0,0.5);
+                    display:flex;
+                    justify-content:center;
+                    align-items:center;
+                    z-index:9999;">
+
+                    <div style="background:white;padding:20px;border-radius:8px;width:400px;">
+
+                        <h5>@GetLabel("SignUp")</h5>
+
+                        <EditForm Model="@signupRequest" OnValidSubmit="SubmitSignup">
+                            <DataAnnotationsValidator />
+                            <ValidationSummary />
+
+                            <div class="mb-2">
+                                <label>@GetLabel("UserName")</label>
+                                <InputText class="form-control"
+                                @bind-Value="signupRequest.UserName" />
+                            </div>
+
+                            <div class="mb-2">
+                                <label>@GetLabel("Email")</label>
+                                <InputText class="form-control"
+                                @bind-Value="signupRequest.Email" />
+                            </div>
+
+                            <div class="mb-2">
+                                <label>@GetLabel("PW")</label>
+                                <InputText class="form-control" @bind-Value="signupRequest.Password" type="@passwordInputType"/>
+                            </div>
+
+                            <div class="mb-2">
+                                <label>@GetLabel("PWc")</label>
+                                <InputText class="form-control" @bind-Value="signupRequest.ConfirmPassword" type="@passwordInputType" />
+                            </div>
+
+                            @if (options.SelfRegistrationCaptcha)
+                            {
+                                <ReCaptcha @ref="_captcha" SiteKey="@SiteKey" />
+                                <br />
+                            }
+
+                            <div class="form-check mb-2">
+                                <InputCheckbox class="form-check-input" @bind-Value="showPassword" id="showPassword" />
+                                <label class="form-check-label" for="showPassword">@GetLabel("PWsw")</label>
+                            </div>
+
+                            <div class="mb-3">
+                                <p class="text-danger">@((MarkupString)signupMessage)</p>
+                            </div>
+
+                            <div class="mt-3 d-flex justify-content-end gap-2">
+                                <button type="button"
+                                class="btn btn-secondary"
                                 @onclick="CloseSignupModal">
-                            @GetLabel("Close")
-                        </button>
+                                    @GetLabel("Cancel")
+                                </button>
+
+                                <button type="submit"
+                                class="btn btn-primary">
+                                    @GetLabel("SignUp")
+                                </button>
+                            </div>
+
+                        </EditForm>
+
+                        <div class="mb-2">
+                            <button type="button" class="btn btn-link p-0" @onclick="ShowRules">
+                                @GetPasswordRulesLabel()
+                            </button>
+                        </div>
+
+                        <p class="small">@((MarkupString)rules)</p>
+
                     </div>
-
                 </div>
-            </div>
+            }
+
+            @if (showSignUpSuccess)
+            {
+                <div style="
+                    position:fixed;
+                    top:0;left:0;right:0;bottom:0;
+                    background:rgba(0,0,0,0.5);
+                    display:flex;
+                    justify-content:center;
+                    align-items:center;
+                    z-index:9999;">
+
+                    <div style="background:white;padding:20px;border-radius:8px;width:350px;">
+
+                        <p>@((MarkupString)signupMessage)</p>
+
+                        <div class="d-flex justify-content-end">
+                            <button class="btn btn-secondary"
+                            @onclick="CloseSignupModal">
+                                @GetLabel("Close")
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            }
+
+            @if (showQr)
+            {
+                <div class="mt-4 text-center">
+                    <h5>@GetLabel("Mfa1")</h5>
+
+                    <img src="@qrCodeBase64" style="width:200px;height:200px;" />
+
+                    <p class="mt-2">@GetLabel("Mfa2"):<br />
+                        <b>@manualKey</b>
+                    </p>
+                </div>
+            }
+
+            @if (showMfaInput)
+            {
+                <div class="mt-3">
+                    <label>@GetLabel("Mfa3"):</label>
+
+                    <InputText @bind-Value="mfaCode" class="form-control" />
+
+                    <button type="button" class="btn btn-success mt-2" @onclick="VerifyMfa">
+                        @GetLabel("Verify")
+                    </button>
+                </div>
+            }
+
+            <p class="small">@((MarkupString)successMessage)</p>
+            <p class="small text-danger">@((MarkupString)errorMessage)</p>
+            <p>@tokenkey</p>
+            <p>@token</p>
+            <p>@cookie</p>
         }
-
-        @if (showQr)
-        {
-            <div class="mt-4 text-center">
-                <h5>@GetLabel("Mfa1")</h5>
-
-                <img src="@qrCodeBase64" style="width:200px;height:200px;" />
-
-                <p class="mt-2">@GetLabel("Mfa2"):<br />
-                    <b>@manualKey</b>
-                </p>
-            </div>
-        }
-
-        @if (showMfaInput)
-        {
-            <div class="mt-3">
-                <label>@GetLabel("Mfa3"):</label>
-
-                <InputText @bind-Value="mfaCode" class="form-control" />
-
-                <button type="button" class="btn btn-success mt-2" @onclick="VerifyMfa">
-                    @GetLabel("Verify")
-                </button>
-            </div>
-        }
-            
-        <p class="small">@((MarkupString)successMessage)</p>
-        <p class="small text-danger">@((MarkupString)errorMessage)</p>
-        <p>@tokenkey</p>
-        <p>@token</p>
-        <p>@cookie</p>
     </div>
 </div>
 
@@ -310,6 +324,8 @@
     };
     private string errorMessage = string.Empty;
     private string successMessage = string.Empty;
+    
+    private bool isProcessing = false;
     private bool isDev = false;
 
     private string tokenkey;

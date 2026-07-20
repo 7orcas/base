@@ -153,7 +153,8 @@ namespace Backend.Base.Label
                 "CaptchaS",
                 "CaptchaE",
                 "CaptchaR",
-                "Close"
+                "Close",
+                "PWait"
             };
 
             list = list

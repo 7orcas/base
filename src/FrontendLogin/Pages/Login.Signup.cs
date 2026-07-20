@@ -24,40 +24,55 @@ namespace FrontendLogin.Pages
                 return;
             }
 
-            var robotClient = HttpClientFactory.CreateClient(GC.HTTP_Client);
-            var token = await _captcha.GetToken();
-            if (string.IsNullOrWhiteSpace(token)) 
+            isProcessing = true;
+
+            if (options.SelfRegistrationCaptcha)
             {
-                signupMessage = GetLabel("CaptchaR");
-                return;
-            }
-            var robotResponse = await robotClient.PostAsJsonAsync(
-                GC.URL_robot,
-                new RobotRequest
+                var robotClient = HttpClientFactory.CreateClient(GC.HTTP_Client);
+                var token = await _captcha.GetToken();
+                if (string.IsNullOrWhiteSpace(token))
                 {
-                    LangCode = options.LangCode,
-                    AppClient = GC.AppClient,
-                    CaptchaToken = token
-                });
-            
-            if (!robotResponse.IsSuccessStatusCode)
-            {
-                signupMessage = GetLabel("CaptchaE");
-                return;
+                    signupMessage = GetLabel("CaptchaR");
+                    return;
+                }
+                var robotResponse = await robotClient.PostAsJsonAsync(
+                    GC.URL_robot,
+                    new RobotRequest
+                    {
+                        LangCode = options.LangCode,
+                        AppClient = GC.AppClient,
+                        CaptchaToken = token
+                    });
+
+                if (!robotResponse.IsSuccessStatusCode)
+                {
+                    signupMessage = GetLabel("CaptchaE");
+                    isProcessing = false;
+                    return;
+                }
+                else
+                {
+                    var result = await robotResponse.Content.ReadAsStringAsync();
+                    var responseDto = JsonConvert.DeserializeObject<_ResponseDto>(result);
+                    var robot = JsonConvert.DeserializeObject<RobotDto>(responseDto.Result.ToString());
+
+                    signupRequest.NotRobot = responseDto.Valid;
+                    signupRequest.Token = robot.Token;
+                    signupMessage = robot.Message;
+
+                    if (!responseDto.Valid)
+                    {
+                        isProcessing = false;
+                        return;
+                    }
+                }
             }
             else
             {
-                var result = await robotResponse.Content.ReadAsStringAsync();
-                var responseDto = JsonConvert.DeserializeObject<_ResponseDto>(result);
-
-                signupRequest.NotRobot = responseDto.Valid;
-                signupMessage = responseDto.Result.ToString();
-
-                if(!responseDto.Valid)
-                    return;
+                signupRequest.NotRobot = false;
+                signupRequest.Token = string.Empty;
             }
 
-    
             var client = HttpClientFactory.CreateClient(GC.HTTP_Client);
 
             var response = await client.PostAsJsonAsync(
@@ -75,12 +90,14 @@ namespace FrontendLogin.Pages
                     showSignUpSuccess = true;
                     initialiseSignupRequest();
                 }
-                signupMessage = responseDto.Result.ToString();
+                signupMessage = responseDto.Result?.ToString();
             }
             else
             {
                 signupMessage = GetLabel("SignUpFail") + "<br>" + GetLabel("SysA");
             }
+
+            isProcessing = false;
         }
 
         private void initialiseSignupRequest()
@@ -88,6 +105,8 @@ namespace FrontendLogin.Pages
             signupRequest = new();
             signupRequest.OrgNr = options.OrgNr;
             signupRequest.LangCode = options.LangCode;
+            signupRequest.Token = string.Empty;
+            signupRequest.NotRobot = false;
             showPassword = false;
         }
 

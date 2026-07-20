@@ -2,6 +2,6 @@
 {
     public interface RobotServiceI
     {
-        Task<(bool success, string message)> Verify(string token, string langCode);
+        Task<(bool success, string temptoken, string message)> Verify(string ipAddress, string token, string langCode);
     }
 }

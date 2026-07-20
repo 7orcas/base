@@ -86,6 +86,7 @@ namespace Backend.Base.Login
                 RememberMe = false,
                 Forgot = false,
                 SelfRegistration = false,
+                SelfRegistrationCaptcha = false,
                 Masquerade = false,
             };
 
@@ -99,6 +100,7 @@ namespace Backend.Base.Login
             if (!test.RememberMe) options.RememberMe = false;
             if (!test.Forgot) options.Forgot = false;
             if (!test.SelfRegistration) options.SelfRegistration = false;
+            if (!test.SelfRegistrationCaptcha) options.SelfRegistrationCaptcha = false;
             if (!test.Masquerade) options.Masquerade = false;
         }
 
@@ -111,6 +113,7 @@ namespace Backend.Base.Login
             if (org.IsMasqueradeEnabled) test.Masquerade = true;
             if (org.IsPasswordResetEnabled) test.Forgot = true;
             if (org.IsSignupEnabled) test.SelfRegistration = true;
+            if (org.Encoding.IsSignupCaptchaEnabled) test.SelfRegistrationCaptcha = true;
         }
 
 
@@ -177,6 +180,7 @@ namespace Backend.Base.Login
                 RememberMe = org.IsRememberMeEnabled,
                 Forgot = org.IsPasswordResetEnabled,
                 SelfRegistration = org.IsSignupEnabled,
+                SelfRegistrationCaptcha = org.Encoding.IsSignupCaptchaEnabled,
                 Masquerade = org.IsMasqueradeEnabled
             };
 

@@ -18,6 +18,7 @@ namespace Backend.Base.Login
         private readonly LoginRepoI _loginRepo;
         private readonly LabelServiceI _labelService;
         private readonly OrgServiceI _orgService;
+        private readonly TokenServiceI _tokenService;
         private readonly EmailServiceI _emailService;
 
         public SignupService(IServiceProvider serviceProvider,
@@ -26,6 +27,7 @@ namespace Backend.Base.Login
             LoginRepoI loginRepo,
             LabelServiceI labelService,
             OrgServiceI orgService,
+            TokenServiceI tokenService,
             EmailServiceI emailService)
             : base(serviceProvider)
         {
@@ -34,6 +36,7 @@ namespace Backend.Base.Login
             _loginRepo = loginRepo;
             _labelService = labelService;
             _orgService = orgService;
+            _tokenService = tokenService;
             _emailService = emailService;
         }
 
@@ -44,7 +47,7 @@ namespace Backend.Base.Login
          * - error message (if attempt is still valid)
          * - emtpy string if suspicious (and logged)
          */
-        public async Task<(bool success, string message)> SignupUser(string ipaddress, string username, string email, string password, int orgNr, string langCode)
+        public async Task<(bool success, string message)> SignupUser(string ipaddress, string username, string email, string password, int orgNr, string langCode, string token)
         {
             var org = await _orgService.GetOrg(orgNr);
             var labels = await _labelService.GetLangCodeDic(langCode, org.LangLabelVariant);
@@ -57,7 +60,18 @@ namespace Backend.Base.Login
                 _log.Error("Invalid OrgNr in signup Ipaddress {ipaddress} OrgNr {orgNr} Username {username}", ipaddress, orgNr, username);
                 return (false, "");
             }
-            
+
+            //Check token
+            if (org.Encoding.IsSignupCaptchaEnabled)
+            {
+                var tv = _tokenService.DecodeToken(token);
+                if (string.IsNullOrEmpty(tv.IpAddress) || tv.IpAddress != ipaddress)
+                {
+                    _log.Error("Invalid captcha token in signup Ipaddress {ipaddress} OrgNr {orgNr} Username {username}", ipaddress, orgNr, username);
+                    return (false, "");
+                }
+            }
+
             var val = new BaseLabelValidation(labels);
 
             //Validate inputs

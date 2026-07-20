@@ -38,7 +38,7 @@ namespace Backend.Base.Login
         public async Task<IActionResult> Signup([FromBody] SignupRequest request)
         {
             var ipAddress = GetClientIp();
-            var res = await _signupService.SignupUser(ipAddress, request.UserName, request.Email, request.Password, request.OrgNr, request.LangCode);
+            var res = await _signupService.SignupUser(ipAddress, request.UserName, request.Email, request.Password, request.OrgNr, request.LangCode, request.Token);
 
             var r = new _ResponseDto
             {

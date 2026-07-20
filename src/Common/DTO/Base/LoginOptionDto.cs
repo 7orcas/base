@@ -15,6 +15,7 @@
         public bool RememberMe { get; set; }
         public bool Forgot { get; set; }
         public bool SelfRegistration { get; set; }
+        public bool SelfRegistrationCaptcha { get; set; }
         public bool Masquerade { get; set; }
         public string RememberMeCookie { get; set; }
     }

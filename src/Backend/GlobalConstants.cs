@@ -24,6 +24,7 @@
         {
             JWT = 1,
             ResetRequest = 2,
+            Captcha = 3,
         }
 
         //Entity Type Id
