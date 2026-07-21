@@ -1,0 +1,7 @@
+
+
+Page Background: #F8FAFC
+Card Background: #FFFFFF
+Border: #E2E8F0
+Text: #0F172A
+Primary: #2563EB

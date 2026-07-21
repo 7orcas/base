@@ -324,7 +324,7 @@
     };
     private string errorMessage = string.Empty;
     private string successMessage = string.Empty;
-    
+
     private bool isProcessing = false;
     private bool isDev = false;
 
@@ -406,6 +406,8 @@
     //Call the API with the login credentials (and the MFA code if applicable) 
     private async Task<LoginSuccessDto?> LoginToBlue(string url)
     {
+        var responseDto = null as _ResponseDto;
+
         try
         {
             var isMfa = url == GC.URL_mfa_verify;
@@ -414,7 +416,7 @@
             //Use JS interop to call the login function in wwwroot/login.js, which uses fetch with 'credentials: include' to allow cookies (for MFA flow)
             var client = HttpClientFactory.CreateClient(GC.HTTP_Client);
             var urlX = client.BaseAddress.ToString() + url;
-            var responseDto = await JS.InvokeAsync<_ResponseDto>(
+            responseDto = await JS.InvokeAsync<_ResponseDto>(
                 "login",
                 urlX,
                 loginRequest);

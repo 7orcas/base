@@ -52,4 +52,11 @@
         public string SecretKey { get; set; }
     }
 
+    public class RateLimiting
+    {
+        public int PermitLimit { get; set; }
+        public int WindowMinutes { get; set; }
+    }
+
+
 }

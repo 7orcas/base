@@ -1,6 +1,7 @@
 ﻿using Backend.Base.DataProtection;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Serilog.Events;
 using GC = Backend.GlobalConstants;
 
@@ -38,6 +39,7 @@ namespace Backend.Base.Login
 
         [AllowAnonymous]
         [HttpPost("login")]
+        [EnableRateLimiting("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
             var ipAddress = GetClientIp();
