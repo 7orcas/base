@@ -26,11 +26,13 @@ VALUES ('3', 3, '3', 'en', 0, 'en', 1);
 INSERT INTO base.org (nr, code, descr, langcode, langlabelvariant)
 VALUES (0, 'Org Base', 'Base Organisation', 'en', 0);
 
-INSERT INTO base.org (nr, code, descr, langcode, langlabelvariant, mfa,
+INSERT INTO base.org (nr, code, descr, langcode, langlabelvariant, mfa, 
+	apikey,
     ispasswordresetenabled, issignupenabled, isemailrequired, isemailverified, icon, 
 	encoded)
 VALUES
 (1, 'Org 1', 'Org 1 Description', 'en', 1, 0, 
+  'X123',	
   true, true, true, true, '🏢',
  '{Languages:[{LangCode:"en",IsEditable:true},{LangCode:"de",IsEditable:true},{LangCode:"c1",IsEditable:false},{LangCode:"c2",IsEditable:false}]}');
 

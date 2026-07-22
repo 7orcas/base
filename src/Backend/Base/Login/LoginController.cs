@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
-using Serilog.Events;
 using GC = Backend.GlobalConstants;
 
 /// <summary>
@@ -43,12 +42,13 @@ namespace Backend.Base.Login
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
             var ipAddress = GetClientIp();
-            var login = await _loginService.LoginUser(ipAddress, request.UserName, request.Password, request.Org, request.SourceApplication, request.LangCode, false);
+            var login = await _loginService.LoginUser(ipAddress, request, false);
             var res = login.Response;
 
             if (!res.IsValid)
                 return Ok(new _ResponseDto
                 {
+                    StatusCode = StatusCodes.Status403Forbidden,
                     Valid = false,
                     ErrorMessage = res.ErrorMessage,
                 });

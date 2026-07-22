@@ -94,7 +94,7 @@ namespace FrontendServer.Base._Base
                 
                 if (response != null && response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
                 {
-                    _statusCode = GC.StatusCodeLoginExpired;
+                    _statusCode = StatusCodes.Status401Unauthorized;
                     _errorMessage = new MarkupString(LS.GetLabel("LEx"));
                     _isLoading = false;
                     _isError = true;
@@ -154,7 +154,7 @@ namespace FrontendServer.Base._Base
             var r = await response.Content.ReadAsStringAsync();
             var dto = JsonConvert.DeserializeObject<_ResponseDto>(r);
 
-            if (dto.StatusCode == GC.StatusCodeUnProcessable)
+            if (dto.StatusCode == StatusCodes.Status422UnprocessableEntity)
             {
                 _isValidationError = true;
                 var list = JsonConvert.DeserializeObject<List<ValDto>>(dto.Result.ToString());

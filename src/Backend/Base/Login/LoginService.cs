@@ -56,7 +56,7 @@ namespace Backend.Base.Login
 
         // Get the user login and account details, validate the password
         // Return a tokenkey if valid and MFA is not required or MFA is enabled and validated 
-        public async Task<LoginEnt> LoginUser(string ipAddress, string username, string password, int orgNr, int sourceAppNr, string langCode, bool isMfaValid)
+        public async Task<LoginEnt> LoginUser(string ipAddress, LoginRequest request, bool isMfaValid)
         {
             try
             {
@@ -65,22 +65,26 @@ namespace Backend.Base.Login
                 //loginErr.Response.ErrorMessage = null; By default no message to avoid giving hints to hackers
 
 
-                var login = await GetLoginByUsername(username);
-                var org = await _orgService.GetOrg(orgNr);
+                var login = await GetLoginByUsername(request.UserName);
+                var org = await _orgService.GetOrg(request.Org);
                 if (login == null || org == null)
                     return loginErr;
 
+                //Test if API client login and validate
+                if (request.SourceApplication == GC.ApiClient &&
+                    !CompareNotNull(request.ApiKey, org.ApiKey))
+                    return loginErr;
 
-                var labels = await _labelService.GetLangCodeDic(langCode, org.LangLabelVariant);
-                if (!await ValidateLogin(login, loginErr, password, org, labels))
+                var labels = await _labelService.GetLangCodeDic(request.LangCode, org.LangLabelVariant);
+                if (!await ValidateLogin(login, loginErr, request.Password, org, labels))
                     return loginErr;
 
 
                 UserAccountEnt? account = null;
                 if (ServiceAccount != null && login.IsService())
-                    account = UserAccountEnt.GetServiceAccount(orgNr);
+                    account = UserAccountEnt.GetServiceAccount(request.Org);
                 else
-                    account = await _loginRepo.GetAccount(login.Id, orgNr);
+                    account = await _loginRepo.GetAccount(login.Id, request.Org);
 
                 if (account == null)
                 {
@@ -114,21 +118,30 @@ namespace Backend.Base.Login
                 }
 
                 //Continue with login process and return tokenkey
-                langCode = !string.IsNullOrEmpty(langCode) ? langCode : account.LangCode; //Delete me
-                await InitialiseLogin(login, account, org, sourceAppNr);
+                var langCode = !string.IsNullOrEmpty(request.LangCode) ? request.LangCode : account.LangCode; //Delete me
+                await InitialiseLogin(login, account, org, request.SourceApplication);
                 var userConfig = _configService.CreateUserConfig(account, org, langCode);
-                var session = await _sessionService.CreateSession(account, org, userConfig, sourceAppNr, ipAddress);
+                var session = await _sessionService.CreateSession(account, org, userConfig, request.SourceApplication, ipAddress);
 
                 var tv = new TokenValues
                 {
                     IpAddress = ipAddress,
-                    Username = username,
+                    Username = request.UserName,
                     SessionKey = session.Key,
-                    OrgNr = orgNr,
+                    OrgNr = request.Org,
                 };
 
                 var tokenKey = _tokenService.CreateJWToken(tv);
-                
+
+                //If API client then return refresh token
+                if (request.SourceApplication == GC.ApiClient)
+                {
+                    var token = _tokenService.GetJWToken(tokenKey);
+                    var refreshToken = await _tokenService.CreateRefreshToken(tv);
+                    var result = await _tokenService.RefreshToken(refreshToken.TokenString(), ipAddress, "LoginApi");
+                    tokenKey = result.jwToken;
+                }
+
                 login.Response.IsValid = true;
                 login.Response.TokenKey = tokenKey;
                 login.Response.MainUrl = AppSettings.Urls.Client;

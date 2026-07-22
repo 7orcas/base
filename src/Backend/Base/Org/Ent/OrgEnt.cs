@@ -21,6 +21,7 @@ namespace Backend.Base.Org.Ent
         public string LangCode { get; set; }
         public int LangLabelVariant { get; set; }
         public string? Icon { get; set; }
+        public string? ApiKey { get; set; }
         public int Mfa { get; set; }
         public bool IsRememberMeEnabled { get; set; }
         public bool IsMasqueradeEnabled { get; set; }

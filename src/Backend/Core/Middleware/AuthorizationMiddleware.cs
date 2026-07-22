@@ -85,7 +85,7 @@ namespace Backend.Core.Middleware
             {
                 Valid = false,
                 ErrorMessage = GetLabel("NAuthX", "Not Authorised", labels),
-                StatusCode = GC.StatusCodeNotAuthorised // HTTP status code
+                StatusCode = StatusCodes.Status403Forbidden
             };
 
             return r;
