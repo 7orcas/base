@@ -3,7 +3,7 @@ namespace Backend.Base.Login
 {
     public interface LoginServiceI
     {
-        Task<LoginEnt> LoginUser(string ipaddress, string userid, string password, int orgNr, int sourceAppNr, string langCode, bool mfaValid);
+        Task<LoginEnt> LoginUser(string ipaddress, LoginRequest request, bool mfaValid);
         Task<LoginEnt?> GetLoginById(long id);
         Task<LoginEnt?> GetLoginByEmail(string email);
         Task<bool> ResetRequest(string email, string ipAddress);

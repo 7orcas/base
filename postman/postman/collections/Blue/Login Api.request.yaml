@@ -1,0 +1,25 @@
+$kind: http-request
+name: Login Api
+description: ""
+url: https://localhost:6002/v123/api/Login/login
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"UserName\": \"$\",\r
+
+    \    \"Password\": \"$\",\r
+
+    \    \"LangCode\": \"en\",\r
+
+    \    \"Org\": 1,\r
+
+    \    \"SourceApplication\": 2,\r
+
+    \    \"ApiKey\": \"X123\",\r
+
+    \    \"UrlSuffix\": \"api\"\r
+
+    }"
+order: 2016421435100701

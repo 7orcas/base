@@ -1,0 +1,85 @@
+I have a c# ,.Net, Blazor Server application.
+The .Net Backend is an API project.
+The Blazor frontend is made up of 2 Blazor server projects, a Login project and the Client project.
+I want to add rate limiting logic to my API project
+Give me step by step instructions to implement.
+
+My thoughts
+- The Login API will be different to the default (say 5 attempts per minute)
+- The default will be 1000 per hour
+- There maybe some API calls that will exceed the default rate, this should be allowed if configured
+
+
+
+
+
+
+dotnet add package Microsoft.AspNetCore.RateLimiting
+
+
+
+using System.Threading.RateLimiting;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+    // LOGIN POLICY
+    options.AddPolicy("login", context =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            factory: partition => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 5,
+                Window = TimeSpan.FromMinutes(1),
+                QueueLimit = 0
+            }));
+
+    // DEFAULT POLICY
+    options.AddPolicy("default", context =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: GetUserOrIp(context),
+            factory: partition => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 1000,
+                Window = TimeSpan.FromHours(1),
+                QueueLimit = 0
+            }));
+
+    // HIGH VOLUME POLICY
+    options.AddPolicy("highvolume", context =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: GetUserOrIp(context),
+            factory: partition => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 5000,
+                Window = TimeSpan.FromHours(1),
+                QueueLimit = 0
+            }));
+});
+
+Use [DisableRateLimiting] to allow any limit
+
+
+
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+    options.OnRejected = async (context, cancellationToken) =>
+    {
+        context.HttpContext.Response.ContentType = "application/json";
+
+        await context.HttpContext.Response.WriteAsJsonAsync(
+            new
+            {
+                Success = false,
+                Message = "Too many requests. Please try again later."
+            },
+            cancellationToken);
+    };
+
+    // Add policies...
+});

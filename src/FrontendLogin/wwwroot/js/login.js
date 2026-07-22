@@ -11,6 +11,13 @@
         body: json
     });
 
+    if (response.status === 429) {
+        return {
+            valid: false,
+            errorMessage: "Too many login attempts - Please try again later."
+        };
+    }
+
     if (!response.ok) {
         throw new Error("Login failed x");
     }

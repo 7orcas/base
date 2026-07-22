@@ -1,11 +1,11 @@
-﻿using GC = Common.GlobalConstants;
+﻿using Microsoft.AspNetCore.Http;
 
 
 namespace Common.DTO
 {
     public class _ResponseDto
     {
-        public int StatusCode { get; set; } = GC.StatusCodeOk;
+        public int StatusCode { get; set; } = StatusCodes.Status200OK;
         public bool Valid { get; set; } = true;
         public string? ErrorMessage { get; set; }
         public string? SuccessMessage { get; set; }

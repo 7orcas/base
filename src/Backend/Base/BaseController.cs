@@ -83,7 +83,7 @@ namespace Backend.Base
             var x = new _ResponseDto
             {
                 Valid = false,
-                StatusCode = GC.StatusCodeUnProcessable,
+                StatusCode = StatusCodes.Status422UnprocessableEntity,
                 ErrorMessage = GetLabel("InvR", langDic),
                 Result = validations
             };

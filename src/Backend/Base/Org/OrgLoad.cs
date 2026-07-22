@@ -20,6 +20,7 @@ namespace Backend.Base.Org
             org.Code = GetCode(r);
             org.Description = GetDescription(r);
             org.Icon = GetStringNull(r, "icon");
+            org.ApiKey = GetStringNull(r, "apiKey");
             org.Updated = GetUpdated(r);
             org.Version = GetVersion(r);
             org.IsActive = IsActive(r);
@@ -39,5 +40,42 @@ namespace Backend.Base.Org
 
             return org;
         }
+
+        static public OrgDto Load(OrgEnt org, List<OrgLangDto> langDtos)
+        {
+            var enc = org.Encoding;
+            return new OrgDto
+            {
+                Nr = org.Nr,
+                Code = org.Code,
+                Description = org.Description,
+                Icon = org.Icon,
+                Updated = org.Updated,
+                Version = org.Version,
+                IsActive = org.IsActive,
+                LangCode = org.LangCode,
+                LangLabelVariant = org.LangLabelVariant,
+                Languages = langDtos,
+
+                PasswordRule = new PasswordRuleDto
+                {
+                    MinLength = enc.PasswordRule.MinLength,
+                    MaxLength = enc.PasswordRule.MaxLength,
+                    IsMixedCase = enc.PasswordRule.IsMixedCase,
+                    IsNonLetter = enc.PasswordRule.IsSpecial,
+                    IsNumber = enc.PasswordRule.IsNumber,
+                },
+
+                LoginAttemptRule = new LoginAttemptRuleDto
+                {
+                    WarningAttempts = enc.LoginAttemptRule.WarningAttempts,
+                    LockoutAttempts = enc.LoginAttemptRule.LockoutAttempts,
+                    WarningLockoutMinutes = enc.LoginAttemptRule.WarningLockoutMinutes,
+                    LockoutPasswordResetLink = enc.LoginAttemptRule.LockoutPasswordResetLink,
+                    WarningPasswordResetLink = enc.LoginAttemptRule.WarningPasswordResetLink,
+                }
+            };
+        }
+
     }
 }

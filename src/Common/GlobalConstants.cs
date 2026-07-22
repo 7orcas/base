@@ -10,17 +10,13 @@ namespace Common
 {
     public class GlobalConstants
     {
-        public const int AppClient = 1; 
+        public const int AppClient = 1;
+        public const int ApiClient = 2;
 
         public const int NewRecordId = -9000;
 
         public const string LangCodeDefault      = "en";
         public const int OrgNrDefault            = 0;
-
-        public const int StatusCodeOk            = 200;
-        public const int StatusCodeLoginExpired  = 401;
-        public const int StatusCodeNotAuthorised = 403;
-        public const int StatusCodeUnProcessable = 422;
 
         //Login (successful) Actions
         public const int NavigateToFrontendServer     = 0;

@@ -56,6 +56,7 @@ CREATE TABLE base.org (
     langcode VARCHAR(4) NOT NULL,
     langlabelvariant INTEGER NOT NULL,
 	icon TEXT,
+	apikey TEXT, 
 	mfa INTEGER NOT NULL DEFAULT 0,
 	isremembermeenabled BOOLEAN DEFAULT FALSE,
 	ismasqueradeenabled BOOLEAN DEFAULT FALSE,
@@ -67,6 +68,7 @@ CREATE TABLE base.org (
 );
 
 COMMENT ON TABLE base.org IS 'Organisation entity (system can have mulitple Organisations';
+COMMENT ON COLUMN base.org.apikey IS 'Secrete key to allow api logins';
 COMMENT ON COLUMN base.org.mfa IS '0 = inactive, 1 = optional per day, 2 = required per day, 3 = required each login';
 COMMENT ON COLUMN base.org.ispasswordresetenabled IS 'Users can request a password reset via email';
 COMMENT ON COLUMN base.org.issignupenabled IS 'Self registration is enabled, ie users can sign up';

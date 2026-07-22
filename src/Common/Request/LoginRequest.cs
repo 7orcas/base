@@ -18,6 +18,7 @@ namespace Common.Request
         public bool RememberMe { get; set; }
 
         public long? Id { get; set; }
+        public string? ApiKey { get; set; }
         public string? MfaCode { get; set; }
 
         public bool IsPopulated()

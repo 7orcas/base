@@ -102,4 +102,11 @@ public abstract class BaseService : SqlUtils
 
     public DateTimeOffset Now () => DateTimeOffset.Now;
 
+    public bool CompareNotNull (string? value1, string? value2)
+    {
+        return !string.IsNullOrEmpty(value1) && 
+            !string.IsNullOrEmpty(value2) && 
+            value1.Equals(value2);
+    }
+
 }

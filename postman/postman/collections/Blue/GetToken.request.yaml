@@ -1,0 +1,8 @@
+$kind: http-request
+name: GetToken
+description: ""
+url: https://localhost:6002/v123/api/Token/token?key=2e16795a-1903-4472-ba19-a6cefb184e25
+method: GET
+queryParams:
+  key: 2e16795a-1903-4472-ba19-a6cefb184e25
+order: 705159421873755

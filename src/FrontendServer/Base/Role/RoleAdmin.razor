@@ -356,7 +356,7 @@ else
         if (updates.Count>0)
         {
             var response = await PostAsync<RoleDto>(GC.URL_role_update, updates);
-            if (response.StatusCode == GC.StatusCodeOk)
+            if (response.StatusCode == StatusCodes.Status200OK)
             {
                 await Load();
             }

@@ -10,11 +10,11 @@
 }
 else if (IsError)
 {
-    if (StatusCode == GC.StatusCodeLoginExpired)
+    if (StatusCode == StatusCodes.Status401Unauthorized)
     {
             <h2>@lEx</h2>
     }
-    else if (StatusCode == GC.StatusCodeNotAuthorised)
+    else if (StatusCode == StatusCodes.Status403Forbidden)
     {
         <h2>@nAuthX</h2>
         <div class="error-content">

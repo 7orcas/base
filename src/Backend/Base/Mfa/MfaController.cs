@@ -76,7 +76,7 @@ namespace Backend.Base.Mfa
         
 
             var ipAddress = GetClientIp();
-            var login = await _loginService.LoginUser(ipAddress, request.UserName, request.Password, request.Org, request.SourceApplication, request.LangCode, true);
+            var login = await _loginService.LoginUser(ipAddress, request, true);
             var res = login.Response;
 
             LoginSuccessDto dto = null;

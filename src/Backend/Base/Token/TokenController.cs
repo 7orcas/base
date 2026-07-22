@@ -99,7 +99,7 @@ namespace Backend.Base.Token
                     {
                         Valid = false,
                         ErrorMessage = "No token - may have expired",  
-                        StatusCode = GC.StatusCodeNotAuthorised 
+                        StatusCode = StatusCodes.Status403Forbidden
                     };
             }
 
