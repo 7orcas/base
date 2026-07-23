@@ -336,6 +336,7 @@ namespace Backend.Base.Login
 
         public class PasswordConfig
         {
+            public const int Version = 1;
             public const int SaltSize = 16;      // 128 bits
             public const int KeySize = 32;       // 256 bits
             public const int Iterations = 300000;
@@ -355,11 +356,7 @@ namespace Backend.Base.Login
                 PasswordConfig.KeySize);
 
             return string.Join('.',
-                "Pbkdf2",
-                "SHA256",
-                PasswordConfig.SaltSize.ToString(),
-                PasswordConfig.KeySize.ToString(),
-                PasswordConfig.Iterations.ToString(),
+                PasswordConfig.Version.ToString(),
                 Convert.ToBase64String(salt),
                 Convert.ToBase64String(hash));
         }
@@ -368,13 +365,26 @@ namespace Backend.Base.Login
         {
             string[] parts = storedHash.Split('.');
 
-            if (parts.Length != 7)
+            if (parts.Length != 3)
                 return false;
 
-            int keySize = int.Parse(parts[3]);
-            int iterations = int.Parse(parts[4]);
-            byte[] salt = Convert.FromBase64String(parts[5]);
-            byte[] hash = Convert.FromBase64String(parts[6]);
+            int version = Convert.ToInt32(parts[0]);
+            int keySize = 0;
+            int iterations = 0;
+            byte[] salt = null;
+            byte[] hash = null;
+
+            switch (version)
+            {
+                case 1:
+                    keySize = 32;
+                    iterations = 300000;
+                    salt = Convert.FromBase64String(parts[1]);
+                    hash = Convert.FromBase64String(parts[2]);
+                    break;
+
+                default: return false;
+            }
 
             byte[] inputHash = Rfc2898DeriveBytes.Pbkdf2(
                 password,
@@ -542,11 +552,11 @@ namespace Backend.Base.Login
             if (!r0.valid)
                 return (r0.valid, r0.message);
 
-            login.Password = password;
+            login.Password = PasswordHash(password);
 
             await Sql.ExecuteAsync(
                   "UPDATE base.zzz "
-                  + "SET yyy = '" + password + "' "
+                  + "SET yyy = '" + login.Password + "' "
                   + "WHERE id = " + login.Id
               );
 
