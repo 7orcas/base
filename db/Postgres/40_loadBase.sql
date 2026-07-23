@@ -51,11 +51,14 @@ VALUES (3, 'Org 3', 'Org 3 Description', 'de', 1,
 -- -------------------------------------------------
 INSERT INTO base.zzz (id, xxx, yyy, email, orgnrdefault, langcode, isemailverified, ismfarequired)
 VALUES
-(1, '1', '1', '1', 1, 'en', true, false);
+(1, '1', 'Pbkdf2.SHA256.16.32.300000.bElHDRD8r/YSi60KfZ895Q==.OtZFpeplYRtPbhp1iDJv81XGo1hcP9okCCcDMK1l/ZQ=', --1
+ '1', 1, 'en', true, false);
 INSERT INTO base.zzz (id, xxx, yyy, email, orgnrdefault, langcode)
 VALUES
-(2, 'user', 'xx123', 'xx123', 1, 'en'),
-(-1, '$', '$', 'js@7orcas.com', 1, 'en');
+(2, 'user', 'Pbkdf2.SHA256.16.32.300000.VJXOTS5/KLiukWt4kMACAw==.KUeftBqtDfYlkZ8D4qNIAGm4g3cdoVB+67e5bIO8qRI=', --xx123
+ 'xx123', 1, 'en'),
+(-1, '$', 'Pbkdf2.SHA256.16.32.300000.8da2kjhE7Yjh8LpInlivMQ==.jRwSyq64a4AYu6mSxBYaZ3tWgyRhPD2ZJlzHovwBYr0=', --$
+ 'js@7orcas.com', 1, 'en');
 
 -- -------------------------------------------------
 -- base.useracc
