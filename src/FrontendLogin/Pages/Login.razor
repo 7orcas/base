@@ -22,24 +22,35 @@
         }
         else
         {
-
             @if (options != null)
             {
-                <h3 class="text-center mb-4">
-                    <img src="@options.Icon" alt="Icon" style="width:32px;height:32px;vertical-align:middle;" />
-                    @options.Code
-                </h3>
-            }
+                <div class="text-center mb-4">
+                    <img src="@options.Icon"
+                         alt="Icon"
+                         style="width:48px;height:48px;" />
 
-            <h4 class="text-center mb-4">@GetLabel("Login")</h4>
+                    <h3 class="mt-2 mb-0">@options.Code</h3>
+                    <small class="text-muted">@SelectedOrgName</small>
+                </div>
+            }
 
             <EditForm Model="@loginRequest" OnValidSubmit="@HandleLogin">
                 <DataAnnotationsValidator />
                 <ValidationSummary class="text-danger mb-3" />
 
                 <div class="mb-3">
-                    <label class="form-label">@GetLabel("UserName")</label>
-                    <InputText class="form-control" @bind-Value="loginRequest.UserName" />
+                    <label class="form-label field-label">
+                        @GetLabel("UserName")
+                    </label>
+
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="bi bi-person"></i>
+                        </span>
+
+                        <InputText class="form-control"
+                                   @bind-Value="loginRequest.UserName" />
+                    </div>
                 </div>
 
                 @if (options != null && options.Masquerade)
@@ -51,13 +62,35 @@
                 }
 
                 <div class="mb-3">
-                    <label class="form-label">@GetLabel("PW")</label>
-                    <InputText class="form-control" @bind-Value="loginRequest.Password" Type="password" />
+                    <label class="form-label field-label">
+                        @GetLabel("PW")
+                    </label>
+
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="bi bi-lock-fill"></i>
+                        </span>
+
+                        <InputText class="form-control"
+                                   @bind-Value="loginRequest.Password"
+                                   type="@(showPassword ? "text" : "password")" />
+
+                        <button type="button"
+                                class="btn btn-outline-secondary"
+                                @onclick="TogglePassword">
+                            <i class="bi @(showPassword ? "bi-eye-slash-fill" : "bi-eye-fill")"></i>
+                        </button>
+                    </div>
                 </div>
+
                 <div class="mb-3">
-                    <label class="form-label">@GetLabel("Org")</label>
-                    <InputSelect class="form-select" @bind-Value="loginRequest.Org">
-                        <option value="">-- Select Org --</option>
+                    <label class="form-label field-label">
+                        @GetLabel("Org")
+                    </label>
+                    
+                    <InputSelect class="form-select"
+                                 @bind-Value="loginRequest.Org"
+                                 @bind-Value:after="UpdateSelectedOrg">
                         @foreach (var org in OrgList)
                         {
                             <option value="@org.Nr">@org.Name</option>
@@ -66,14 +99,30 @@
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label">@GetLabel("Lang")</label>
-                    <InputSelect class="form-select" @bind-Value="loginRequest.LangCode">
-                        <option value="">-- Select Language --</option>
-                        @foreach (var lang in LangList)
-                        {
-                            <option value="@lang.Code">@lang.Name</option>
-                        }
-                    </InputSelect>
+                    <label class="form-label field-label">
+                        @GetLabel("Lang")
+                    </label>
+
+                    <div class="input-group">
+
+                        <span class="input-group-text bg-white">
+                            <img src="@SelectedLangFlag"
+                                 alt="Icon"
+                                 style="width:24px;height:24px;">
+                            
+                        </span>
+
+                        <InputSelect class="form-select"
+                                     @bind-Value="loginRequest.LangCode"
+                                     @bind-Value:after="UpdateSelectedLanguage">
+
+                            @foreach (var lang in LangList)
+                            {
+                                <option value="@lang.Code">@lang.Name</option>
+                            }
+                        </InputSelect>
+
+                    </div>
                 </div>
 
 
@@ -86,6 +135,8 @@
 
 
             </EditForm>
+
+            <p></p>
 
             @if (options != null && options.RememberMe)
             {
@@ -218,8 +269,8 @@
                             }
 
                             <div class="form-check mb-2">
-                                <InputCheckbox class="form-check-input" @bind-Value="showPassword" id="showPassword" />
-                                <label class="form-check-label" for="showPassword">@GetLabel("PWsw")</label>
+                                <InputCheckbox class="form-check-input" @bind-Value="showSignupPassword" id="showSignupPassword" />
+                                <label class="form-check-label" for="showSignupPassword">@GetLabel("PWsw")</label>
                             </div>
 
                             <div class="mb-3">
@@ -327,6 +378,10 @@
     };
     private string errorMessage = string.Empty;
     private string successMessage = string.Empty;
+    private string SelectedOrgName = "";
+    private string SelectedLangName = "";
+    private string SelectedLangFlag = "";
+    private bool showPassword;
 
     private bool isProcessing = false;
     private bool isDev = false;
@@ -358,7 +413,7 @@
     private bool showSignUpModal = false;
     private bool showSignUpSuccess = false;
     private bool showRules = false;
-    private bool showPassword = false;
+    private bool showSignupPassword = false;
     private string rules = string.Empty;
     private SignupRequest signupRequest;
     private string signupMessage = "";
@@ -486,6 +541,31 @@
         token = await tokenResponse.Content.ReadAsStringAsync();
     }
 
+    private void UpdateSelectedOrg()
+    {
+        SelectedOrgName =
+            OrgList.FirstOrDefault(x => x.Nr == loginRequest.Org)?.Name ?? "";
+    }
+
+    private void TogglePassword()
+    {
+        showPassword = !showPassword;
+    }
+
+    private void UpdateSelectedLanguage()
+    {
+        var lang = LangList.FirstOrDefault(x => x.Code == loginRequest.LangCode);
+        if (lang != null)
+            SelectedLangFlag = lang.FlagUrl;
+    }
+
+private void SelectLanguage(LangItem lang)
+{
+    loginRequest.LangCode = lang.Code;
+    SelectedLangName = lang.Name;
+    SelectedLangFlag = lang.FlagUrl;
+}
+
     protected override async Task OnInitializedAsync()
     {
         cookie = GetRememberMeCookie(GC.Cookie_RememberMe + $"{UrlSuffix}");
@@ -517,9 +597,13 @@
             OrgList.Add(new OrgItem
                 {
                     Nr = o.Nr,
-                    Name = o.Code + (!string.IsNullOrEmpty(o.Description) ? " - " + o.Description : "")
+                    Code = o.Code,
+                    Name = (!string.IsNullOrEmpty(o.Description) ? o.Description : "")
                 });
         }
+        if (OrgList.Any())
+            SelectedOrgName = OrgList.First().Name;
+        
 
         //Load langauge options
         LangList = new List<LangItem>();
@@ -527,10 +611,25 @@
         {
             LangList.Add(new LangItem
             {
+                FlagUrl = "/images/flags/gb.svg",
                 Code = o.Code,
                 Name = o.Description
             });
         }
+
+var selectedLang = LangList.FirstOrDefault(x => x.Code == loginRequest.LangCode);
+
+if (selectedLang == null && LangList.Any())
+{
+    selectedLang = LangList.First();
+}
+
+if (selectedLang != null)
+{
+    SelectedLangName = selectedLang.Name;
+    SelectedLangFlag = selectedLang.FlagUrl;
+}
+
 
         loginRequest.UrlSuffix = UrlSuffix;
         loginRequest.Org = int.Parse(options.Orgs[0].Nr.ToString());
@@ -610,11 +709,13 @@
     public class OrgItem
     {
         public int Nr { get; set; }
+        public string Code { get; set; }
         public string Name { get; set; }
     }
 
     public class LangItem
     {
+        public string FlagUrl { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
     }

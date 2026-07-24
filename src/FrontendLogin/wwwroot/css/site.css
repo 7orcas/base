@@ -89,3 +89,29 @@ a, .btn-link {
         transform: rotate(360deg);
     }
 }
+
+.field-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #6c757d;
+    margin-bottom: 4px;
+}
+
+.input-group-text {
+    background: #f8f9fa;
+    border-right: 0;
+    color: #0d6efd;
+}
+
+.input-group .form-control {
+    border-left: 0;
+}
+
+.input-group .form-control:focus {
+    box-shadow: none;
+}
+
+.input-group:focus-within {
+    box-shadow: 0 0 0 0.2rem rgba(13,110,253,.15);
+    border-radius: .5rem;
+}

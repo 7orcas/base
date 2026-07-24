@@ -95,9 +95,9 @@ Crud.D,Delete
 PermAll,All Permissions
 PermEff,Effective Permissions
 User,User
-UserName,User name
-UserNameM,Masquerade User name
-UserNameEx,User name already exists
+UserName,Username
+UserNameM,Masquerade Username
+UserNameEx,Username already exists
 UserRs,User Roles
 LDM,Light/Dark Mode
 Logout,Logout
@@ -128,8 +128,8 @@ Entity,Entity
 Field,Field
 Message,Message
 RemMe,Remember Me
-ForgotUP,Forgot your username and/or password?
-SignUp,Sign Up
+ForgotUP,Forgotten password?
+SignUp,Create account
 SignUpSuccess,Your account request has been submitted successfully
 SignUpFail,Registration failed
 SignUp1,Success! A new account has been created. 
