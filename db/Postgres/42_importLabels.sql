@@ -18,28 +18,17 @@ DELETE FROM base.langkey;
 DELETE FROM base.langcode;
 
 -- -------------------------------------------------
--- Languages
+-- Language Codes
 -- -------------------------------------------------
-INSERT INTO base.langcode (code, descr)
+INSERT INTO base.langcode (id, code, descr, flag)
 VALUES
-('en', 'English'),
-('de', 'Deutsch'),
-('it', 'Italian'),
-('es', 'Español'),
-('ma', 'Maori');
+(1, 'en', 'English', 'gb.svg'),
+(2, 'de', 'Deutsch', 'de.svg'),
+(3, 'it', 'Italian', NULL),
+(4, 'es', 'Español', 'es.svg'),
+(5, 'ma', 'Maori', 'Maori.png'),
+(6, 'cn', 'Chinese', 'cn.svg');
 
--- Testing codes
-INSERT INTO base.langcode (code, descr) VALUES
-('c1', 'xxx'),
-('c2', 'xxx'),
-('c3', 'xxx'),
-('c4', 'xxx'),
-('c5', 'xxx'),
-('c6', 'xxx'),
-('c7', 'xxx'),
-('c8', 'xxx');
-
-UPDATE base.langcode SET isactive = FALSE WHERE code = 'c3';
 
 -- -------------------------------------------------
 -- Staging tables
@@ -72,6 +61,11 @@ TRUNCATE zz_import_labels_base;
 \copy zz_import_labels_base FROM 'C:/Source/db/Labels/BaseDe.txt' WITH (FORMAT csv);
 INSERT INTO zz_import_labels_basex (langcode, langkey, label)
 SELECT 'de', langkey, label FROM zz_import_labels_base;
+TRUNCATE zz_import_labels_base;
+
+\copy zz_import_labels_base FROM 'C:/Source/db/Labels/BaseCn.txt' WITH (FORMAT csv);
+INSERT INTO zz_import_labels_basex (langcode, langkey, label)
+SELECT 'cn', langkey, label FROM zz_import_labels_base;
 TRUNCATE zz_import_labels_base;
 
 \copy zz_import_labels_base FROM 'C:/Source/db/Labels/BaseTtEn.txt' WITH (FORMAT csv);

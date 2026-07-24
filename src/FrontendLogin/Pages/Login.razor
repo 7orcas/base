@@ -106,10 +106,12 @@
                     <div class="input-group">
 
                         <span class="input-group-text bg-white">
-                            <img src="@SelectedLangFlag"
-                                 alt="Icon"
-                                 style="width:24px;height:24px;">
-                            
+                            @if (!string.IsNullOrEmpty(SelectedLangFlag))
+                            {
+                                <img src="@SelectedLangFlag"
+                                alt="Icon"
+                                style="width:24px;height:24px;">
+                            }
                         </span>
 
                         <InputSelect class="form-select"
@@ -379,7 +381,6 @@
     private string errorMessage = string.Empty;
     private string successMessage = string.Empty;
     private string SelectedOrgName = "";
-    private string SelectedLangName = "";
     private string SelectedLangFlag = "";
     private bool showPassword;
 
@@ -552,19 +553,15 @@
         showPassword = !showPassword;
     }
 
-    private void UpdateSelectedLanguage()
+    private async Task UpdateSelectedLanguage()
     {
         var lang = LangList.FirstOrDefault(x => x.Code == loginRequest.LangCode);
         if (lang != null)
+        {
             SelectedLangFlag = lang.FlagUrl;
+            labels = await LS.InitialiseLabels(lang.Code, options.LangLabelVariant);
+        }
     }
-
-private void SelectLanguage(LangItem lang)
-{
-    loginRequest.LangCode = lang.Code;
-    SelectedLangName = lang.Name;
-    SelectedLangFlag = lang.FlagUrl;
-}
 
     protected override async Task OnInitializedAsync()
     {
@@ -603,32 +600,30 @@ private void SelectLanguage(LangItem lang)
         }
         if (OrgList.Any())
             SelectedOrgName = OrgList.First().Name;
-        
+
 
         //Load langauge options
         LangList = new List<LangItem>();
         foreach (var o in options.LangCodes)
         {
-            LangList.Add(new LangItem
-            {
-                FlagUrl = "/images/flags/gb.svg",
-                Code = o.Code,
-                Name = o.Description
-            });
+            var i = new LangItem
+                {
+                    Code = o.Code,
+                    Name = o.Description,
+
+                };
+            if (!string.IsNullOrEmpty(o.Flag))
+                i.FlagUrl = "/images/flags/" + o.Flag;
+            
+            LangList.Add(i);
         }
 
-var selectedLang = LangList.FirstOrDefault(x => x.Code == loginRequest.LangCode);
+        var selectedLang = LangList.FirstOrDefault(x => x.Code == loginRequest.LangCode);
+        if (selectedLang == null && LangList.Any())
+            selectedLang = LangList.First();
 
-if (selectedLang == null && LangList.Any())
-{
-    selectedLang = LangList.First();
-}
-
-if (selectedLang != null)
-{
-    SelectedLangName = selectedLang.Name;
-    SelectedLangFlag = selectedLang.FlagUrl;
-}
+        if (selectedLang != null)
+            SelectedLangFlag = selectedLang.FlagUrl;
 
 
         loginRequest.UrlSuffix = UrlSuffix;

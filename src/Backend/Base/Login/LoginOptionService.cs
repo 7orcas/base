@@ -207,7 +207,8 @@ namespace Backend.Base.Login
                 dto.LangCodes.Add(new LangCodeDto
                 {
                     Code = l.Code,
-                    Description = l.Description
+                    Description = l.Description,
+                    Flag = l.Flag,
                 });
 
             }

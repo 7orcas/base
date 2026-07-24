@@ -4,11 +4,14 @@ BEGIN;
 -- -------------------------------------------------
 -- base.langcode
 -- -------------------------------------------------
-INSERT INTO base.langcode (id, code, descr)
+INSERT INTO base.langcode (id, code, descr, flag)
 VALUES
-(1, 'en', 'English'),
-(2, 'de', 'Deutsch'),
-(3, 'es', 'Español');
+(1, 'en', 'English', 'gb.svg'),
+(2, 'de', 'Deutsch', 'de.svg'),
+(3, 'it', 'Italian', 'it.svg'),
+(4, 'es', 'Español', 'es.svg'),
+(5, 'ma', 'Maori', 'Maori.png');
+
 
 -- -------------------------------------------------
 -- base.langkey

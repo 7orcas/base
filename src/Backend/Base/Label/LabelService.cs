@@ -296,6 +296,7 @@ namespace Backend.Base.Label
                         lang.Id = GetId(r);
                         lang.Code = GetCode(r);
                         lang.Description = GetDescription(r);
+                        lang.Flag = GetStringNull(r, "flag");
                         lang.IsActive = IsActive(r);
                         list.Add(lang);
                     }
