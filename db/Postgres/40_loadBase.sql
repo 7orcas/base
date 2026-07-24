@@ -31,14 +31,16 @@ INSERT INTO base.org (nr, code, descr, langcode, langlabelvariant, mfa,
     ispasswordresetenabled, issignupenabled, isemailrequired, isemailverified, icon, 
 	encoded)
 VALUES
-(1, 'Org 1', 'Org 1 Description', 'en', 1, 0, 
+(1, 'Blue', 'Focus your heart', 'en', 1, 0, 
   'X123',	
-  true, true, true, true, '🏢',
+  true, true, true, true, 
+  '/images/Icons/BlueBlank512.png',
  '{Languages:[{LangCode:"en",IsEditable:true},{LangCode:"de",IsEditable:true},{LangCode:"c1",IsEditable:false},{LangCode:"c2",IsEditable:false}]}');
 
 INSERT INTO base.org (nr, code, descr, langcode, langlabelvariant, icon, encoded)
 VALUES
-(2, 'Org 2', 'Org 2 Description', 'en', 2, '📁',
+(2, 'Org 2', 'Org 2 Description', 'en', 2, 
+ '/images/Icons/BlueBlack512.png',
  '{Languages:[{LangCode:"de",IsEditable:true}]}');
 
 INSERT INTO base.org (nr, code, descr, langcode, langlabelvariant, encoded)
