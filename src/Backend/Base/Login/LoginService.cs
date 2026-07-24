@@ -1,6 +1,8 @@
 ﻿using Backend.Base.Email;
 using Backend.Base.Token.Ent;
+using Org.BouncyCastle.Utilities;
 using System.Reflection.Metadata.Ecma335;
+using System.Security.Cryptography;
 using GC = Backend.GlobalConstants;
 
 /// <summary>
@@ -215,7 +217,8 @@ namespace Backend.Base.Login
                 return false;
             }
             
-            var validPassword = !string.IsNullOrEmpty(password)  && password.Equals(login.Password);
+            //var passwordHash = PasswordHash(password);
+            var validPassword = VerifyPassword(password, login.Password);
             
 
             //Check is user's email is verified if org requires it. 
@@ -330,6 +333,69 @@ namespace Backend.Base.Login
 
             return validPassword;
         }
+
+        public class PasswordConfig
+        {
+            public const int Version = 1;
+            public const int SaltSize = 16;      // 128 bits
+            public const int KeySize = 32;       // 256 bits
+            public const int Iterations = 300000;
+            public static readonly HashAlgorithmName HashAlgorithm = HashAlgorithmName.SHA256;
+        }
+
+
+        private string PasswordHash(string password) 
+        {
+            byte[] salt = RandomNumberGenerator.GetBytes(PasswordConfig.SaltSize);
+
+            byte[] hash = Rfc2898DeriveBytes.Pbkdf2(
+                password,
+                salt,
+                PasswordConfig.Iterations,
+                PasswordConfig.HashAlgorithm,
+                PasswordConfig.KeySize);
+
+            return string.Join('.',
+                PasswordConfig.Version.ToString(),
+                Convert.ToBase64String(salt),
+                Convert.ToBase64String(hash));
+        }
+
+        private bool VerifyPassword (string password, string storedHash)
+        {
+            string[] parts = storedHash.Split('.');
+
+            if (parts.Length != 3)
+                return false;
+
+            int version = Convert.ToInt32(parts[0]);
+            int keySize = 0;
+            int iterations = 0;
+            byte[] salt = null;
+            byte[] hash = null;
+
+            switch (version)
+            {
+                case 1:
+                    keySize = 32;
+                    iterations = 300000;
+                    salt = Convert.FromBase64String(parts[1]);
+                    hash = Convert.FromBase64String(parts[2]);
+                    break;
+
+                default: return false;
+            }
+
+            byte[] inputHash = Rfc2898DeriveBytes.Pbkdf2(
+                password,
+                salt,
+                iterations,
+                PasswordConfig.HashAlgorithm,
+                keySize);
+
+            return CryptographicOperations.FixedTimeEquals(hash, inputHash);
+        }
+
 
 
         public async Task InitialiseLogin(LoginEnt login, UserAccountEnt account, OrgEnt org, int sourceAppNr)
@@ -486,11 +552,11 @@ namespace Backend.Base.Login
             if (!r0.valid)
                 return (r0.valid, r0.message);
 
-            login.Password = password;
+            login.Password = PasswordHash(password);
 
             await Sql.ExecuteAsync(
                   "UPDATE base.zzz "
-                  + "SET yyy = '" + password + "' "
+                  + "SET yyy = '" + login.Password + "' "
                   + "WHERE id = " + login.Id
               );
 

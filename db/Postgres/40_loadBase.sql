@@ -31,14 +31,16 @@ INSERT INTO base.org (nr, code, descr, langcode, langlabelvariant, mfa,
     ispasswordresetenabled, issignupenabled, isemailrequired, isemailverified, icon, 
 	encoded)
 VALUES
-(1, 'Org 1', 'Org 1 Description', 'en', 1, 0, 
+(1, 'Blue', 'Focus your heart', 'en', 1, 0, 
   'X123',	
-  true, true, true, true, '🏢',
+  true, true, true, true, 
+  '/images/Icons/BlueBlank512.png',
  '{Languages:[{LangCode:"en",IsEditable:true},{LangCode:"de",IsEditable:true},{LangCode:"c1",IsEditable:false},{LangCode:"c2",IsEditable:false}]}');
 
 INSERT INTO base.org (nr, code, descr, langcode, langlabelvariant, icon, encoded)
 VALUES
-(2, 'Org 2', 'Org 2 Description', 'en', 2, '📁',
+(2, 'Org 2', 'Org 2 Description', 'en', 2, 
+ '/images/Icons/BlueBlack512.png',
  '{Languages:[{LangCode:"de",IsEditable:true}]}');
 
 INSERT INTO base.org (nr, code, descr, langcode, langlabelvariant, encoded)
@@ -51,11 +53,14 @@ VALUES (3, 'Org 3', 'Org 3 Description', 'de', 1,
 -- -------------------------------------------------
 INSERT INTO base.zzz (id, xxx, yyy, email, orgnrdefault, langcode, isemailverified, ismfarequired)
 VALUES
-(1, '1', '1', '1', 1, 'en', true, false);
+(1, '1', '1.bElHDRD8r/YSi60KfZ895Q==.OtZFpeplYRtPbhp1iDJv81XGo1hcP9okCCcDMK1l/ZQ=', --1
+ 'john.stewart@7orcas.com', 1, 'en', true, false);
 INSERT INTO base.zzz (id, xxx, yyy, email, orgnrdefault, langcode)
 VALUES
-(2, 'user', 'xx123', 'xx123', 1, 'en'),
-(-1, '$', '$', 'js@7orcas.com', 1, 'en');
+(2, 'user', '1.VJXOTS5/KLiukWt4kMACAw==.KUeftBqtDfYlkZ8D4qNIAGm4g3cdoVB+67e5bIO8qRI=', --xx123
+ 'xx123', 1, 'en'),
+(-1, '$', '1.8da2kjhE7Yjh8LpInlivMQ==.jRwSyq64a4AYu6mSxBYaZ3tWgyRhPD2ZJlzHovwBYr0=', --$
+ 'js@7orcas.com', 1, 'en');
 
 -- -------------------------------------------------
 -- base.useracc
