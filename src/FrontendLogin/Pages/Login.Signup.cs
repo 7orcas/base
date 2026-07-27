@@ -150,12 +150,7 @@ namespace FrontendLogin.Pages
             StateHasChanged();
         }
 
-        private string passwordInputType => showPassword ? "text" : "password";
-
-        public class RobotModel
-        {
-            public string Name { get; set; }
-        }
+        private string passwordInputType => showSignupPassword ? "text" : "password";
 
     }
 }

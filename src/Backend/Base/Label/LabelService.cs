@@ -111,73 +111,50 @@ namespace Backend.Base.Label
             var dic = cache.Get<Dictionary<string, LangLabel>>(key);
             if (dic != null) return dic.Values.ToList();
 
-            var list = await GetLabelList(null, langCode, null, null, null);
+            var list = await GetLabelList(null, langCode, null, null, variant);
 
             // Filter the list to only include login-related keys
             var loginKeys = new HashSet<string>
             {
-                "Login",
-                "UserName",
-                "UserNameM",
+                "Oops",
+                "Cancel",
+                "Close",
+                "PWait",
+                "Verify",
+                "Login*",
+                "UserName*",
                 "Email",
                 "Org",
                 "Lang",
                 "RemMe",
                 "ForgotUP",
-                "SignUp",
-                "SignUpFail",
+                "SignUp*",
                 "SysA",
-                "NotRobot",
-                "NotRobotConfirm",
+                "NotRobot*",
                 "ChgPw",
-                "PW",
-                "PWc",
-                "PWx",
-                "PWn",
-                "PWsw",
-                "PWhr",
-                "PWsr",
-                "PWReset",
-                "PWReset0",
-                "PWReset1",
-                "PWReset2",
-                "PWReset3",
-                "Cancel",
+                "PW*",
                 "Send",
-                "PWResetES",
-                "Mfa1",
-                "Mfa2",
-                "Mfa3",
-                "MfaEr",
-                "Verify",
-                "CaptchaS",
-                "CaptchaE",
-                "CaptchaR",
-                "Close",
-                "PWait"
+                "Mfa*",
+                "Captcha*",
             };
 
             list = list
-                .Where(x => loginKeys.Contains(x.LangKeyCode))
+                .Where(label => loginKeys.Any(key =>
+                {
+                    if (key.EndsWith("*"))
+                    {
+                        var prefix = key[..^1];
+                        return label.LangKeyCode.StartsWith(
+                            prefix,
+                            StringComparison.OrdinalIgnoreCase);
+                    }
+
+                    return string.Equals(
+                        label.LangKeyCode,
+                        key,
+                        StringComparison.OrdinalIgnoreCase);
+                }))
                 .ToList();
-
-            if (variant.HasValue)
-            {
-                try
-                {
-                    var dict = list.ToDictionary(x => x.LangKeyCode, x => x);
-
-                    var listX = await GetLabelList(null, langCode, null, null, variant);
-                    foreach (var label in listX)
-                        dict[label.LangKeyCode] = label;
-
-                    list = dict.Values.ToList();
-                }
-                catch
-                {
-                    _log.Error("Can't get language variants");
-                }
-            }
 
             await SetLanguageLabelDic(langCode, variant, list, LoginLabelsCacheKey);
             return list;

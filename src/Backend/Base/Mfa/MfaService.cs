@@ -75,7 +75,7 @@ namespace Backend.Base.Mfa
 
         private string GenerateQrCodeUri(string email, string unformattedKey, bool isService)
         {
-            var name = AppSettings.AuthenticatorAppName + (isService?"-Service":"");
+            var name = AppSettings.AuthenticatorAppName + (isService?"-Service":""); //ToDo add specific qr for service
             return $"otpauth://totp/{name}:{email}?secret={unformattedKey}&issuer={name}&digits=6";
         }
 

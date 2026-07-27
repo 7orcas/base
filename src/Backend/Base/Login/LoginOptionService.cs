@@ -199,6 +199,9 @@ namespace Backend.Base.Login
 
             await ReconcileOptionsWithOrgs(dto);
 
+            if (dto.SelfRegistrationCaptcha)
+                dto.RecaptchaSiteKey = AppSettings.ReCaptcha.SiteKey;
+
             var list = await _labelService.GetLangCodeList();
             foreach (var part in ent.LangCodes.Split(","))
             {
