@@ -84,7 +84,8 @@ namespace Backend.Base.Login
             {
                 Mfa = true,
                 RememberMe = false,
-                Forgot = false,
+                PasswordReset = false,
+                PasswordResetCaptcha = false,
                 SelfRegistration = false,
                 SelfRegistrationCaptcha = false,
                 Masquerade = false,
@@ -98,7 +99,8 @@ namespace Backend.Base.Login
 
             if (!test.Mfa) options.Mfa = false;
             if (!test.RememberMe) options.RememberMe = false;
-            if (!test.Forgot) options.Forgot = false;
+            if (!test.PasswordReset) options.PasswordReset = false;
+            if (!test.PasswordResetCaptcha) options.PasswordResetCaptcha = false;
             if (!test.SelfRegistration) options.SelfRegistration = false;
             if (!test.SelfRegistrationCaptcha) options.SelfRegistrationCaptcha = false;
             if (!test.Masquerade) options.Masquerade = false;
@@ -111,7 +113,8 @@ namespace Backend.Base.Login
             if (org.Mfa > GC.MfaInactive) test.Mfa = true;
             if (org.IsRememberMeEnabled) test.RememberMe = true;
             if (org.IsMasqueradeEnabled) test.Masquerade = true;
-            if (org.IsPasswordResetEnabled) test.Forgot = true;
+            if (org.IsPasswordResetEnabled) test.PasswordReset = true;
+            if (org.Encoding.IsPasswordResetCaptchaEnabled) test.PasswordResetCaptcha = true;
             if (org.IsSignupEnabled) test.SelfRegistration = true;
             if (org.Encoding.IsSignupCaptchaEnabled) test.SelfRegistrationCaptcha = true;
         }
@@ -178,7 +181,8 @@ namespace Backend.Base.Login
                 SuccessAction = ent.SuccessAction,
                 Mfa = org.Mfa > GC.MfaInactive,
                 RememberMe = org.IsRememberMeEnabled,
-                Forgot = org.IsPasswordResetEnabled,
+                PasswordReset = org.IsPasswordResetEnabled,
+                PasswordResetCaptcha = org.Encoding.IsPasswordResetCaptchaEnabled,
                 SelfRegistration = org.IsSignupEnabled,
                 SelfRegistrationCaptcha = org.Encoding.IsSignupCaptchaEnabled,
                 Masquerade = org.IsMasqueradeEnabled
@@ -199,7 +203,7 @@ namespace Backend.Base.Login
 
             await ReconcileOptionsWithOrgs(dto);
 
-            if (dto.SelfRegistrationCaptcha)
+            if (dto.SelfRegistrationCaptcha || dto.PasswordResetCaptcha)
                 dto.RecaptchaSiteKey = AppSettings.ReCaptcha.SiteKey;
 
             var list = await _labelService.GetLangCodeList();

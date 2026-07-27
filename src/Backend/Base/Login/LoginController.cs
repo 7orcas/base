@@ -169,12 +169,12 @@ namespace Backend.Base.Login
         }
 
         [AllowAnonymous]
-        [HttpGet("resetrequest")]
-        public async Task<IActionResult> ResetRequest([FromQuery] string langCode, [FromQuery] string email)
+        [HttpPost("resetrequest")]
+        public async Task<IActionResult> ResetRequest([FromBody] ResetRequest request)
         {
             var ipAddress = GetClientIp();
 
-            await _loginService.ResetRequest(email, ipAddress, langCode);
+            await _loginService.ResetRequest(request.Email, ipAddress, request.LangCode);
 
             var r = new _ResponseDto
             {

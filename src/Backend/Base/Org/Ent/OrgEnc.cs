@@ -30,6 +30,12 @@ namespace Backend.Base.Org.Ent
         public LoginAttemptRule LoginAttemptRule { get; set; } = new LoginAttemptRule();
 
         /// <summary>
+        /// Google recaptcha enabled flag for password reset.
+        /// </summary>
+        [NotMapped]
+        public bool IsPasswordResetCaptchaEnabled { get; set; } = true;
+
+        /// <summary>
         /// The number of days a signup registration email address must be verified before it expires. (default is 30 days).
         /// </summary>
         [NotMapped]

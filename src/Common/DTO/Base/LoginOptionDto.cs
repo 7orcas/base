@@ -13,7 +13,8 @@
         public int SuccessAction { get; set; }
         public bool Mfa { get; set; }
         public bool RememberMe { get; set; }
-        public bool Forgot { get; set; }
+        public bool PasswordReset { get; set; }
+        public bool PasswordResetCaptcha { get; set; }
         public bool SelfRegistration { get; set; }
         public bool SelfRegistrationCaptcha { get; set; }
         public string RecaptchaSiteKey { get; set; }
