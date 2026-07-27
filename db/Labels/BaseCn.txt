@@ -1,0 +1,143 @@
+SysA,请联系您的系统管理员
+Oops,糟糕！出现了问题！请联系您的系统管理员。
+UnKnError,发生了意外错误。
+PWait,请稍候……
+New,新建
+Close,关闭
+Delete,删除
+Send,发送
+Cancel,取消
+On,开启
+Off,关闭
+SaveRec,保存
+SaveChg,保存更改
+Verify,验证
+Org,组织
+Orgs,组织
+Orgs-s,组织
+OrgNr,组织编号
+OrgSub,组织配置
+Conf,配置
+ConfSub,用户配置
+ChgPw,修改密码
+PwChg,密码已修改
+PW,密码
+PWn,新密码
+PWc,确认密码
+PWsw,显示密码
+PWs,密码
+PWx,密码不匹配
+PWr,密码规则
+PWsr,显示密码规则
+PWhr,隐藏密码规则
+PWmc,必须包含大小写字母
+PWSp,必须包含特殊字符
+PWNum,必须包含数字
+PWAt,最大登录尝试次数
+PWReset0,请输入您的电子邮箱地址以申请重置密码。
+PWReset1,如果提供的邮箱地址关联了账户，系统将很快发送密码重置链接。
+PWReset2,请检查您的收件箱以及垃圾邮件文件夹。
+PWReset3,出于安全原因，我们无法确认某个邮箱地址是否已注册。
+PWReset,密码重置
+PWResetES,密码重置邮件已发送
+PWResetRsp,您的密码已成功修改。
+PWResetErr1,令牌无效或已过期，请重试
+PWResetErr2,您的账户已停用
+PWResetErr3,密码无效，必须符合密码规则
+PWResetErr4,必须填写您的电子邮箱地址
+NotRobot,我不是机器人
+NotRobotConfirm,请确认您不是机器人
+Email,电子邮箱
+EmailInvalid,无效的电子邮箱地址
+EmailEx,电子邮箱已存在
+EmailVL,登录前必须先验证您的电子邮箱地址
+EmailV,验证您的电子邮箱地址
+EmailVS,电子邮箱地址已验证
+EmailVSX,电子邮箱地址已完成验证
+EmailVM,您现在可以登录了
+EmailVX,邮箱验证已过期，请联系 IT 支持
+Mfa1,使用 Microsoft Authenticator 扫描
+Mfa2,或手动输入此密钥
+Mfa3,输入 Microsoft Authenticator 中的验证码
+MfaEr,加载 MFA 设置失败
+LEx,登录已过期，请重新登录。
+BConf,基础配置
+Lang,语言
+Langs,语言
+LangCodeV,语言变体
+Label,标签
+Config,配置
+ConfigG,常规配置
+UnsavedC,有未保存的更改，仍要离开吗？
+LenMax,最大长度
+LenMin,最小长度
+Nr,编号
+AdminM,管理员
+Role,角色
+Roles,角色
+RoleSub,角色包含权限。权限是累积的，即组合后赋予用户最高授权级别。
+RoleA,新增角色
+RoleEN,编辑角色名称
+MachSub,设备记录
+NAuth,未授权
+NAuthX,您无权查看此页面
+NAuthA,请联系系统管理员为您授予访问权限
+UserPerm,用户权限
+UserPermSub,用户权限及对应 CRUD（创建、读取、更新、删除）设置
+Perm,权限
+Perms,权限
+PermNr,权限编号
+Crud,CRUD
+Crud.C,创建
+Crud.R,读取
+Crud.U,更新
+Crud.D,删除
+PermAll,所有权限
+PermEff,有效权限
+User,用户
+UserName,用户名
+UserNameM,模拟用户名
+UserNameEx,用户名已存在
+UserRs,用户角色
+LDM,浅色/深色模式
+Logout,退出登录
+Login,登录
+LoginUP,用户名和/或密码无效
+LoginXPX,已达到最大登录尝试次数，登录已被锁定。
+LoginWP,警告：您已达到 %% 次尝试。
+LoginAX,最大登录尝试次数为 %% 次。
+LoginWPX,您的登录已被锁定 %% 分钟。
+LoginLO,您的登录将被锁定至 %%
+LoginIL,您的登录账户未激活
+LoginAS,您未被配置为访问 %%
+LoginIA,您在 %% 中的账户未激活
+Audit,审计
+ValE,验证错误
+ValT,存在验证错误，保存失败。
+ValTs,请修正错误后重新保存。
+InvR,无效记录
+InvO,无效组织编号
+InvF,字段不能为空
+InvL,字段超出最大长度（%%）
+InvS,字段不能包含空格
+InvSp,字段不能包含特殊字符
+InvCE,代码已存在
+InvCD,重复代码
+InvUD,此记录自加载后已被修改（%%）
+Entity,实体
+Field,字段
+Message,消息
+RemMe,记住我
+ForgotUP,忘记密码？
+SignUp,创建账户
+SignUpSuccess,账户申请已成功提交
+SignUpFail,注册失败
+SignUp1,成功！新账户已创建。
+SignUp2,验证注册信息的电子邮件已发送。
+SignUp3,请检查您的收件箱以及垃圾邮件文件夹。
+CaptchaS,ReCAPTCHA 验证成功
+CaptchaE,ReCAPTCHA 验证失败
+CaptchaR,必须完成 ReCAPTCHA 验证
+Val0,不能为空
+Val1,不能包含空格
+<LAST>,<LAST LINE>

@@ -107,7 +107,7 @@ namespace FrontendLogin.Pages
             signupRequest.LangCode = options.LangCode;
             signupRequest.Token = string.Empty;
             signupRequest.NotRobot = false;
-            showPassword = false;
+            showSignupPassword = false;
         }
 
         private void GoToSelfRegistration()
@@ -150,12 +150,7 @@ namespace FrontendLogin.Pages
             StateHasChanged();
         }
 
-        private string passwordInputType => showPassword ? "text" : "password";
-
-        public class RobotModel
-        {
-            public string Name { get; set; }
-        }
+        private string passwordInputType => showSignupPassword ? "text" : "password";
 
     }
 }

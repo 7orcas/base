@@ -26,6 +26,11 @@ namespace Backend.Base.Label.Ent
         /// </summary>
         public string? Description { get; set; }
 
+        /// <summary>
+        /// The language code's flag.
+        /// </summary>
+        public string? Flag { get; set; }
+
         public DateTimeOffset Updated { get; set; }
 
         /// <summary>

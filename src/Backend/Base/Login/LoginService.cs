@@ -109,7 +109,7 @@ namespace Backend.Base.Login
                 if (org.Mfa == GC.MfaRequiredEachLogin) isMfaRequired = true;
                 if (org.Mfa == GC.MfaRequiredEachDay && daysSinceLastLogin > 0) isMfaRequired = true;
                 if (org.Mfa == GC.MfaOptionalEachDay && daysSinceLastLogin > 0 && login.IsMfaRequired) isMfaRequired = true;
-                if (login.IsService()) isMfaRequired = !_environment.IsDevelopment(); //Service account always requires MFA
+                if (!isMfaRequired && login.IsService()) isMfaRequired = !_environment.IsDevelopment(); //Service account always requires MFA
 
                 if (!isMfaValid && isMfaRequired)
                 {
@@ -450,15 +450,20 @@ namespace Backend.Base.Login
             return true;
         }
 
-        public async Task<bool> ResetRequest(string email, string ipAddress)
+        public async Task<(bool success, string message)> ResetRequest(string email, string ipAddress, string langCode)
         {
             var login = await GetLoginByEmail(email);
+            var labels = await _labelService.GetLangCodeDic(langCode, GC.LangLabelVariantDefault);
+
+            var oops = "Something went wrong! Please see your system admin.";
+            if (labels.TryGetValue("Oops", out var value))
+                oops = value;
 
             if (login == null || !login.IsActive)
             {
                 var message = "Reset request by " + (login == null ? "non-existant" : "inactive");
                 _log.Warning(message + " email {Email} ipAddress {ipAddress}", email, ipAddress);
-                return false;
+                return (false, oops);
             }
 
             var org = await _orgService.GetOrg(login.OrgNrDefault);
@@ -468,7 +473,7 @@ namespace Backend.Base.Login
                 || !org.IsPasswordResetEnabled)
             {
                 _log.Warning("Reset request invalid org, email {Email} ipAddress {ipAddress}", email, ipAddress);
-                return false;
+                return (false, oops);
             }
 
             var tv = new TokenValues
@@ -481,21 +486,14 @@ namespace Backend.Base.Login
 
             var token = _tokenService.CreateResetRequestToken(tv);
 
-            //Delete me???
-            var langCode = GC.LangCodeDefault;
-            if (login.LangCode != null) langCode = login.LangCode;
-            else if (org.LangCode != null) langCode = org.LangCode;
-            login.LangCode = langCode;
-
-            var labels = await _labelService.GetLangCodeDic(langCode, org.LangLabelVariant);
             var subject = "Password Reset";
-            if (labels.TryGetValue("PWReset", out var value))
-                subject = value;
+            if (labels.TryGetValue("PWReset", out var valueX))
+                subject = valueX;
 
             var template = new ResetPasswordRequest(org, login, token, labels);
             await _emailService.SendEmailAsync(email, subject, template.RenderTemplate());
             
-            return true;
+            return (true, subject);
         }
 
         /*

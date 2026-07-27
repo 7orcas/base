@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.AspNetCore.Components;
+using Newtonsoft.Json;
 using QRCoder;
 using GC = FrontendLogin.GlobalConstants;
 
@@ -14,25 +15,30 @@ namespace FrontendLogin.Pages
     public partial class Login
     {
 
-        private void initialiseMfaInput()
+        private MfaModel mfaModel = new();
+
+        public class MfaModel
         {
-            showMfaInput = options.Mfa;
-            StateHasChanged();
+            public string? MfaCode { get; set; }
         }
+
+
+        private bool focusMfa;
 
         private async Task MfaCheck(LoginSuccessDto login)
         {
             loginRequest.Id = login.Id;
+            disableLogin = true;
 
             if (!login.IsMfaEnabled)
                 await LoadMfaQr(); //Show the QR code to set up MFA
             else
             {
                 showMfaInput = true;
+                focusMfa = true;
                 StateHasChanged();
             }
         }
-
 
         private async Task LoadMfaQr()
         {
@@ -74,7 +80,7 @@ namespace FrontendLogin.Pages
             try
             {
                 errorMessage = "";
-                loginRequest.MfaCode = mfaCode;
+                loginRequest.MfaCode = mfaModel.MfaCode;
 
                 var login = await LoginToBlue(GC.URL_mfa_verify);
 

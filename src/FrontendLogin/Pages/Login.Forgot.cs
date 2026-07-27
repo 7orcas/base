@@ -27,8 +27,10 @@ namespace FrontendLogin.Pages
                 return;
             }
 
+            isProcessing = true;
+
             var client = HttpClientFactory.CreateClient(GC.HTTP_Client);
-            var response = await client.GetAsync($"{GC.URL_reset_request}?email={forgotEmail}");
+            var response = await client.GetAsync($"{GC.URL_reset_request}?langCode={options.LangCode}&email={forgotEmail}");
             var r = await response.Content.ReadAsStringAsync();
             var dto = JsonConvert.DeserializeObject<_ResponseDto>(r);
 
@@ -39,6 +41,7 @@ namespace FrontendLogin.Pages
 
             showForgotModal = false;
             showForgotSent = true;
+            isProcessing = false;
             await InvokeAsync(StateHasChanged);
         }
 

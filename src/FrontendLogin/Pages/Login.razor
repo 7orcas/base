@@ -22,42 +22,77 @@
         }
         else
         {
-
             @if (options != null)
             {
-                <h3 class="text-center mb-4">
-                    <img src="@options.Icon" alt="Icon" style="width:32px;height:32px;vertical-align:middle;" />
-                    @options.Code
-                </h3>
-            }
+                <div class="text-center mb-4">
+                    <img src="@options.Icon"
+                         alt="Icon"
+                         style="width:48px;height:48px;" />
 
-            <h4 class="text-center mb-4">@GetLabel("Login")</h4>
+                    <h3 class="mt-2 mb-0">@options.Code</h3>
+                    <small class="text-muted">@SelectedOrgName</small>
+                </div>
+            }
 
             <EditForm Model="@loginRequest" OnValidSubmit="@HandleLogin">
                 <DataAnnotationsValidator />
                 <ValidationSummary class="text-danger mb-3" />
 
                 <div class="mb-3">
-                    <label class="form-label">@GetLabel("UserName")</label>
-                    <InputText class="form-control" @bind-Value="loginRequest.UserName" />
+                    <label class="form-label field-label">
+                        @GetLabel("UserName")
+                    </label>
+
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="bi bi-person"></i>
+                        </span>
+
+                        <InputText class="form-control"
+                                   @bind-Value="loginRequest.UserName" />
+                    </div>
                 </div>
 
                 @if (options != null && options.Masquerade)
                 {
                     <div class="mb-3">
-                        <label class="form-label">@GetLabel("UserNameM")</label>
+                        <label class="form-label field-label">
+                            @GetLabel("UserNameM")
+                        </label>
                         <InputText class="form-control" @bind-Value="loginRequest.Masquerade" />
                     </div>
                 }
 
                 <div class="mb-3">
-                    <label class="form-label">@GetLabel("PW")</label>
-                    <InputText class="form-control" @bind-Value="loginRequest.Password" Type="password" />
+                    <label class="form-label field-label">
+                        @GetLabel("PW")
+                    </label>
+
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="bi bi-lock-fill"></i>
+                        </span>
+
+                        <InputText class="form-control"
+                                   @bind-Value="loginRequest.Password"
+                                   type="@(showPassword ? "text" : "password")" />
+
+                        <button type="button"
+                                class="btn btn-outline-secondary"
+                                @onclick="TogglePassword">
+                            <i class="bi @(showPassword ? "bi-eye-slash-fill" : "bi-eye-fill")"></i>
+                        </button>
+                    </div>
                 </div>
+
                 <div class="mb-3">
-                    <label class="form-label">@GetLabel("Org")</label>
-                    <InputSelect class="form-select" @bind-Value="loginRequest.Org">
-                        <option value="">-- Select Org --</option>
+                    <label class="form-label field-label">
+                        @GetLabel("Org")
+                    </label>
+                    
+                    <InputSelect class="form-select"
+                                 @bind-Value="loginRequest.Org"
+                                 @bind-Value:after="UpdateSelectedOrg">
                         @foreach (var org in OrgList)
                         {
                             <option value="@org.Nr">@org.Name</option>
@@ -66,26 +101,48 @@
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label">@GetLabel("Lang")</label>
-                    <InputSelect class="form-select" @bind-Value="loginRequest.LangCode">
-                        <option value="">-- Select Language --</option>
-                        @foreach (var lang in LangList)
-                        {
-                            <option value="@lang.Code">@lang.Name</option>
-                        }
-                    </InputSelect>
+                    <label class="form-label field-label">
+                        @GetLabel("Lang")
+                    </label>
+
+                    <div class="input-group">
+
+                        <span class="input-group-text bg-white">
+                            @if (!string.IsNullOrEmpty(SelectedLangFlag))
+                            {
+                                <img src="@SelectedLangFlag"
+                                alt="Icon"
+                                style="width:24px;height:24px;">
+                            }
+                        </span>
+
+                        <InputSelect class="form-select"
+                                     @bind-Value="loginRequest.LangCode"
+                                     @bind-Value:after="UpdateSelectedLanguage">
+
+                            @foreach (var lang in LangList)
+                            {
+                                <option value="@lang.Code">@lang.Name</option>
+                            }
+                        </InputSelect>
+
+                    </div>
                 </div>
 
 
                 <div class="mt-3 mb-3">
                     <label class="form-label"></label>
-                    <button type="submit" class="btn btn-primary w-100">
+                    <button type="submit" 
+                            class="btn btn-primary w-100"
+                            disabled="@disableLogin">
                         @GetLabel("Login")
                     </button>
                 </div>
 
 
             </EditForm>
+
+            <p></p>
 
             @if (options != null && options.RememberMe)
             {
@@ -190,36 +247,47 @@
                             <ValidationSummary />
 
                             <div class="mb-2">
-                                <label>@GetLabel("UserName")</label>
+                                <label class="form-label field-label">
+                                    @GetLabel("UserName")
+                                </label>
                                 <InputText class="form-control"
                                 @bind-Value="signupRequest.UserName" />
                             </div>
 
                             <div class="mb-2">
-                                <label>@GetLabel("Email")</label>
+                                <label class="form-label field-label">
+                                    @GetLabel("Email")
+                                </label>
                                 <InputText class="form-control"
                                 @bind-Value="signupRequest.Email" />
                             </div>
 
                             <div class="mb-2">
-                                <label>@GetLabel("PW")</label>
+                                <label class="form-label field-label">
+                                    @GetLabel("PW")
+                                </label>
                                 <InputText class="form-control" @bind-Value="signupRequest.Password" type="@passwordInputType"/>
                             </div>
 
                             <div class="mb-2">
-                                <label>@GetLabel("PWc")</label>
+                                <label class="form-label field-label">
+                                    @GetLabel("PWc")
+                                </label>
                                 <InputText class="form-control" @bind-Value="signupRequest.ConfirmPassword" type="@passwordInputType" />
                             </div>
 
                             @if (options.SelfRegistrationCaptcha)
                             {
-                                <ReCaptcha @ref="_captcha" SiteKey="@SiteKey" />
+                                <p></p>
+                                <div class="mb-3">
+                                    <ReCaptcha @ref="_captcha" SiteKey="@RecaptchaSiteKey" />
+                                </div>
                                 <br />
                             }
 
                             <div class="form-check mb-2">
-                                <InputCheckbox class="form-check-input" @bind-Value="showPassword" id="showPassword" />
-                                <label class="form-check-label" for="showPassword">@GetLabel("PWsw")</label>
+                                <InputCheckbox class="form-check-input" @bind-Value="showSignupPassword" id="showSignupPassword" />
+                                <label class="form-check-label" for="showSignupPassword">@GetLabel("PWsw")</label>
                             </div>
 
                             <div class="mb-3">
@@ -240,6 +308,8 @@
                             </div>
 
                         </EditForm>
+
+                        <p></p>
 
                         <div class="mb-2">
                             <button type="button" class="btn btn-link p-0" @onclick="ShowRules">
@@ -294,15 +364,17 @@
 
             @if (showMfaInput)
             {
-                <div class="mt-3">
-                    <label>@GetLabel("Mfa3"):</label>
+                <EditForm Model="mfaModel" OnValidSubmit="VerifyMfa">
+                    <div class="mt-3">
+                        <label>@GetLabel("Mfa3"):</label>
 
-                    <InputText @bind-Value="mfaCode" class="form-control" />
+                        <input @ref="mfaInput" @bind="mfaModel.MfaCode" class="form-control" />
 
-                    <button type="button" class="btn btn-success mt-2" @onclick="VerifyMfa">
-                        @GetLabel("Verify")
-                    </button>
-                </div>
+                        <button type="submit" class="btn btn-success mt-2">
+                            @GetLabel("Verify")
+                        </button>
+                    </div>
+                </EditForm>
             }
 
             <p class="small">@((MarkupString)successMessage)</p>
@@ -327,6 +399,10 @@
     };
     private string errorMessage = string.Empty;
     private string successMessage = string.Empty;
+    private string SelectedOrgName = "";
+    private string SelectedLangFlag = "";
+    private bool showPassword;
+    private bool disableLogin = false;
 
     private bool isProcessing = false;
     private bool isDev = false;
@@ -348,25 +424,24 @@
     private string forgotModalMessage = "";
 
     //MFA
+    private ElementReference mfaInput;
     private string qrCodeBase64;
     private bool showQr = false;
     private string manualKey;
-    private string mfaCode;
     private bool showMfaInput = false; // for future use if no QR
 
     // Self Registration
     private bool showSignUpModal = false;
     private bool showSignUpSuccess = false;
     private bool showRules = false;
-    private bool showPassword = false;
+    private bool showSignupPassword = false;
     private string rules = string.Empty;
     private SignupRequest signupRequest;
     private string signupMessage = "";
 
     //Not a Robot
     private ReCaptcha _captcha;
-    private string SiteKey = "6LfX7VstAAAAAPIBO5h0cDYzxGmQ1D81nnyr6p5s";
-    private RobotModel _robotModel = new();
+    private string RecaptchaSiteKey;
 
     private string cookie;
 
@@ -464,6 +539,12 @@
             autoLogin = false; 
             HandleLogin();
         }
+
+        if (focusMfa)
+        {
+            focusMfa = false;
+            await mfaInput.FocusAsync();
+        }
     }
 
     //For API login's, display the bearer token
@@ -473,6 +554,27 @@
         var client = HttpClientFactory.CreateClient(GC.HTTP_Client);
         var tokenResponse = await client.GetAsync(GC.URL_token + "?key=" + key);
         token = await tokenResponse.Content.ReadAsStringAsync();
+    }
+
+    private void UpdateSelectedOrg()
+    {
+        SelectedOrgName =
+            OrgList.FirstOrDefault(x => x.Nr == loginRequest.Org)?.Name ?? "";
+    }
+
+    private void TogglePassword()
+    {
+        showPassword = !showPassword;
+    }
+
+    private async Task UpdateSelectedLanguage()
+    {
+        var lang = LangList.FirstOrDefault(x => x.Code == loginRequest.LangCode);
+        if (lang != null)
+        {
+            SelectedLangFlag = lang.FlagUrl;
+            labels = await LS.InitialiseLabels(lang.Code, options.LangLabelVariant);
+        }
     }
 
     protected override async Task OnInitializedAsync()
@@ -490,9 +592,10 @@
 
         options = JsonConvert.DeserializeObject<LoginOptionDto>(dto.Result.ToString());
 
-        initialiseMfaInput();
+        //initialiseMfaInput(); //DeLete Me
         initialiseSignupRequest();
 
+        RecaptchaSiteKey = options.RecaptchaSiteKey;
         cookie = options.RememberMeCookie;
         navigateToMain = options.SuccessAction == GC.NavigateToFrontendServer;
 
@@ -506,20 +609,37 @@
             OrgList.Add(new OrgItem
                 {
                     Nr = o.Nr,
-                    Name = o.Code + (!string.IsNullOrEmpty(o.Description) ? " - " + o.Description : "")
+                    Code = o.Code,
+                    Name = (!string.IsNullOrEmpty(o.Description) ? o.Description : "")
                 });
         }
+        if (OrgList.Any())
+            SelectedOrgName = OrgList.First().Name;
+
 
         //Load langauge options
         LangList = new List<LangItem>();
         foreach (var o in options.LangCodes)
         {
-            LangList.Add(new LangItem
-            {
-                Code = o.Code,
-                Name = o.Description
-            });
+            var i = new LangItem
+                {
+                    Code = o.Code,
+                    Name = o.Description,
+
+                };
+            if (!string.IsNullOrEmpty(o.Flag))
+                i.FlagUrl = "/images/flags/" + o.Flag;
+            
+            LangList.Add(i);
         }
+
+        var selectedLang = LangList.FirstOrDefault(x => x.Code == loginRequest.LangCode);
+        if (selectedLang == null && LangList.Any())
+            selectedLang = LangList.First();
+
+        if (selectedLang != null)
+            SelectedLangFlag = selectedLang.FlagUrl;
+
 
         loginRequest.UrlSuffix = UrlSuffix;
         loginRequest.Org = int.Parse(options.Orgs[0].Nr.ToString());
@@ -599,12 +719,15 @@
     public class OrgItem
     {
         public int Nr { get; set; }
+        public string Code { get; set; }
         public string Name { get; set; }
     }
 
     public class LangItem
     {
+        public string FlagUrl { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
     }
+    
 }
