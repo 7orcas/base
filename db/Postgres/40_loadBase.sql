@@ -31,7 +31,7 @@ INSERT INTO base.org (nr, code, descr, langcode, langlabelvariant, mfa,
     ispasswordresetenabled, issignupenabled, isemailrequired, isemailverified, icon, 
 	encoded)
 VALUES
-(1, 'Blue', 'Focus your heart', 'en', 1, 3, 
+(1, 'Blue', 'Focus your heart', 'en', 1, 0, 
   'X123',	
   true, true, true, true, 
   '/images/Icons/BlueBlank512.png',
