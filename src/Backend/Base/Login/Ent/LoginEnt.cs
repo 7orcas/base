@@ -48,7 +48,7 @@ namespace Backend.Base.Login.Ent
                 Username = "service",
                 Password = "",
                 Attempts = 0,
-                Lastlogin = DateTime.Now,
+                Lastlogin = null,
                 IsActive = true
             };
         }

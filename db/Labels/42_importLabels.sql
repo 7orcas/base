@@ -20,13 +20,14 @@ DELETE FROM base.langcode;
 -- -------------------------------------------------
 -- Languages
 -- -------------------------------------------------
-INSERT INTO base.langcode (code, descr)
+INSERT INTO base.langcode (code, descr, flag)
 VALUES
-('en', 'English'),
-('de', 'Deutsch'),
-('it', 'Italian'),
-('es', 'Español'),
-('ma', 'Maori');
+('en', 'English', 'gb.svg'),
+('de', 'Deutsch', 'de.svg'),
+('it', 'Italian', 'it.svg'),
+('es', 'Español', 'es.svg'),
+('ma', 'Maori', 'Maori.png'),
+('cn', 'Chinese', 'cn.svg');
 
 -- Testing codes
 INSERT INTO base.langcode (code, descr) VALUES
