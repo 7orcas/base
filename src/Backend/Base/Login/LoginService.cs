@@ -95,7 +95,7 @@ namespace Backend.Base.Login
                 }
 
                 //Masquerade user?
-                string masquerade = null;
+                long? masqueradeId = null;
                 if (!string.IsNullOrEmpty(request.Masquerade))
                 {
                     var loginM = null as LoginEnt;
@@ -115,7 +115,7 @@ namespace Backend.Base.Login
                     _log.Warning("Masquerade login valid. " +
                             "Masquerade {MasqueradeUsername}, LoginUsername {Username} OrgNr {Org}",
                             request.Masquerade, login.Username, org.Nr);
-                    masquerade = loginM.Username;
+                    masqueradeId = login.Id;
                     login = loginM;
                 }
                 
@@ -162,9 +162,10 @@ namespace Backend.Base.Login
 
                 //Continue with login process and return tokenkey
                 var langCode = !string.IsNullOrEmpty(request.LangCode) ? request.LangCode : account.LangCode; //Delete me
-                await InitialiseLogin(login, account, org, request.SourceApplication);
+                await InitialiseLogin(login, account, org);
                 var userConfig = _configService.CreateUserConfig(account, org, langCode);
-                var session = await _sessionService.CreateSession(account, org, userConfig, masquerade, request.SourceApplication, ipAddress);
+                var session = await _sessionService.CreateSession(account, org, userConfig, masqueradeId, request.SourceApplication, ipAddress);
+                _auditService.LogInOut(session, GC.EntityTypeLogin);
 
                 var tv = new TokenValues
                 {
@@ -439,7 +440,7 @@ namespace Backend.Base.Login
 
 
 
-        public async Task InitialiseLogin(LoginEnt login, UserAccountEnt account, OrgEnt org, int sourceAppNr)
+        public async Task InitialiseLogin(LoginEnt login, UserAccountEnt account, OrgEnt org)
         {
             if (login.Id == GC.ServiceLoginId)
                 SetAttemptsService(0);
@@ -451,7 +452,6 @@ namespace Backend.Base.Login
 
             account.Username = login.Username;
             account.Permissions = await _permissionService.LoadEffectivePermissionsInt(account.Id, org.Nr);
-            _auditService.LogInOut(sourceAppNr, org.Nr, account.Id, GC.EntityTypeLogin);
         }
 
         private async Task<int> IncrementAttempts(LoginEnt l)

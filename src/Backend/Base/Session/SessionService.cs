@@ -22,7 +22,7 @@ namespace Backend.Base.Session
             _memoryCache = memoryCache;
         }
 
-        public async Task<SessionEnt> CreateSession(UserAccountEnt userAccount, OrgEnt org, UserConfig userConfig, string? masquerade,
+        public async Task<SessionEnt> CreateSession(UserAccountEnt userAccount, OrgEnt org, UserConfig userConfig, long? masqueradeId,
             int sourceApp, string ipAddress)
         {
             var key = userAccount.Username + "-" + Guid.NewGuid().ToString();
@@ -30,7 +30,7 @@ namespace Backend.Base.Session
             {
                 Key = key,
                 UserAccount = userAccount,
-                MasqueradeUsername = masquerade,
+                MasqueradeId = masqueradeId,
                 Org = org,
                 UserConfig = userConfig,
                 SourceApp = sourceApp,

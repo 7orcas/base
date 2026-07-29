@@ -5,7 +5,8 @@ namespace Backend.Base.Audit
     {
         void ReadList(SessionEnt session, int entityTypeId, string query);
         void ReadEntity(SessionEnt session, int entityTypeId, long entityId);
-        void LogInOut(int sourceApp, long orgNr, long loginId, int entityTypeId);
+        void LogInOut(SessionEnt session, int entityTypeId);
         Task<List<AuditList>> GetEvents(SessionEnt session);
+        AuditDto Load(AuditList e);
     }
 }

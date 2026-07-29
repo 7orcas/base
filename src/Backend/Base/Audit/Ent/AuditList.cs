@@ -4,6 +4,7 @@
     {
         public string EntityType { get; set; }
         public string? User { get; set; }
+        public string? Masquerade { get; set; }
         public string CrudDescr { get; set; }
         public string SourceDescr { get; set; }
     }

@@ -78,7 +78,7 @@ namespace Backend.Base.Login
         }
 
         //Make sure the options are enabled in at least one of the org numbers
-        private async Task ReconcileOptionsWithOrgs(LoginOptionDto options)
+        private async Task ReconcileOptionsWithOrgs(LoginOptionDto dto)
         {
             var test = new LoginOptionDto
             {
@@ -91,19 +91,19 @@ namespace Backend.Base.Login
                 Masquerade = false,
             };
 
-            foreach (var orgDto in options.Orgs)
+            foreach (var orgDto in dto.Orgs)
             {
                 var org = await _orgService.GetOrg(orgDto.Nr);
                 ReconcileOptionsWithOrg(test, org);
             }
 
-            if (!test.Mfa) options.Mfa = false;
-            if (!test.RememberMe) options.RememberMe = false;
-            if (!test.PasswordReset) options.PasswordReset = false;
-            if (!test.PasswordResetCaptcha) options.PasswordResetCaptcha = false;
-            if (!test.SelfRegistration) options.SelfRegistration = false;
-            if (!test.SelfRegistrationCaptcha) options.SelfRegistrationCaptcha = false;
-            if (!test.Masquerade) options.Masquerade = false;
+            if (!test.Mfa) dto.Mfa = false;
+            if (!test.RememberMe) dto.RememberMe = false;
+            if (!test.PasswordReset) dto.PasswordReset = false;
+            if (!test.PasswordResetCaptcha) dto.PasswordResetCaptcha = false;
+            if (!test.SelfRegistration) dto.SelfRegistration = false;
+            if (!test.SelfRegistrationCaptcha) dto.SelfRegistrationCaptcha = false;
+            if (!test.Masquerade) dto.Masquerade = false;
         }
 
         private void ReconcileOptionsWithOrg(LoginOptionDto test, OrgEnt org)
@@ -131,6 +131,7 @@ namespace Backend.Base.Login
                 LangLabelVariant = GetInt(r, "langlabelvariant"),
                 LangCodes = GetString(r, "langcodes"),
                 SuccessAction = GetInt(r, "successaction"),
+                IsMasqueradeEnabled = GetBoolean(r, "isMasqueradeEnabled"),
                 IsActive = GetBoolean(r, "isActive")
             };
         }
@@ -151,6 +152,7 @@ namespace Backend.Base.Login
                 LangLabelVariant = 0,
                 LangCodes = langs,
                 SuccessAction = GC.NavigateToFrontendServer,
+                IsMasqueradeEnabled = true,
                 IsActive = true
             };
             
@@ -158,7 +160,13 @@ namespace Backend.Base.Login
         }
 
 
-        //Initialise login options 
+        /// <summary>
+        /// Initialise login options:
+        /// 1. Set options with the default org nr
+        /// 2. Remove options if not valid in other org nrs
+        /// </summary>
+        /// <param name="ent"></param>
+        /// <returns></returns>
         public async Task<LoginOptionDto> InitialiseLoginOptions(LoginOptionEnt ent)
         {
             //Get the default org for this login option
@@ -185,7 +193,7 @@ namespace Backend.Base.Login
                 PasswordResetCaptcha = org.Encoding.IsPasswordResetCaptchaEnabled,
                 SelfRegistration = org.IsSignupEnabled,
                 SelfRegistrationCaptcha = org.Encoding.IsSignupCaptchaEnabled,
-                Masquerade = org.IsMasqueradeEnabled
+                Masquerade = org.IsMasqueradeEnabled && ent.IsMasqueradeEnabled  //Must be both enabled
             };
 
             foreach (var part in ent.OrgNrs.Split(","))

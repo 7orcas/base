@@ -20,6 +20,7 @@ CREATE TABLE cntrl.loginoption (
     langcode VARCHAR(4) NOT NULL,
     langlabelvariant INTEGER NOT NULL,
 	langcodes TEXT,
+	ismasqueradeenabled BOOLEAN DEFAULT FALSE,
 	successaction INTEGER NOT NULL DEFAULT 0
 );
 

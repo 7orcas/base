@@ -31,20 +31,7 @@ namespace Backend.Base.Audit
             var list = new List<AuditDto>();
 
             foreach (var e in events)
-            {
-                list.Add(new AuditDto
-                {
-                    Id = e.Id,
-                    orgNr = e.orgNr,
-                    Source = e.Source,
-                    EntityType = e.EntityType,
-                    EntityId = e.EntityId,
-                    User = e.User,
-                    Created = e.Created,
-                    Crud = e.Crud,
-                    Details = e.Details,
-                });
-            }
+                list.Add(_auditService.Load(e));
 
             var r = new _ResponseDto
             {
