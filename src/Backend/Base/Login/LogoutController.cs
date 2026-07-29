@@ -31,7 +31,7 @@ namespace Backend.Base.Login
         public async Task<IActionResult> Logout()
         {
             var ses = HttpContext.Items["session"] as SessionEnt;
-            _auditService.LogInOut(ses.SourceApp, ses.Org.Nr, ses.UserAccount.Id, GC.EntityTypeLogout);
+            _auditService.LogInOut(ses, GC.EntityTypeLogout);
             _sessionService.RemoveSession(ses.Key);
             return Ok("ok");
         }

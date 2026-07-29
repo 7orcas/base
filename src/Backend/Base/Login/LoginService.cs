@@ -67,20 +67,58 @@ namespace Backend.Base.Login
                 //loginErr.Response.ErrorMessage = null; By default no message to avoid giving hints to hackers
 
 
+                //Test Username and OrgNr
                 var login = await GetLoginByUsername(request.UserName);
                 var org = await _orgService.GetOrg(request.Org);
                 if (login == null || org == null)
+                {
+                    _log.Error("Login and/or org null. Username {Username} Org {Org}",
+                        request.UserName, request.Org);
                     return loginErr;
+                }
 
-                //Test if API client login and validate
+                //Test API client 
                 if (request.SourceApplication == GC.ApiClient &&
                     !CompareNotNull(request.ApiKey, org.ApiKey))
+                {
+                    _log.Error("Login API invalid api key. LoginKey {Username} OrgKey {Org}",
+                        request.ApiKey, org.ApiKey);
                     return loginErr;
+                }
 
+                //Validate user
                 var labels = await _labelService.GetLangCodeDic(request.LangCode, org.LangLabelVariant);
                 if (!await ValidateLogin(login, loginErr, request.Password, org, labels))
+                {
+                    _log.Warning("Login not Validated. Error {Error}", loginErr.Response.ErrorMessage);
                     return loginErr;
+                }
 
+                //Masquerade user?
+                long? masqueradeId = null;
+                if (!string.IsNullOrEmpty(request.Masquerade))
+                {
+                    var loginM = null as LoginEnt;
+                    if (login.IsService() 
+                        && org.IsMasqueradeEnabled
+                        && request.SourceApplication != GC.ApiClient)
+                        loginM = await GetLoginByUsername(request.Masquerade);
+
+                    if (loginM == null)
+                    {
+                        _log.Error("Masquerade login invalid. " +
+                            "Masquerade {MasqueradeUsername}, LoginUsername {Username} OrgNr {Org}",
+                            request.Masquerade, login.Username, org.Nr);
+                        return loginErr;
+                    }
+
+                    _log.Warning("Masquerade login valid. " +
+                            "Masquerade {MasqueradeUsername}, LoginUsername {Username} OrgNr {Org}",
+                            request.Masquerade, login.Username, org.Nr);
+                    masqueradeId = login.Id;
+                    login = loginM;
+                }
+                
 
                 UserAccountEnt? account = null;
                 if (ServiceAccount != null && login.IsService())
@@ -88,11 +126,13 @@ namespace Backend.Base.Login
                 else
                     account = await _loginRepo.GetAccount(login.Id, request.Org);
 
+                //Validate account
                 if (account == null)
                 {
                     var label = GetLabel("LoginAS", "You are not setup to access %%", labels);
                     label = ReplaceLabelParameter(label, org.Code);
                     loginErr.Response.ErrorMessage = label;
+                    _log.Warning("Login no account. Error {Error}", loginErr.Response.ErrorMessage);
                     return loginErr;
                 }
                 else if (!account.IsActive)
@@ -100,6 +140,7 @@ namespace Backend.Base.Login
                     var label = GetLabel("LoginIA", "Your account into %% is inactive", labels);
                     label = ReplaceLabelParameter(label, org.Code);
                     loginErr.Response.ErrorMessage = label;
+                    _log.Warning("Login not active. Error {Error}", loginErr.Response.ErrorMessage);
                     return loginErr;
                 }
 
@@ -121,9 +162,10 @@ namespace Backend.Base.Login
 
                 //Continue with login process and return tokenkey
                 var langCode = !string.IsNullOrEmpty(request.LangCode) ? request.LangCode : account.LangCode; //Delete me
-                await InitialiseLogin(login, account, org, request.SourceApplication);
+                await InitialiseLogin(login, account, org);
                 var userConfig = _configService.CreateUserConfig(account, org, langCode);
-                var session = await _sessionService.CreateSession(account, org, userConfig, request.SourceApplication, ipAddress);
+                var session = await _sessionService.CreateSession(account, org, userConfig, masqueradeId, request.SourceApplication, ipAddress);
+                _auditService.LogInOut(session, GC.EntityTypeLogin);
 
                 var tv = new TokenValues
                 {
@@ -398,7 +440,7 @@ namespace Backend.Base.Login
 
 
 
-        public async Task InitialiseLogin(LoginEnt login, UserAccountEnt account, OrgEnt org, int sourceAppNr)
+        public async Task InitialiseLogin(LoginEnt login, UserAccountEnt account, OrgEnt org)
         {
             if (login.Id == GC.ServiceLoginId)
                 SetAttemptsService(0);
@@ -410,7 +452,6 @@ namespace Backend.Base.Login
 
             account.Username = login.Username;
             account.Permissions = await _permissionService.LoadEffectivePermissionsInt(account.Id, org.Nr);
-            _auditService.LogInOut(sourceAppNr, org.Nr, account.Id, GC.EntityTypeLogin);
         }
 
         private async Task<int> IncrementAttempts(LoginEnt l)

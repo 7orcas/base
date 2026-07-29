@@ -40,16 +40,16 @@ namespace Backend.Base.Login
         [HttpGet("get/{urlSuffix}")]
         public async Task<IActionResult> LoginOptions([FromRoute] string urlSuffix, [FromQuery] string? encryptedCookie)
         {
-            var options = await _loginOptionService.GetLoginOptions(urlSuffix);
+            var loginOptionEnt = await _loginOptionService.GetLoginOptions(urlSuffix);
 
-            if (!options.IsActive)
+            if (!loginOptionEnt.IsActive)
                 return Ok(new _ResponseDto
                 {
                     Valid = false,
                     ErrorMessage = "NAuthA",
                 });
 
-            var dto = await _loginOptionService.InitialiseLoginOptions(options);
+            var dto = await _loginOptionService.InitialiseLoginOptions(loginOptionEnt);
             dto.RememberMeCookie = _cookieProtector.Decrypt(encryptedCookie);
 
             var r = new _ResponseDto

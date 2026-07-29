@@ -17,6 +17,7 @@ namespace Backend.Base.Login.Ent
         public string LangCode { get; set; }
         public int LangLabelVariant { get; set; }
         public string LangCodes { get; set; }
+        public bool IsMasqueradeEnabled { get; set; }
         public int SuccessAction { get; set; }
 
         [NotMapped]

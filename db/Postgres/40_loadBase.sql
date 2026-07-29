@@ -8,11 +8,14 @@ BEGIN;
 INSERT INTO cntrl.loginoption (urlsuffix, orgnr, orgnrs, langcode, langlabelvariant, langcodes, isdefault)
 VALUES ('blue', 1, '1', 'en', 0, 'en', true);
 
+INSERT INTO cntrl.loginoption (urlsuffix, orgnr, orgnrs, langcode, langlabelvariant, langcodes, ismasqueradeenabled)
+VALUES ('service', 1, '1', 'en', 0, 'en', true);
+
 INSERT INTO cntrl.loginoption (urlsuffix, orgnr, orgnrs, langcode, langlabelvariant, langcodes, isdefault)
 VALUES ('admin', 1, '1,2', 'en', 0, 'en,de,it,es,ma,cn', false);
 
-INSERT INTO cntrl.loginoption (urlsuffix, orgnr, orgnrs, langcode, langlabelvariant, langcodes)
-VALUES ('all', 2, '1,2,3', 'de', 1, 'en,de,es,xx');
+INSERT INTO cntrl.loginoption (urlsuffix, orgnr, orgnrs, langcode, langlabelvariant, langcodes, ismasqueradeenabled)
+VALUES ('all', 2, '1,2,3', 'de', 1, 'en,de,es,xx', true);
 
 INSERT INTO cntrl.loginoption (urlsuffix, orgnr, orgnrs, langcode, langlabelvariant, langcodes, successaction)
 VALUES ('api', 1, '1', 'en', 0, 'en', 1);
@@ -28,12 +31,13 @@ VALUES (0, 'Org Base', 'Base Organisation', 'en', 0);
 
 INSERT INTO base.org (nr, code, descr, langcode, langlabelvariant, mfa, 
 	apikey,
-    ispasswordresetenabled, issignupenabled, isemailrequired, isemailverified, icon, 
+    ispasswordresetenabled, issignupenabled, isemailrequired, isemailverified, ismasqueradeenabled,
+	icon, 
 	encoded)
 VALUES
 (1, 'Blue', 'Focus your heart', 'en', 1, 0, 
   'X123',	
-  true, true, true, true, 
+  true, true, true, true, true, 
   '/images/Icons/BlueBlank512.png',
  '{Languages:[{LangCode:"en",IsEditable:true},{LangCode:"de",IsEditable:true},{LangCode:"c1",IsEditable:false},{LangCode:"c2",IsEditable:false}]}');
 
@@ -144,7 +148,14 @@ VALUES
 (6, 2, 6),
 (7, 3, 1),
 (8, 3, 5),
-(9, 3, 6);
+(9, 3, 6),
+
+(10, 1, 1),
+(12, 1, 2),
+(13, 1, 3),
+(14, 1, 4),
+(15, 1, 5),
+(16, 1, 6);
 
 -- -------------------------------------------------
 -- Fix identity sequences
