@@ -28,12 +28,13 @@ VALUES (0, 'Org Base', 'Base Organisation', 'en', 0);
 
 INSERT INTO base.org (nr, code, descr, langcode, langlabelvariant, mfa, 
 	apikey,
-    ispasswordresetenabled, issignupenabled, isemailrequired, isemailverified, icon, 
+    ispasswordresetenabled, issignupenabled, isemailrequired, isemailverified, ismasqueradeenabled,
+	icon, 
 	encoded)
 VALUES
 (1, 'Blue', 'Focus your heart', 'en', 1, 0, 
   'X123',	
-  true, true, true, true, 
+  true, true, true, true, true, 
   '/images/Icons/BlueBlank512.png',
  '{Languages:[{LangCode:"en",IsEditable:true},{LangCode:"de",IsEditable:true},{LangCode:"c1",IsEditable:false},{LangCode:"c2",IsEditable:false}]}');
 

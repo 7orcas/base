@@ -15,6 +15,7 @@ namespace Backend.Base.Session.Ent
         public string Key { get; set; }
         public OrgEnt Org { get; set; }
         public UserAccountEnt UserAccount { get; set; }
+        public string? MasqueradeUsername { get; set; }
         public UserConfig UserConfig { get; set; }
         public int SourceApp {  get; set; }
         public string IpAddress { get; set; } = string.Empty;

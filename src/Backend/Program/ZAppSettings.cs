@@ -4,6 +4,8 @@
     {
         static public void Configure(WebApplicationBuilder builder)
         {
+            var _log = Serilog.Log.Logger;
+
             AppSettings.DBMainConnection = builder.Configuration["ConnectionStrings:DBMainConnection"];
             AppSettings.MaxGetTokenCalls = int.Parse(builder.Configuration["Token:MaxGetTokenCalls"]);
             AppSettings.AccessTokenMinutes = int.Parse(builder.Configuration["Token:AccessTokenMinutes"]);
@@ -22,20 +24,26 @@
                 urls.Login = builder.Configuration["Urls:Login"];
                 AppSettings.Urls = urls;
             }
-            catch { }
+            catch (Exception e) 
+            {
+                _log.Error("AppSettings URLs  ex{ex}", e);
+            }
 
             try
             {
                 var email = new EmailSettings();
                 email.SmtpServer = builder.Configuration["Email:SmtpServer"];
-                email.Port = int.Parse(builder.Configuration["Email:Port"]);
                 email.SenderName = builder.Configuration["Email:SenderName"];
                 email.SenderEmail = builder.Configuration["Email:SenderEmail"];
                 email.Username = builder.Configuration["Email:Username"];
                 email.Password = builder.Configuration["Email:Password"];
+                email.Port = int.Parse(builder.Configuration["Email:Port"]);
                 AppSettings.EmailSettings = email;
             }
-            catch { }
+            catch (Exception e)
+            {
+                _log.Error("AppSettings Email  ex{ex}", e);
+            }
 
             //Do not log details!
             try
@@ -49,7 +57,10 @@
                 if (acc.IsValid())
                     AppSettings.ServiceAccount = acc;
             }
-            catch { }
+            catch (Exception e) 
+            {
+                _log.Error("AppSettings ServiceAccount  ex{ex}", e);
+            }
 
             try
             {
@@ -58,7 +69,10 @@
                 recaptcha.SecretKey = builder.Configuration["ReCaptcha:SecretKey"];
                 AppSettings.ReCaptcha = recaptcha;
             }
-            catch { }
+            catch (Exception e) 
+            {
+                _log.Error("AppSettings Recaptucha  ex{ex}", e);
+            }
         }
     
 
