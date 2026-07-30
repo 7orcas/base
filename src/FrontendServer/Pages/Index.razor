@@ -137,7 +137,7 @@ else
     private async Task<string> GetTokenFromKey(string tokenkey)
     {
         var clientU = HttpClientFactory.CreateClient(GC.UnAuthorizedClientKey);
-        var response = await clientU.GetAsync(GC.URL_token + "?key=" + tokenkey);
+        var response = await clientU.GetAsync(GC.URL_token_token + "?key=" + tokenkey);
         var r = await response.Content.ReadAsStringAsync();
         var dto = JsonConvert.DeserializeObject<_ResponseDto>(r);
         var tokenDto = JsonConvert.DeserializeObject<LoginTokenDto>(dto.Result.ToString());

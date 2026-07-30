@@ -398,11 +398,19 @@
                 </EditForm>
             }
 
-            <p class="small">@((MarkupString)successMessage)</p>
-            <p class="small text-danger">@((MarkupString)errorMessage)</p>
-            <p>@tokenkey</p>
-            <p>@token</p>
-            <p>@cookie</p>
+            @if (!string.IsNullOrEmpty(successMessage))
+            {
+                <p class="small">@((MarkupString)successMessage)</p>
+            }
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <p class="small text-danger">@((MarkupString)errorMessage)</p>
+            }
+            @if (!string.IsNullOrEmpty(tokenkey) || !string.IsNullOrEmpty(token))
+            {
+                <p>@tokenkey</p>
+                <p>@token</p>
+            }
 
             <div class="mt-3 text-muted text-center" style="font-size: 0.75rem;">
                 @GetLabel("Ver"): @VersionNumber
@@ -580,7 +588,7 @@
     {
         tokenkey = key;
         var client = HttpClientFactory.CreateClient(GC.HTTP_Client);
-        var tokenResponse = await client.GetAsync(GC.URL_token + "?key=" + key);
+        var tokenResponse = await client.GetAsync(GC.URL_token_token + "?key=" + key);
         token = await tokenResponse.Content.ReadAsStringAsync();
     }
 

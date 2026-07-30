@@ -26,7 +26,7 @@ namespace Common
         public const string URL_login_label           = "api/Login/loginlabels/";
         public const string URL_reset_request         = "api/Login/resetrequest";
         public const string URL_reset_action          = "api/Login/resetaction";
-        public const string URL_token                 = "api/Token/token";
+        public const string URL_token_token           = "api/Token/token";
         public const string URL_token_refresh_expired = "api/Token/refreshexpired";
         public const string URL_token_refresh_current = "api/Token/refreshcurrent";
         public const string URL_token_test            = "api/Token/test";

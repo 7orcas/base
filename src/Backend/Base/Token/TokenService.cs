@@ -57,28 +57,9 @@ namespace Backend.Base.Token
 
         private string CreateToken(TokenValues tv, GC.TokenType type)
         {
-            var claims = new[]
-            {
-                new Claim("Key", tv.SessionKey),
-                new Claim("Org", "" + tv.OrgNr),
-                new Claim("Ip", "" + tv.IpAddress),
-                new Claim("User", "" + tv.Username),
-            };
-
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(TokenParameters._Key));
-            var creds = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-
-            var token = new JwtSecurityToken(
-                issuer: TokenParameters._Issuer,
-                audience: TokenParameters._Audience,
-                claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(AppSettings.AccessTokenMinutes),
-                //expires: DateTime.UtcNow.AddSeconds(AppSettings.AccessTokenMinutes), TESTING
-                signingCredentials: creds
-                );
-
             var tt = "??";
             var returnJwt = false;
+            var expires = DateTime.UtcNow.AddMinutes(AppSettings.AccessTokenMinutes);
 
             switch (type)
             {
@@ -95,6 +76,25 @@ namespace Backend.Base.Token
                     returnJwt = true;
                     break;
             }
+
+            var claims = new[]
+            {
+                new Claim("Key", tv.SessionKey),
+                new Claim("Org", "" + tv.OrgNr),
+                new Claim("Ip", "" + tv.IpAddress),
+                new Claim("User", "" + tv.Username),
+            };
+
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(TokenParameters._Key));
+            var creds = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                issuer: TokenParameters._Issuer,
+                audience: TokenParameters._Audience,
+                claims: claims,
+                expires: expires,
+                signingCredentials: creds
+                );
 
             _log.Debug("CreateToken Type {Type} Username {Username} OrgNr {OrgNr} SessionKey {SessionKey}",
                 tt, tv.Username, tv.OrgNr, tv.SessionKey);

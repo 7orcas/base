@@ -1,0 +1,49 @@
+I want a web layout design the has:
+A main menu - the menu items could have sub items
+A title and home icon
+Needs to run on various devices of different sizes
+A main page (ie showing the item from the menu)
+
++--------------------------------------------------+
+| 🏠 Home | Application Title            ☰ Mobile |
++--------------------------------------------------+
+| Menu             | Main Content Area             |
+|------------------|------------------------------|
+| Dashboard        | Selected Page Content        |
+| Products ▼       |                              |
+|   Product List   |                              |
+|   Categories     |                              |
+| Reports ▼        |                              |
+|   Sales          |                              |
+|   Usage          |                              |
+| Settings         |                              |
++--------------------------------------------------+
+
+
+
+Start a graph
+  - Save
+  - Group or Individual
+  - Start / Stop / Pause
+Stats (of graphs)
+
+Chat
+- Group
+- Private
+
+User
+- Groups
+- Change Password
+- Logout
+- Preferences
+  - Light / Dark Mode
+  - Notifcations
+- Roles (info)
+
+Admin
+- Users
+- Roles and Permissions
+- Audit
+- Organisations
+  - Accounts
+    - Roles
