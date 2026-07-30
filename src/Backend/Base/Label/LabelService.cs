@@ -136,6 +136,7 @@ namespace Backend.Base.Label
                 "Send",
                 "Mfa*",
                 "Captcha*",
+                "Ver"
             };
 
             list = list

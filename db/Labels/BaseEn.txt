@@ -140,4 +140,5 @@ CaptchaE,Failed to verify reCAPTCHA
 CaptchaR,ReCAPTCHA is required
 Val0,Can''t be empty
 Val1,Can''t contain spaces
+Ver,Version
 <LAST>,<LAST LINE>
