@@ -1,0 +1,7 @@
+<Project>
+  <PropertyGroup>
+    <Version>1.0.0</Version>
+    <InformationalVersion>0.3.$([System.DateTime]::UtcNow.ToString('yyyyMMdd'))</InformationalVersion>
+	<IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+  </PropertyGroup>
+</Project>

@@ -1,8 +1,5 @@
-using Backend;
 using Backend.Base.Token.Ent;
-using Backend.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
 using QuestPDF.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -43,6 +40,7 @@ ZCors.Use(app);
 ZRateLimiter.Use(app);
 ZMiddleware.Configure(app);
 ZLogging.ConfigureRequests(app);
+ZVersionApi.Use(app);
 
 if (app.Environment.IsDevelopment())
 {
