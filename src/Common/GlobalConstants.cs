@@ -21,6 +21,7 @@ namespace Common
         //Login (successful) Actions
         public const int NavigateToFrontendServer     = 0;
         public const int GetAndDisplayJWTtoken        = 1;
+        public const string URL_version_number        = "api/version";
         public const string URL_login_option          = "api/LoginOption/get/";
         public const string URL_login_label           = "api/Login/loginlabels/";
         public const string URL_reset_request         = "api/Login/resetrequest";

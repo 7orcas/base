@@ -1,0 +1,71 @@
+I have a c# ,.Net, Blazor Server application.
+The .Net Backend is an API project.
+The Blazor frontend is made up of 2 Blazor server projects, a Login project and the Client project.
+I want to have a version number that identifies the release
+It should have the following format: major number.minor number.build number
+How can I have an automated system that updates the build number each build and make this availble to the API project
+
+
+I'm not running a CI/CD pipeline (I may in the future, but not now)
+I like the /api/version access
+
+
+create file: Directory.Build.props (solution root):
+<Project>
+  <PropertyGroup>
+    <VersionMajor>1</VersionMajor>
+    <VersionMinor>0</VersionMinor>
+
+    <BuildNumber>
+      $([System.DateTime]::UtcNow.ToString("yyyyMMddHHmm"))
+    </BuildNumber>
+
+    <Version>
+      $(VersionMajor).$(VersionMinor).$(BuildNumber)
+    </Version>
+
+    <InformationalVersion>
+      $(Version)
+    </InformationalVersion>
+  </PropertyGroup>
+</Project>
+
+create file: BuildNumber.txt (solution root)
+inital: 100
+
+Add a build target that:
+1. Reads the current number
+2. Increments it
+3. Writes it back
+4. Sets the assembly version
+
+in Directory.Build.targets (solution root):
+<Project>
+
+  <Target Name="GenerateBuildNumber" BeforeTargets="BeforeBuild">
+
+    <ReadLinesFromFile File="BuildNumber.txt">
+      <Output TaskParameter="Lines" PropertyName="BuildNumber"/>
+    </ReadLinesFromFile>
+
+    <PropertyGroup>
+      <NewBuildNumber>$([MSd($(BuildNumber),1))</NewBuildNumber>
+
+      <Version>
+        $(VersionMajor).$(VersionMinor).$(NewBuildNumber)
+      </Version>
+
+      <InformationalVersion>
+        $(VersionMajor).$(VersionMinor).$(NewBuildNumber)
+      </InformationalVersion>
+    </PropertyGroup>
+
+    <WriteLinesToFile
+        File="BuildNumber.txt"
+        Lines="$(NewBuildNumber)"
+        Overwrite="true" />
+
+  </Target>
+
+</Project>
+

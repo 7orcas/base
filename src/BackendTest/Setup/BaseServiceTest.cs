@@ -64,11 +64,13 @@ namespace BackendTest.Setup
         public class AuditTest : AuditServiceI
         {
             public Task<List<AuditList>> GetEvents(SessionEnt session) => throw new NotImplementedException();
-            public void LogInOut(int sourceApp, int orgNr, int loginId, int entity) { }
-            public void LogInOut(int sourceApp, long orgNr, long loginId, int entityTypeId) => throw new NotImplementedException();
+            public void LogInOut(SessionEnt session, int entity) { }
+            //public void LogInOut(SessionEnt session, int entityTypeId) => throw new NotImplementedException();
             public void ReadEntity(SessionEnt session, int entityTypeId, int entityId) { }
             public void ReadEntity(SessionEnt session, int entityTypeId, long entityId) => throw new NotImplementedException();
             public void ReadList(SessionEnt session, int entityTypeId, string query) { }
+
+            public AuditDto Load(AuditList e) => throw new NotImplementedException();
         }
 
     }
