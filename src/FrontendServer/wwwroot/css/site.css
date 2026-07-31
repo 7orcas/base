@@ -187,3 +187,57 @@ a, .btn-link {
     color: var(--row-error-color-dark) !important;
     background-color: var(--row-error-bg-dark) !important;
 }
+
+
+
+
+.layout-body {
+    display: flex;
+    height: calc(100vh - 64px - 60px);
+}
+
+.left-panel {
+    width: 300px;
+    min-width: 150px;
+    max-width: 600px;
+    overflow: auto;
+}
+
+.main-panel {
+    flex: 1;
+    overflow: auto;
+}
+
+.right-panel {
+    width: 300px;
+    min-width: 150px;
+    max-width: 600px;
+    overflow: auto;
+}
+
+.splitter {
+    width: 5px;
+    height: 100%;
+    cursor: col-resize;
+    background: #ddd;
+}
+
+.splitter:hover {
+    background: #1976d2;
+}
+
+.bottom-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    width: 100%;
+    padding: 0 16px;
+    z-index: 1200;
+    display: flex;
+    align-items: center;
+    padding-left: 16px;
+    border-top: 1px solid var(--mud-palette-lines-default);
+    background-color: var(--mud-palette-surface);
+}

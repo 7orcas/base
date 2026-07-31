@@ -16,10 +16,9 @@
     {
         <MudLayout>
 
-            <MudAppBar Elevation="4" Class="app-bar">
+            <MudAppBar Elevation="1" Style="width:100%; left:0; right:0;">
                 <div style="display: flex; align-items: center; width: 100%; justify-content: space-between;">
 
-                    <!-- Left -->
                     <div style="display: flex; align-items: center;">
                         @if (ConfS.Config.User.IsService)
                         {
@@ -33,7 +32,7 @@
 
                     <!-- Center: Menu items -->
                     <div style="display: flex; gap: 16px;">
-                        <MainMenu />
+                        yyyyy
                     </div>
 
                     <!-- Right Settings -->
@@ -76,20 +75,51 @@
                 </div>
             </MudAppBar>
 
+            <!--
             <MudDrawer @bind-Open="_drawerOpen"
                        Elevation="1"
                        ClipMode="DrawerClipMode.Always"
                        Variant="DrawerVariant.Responsive">
                 <ServiceMenu />
             </MudDrawer>
+            -->
 
             <MudMainContent Class="main-content-fill-screen">
-                <MudContainer MaxWidth="MaxWidth.False" Class="main-container" Gutters="false">
-                    <MudPaper Class="main-container" Elevation="0" Square="true">
+
+                <div style="display:flex;height:calc(100vh - 64px - 60px);">
+
+                    <div id="leftPanel" class="left-panel" style="border:solid;border-color:red;">
+                        <MainMenu />
+                    </div>
+
+                    <div id="leftSplitter" class="splitter"></div>
+
+                    <div class="main-panel" style="border:solid;border-color:blue;">
                         @Body
-                    </MudPaper>
-                </MudContainer>
+                    </div>
+
+                    <div id="rightSplitter" class="splitter"></div>
+
+                    <div id="rightPanel" class="right-panel" style="border:solid;border-color:purple">
+                        <ServiceMenu />
+                    </div>
+
+                </div>
+                
             </MudMainContent>
+
+
+            <MudPaper Class="bottom-bar d-flex justify-space-between align-center" Elevation="1" Square="true">
+                <div style="display: flex; align-items: center;">
+                    111
+                </div>
+                <div style="display: flex; gap: 16px;">
+                    2222222222222222222222222222222222222222222222222222222222
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    333
+                </div>
+            </MudPaper>
 
         </MudLayout>
     }
@@ -104,6 +134,23 @@
 @inject LogoutService LgS
 @inject ProtectedSessionStorage PS
 @code {
+
+    [Inject] IJSRuntime JS { get; set; } = default!;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (ConfS.IsInitialized)
+        {
+            await JS.InvokeVoidAsync("initSplitters");
+        }
+    }
+
+
+
+
+
+
+
     private string lOrg = "";
 
     private bool _drawerOpen = false;
