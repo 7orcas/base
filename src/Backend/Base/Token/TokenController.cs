@@ -122,7 +122,7 @@ namespace Backend.Base.Token
             return r;
         }
 
-        [Authorize]
+        [AllowAnonymous]
         [CrudAtt(GC.CrudIgnore)]
         [HttpGet("test")]
         public IActionResult TestToken()
