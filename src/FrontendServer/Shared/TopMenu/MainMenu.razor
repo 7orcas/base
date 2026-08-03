@@ -1,32 +1,36 @@
 ﻿
-@for (int i = 0; i < items.Count(); i += cMax)
-{
-    var index = i;
-    <MenuButton Title="@items[index + cLabel]" Link="@items[index + cRoute]" />
-}
+<div class="vertical-menu">
+    @for (int i = 0; i < items.Count(); i += cMax)
+    {
+        var index = i;
+        <MenuButton Title="@items[index + cLabel]" Link="@items[index + cRoute]" />
+    }
 
-@if (ConfS.Config.User.IsSystemAdmin)
-{
-    <MudMenu ActivationEvent="MouseEvent.MouseOver"
-             AnchorOrigin="Origin.BottomCenter"
-             TransformOrigin="Origin.TopCenter"
-             OffsetY="true"
-             Dense="true">
-        <ActivatorContent>
+    @if (ConfS.Config.User.IsSystemAdmin)
+    {
+        <div style="width:100%;">
             <MudButton Class="custom-menu-button"
-                       Link="true"
+                       Variant="Variant.Text"
                        Color="Color.Inherit"
-                       Variant="Variant.Text">
+                       OnClick="ToggleAdminMenu">
+
                 <MudText Typo="Typo.h6">@GetLabel("AdminM")</MudText>
+                <MudIcon Icon="@(showAdmin ? Icons.Material.Filled.ExpandLess : Icons.Material.Filled.ExpandMore)" Class="mr-2" />
             </MudButton>
-        </ActivatorContent>
-        <ChildContent>
-            <MudStack Spacing="1" Style="align-items: flex-start;">
-                <MenuButton Title="@GetLabel("Roles")" Link="@AppRoutes.UserRoleRoute" />
-            </MudStack>
-        </ChildContent>
-    </MudMenu>
-}
+
+            @if (showAdmin)
+            {
+                <MudStack Spacing="0" Class="custom-menu-sub">
+                    <MenuButton Title="@GetLabel("Roles")"
+                                Link="@AppRoutes.UserRoleRoute" />
+
+                    <MenuButton Title="@GetLabel("Organisation")"
+                                Link="@AppRoutes.OrgRoute" />
+                </MudStack>
+            }
+        </div>
+    }
+</div>
 
 @inject ConfigService ConfS
 @inject LabelService LS
@@ -36,6 +40,7 @@
     private int cLabel = 2;
     private int cMax   = 3;
 
+    private bool showAdmin;
     private string[] items =
         {
             "Machines",     AppRoutes.MachinesRoute, "",
@@ -69,5 +74,8 @@
     private string GetLabel(string key) => LS.GetLabel(key);
 
     public void Dispose() => LS.OnLabelsChanged -= RefreshLayout;
+
+    private void ToggleAdminMenu() => showAdmin = !showAdmin;
+    
 
 }

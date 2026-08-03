@@ -26,7 +26,7 @@ namespace FrontendServer.Base.Util
         public void Set(AppConfigDto config)
         {
             if (config == null) { throw new ArgumentNullException("config"); }
-            org = config.OrgDescription;
+            org = config.Org.Description;
             lang = config.Label.LangCode;
             langVariant = config.Label.Variant;
             userId = config.UniqueUserId.ToString();

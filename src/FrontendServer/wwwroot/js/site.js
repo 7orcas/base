@@ -1,4 +1,7 @@
-﻿window.initSplitters = function () {
+﻿window.initSplitters = function (dotNetRef) {
+
+    //DeleteMe
+    console.log("initSplitters called");
 
     const leftPanel = document.getElementById("leftPanel");
     const rightPanel = document.getElementById("rightPanel");
@@ -9,16 +12,15 @@
     let draggingLeft = false;
     let draggingRight = false;
 
-    leftSplitter.addEventListener("mousedown", () => draggingLeft = true);
-    rightSplitter.addEventListener("mousedown", () => draggingRight = true);
+    if (leftSplitter && leftSplitter.offsetParent !== null) {
+        leftSplitter.addEventListener("mousedown", () => draggingLeft = true);
+    }
 
-    document.addEventListener("mouseup", () => {
-        draggingLeft = false;
-        draggingRight = false;
-    });
+    if (rightSplitter && rightSplitter.offsetParent !== null) {
+        rightSplitter.addEventListener("mousedown", () => draggingRight = true);
+    }
 
     document.addEventListener("mousemove", e => {
-
         if (draggingLeft) {
             leftPanel.style.width = `${e.clientX}px`;
         }
@@ -27,5 +29,25 @@
             const width = window.innerWidth - e.clientX;
             rightPanel.style.width = `${width}px`;
         }
+    });
+
+    document.addEventListener("mouseup", async () => {
+
+        if (draggingLeft && leftPanel) {
+            await dotNetRef.invokeMethodAsync(
+                "PanelResized",
+                "LeftPanel",
+                leftPanel.offsetWidth);
+        }
+
+        if (draggingRight && rightPanel) {
+            await dotNetRef.invokeMethodAsync(
+                "PanelResized",
+                "RightPanel",
+                rightPanel.offsetWidth);
+        }
+
+        draggingLeft = false;
+        draggingRight = false;
     });
 };

@@ -66,10 +66,17 @@ namespace Backend.Base.Config
                 SuccessMessage = "Config Ok",
                 Result = new AppConfigDto
                 {
-                    OrgDescription = session.Org.Description,
                     UniqueUserId = userAccount.Id + 987123564,
                     UniqueSessionId = UniqueSessionId.GetId(),
                     
+                    Org = new OrgConfigDto
+                    {
+                        Nr = session.Org.Nr,
+                        Code = session.Org.Code,
+                        Description = session.Org.Description,
+                        Icon = session.Org.Icon
+                    },
+
                     User = new UserConfigDto 
                     {
                         IsService = userAccount.IsService(),

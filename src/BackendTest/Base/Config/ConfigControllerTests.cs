@@ -20,7 +20,7 @@ namespace BackendTest.Base.Config
             Assert.AreEqual(dto.StatusCode, 200);
 
             var config = dto.Result as AppConfigDto;
-            Assert.AreEqual(config.OrgDescription, ORG_DESC);
+            Assert.AreEqual(config.Org.Description, ORG_DESC);
         }
     }
 }
