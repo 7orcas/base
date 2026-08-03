@@ -3,8 +3,6 @@
 /* Check MudTheme in MainLayout */
 :root {
     /* Light mode settings */
-    --title-bg-light: #1565C0;
-    --mainmenu-bg-light: #1565C0;
     --toolbar-bg-light: var(--mud-palette-surface);
     --button-overlay-light: #1976d2;
     --button-text-color-light: white;
@@ -13,8 +11,6 @@
     --row-error-color-light: white;
     --row-error-bg-light: #d70f0f;
     /* Dark mode settings */
-    --title-bg-dark: #1565C0;
-    --mainmenu-bg-dark: #1565C0;
     --toolbar-bg-dark: #222;
     --button-overlay-dark: rgba(255, 255, 255, 0.05);
     --button-text-color-dark: white;
@@ -220,9 +216,31 @@ a, .btn-link {
 }
 
 .main-panel {
+    margin-left: 10px;
     flex: 1;
     overflow: auto;
 }
+
+.main-title-light {
+    background-color: #1565C0 !important;
+    color: white !important;
+}
+
+.main-title-dark {
+    background-color: #373740 !important;
+    color: #FFFFFFB2 !important;
+}
+
+.main-menu-light {
+    background-color: #1565C0 !important;
+    color: white !important;
+}
+
+.main-menu-dark {
+    background-color: #373740 !important;
+    color: #FFFFFFB2 !important;
+}
+
 
 .right-panel {
     width: 400px;

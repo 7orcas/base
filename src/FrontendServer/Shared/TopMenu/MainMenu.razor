@@ -34,6 +34,7 @@
 
 @inject ConfigService ConfS
 @inject LabelService LS
+@inject ThemeService TS
 @code {
     private int cCode  = 0;
     private int cRoute = 1;
@@ -77,5 +78,5 @@
 
     private void ToggleAdminMenu() => showAdmin = !showAdmin;
     
-
+    public string GetLightDarkClassSuffix() => TS.IsDarkMode ? "-dark" : "-light";
 }

@@ -2,7 +2,7 @@
 
 <div class="layout-root">
 
-    <MudThemeProvider DefaultScrollbar="true" @bind-IsDarkMode="_isDarkMode" Theme="_theme" />
+    <MudThemeProvider DefaultScrollbar="true" @bind-IsDarkMode="_isDarkMode" />
     <MudPopoverProvider />
     <MudDialogProvider />
     <MudSnackbarProvider />
@@ -16,8 +16,11 @@
     {
         <MudLayout>
 
-            <MudAppBar Elevation="1" Style="background-color: #1565C0;width:100%; left:0; right:0;">
-                <MudText style="display: flex; align-items: center; width: 100%; justify-content: space-between;">
+            <MudAppBar Elevation="1" 
+                       Class="@($"main-title{GetLightDarkClassSuffix()}")"
+                       Style="width:100%; left:0; right:0;">
+                
+                <MudText Style="display: flex; align-items: center; width: 100%; justify-content: space-between;">
 
                     <div style="display: flex; align-items: center;">
                         <MudButton Href="@AppRoutes.HomeRoute">
@@ -81,7 +84,7 @@
 
                 <div style="display:flex;height:calc(100vh - 64px - 60px);">
 
-                    <div id="leftPanel" class="left-panel" style="width:@($"{_leftPanelWidth}px");">
+                    <div id="leftPanel" class="left-panel @($"main-menu{GetLightDarkClassSuffix()}")" style="width:@($"{_leftPanelWidth}px");">
                         <MainMenu />
                     </div>
 
@@ -171,35 +174,38 @@
         }
     }
 
-    private MudTheme _theme = new MudTheme
-        {
-            PaletteLight = new PaletteLight
-            {
-                AppbarText = "#FFFFFF",
-                AppbarBackground = "#1976d2",
+    public string GetLightDarkClassSuffix() => TS.IsDarkMode ? "-dark" : "-light";
 
-                Primary = "#1976d2",
-                Secondary = "#e91e63",
-                Background = "#f5f5f5",
-                TextPrimary = "#212121",
-                DrawerBackground = "#FFFF00" // "#ffffff",
+    //DeleteMe
+    // private MudTheme _theme = new MudTheme
+    //     {
+    //         PaletteLight = new PaletteLight
+    //         {
+    //             // AppbarText = "#FFFFFF",
+    //             // AppbarBackground = "#1976d2",
 
-            },
-            PaletteDark = new PaletteDark
-            {
-                AppbarBackground = "#2A2D3E",   // Soft steel blue-gray
-                AppbarText = "#E0E0E0",         // Muted white for comfort
+    //             // Primary = "#1976d2",
+    //             // Secondary = "#e91e63",
+    //             // Background = "#f5f5f5",
+    //             // TextPrimary = "#212121",
+    //             // DrawerBackground = "#FFFF00" // "#ffffff",
 
-                Background = "#2C2F3A", //"#1E1E2F",         // Deep but not harsh
-                Surface = "#2A2D3E",            // Match or complement AppBar
-                Primary = "#90CAF9",            // Soft blue (Material Blue 200)
-                PrimaryContrastText = "#1E1E2F",// Text on primary buttons
+    //         },
+    //         PaletteDark = new PaletteDark
+    //         {
+    //             // AppbarBackground = "#2A2D3E",   // Soft steel blue-gray
+    //             // AppbarText = "#E0E0E0",         // Muted white for comfort
 
-                TextPrimary = "#E0E0E0",        // Light gray for standard text
-                TextSecondary = "#A0A0B2",      // Dimmer for subtext
-                DrawerBackground = "#2C2F3A",   // Slightly lighter for depth
-            },
-        };
+    //             // Background = "#2C2F3A", //"#1E1E2F",         // Deep but not harsh
+    //             // Surface = "#2A2D3E",            // Match or complement AppBar
+    //             // Primary = "#90CAF9",            // Soft blue (Material Blue 200)
+    //             // PrimaryContrastText = "#1E1E2F",// Text on primary buttons
+
+    //             // TextPrimary = "#E0E0E0",        // Light gray for standard text
+    //             // TextSecondary = "#A0A0B2",      // Dimmer for subtext
+    //             // DrawerBackground = "#2C2F3A",   // Slightly lighter for depth
+    //         },
+    //     };
 
 
 
