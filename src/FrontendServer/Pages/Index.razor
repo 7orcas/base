@@ -20,22 +20,20 @@ else
     <p></p>
     <p></p>
     <p>
-        <table style="border:solid">
+            <table style="border:solid; width:600px;table-layout:fixed;">
             <thead>
-                <tr><th></th><th></th></tr>
+                    <tr><th style="width:100px;"></th><th></th></tr>
             </thead>
             <tbody>
-                <tr><td>Org:</td><td><b>@ConfS.loginParameters?.org</b></td></tr>
-                <tr><td>LangCode:</td><td><b>@ConfS.loginParameters?.lang</b></td></tr>
-                <tr><td>LangVariant:</td><td><b>@ConfS.loginParameters?.langVariant</b></td></tr>
-                <tr><td>UserId:</td><td><b>@ConfS.loginParameters?.userId</b></td></tr>
-                <tr><td>SessionId:</td><td><b>@ConfS.loginParameters?.sessionId</b></td></tr>
-                <tr><td>Loaded:</td><td><b>@ConfS.loginParameters?.loaded</b></td></tr>
-                <tr><td>Token key:</td><td><b>@ConfS.loginParameters?.tokenkey</b></td></tr>
-                <!--  
-                <tr><td>Token:</td><td><b>@ConfS.loginParameters?.token</b></td></tr>
-                -->
-                <tr><td>LoginUrl:</td><td><b>@ConfS.loginParameters?.loginUrl</b></td></tr>
+                    <tr><td style="width:100px;">Org:</td><td><b>@ConfS?.Config?.Org.Nr: @ConfS?.Config?.Org.Code - @ConfS?.Config?.Org.Description</b></td></tr>
+                    <tr><td style="width:100px;">LangCode:</td><td><b>@ConfS.loginParameters?.lang</b></td></tr>
+                    <tr><td style="width:100px;">LangVariant:</td><td><b>@ConfS.loginParameters?.langVariant</b></td></tr>
+                    <tr><td style="width:100px;">UserId:</td><td><b>@ConfS.loginParameters?.userId</b></td></tr>
+                    <tr><td style="width:100px;">SessionId:</td><td><b>@ConfS.loginParameters?.sessionId</b></td></tr>
+                    <tr><td style="width:100px;">Loaded:</td><td><b>@ConfS.loginParameters?.loaded</b></td></tr>
+                    <tr><td style="width:100px;">Token key:</td><td><b>@ConfS.loginParameters?.tokenkey</b></td></tr>
+                    <tr><td style="width:100px;">Token:</td><td style="width:380px;overflow-wrap:break-word;word-break: break-all;white-space: normal;"><b>@ConfS.loginParameters?.token</b></td></tr>
+                    <tr><td style="width:100px;">LoginUrl:</td><td><b>@ConfS.loginParameters?.loginUrl</b></td></tr>
             </tbody>
         </table>
     </p>
