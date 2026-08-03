@@ -38,7 +38,7 @@ VALUES
 (1, 'Blue', 'Focus your heart', 'en', 1, 0, 
   'X123',	
   true, true, true, true, true, 
-  '/images/Icons/BlueBlank512.png',
+  '/images/Icons/BlueTransparentBlack512.png',
  '{Languages:[{LangCode:"en",IsEditable:true},{LangCode:"de",IsEditable:true},{LangCode:"c1",IsEditable:false},{LangCode:"c2",IsEditable:false}]}');
 
 INSERT INTO base.org (nr, code, descr, langcode, langlabelvariant, icon, encoded)

@@ -130,6 +130,11 @@ namespace Backend.Base.Token
             TokenValues tv = new TokenValues();
             try
             {
+                // Has token expired?
+                var jwt = tokenHandler.ReadJwtToken(token);
+                if (jwt.ValidTo < DateTime.UtcNow)
+                    return null;
+
                 // Validate token and decode
                 var principal = tokenHandler.ValidateToken(token, TokenParameters.GetParameters(), out var validatedToken);
 
@@ -143,6 +148,7 @@ namespace Backend.Base.Token
                 _log.Debug("DecodeToken SessionKey {SessionKey} Token {Token}", tv.SessionKey, token);
                 return tv;
             }
+            catch (SecurityTokenExpiredException) { return null; }
             catch (Exception ex)
             {
                 var jwt = new JwtSecurityTokenHandler().ReadJwtToken(token);

@@ -2,7 +2,7 @@
 {
     public class AppConfigDto : _BaseDto<AppConfigDto>
     {
-        public string OrgDescription { get; set; }
+        public OrgConfigDto Org { get; set; }
         public long UniqueUserId { get; set; }
         public long UniqueSessionId { get; set; }
         public LanguageConfigDto[] Languages { get; set; }
@@ -11,6 +11,15 @@
         public bool DebugMode { get; set; } = false;
         public string UrlLogin { get; set; }
     }
+
+    public class OrgConfigDto
+    {
+        public int Nr { get; set; }
+        public string Code { get; set; }
+        public string? Description { get; set; }
+        public string? Icon { get; set; }
+    }
+
 
     public class LabelConfigDto
     {

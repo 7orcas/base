@@ -2,7 +2,7 @@
 
 <div class="layout-root">
 
-    <MudThemeProvider DefaultScrollbar="true" @bind-IsDarkMode="_isDarkMode" Theme="_theme" />
+    <MudThemeProvider DefaultScrollbar="true" @bind-IsDarkMode="_isDarkMode" />
     <MudPopoverProvider />
     <MudDialogProvider />
     <MudSnackbarProvider />
@@ -16,28 +16,32 @@
     {
         <MudLayout>
 
-            <MudAppBar Elevation="4" Class="app-bar">
-                <div style="display: flex; align-items: center; width: 100%; justify-content: space-between;">
+            <MudAppBar Elevation="1" 
+                       Class="@($"main-title{GetLightDarkClassSuffix()}")"
+                       Style="width:100%; left:0; right:0;">
+                
+                <MudText Style="display: flex; align-items: center; width: 100%; justify-content: space-between;">
 
-                    <!-- Left -->
                     <div style="display: flex; align-items: center;">
-                        @if (ConfS.Config.User.IsService)
-                        {
-                            <MudIconButton Icon="@Icons.Material.Filled.Menu"
-                                           Color="Color.Inherit"
-                                           Edge="Edge.Start"
-                                           OnClick="@ToggleDrawer" />
-                        }
-                        <MenuButton Title="@ConfS.Config.OrgDescription" Link="@AppRoutes.HomeRoute" />
+                        <MudButton Href="@AppRoutes.HomeRoute">
+                            <img src=@ConfS.Config.Org.Icon
+                                    alt="Icon"
+                                    style="width:48px;height:48px;" />
+                        </MudButton>
                     </div>
 
                     <!-- Center: Menu items -->
-                    <div style="display: flex; gap: 16px;">
-                        <MainMenu />
-                    </div>
+                    <MudText Typo="Typo.h5" Class="font-weight-bold">
+                        @ConfS.Config.Org.Description
+                    </MudText>
 
                     <!-- Right Settings -->
                     <div style="display: flex; align-items: center; gap: 12px;">
+                        
+                        <MudIconButton Style="font-size:32px;color:white;"
+                            Icon="@Icons.Material.Filled.Chat"
+                            OnClick="ToggleChat" />
+
                         <MudMenu ActivationEvent="MouseEvent.MouseOver"
                                  AnchorOrigin="Origin.BottomLeft"
                                  TransformOrigin="Origin.TopLeft"
@@ -73,23 +77,47 @@
                         </MudMenu>
                     </div>
 
-                </div>
+                </MudText>
             </MudAppBar>
 
-            <MudDrawer @bind-Open="_drawerOpen"
-                       Elevation="1"
-                       ClipMode="DrawerClipMode.Always"
-                       Variant="DrawerVariant.Responsive">
-                <ServiceMenu />
-            </MudDrawer>
-
             <MudMainContent Class="main-content-fill-screen">
-                <MudContainer MaxWidth="MaxWidth.False" Class="main-container" Gutters="false">
-                    <MudPaper Class="main-container" Elevation="0" Square="true">
+
+                <div style="display:flex;height:calc(100vh - 64px - 60px);">
+
+                    <div id="leftPanel" class="left-panel @($"main-menu{GetLightDarkClassSuffix()}")" style="width:@($"{_leftPanelWidth}px");">
+                        <MainMenu />
+                    </div>
+
+                    <div id="leftSplitter" class="splitter"></div>
+
+                    <div class="main-panel">
                         @Body
-                    </MudPaper>
-                </MudContainer>
+                    </div>
+
+                    @if (_chatOpen)
+                    {
+                        <div id="rightSplitter" class="splitter"></div>
+                        <div id="rightPanel" class="right-panel" style="width:@($"{_rightPanelWidth}px");">
+                            <ServiceMenu />
+                        </div>
+                    }
+
+                </div>
+                
             </MudMainContent>
+
+
+            <MudPaper Class="bottom-bar d-flex justify-space-between align-center" Elevation="1" Square="true">
+                <div style="display: flex; align-items: center;">
+                    111
+                </div>
+                <div style="display: flex; gap: 16px;">
+                    2222222222222222222222222222222222222222222222222222222222
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    333
+                </div>
+            </MudPaper>
 
         </MudLayout>
     }
@@ -97,6 +125,7 @@
 
 @using GC = FrontendServer.GlobalConstants;
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@implements IAsyncDisposable
 @inject NavigationManager Navigation
 @inject ConfigService ConfS
 @inject LabelService LS
@@ -104,10 +133,22 @@
 @inject LogoutService LgS
 @inject ProtectedSessionStorage PS
 @code {
-    private string lOrg = "";
 
-    private bool _drawerOpen = false;
+    [Inject] IJSRuntime JS { get; set; } = default!;
+    private DotNetObjectReference<MainLayout>? _objRef;
+    private bool _chatOpen = false;
     private bool _isDarkModeBacking = false;
+    private int _leftPanelWidth = 150;
+    private int _rightPanelWidth = 400;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (ConfS.IsInitialized)
+        {
+            _objRef = DotNetObjectReference.Create(this);
+            await JS.InvokeVoidAsync("initSplitters", _objRef);
+        }
+    }
 
     protected override void OnInitialized()
     {
@@ -133,45 +174,43 @@
         }
     }
 
-    // private string lOrg = "Organisations";
-    // private string lMac = "Machines";
+    public string GetLightDarkClassSuffix() => TS.IsDarkMode ? "-dark" : "-light";
 
-    private MudTheme _theme = new MudTheme
-        {
-            PaletteLight = new PaletteLight
-            {
-                AppbarText = "#FFFFFF",
-                AppbarBackground = "#1976d2",
+    //DeleteMe
+    // private MudTheme _theme = new MudTheme
+    //     {
+    //         PaletteLight = new PaletteLight
+    //         {
+    //             // AppbarText = "#FFFFFF",
+    //             // AppbarBackground = "#1976d2",
 
-                Primary = "#1976d2",
-                Secondary = "#e91e63",
-                Background = "#f5f5f5",
-                TextPrimary = "#212121",
-                DrawerBackground = "#ffffff",
+    //             // Primary = "#1976d2",
+    //             // Secondary = "#e91e63",
+    //             // Background = "#f5f5f5",
+    //             // TextPrimary = "#212121",
+    //             // DrawerBackground = "#FFFF00" // "#ffffff",
 
-            },
-            PaletteDark = new PaletteDark
-            {
-                AppbarBackground = "#2A2D3E",   // Soft steel blue-gray
-                AppbarText = "#E0E0E0",         // Muted white for comfort
+    //         },
+    //         PaletteDark = new PaletteDark
+    //         {
+    //             // AppbarBackground = "#2A2D3E",   // Soft steel blue-gray
+    //             // AppbarText = "#E0E0E0",         // Muted white for comfort
 
-                Background = "#1E1E2F",         // Deep but not harsh
-                Surface = "#2A2D3E",            // Match or complement AppBar
-                Primary = "#90CAF9",            // Soft blue (Material Blue 200)
-                PrimaryContrastText = "#1E1E2F",// Text on primary buttons
+    //             // Background = "#2C2F3A", //"#1E1E2F",         // Deep but not harsh
+    //             // Surface = "#2A2D3E",            // Match or complement AppBar
+    //             // Primary = "#90CAF9",            // Soft blue (Material Blue 200)
+    //             // PrimaryContrastText = "#1E1E2F",// Text on primary buttons
 
-                TextPrimary = "#E0E0E0",        // Light gray for standard text
-                TextSecondary = "#A0A0B2",      // Dimmer for subtext
-                DrawerBackground = "#2C2F3A",   // Slightly lighter for depth
-            },
-        };
+    //             // TextPrimary = "#E0E0E0",        // Light gray for standard text
+    //             // TextSecondary = "#A0A0B2",      // Dimmer for subtext
+    //             // DrawerBackground = "#2C2F3A",   // Slightly lighter for depth
+    //         },
+    //     };
 
 
 
     private void RefreshLayout() 
     {
-        // lOrg = LS.GetLabel("Orgs");
-        // lMac = LS.GetLabel("Machines");
         InvokeAsync(StateHasChanged);
     }
 
@@ -180,13 +219,34 @@
         return LS.GetLabel(key);
     }
 
-    private void ToggleDrawer() => _drawerOpen = !_drawerOpen;
+    private void ToggleChat() => _chatOpen = !_chatOpen;
     private async Task Logout() => await LgS.LogoutAsync();
     
     public void Dispose() 
     {
         LS.OnLabelsChanged -= RefreshLayout;
         ConfS.OnInitialized -= HandleConfigInitialized;
+    }
+
+    [JSInvokable]
+    public async Task PanelResized(string panel, int width)
+    {
+        //ToDo FixMe: Implement logic to save the new width of the panels
+        if (panel == "LeftPanel")
+            _leftPanelWidth = width;
+
+        if (panel == "RightPanel")
+            _rightPanelWidth = width;
+
+
+        // Save to session storage
+        // Save to database
+        // Update user preferences
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        _objRef?.Dispose();
     }
 
 }
