@@ -34,6 +34,7 @@
         public const int EntityTypeRole             = 30;
         public const int EntityTypeAudit            = 40;
         public const int EntityTypeLogin            = 50;
+        public const int EntityTypeUser             = 51;
         public const int EntityTypeLogout           = 60;
         public const int EntityTypeLangCode         = 70;
         public const int EntityTypeLangKey          = 80;
@@ -51,6 +52,7 @@
             EntityTypeRole,             "Role",
             EntityTypeAudit,            "Audit",
             EntityTypeLogin,            "Login",
+            EntityTypeUser,             "User",
             EntityTypeLogout,           "Logout",
             EntityTypeLangCode,         "LangCode",
             EntityTypeLangKey,          "LangKey",

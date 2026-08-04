@@ -17,6 +17,8 @@ global using Backend.Base.Audit;
 global using Backend.Base.Audit.Ent;
 global using Backend.Base.Login;
 global using Backend.Base.Login.Ent;
+global using Backend.Base.User;
+global using Backend.Base.User.Ent;
 global using Backend.Base.Org;
 global using Backend.Base.Org.Ent;
 global using Backend.Base.Permission;

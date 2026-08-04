@@ -95,6 +95,8 @@ Crud.D,Delete
 PermAll,All Permissions
 PermEff,Effective Permissions
 User,User
+Users,Users
+UserAdm,User Administration
 UserName,Username
 UserNameM,Masquerade Username
 UserNameEx,Username already exists

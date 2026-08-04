@@ -161,7 +161,7 @@ namespace Backend.Base.Login
                 }
 
                 //Continue with login process and return tokenkey
-                var langCode = !string.IsNullOrEmpty(request.LangCode) ? request.LangCode : account.LangCode; //Delete me
+                var langCode = !string.IsNullOrEmpty(request.LangCode) ? request.LangCode : login.LangCode; 
                 await InitialiseLogin(login, account, org);
                 var userConfig = _configService.CreateUserConfig(account, org, langCode);
                 var session = await _sessionService.CreateSession(account, org, userConfig, masqueradeId, request.SourceApplication, ipAddress);

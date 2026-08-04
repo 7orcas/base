@@ -15,7 +15,7 @@ namespace Backend.Base.Login.Ent
         public long Id { get; set; }
         public long LoginId { get; set; }
         public int OrgNr { get; set; }
-        public string LangCode { get; set; }
+        //DELETE ME public string LangCode { get; set; }
         public int? Classification {  get; set; }
         public DateTimeOffset? Lastlogin { get; set; }
         public bool IsActive { get; set; }
@@ -51,7 +51,6 @@ namespace Backend.Base.Login.Ent
                 Id = GC.ServiceAccountId,
                 LoginId = GC.ServiceLoginId,
                 OrgNr = orgNr,
-                LangCode = GC.LangCodeDefault,
                 Lastlogin = DateTime.Now,
                 IsActive = true,
                 IsAdmin = true

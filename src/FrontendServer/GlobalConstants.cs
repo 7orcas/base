@@ -17,6 +17,9 @@
         public const string URL_perm_user_eff     = "api/Permission/userlisteff";
         public const string URL_perm_list         = "api/Permission/list";
         public const string URL_audit_list        = "api/Audit/list";
+        public const string URL_user_list         = "api/User/list";
+        public const string URL_user              = "api/User/get/";
+        public const string URL_user_update       = "api/User/update";
         public const string URL_user_role_list    = "api/Role/userroles";
         public const string URL_role_list         = "api/Role/roles";
         public const string URL_role              = "api/Role/get/";

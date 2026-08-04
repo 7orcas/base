@@ -68,7 +68,6 @@ namespace BackendTest.Setup
                 Id = userAccId,
                 Username = GCT.UserName,
                 OrgNr = orgNr,
-                LangCode = LANG_CODE_DEFAULT,
                 Classification = 0,
                 IsAdmin = false,
                 Permissions = new List<PermissionCrudEnt>

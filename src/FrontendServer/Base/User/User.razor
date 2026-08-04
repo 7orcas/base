@@ -1,0 +1,151 @@
+﻿@attribute [Route(BaseRoutes.UserRoute)]
+@inherits BasePage
+@attribute [Authorize]
+
+<ConfirmNavigation List="list" />
+
+<Header @key="_pageCode"
+    TitleKey="User" 
+    SubTitleKey="UserAdm"
+    PageCode=@_pageCode
+    ToolBarButtonsRight="toolBarButtonsRight" />
+
+@if (_isLoading || _isError || _isSaving)
+{
+    <LoadingWithError IsLoading=@_isLoading
+                        IsSaving=@_isSaving
+                        IsError=@_isError
+                        Message=@_errorMessage>
+        @exception
+    </LoadingWithError>
+}
+
+<MudGrid>
+
+    <!-- Left Side: List -->
+    @if (showList)
+    {
+        <MudItem xs="1">
+            <Label Size="GC.TextSize.Section" Key="Users"></Label>
+            <MudPaper Elevation="0" Outlined="true">
+                <MudList T="UserDto">
+                    @for (int i = 0; i < list.Count; i++)
+                    {
+                        var index = i;
+                        <div class="@GetListRowOddEvenClass(i)">
+                        <MudListItem 
+                            Value="@list[i]" 
+                            OnClick="() => OnItemSelected(index)"
+                            Text="@list[i].Username" />
+                        </div>
+                    }
+                </MudList>
+            </MudPaper>
+        </MudItem>
+    }
+
+
+    <!-- Right Side: Details -->
+    @if (userDto != null)
+    {
+        <MudItem xs="8">
+            <Text Size="GC.TextSize.Section">@userDto.Username</Text>
+
+        
+        </MudItem>
+    }
+    
+</MudGrid>
+
+@using System.Net
+@using MudBlazor
+@using FrontendServer.Base.Util
+@using System.Text;
+@using sysJ = System.Text.Json
+@using GC = FrontendServer.GlobalConstants;
+@using FrontendServer.Base._Base;
+
+    @code {
+    private bool showList = false;
+    private List<UserDto> list;
+    private UserDto? userDto;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await InitialiseBasePage(GC.PerOrg);
+            _pageCode = BaseRoutes.UserPageCode;
+
+            list = await GetAsync<List<UserDto>>(GC.URL_user_list);
+
+            if (list == null)
+            {
+                //probably expired login
+            }
+            else
+            {
+                if (list.Count > 0)
+                    Load(0, true);
+
+                showList = list.Count > 1;
+            }
+            AddToolbarSave(SaveAsync);
+            StateHasChanged();
+        }
+    }
+
+    private async void OnItemSelected(int index) => Load(index, false);
+
+    private async void Load(int index, bool force) 
+    {
+        var dto = list[index];
+        if (!dto.IsLoaded || force){
+            userDto = await GetAsync<UserDto>(GC.URL_user + dto.UserId);
+            userDto.HashMe();
+            userDto.IsLoaded = true;
+            list[index] = userDto;
+        }
+        else
+            userDto = dto;
+        StateHasChanged();
+    }
+
+    private async Task SaveAsync()
+    {
+        _isSaving = true;
+        var curIndex = userDto != null? list.FindIndex(d => d.UserId == userDto.UserId) : -1;
+        // var client = await SetClient();
+        for (int i = 0; i < list.Count; i++) {
+            var dto = list[i];
+            if (dto.IsLoaded && dto.HasChanged()) {
+
+                // var json = sysJ.JsonSerializer.Serialize(dto);
+                // var content = new StringContent(json, Encoding.UTF8, "application/json");
+                // var response = await client.PostAsync(GC.URL_org_update, content);
+
+                var response = await PostAsync<UserDto>(GC.URL_user_update, dto);
+
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    var o = await GetAsync<UserDto>(GC.URL_user + dto.UserId);
+                    list[i] = o.HashMe().SetLoaded();
+                }
+            }
+        }
+        _isSaving = false;
+
+        if (curIndex != -1)
+            OnItemSelected(curIndex);
+    }
+
+    //ToDo
+    private async void Export() 
+    {
+
+    }
+
+    private string Label(string key) => GetLabel(key);
+    protected override async Task OnInitializedAsync() => _isLoading = true;
+    
+}
