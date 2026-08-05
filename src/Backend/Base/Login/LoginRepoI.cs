@@ -7,7 +7,7 @@
         Task<LoginEnt?> GetLoginByUsername(string userid);
         Task<LoginEnt?> GetLoginByEmail(string email);
         Task<LoginEnt?> GetLoginById(long id);
-        Task<UserAccountEnt?> GetAccount(long loginId, int orgNr);
+        Task<LoginAccountEnt?> GetAccount(long loginId, int orgNr);
         Task<bool> SetAttempts(long id, int attempts);
         Task<bool> SetLockoutTimestamp(long id, DateTimeOffset lockout);
         Task UpdateLastLogin(long id, long accountId);

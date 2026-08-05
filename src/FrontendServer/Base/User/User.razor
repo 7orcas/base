@@ -5,10 +5,9 @@
 <ConfirmNavigation List="list" />
 
 <Header @key="_pageCode"
-    TitleKey="User" 
-    SubTitleKey="UserAdm"
-    PageCode=@_pageCode
-    ToolBarButtonsRight="toolBarButtonsRight" />
+        TitleKey="UserAdm"
+        PageCode=@_pageCode
+        ToolBarButtonsRight="toolBarButtonsRight" />
 
 @if (_isLoading || _isError || _isSaving)
 {
@@ -50,8 +49,17 @@
     {
         <MudItem xs="8">
             <Text Size="GC.TextSize.Section">@userDto.Username</Text>
-
+            <Text Size="GC.TextSize.Section">@userDto.OrgNrDefault</Text>
+            <Text Size="GC.TextSize.Section">@userDto.Version</Text>
+            <Text Size="GC.TextSize.Section">
+                Updated: @userDto.Updated.ToString("dd/MM/yyyy HH:mm")
+            </Text>
         
+            <CheckboxField Width=GC.TextFieldWidth.Short
+                           LangCode="Active"
+                           Value="@userDto.IsActive"
+                           ValueChanged="@((bool val) => userDto.IsActive = val)"
+                           ValueExpression="() => userDto.IsActive" />
         </MudItem>
     }
     

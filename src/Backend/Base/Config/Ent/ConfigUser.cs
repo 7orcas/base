@@ -8,12 +8,12 @@
 
 namespace Backend.Base.Config.Ent
 {
-    public class UserConfig
+    public class ConfigUser
     {
         public int orgNr { get; set; }
         public string LangCodeCurrent { get; set; }
         
-        public List<LanguageConfig> Languages { get; set; }
+        public List<ConfigLanguage> Languages { get; set; }
        
     }
 

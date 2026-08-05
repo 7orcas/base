@@ -32,12 +32,12 @@ namespace Backend.Base.Config
         /// <param name="org"></param>
         /// <param name="requestedLangCode"></param>
         /// <returns></returns>
-        public UserConfig CreateUserConfig(UserAccountEnt userAccount, OrgEnt org, string? requestedLangCode)
+        public ConfigUser CreateUserConfig(LoginAccountEnt userAccount, OrgEnt org, string? requestedLangCode)
         {
-            var orgConfig = _memoryCache.Get<OrgConfig>(GC.CacheKeyOrgConfigPrefix + org.Nr);
+            var orgConfig = _memoryCache.Get<ConfigOrg>(GC.CacheKeyOrgConfigPrefix + org.Nr);
             var userLangCode = ValidateLanguageCode(userAccount, orgConfig, requestedLangCode);
 
-            var userConfig = new UserConfig()
+            var userConfig = new ConfigUser()
             {
                 orgNr = org.Nr,
                 LangCodeCurrent = userLangCode,
@@ -54,7 +54,7 @@ namespace Backend.Base.Config
         /// <param name="orgConfig"></param>
         /// <param name="requestedLangCode"></param>
         /// <returns></returns>
-        private string ValidateLanguageCode(UserAccountEnt userAccount, OrgConfig orgConfig, string? requestedLangCode)
+        private string ValidateLanguageCode(LoginAccountEnt userAccount, ConfigOrg orgConfig, string? requestedLangCode)
         {
             //Is user using the default org lang code?
             if (requestedLangCode == null) requestedLangCode = orgConfig.LangCodeDefault;
@@ -79,9 +79,9 @@ namespace Backend.Base.Config
         /// <param name="orgConfig"></param>
         /// <param name="userLangCode"></param>
         /// <returns></returns>
-        private List<LanguageConfig> CreateClientLanguages(UserAccountEnt userAccount, OrgConfig orgConfig, string userLangCode)
+        private List<ConfigLanguage> CreateClientLanguages(LoginAccountEnt userAccount, ConfigOrg orgConfig, string userLangCode)
         {
-            var langList = new List<LanguageConfig>();
+            var langList = new List<ConfigLanguage>();
 
             if (!userAccount.IsLanguageAdmin()) return langList;
             if (!userAccount.IsService() && !orgConfig.IsLangCodeEditable) return langList;
@@ -92,7 +92,7 @@ namespace Backend.Base.Config
                 if (!up && cl.LangCode.Equals(userLangCode)) up = cl.IsEditable;
                 if (!up && userAccount.IsActiveLanguageAdmin) up = cl.IsEditable;
 
-                langList.Add(new LanguageConfig { 
+                langList.Add(new ConfigLanguage { 
                     LangCode = cl.LangCode,
                     IsVisible = userAccount.IsService() || cl.IsVisible,
                     IsEditable = up
@@ -103,7 +103,7 @@ namespace Backend.Base.Config
             langList = langList.OrderByDescending(x => x.LangCode).ToList();
             var dl = langList.Find(x => x.LangCode == userLangCode);
             
-            var langListX = new List<LanguageConfig>();
+            var langListX = new List<ConfigLanguage>();
             if (dl != null) 
                 langListX.Add(dl);
 

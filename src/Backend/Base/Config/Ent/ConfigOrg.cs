@@ -9,11 +9,11 @@
 
 namespace Backend.Base.Config.Ent
 {
-    public class OrgConfig
+    public class ConfigOrg
     {
         public int orgNr { get; set; }
         public string LangCodeDefault { get; set; }
         public bool IsLangCodeEditable { get; set; } 
-        public List<LanguageConfig> Languages { get; set; }
+        public List<ConfigLanguage> Languages { get; set; }
     }
 }

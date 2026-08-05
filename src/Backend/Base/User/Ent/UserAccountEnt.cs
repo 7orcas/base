@@ -10,7 +10,7 @@
 
 namespace Backend.Base.User.Ent
 {
-    public class UserAccountXEnt : BaseEncode
+    public class UserAccountEnt : BaseEncode
     {
         public int OrgNr { get; set; }
 

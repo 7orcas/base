@@ -10,7 +10,7 @@
 
 namespace Backend.Base.Login.Ent
 {
-    public class UserAccountEnt : BaseEncode
+    public class LoginAccountEnt : BaseEncode
     {
         public long Id { get; set; }
         public long LoginId { get; set; }
@@ -44,9 +44,9 @@ namespace Backend.Base.Login.Ent
          * Special service account
          * Account does not have to be in the database
          */
-        public static UserAccountEnt GetServiceAccount(int orgNr)
+        public static LoginAccountEnt GetServiceAccount(int orgNr)
         {
-            return new UserAccountEnt
+            return new LoginAccountEnt
             {
                 Id = GC.ServiceAccountId,
                 LoginId = GC.ServiceLoginId,

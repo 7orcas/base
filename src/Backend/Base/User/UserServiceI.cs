@@ -5,7 +5,7 @@ namespace Backend.Base.User
     {
         Task<UserEnt> GetUser(long id);
         Task<List<UserEnt>> GetUserList();
-
+        Task<UserEnt?> UpdateUser(UserDto user);
         UserDto Populate(UserEnt user);
     }
 }

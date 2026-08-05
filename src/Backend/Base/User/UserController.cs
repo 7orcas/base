@@ -76,7 +76,24 @@ namespace Backend.Base.User
             return Ok(r);
         }
 
-           
+        /// <summary>
+        /// Update Org
+        /// </summary>
+        /// <returns></returns>
+        [CrudAtt(GC.CrudUpdate)]
+        [AuditListAtt(GC.EntityTypeOrg)]
+        [HttpPost("update")]
+        public async Task<IActionResult> UpdateUser([FromBody] UserDto dto)
+        {
+            var session = HttpContext.Items["session"] as SessionEnt;
+            var user = await _userService.UpdateUser(dto);
+            var r = new _ResponseDto
+            {
+                SuccessMessage = "Ok",
+                Result = user
+            };
+            return Ok(r);
+        }
 
     }
 }

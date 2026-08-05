@@ -39,7 +39,7 @@ namespace BackendTest.Setup
                 UserAccount = CreateUserAccount(orgNr, userAccId)
             };
 
-            var orgConfig = new OrgConfig() {
+            var orgConfig = new ConfigOrg() {
                 orgNr = orgNr,
                 LangCodeDefault = LANG_CODE_DEFAULT,
                 IsLangCodeEditable = true,
@@ -50,9 +50,9 @@ namespace BackendTest.Setup
             return session;
         }
 
-        public UserConfig CreateUserConfig(int orgNr)
+        public ConfigUser CreateUserConfig(int orgNr)
         {
-            var userConfig = new UserConfig
+            var userConfig = new ConfigUser
                 {
                     orgNr = orgNr,
                     LangCodeCurrent = LANG_CODE_DEFAULT,
@@ -61,9 +61,9 @@ namespace BackendTest.Setup
             return userConfig;
         }
 
-        public UserAccountEnt CreateUserAccount(int orgNr, int userAccId)
+        public LoginAccountEnt CreateUserAccount(int orgNr, int userAccId)
         {
-            var acc = new UserAccountEnt
+            var acc = new LoginAccountEnt
             {
                 Id = userAccId,
                 Username = GCT.UserName,
@@ -84,15 +84,15 @@ namespace BackendTest.Setup
             var service = new Mock<ConfigServiceI>();
 
             service
-                .Setup(x => x.CreateUserConfig(It.IsAny<UserAccountEnt>(), It.IsAny<OrgEnt>(), It.IsAny<string>()))
+                .Setup(x => x.CreateUserConfig(It.IsAny<LoginAccountEnt>(), It.IsAny<OrgEnt>(), It.IsAny<string>()))
                 .Returns(CreateUserConfig());
 
             return service.Object;
         }
 
-        public UserConfig CreateUserConfig()
+        public ConfigUser CreateUserConfig()
         {
-            var userConfig = new UserConfig
+            var userConfig = new ConfigUser
             {
                 orgNr = ORG_NR,
                 LangCodeCurrent = LANG_CODE_DEFAULT,
@@ -134,13 +134,13 @@ namespace BackendTest.Setup
             };
         }
 
-        public List<LanguageConfig> CreateLanguageConfigs()
+        public List<ConfigLanguage> CreateLanguageConfigs()
         {
-            return new List<LanguageConfig>
+            return new List<ConfigLanguage>
             {
-                new LanguageConfig { LangCode = LANG_CODE_EN, IsVisible = false, IsEditable = true },
-                new LanguageConfig { LangCode = LANG_CODE_DE, IsVisible = true, IsEditable = false },
-                new LanguageConfig { LangCode = LANG_CODE_ES, IsVisible = false, IsEditable = false }
+                new ConfigLanguage { LangCode = LANG_CODE_EN, IsVisible = false, IsEditable = true },
+                new ConfigLanguage { LangCode = LANG_CODE_DE, IsVisible = true, IsEditable = false },
+                new ConfigLanguage { LangCode = LANG_CODE_ES, IsVisible = false, IsEditable = false }
             };
         }
 

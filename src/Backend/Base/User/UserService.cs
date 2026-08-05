@@ -17,12 +17,15 @@ namespace Backend.Base.User
     public class UserService: BaseService, UserServiceI
     {
         private readonly LabelServiceI _labelService;
-        
+        private readonly UserRepoI _userRepo;
+
         public UserService(IServiceProvider serviceProvider,
-            LabelServiceI labelService) 
+            LabelServiceI labelService,
+            UserRepoI userRepo) 
             : base(serviceProvider) 
         {
             _labelService = labelService;
+            _userRepo = userRepo;
         }
 
         public async Task<List<UserEnt>> GetUserList()
@@ -40,58 +43,15 @@ namespace Backend.Base.User
             return list;
         }
 
-        public async Task<UserEnt> GetUser(long id)
+        public async Task<UserEnt?> GetUser(long id)
         {
-            try
-            {
-                var user = new UserEnt();
-                await Sql.Run(
-                    "SELECT * FROM base.zzz "
-                    + "WHERE id = @id ",
-                    r =>
-                    {
-                        user = new UserEnt() 
-                        { 
-                            Id = GetId(r),
-                            Username = GetString(r, "xxx")
-                        };
-                    },
-                    new NpgsqlParameter("@id", id)
-                );
-                                
-                return user;
-            }
-            catch 
-            {
-                return null;
-            }
+            return await _userRepo.GetById(id);
         }
 
-        //public async Task UpdateOrg(OrgEnt org)
-        //{
-        //    org.Encode();
-        //    await Sql.ExecuteAsync(
-        //            "UPDATE base.org " +
-        //            "SET " +
-        //                Update("code", org.Code) +
-        //                Update("descr", org.Description) +
-        //                Update("encoded", org.Encoded) +
-        //                Update("updated", org.Updated) +
-        //                Update("version", org.Version + 1) +
-        //                Update("isActive", org.IsActive) +
-        //                Update("mfa", org.Mfa) +
-        //                Update("isRememberMeEnabled", org.IsRememberMeEnabled) +
-        //                Update("isMasqueradeEnabled", org.IsMasqueradeEnabled) +
-        //                Update("isForgotenabled", org.IsPasswordResetEnabled) +
-        //                Update("isSignupenabled", org.IsSignupEnabled) +
-        //                Update("isEmailRequired", org.IsEmailRequired) +
-        //                Update("isEmailHtml", org.IsEmailHtml) +
-        //                Update("langCode", org.LangCode) +
-        //                NoComma(Update("langLabelVariant", org.LangLabelVariant)) +
-        //            " WHERE nr = " + org.Nr
-        //    );
-        //    _memoryCache.Set(GC.CacheKeyOrgPrefix + org.Nr, org);
-        //}
+        public async Task<UserEnt?> UpdateUser(UserDto user)
+        {
+            return await _userRepo.Update(user);
+        }
 
         public UserDto Populate(UserEnt user)
         {
@@ -99,6 +59,18 @@ namespace Backend.Base.User
             {
                 UserId = user.Id,
                 Username = user.Username,
+                IsEmailVerified = user.IsEmailVerified,
+                OrgNrDefault = user.OrgNrDefault,
+                LangCode = user.LangCode,
+                Attempts = user.Attempts,
+                AttemptsLockout = user.AttemptsLockout,
+                LastLogin = user.LastLogin,
+                IsActive = user.IsActive,
+                IsMfaRequired = user.IsMfaRequired,
+                IsMfaEnabled = user.IsMfaEnabled,
+                MfaSecret = user.MfaSecret,
+                Updated = user.Updated,
+                Version = user.Version
             };
             return userDto;
         }

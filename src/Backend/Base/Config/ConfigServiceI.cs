@@ -4,6 +4,6 @@ namespace Backend.Base.Config
 {
     public interface ConfigServiceI
     {
-        UserConfig CreateUserConfig(UserAccountEnt userAccount, OrgEnt org, string? langCode);
+        ConfigUser CreateUserConfig(LoginAccountEnt userAccount, OrgEnt org, string? langCode);
     }
 }
