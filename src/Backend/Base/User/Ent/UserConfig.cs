@@ -22,5 +22,11 @@ public class UserConfig : IEntityTypeConfiguration<UserEnt>
         entity.Property(e => e.IsMfaEnabled).HasColumnName("ismfaenabled");
         entity.Property(e => e.MfaSecret).HasColumnName("mfasecret");
         entity.Property(e => e.Version).HasColumnName("version");
+
+
+        entity.HasMany(u => u.Accounts)
+              .WithOne(a => a.User)
+              .HasForeignKey(a => a.UserId);
+
     }
 }

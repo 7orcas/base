@@ -1,6 +1,6 @@
-﻿using System.Text.Json;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 /// <summary>
@@ -13,7 +13,7 @@ using System.Text.Json.Serialization;
 
 namespace Common.DTO
 {
-    public abstract class _BaseDto<T> where T : _BaseDto<T>
+    public abstract class _BaseDto<T> : _BaseVersionDto where T : _BaseDto<T>
 
     {
         /// <summary>

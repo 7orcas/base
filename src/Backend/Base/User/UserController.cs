@@ -41,7 +41,7 @@ namespace Backend.Base.User
             var list = new List<UserDto>();
 
             foreach (var user in users)
-                list.Add(_userService.Populate(user));
+                list.Add(await _userService.Populate(user));
             
             var r = new _ResponseDto
             {
@@ -67,7 +67,7 @@ namespace Backend.Base.User
                 return NotFound();
             }
 
-            var userDto = _userService.Populate(user);
+            var userDto = await _userService.Populate(user);
             var r = new _ResponseDto
             {
                 SuccessMessage = "Ok",

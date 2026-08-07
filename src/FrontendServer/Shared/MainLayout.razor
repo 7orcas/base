@@ -28,6 +28,9 @@
                                     alt="Icon"
                                     style="width:48px;height:48px;" />
                         </MudButton>
+                        <div style="color:red;background-color:white;">
+                            @ShowDebugMode()
+                        </div>
                     </div>
 
                     <!-- Center: Menu items -->
@@ -72,6 +75,10 @@
                                     </div>
                                     <MenuButton Title="@GetLabel("ChgPw")" Link="@AppRoutes.ChangePWRoute" />
                                     <MenuButton Title="@GetLabel("Config")" Link="@AppRoutes.ConfigRoute" />
+                                    
+                                    <MudButton OnClick="ResetLabels" >
+                                        <MudText Typo="Typo.h6">*Reset Labels*</MudText>
+                                    </MudButton>
                                 </MudStack>
                             </ChildContent>
                         </MudMenu>
@@ -176,42 +183,21 @@
 
     public string GetLightDarkClassSuffix() => TS.IsDarkMode ? "-dark" : "-light";
 
-    //DeleteMe
-    // private MudTheme _theme = new MudTheme
-    //     {
-    //         PaletteLight = new PaletteLight
-    //         {
-    //             // AppbarText = "#FFFFFF",
-    //             // AppbarBackground = "#1976d2",
-
-    //             // Primary = "#1976d2",
-    //             // Secondary = "#e91e63",
-    //             // Background = "#f5f5f5",
-    //             // TextPrimary = "#212121",
-    //             // DrawerBackground = "#FFFF00" // "#ffffff",
-
-    //         },
-    //         PaletteDark = new PaletteDark
-    //         {
-    //             // AppbarBackground = "#2A2D3E",   // Soft steel blue-gray
-    //             // AppbarText = "#E0E0E0",         // Muted white for comfort
-
-    //             // Background = "#2C2F3A", //"#1E1E2F",         // Deep but not harsh
-    //             // Surface = "#2A2D3E",            // Match or complement AppBar
-    //             // Primary = "#90CAF9",            // Soft blue (Material Blue 200)
-    //             // PrimaryContrastText = "#1E1E2F",// Text on primary buttons
-
-    //             // TextPrimary = "#E0E0E0",        // Light gray for standard text
-    //             // TextSecondary = "#A0A0B2",      // Dimmer for subtext
-    //             // DrawerBackground = "#2C2F3A",   // Slightly lighter for depth
-    //         },
-    //     };
-
-
+    private string ShowDebugMode()
+    {
+        if (@ConfS.IsDebugMode)
+            return "Debug mode is on ";
+        return "";
+    }
 
     private void RefreshLayout() 
     {
         InvokeAsync(StateHasChanged);
+    }
+
+    private void ResetLabels()
+    {
+        LS.Reset();
     }
 
     private string GetLabel(string key)

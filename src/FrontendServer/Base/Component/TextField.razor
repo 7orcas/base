@@ -7,6 +7,7 @@
 <MudTextField Style="@GetStyle(Width)"
               Label="@label"
               MaxLength="@MaxLength"
+              ReadOnly="@ReadOnly"
               Value="@Value"
               ValueChanged="@ValueChanged"
               ValueExpression="@ValueExpression"
@@ -16,6 +17,7 @@
     [Parameter] public string LangCode { get; set; }
     [Parameter] public GC.TextFieldWidth Width { get; set; } = GC.TextFieldWidth.Medium;
     [Parameter] public int MaxLength { get; set; } = 20;
+    [Parameter] public bool ReadOnly { get; set; } = false;
     [Parameter] public string Value { get; set; }
     [Parameter] public EventCallback<string> ValueChanged { get; set; }
     [Parameter] public Expression<Func<string>> ValueExpression { get; set; }

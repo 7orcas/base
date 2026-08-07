@@ -1,0 +1,35 @@
+﻿@inherits BaseComponent
+
+@using System.Linq.Expressions
+@using MudBlazor
+@using GC = FrontendServer.GlobalConstants;
+
+<div style="display:flex; flex-wrap:wrap; gap:20px; align-items:center;">
+
+    <NumericField Width=GC.TextFieldWidth.Short
+                  LangCode="OrgNr"
+                  ReadOnly="true"
+                  @bind-Value="@accountDto.OrgNr" />
+
+    <NumericField Width=GC.TextFieldWidth.Short
+                  LangCode="Clas"
+                  @bind-Value="@accountDto.Classification" />
+
+    <CheckboxField Width=GC.TextFieldWidth.Short
+                   LangCode="Active"
+                   @bind-Value="@accountDto.IsActive" />
+
+    <CheckboxField Width=GC.TextFieldWidth.Short
+                   LangCode="AdminU"
+                   @bind-Value="@accountDto.IsAdminUser" />
+
+    <CheckboxField Width=GC.TextFieldWidth.Short
+                   LangCode="AdminL"
+                   @bind-Value="@accountDto.IsAdminLang" />
+
+    <Version version=@accountDto />
+</div>
+
+@code {
+    [Parameter] public UserDto.UserAccountDto accountDto { get; set; }
+}

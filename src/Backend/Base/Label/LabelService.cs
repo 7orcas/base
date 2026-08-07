@@ -21,11 +21,16 @@ namespace Backend.Base.Label
         private const string AllLabelsCacheKey = "A";
         private const string LoginLabelsCacheKey = "L";
 
+        //DELETE ME delete refactored commented code below
+
+
         public LabelService(IServiceProvider serviceProvider,
             IMemoryCache memoryCache) 
             : base(serviceProvider)
         {
-            cache = memoryCache;
+            if (AppSettings.Cache.Language)
+                cache = memoryCache;
+            
         }
 
         public async Task<Dictionary<string, LangLabel>> GetLanguageLabelDic(SessionEnt session) =>
@@ -35,11 +40,18 @@ namespace Backend.Base.Label
         public async Task<Dictionary<string, LangLabel>> GetLanguageLabelDic(string langCode, int? variant)
         {
             var key = CacheKey(langCode, variant, AllLabelsCacheKey);
-            var dic = cache.Get<Dictionary<string, LangLabel>>(key);
+            var dic = cache != null ? cache.Get<Dictionary<string, LangLabel>>(key) : null;
             if (dic != null) return dic;
 
-            await GetLanguageLabelList(langCode, variant);
-            return cache.Get<Dictionary<string, LangLabel>>(key);
+            //await GetLanguageLabelList(langCode, variant);
+            //return cache.Get<Dictionary<string, LangLabel>>(key);
+            
+            var list = await GetLanguageLabelList(langCode, variant);
+
+            if (cache != null)
+                return cache.Get<Dictionary<string, LangLabel>>(key);
+
+            return list.ToDictionary(x => x.LangKeyCode, x => x);
         }
 
         public async Task<Dictionary<string, string>> GetLangCodeDic(SessionEnt session) =>
@@ -49,19 +61,22 @@ namespace Backend.Base.Label
         public async Task<Dictionary<string, string>> GetLangCodeDic(string langCode, int? variant)
         {
             var key = CacheKey(langCode, variant, LangCodesCacheKey);
-            var dic = cache.Get<Dictionary<string, string>>(key);
+            var dic = cache != null ? cache.Get<Dictionary<string, string>>(key) : null;
             if (dic != null) return dic;
 
             var list = await GetLanguageLabelList(langCode, variant);
             var dicX = list.ToDictionary(x => x.LangKeyCode, x => x.Code);
-            cache.Set(key, dicX);
 
+            if (cache != null)
+                cache.Set(key, dicX);
+            //return cache.Get<Dictionary<string, LangLabel>>(key);
             return dicX;
         }
 
 
         private async Task SetLanguageLabelDic(string langCode, int? variant, List<LangLabel> list, string type)
         {
+            if (cache == null) return;
             var key = CacheKey(langCode, variant, type);
             var dic = list.ToDictionary(x => x.LangKeyCode, x => x);
             cache.Set(key, dic);
@@ -76,7 +91,7 @@ namespace Backend.Base.Label
         public async Task<List<LangLabel>> GetLanguageLabelList(string langCode, int? variant)
         {
             var key = CacheKey(langCode, variant, AllLabelsCacheKey);
-            var dic = cache.Get<Dictionary<string, LangLabel>>(key);
+            var dic = cache != null ? cache.Get<Dictionary<string, LangLabel>>(key) : null;
             if (dic != null) return dic.Values.ToList(); 
 
             var list = await GetLabelList(null, langCode, null, null, null);
@@ -108,7 +123,7 @@ namespace Backend.Base.Label
         public async Task<List<LangLabel>> GetLanguageLabelListForLogin(string langCode, int? variant)
         {
             var key = CacheKey(langCode, variant, LoginLabelsCacheKey);
-            var dic = cache.Get<Dictionary<string, LangLabel>>(key);
+            var dic = cache != null ? cache.Get<Dictionary<string, LangLabel>>(key) : null;
             if (dic != null) return dic.Values.ToList();
 
             var list = await GetLabelList(null, langCode, null, null, variant);

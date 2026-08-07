@@ -27,6 +27,7 @@ namespace Backend.Base.User.Ent
         public DateTimeOffset Updated { get; set; }
         public int Version { get; set; }
 
+        public ICollection<UserAccountEnt> Accounts { get; set; } = new List<UserAccountEnt>();
 
         public override void Decode() { }
         public override void Encode() { }

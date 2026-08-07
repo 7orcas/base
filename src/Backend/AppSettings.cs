@@ -19,6 +19,7 @@
         public static EmailSettings? EmailSettings { get; set; }
         public static AppUrls Urls { get; set; }
         public static ReCaptcha ReCaptcha { get; set; }
+        public static Cache Cache { get; set; }
     }
 
     public class AppServiceAccount 
@@ -58,5 +59,10 @@
         public int WindowMinutes { get; set; }
     }
 
+    public class Cache
+    {
+        public bool Language { get; set; }
+        public bool Org { get; set; }
+    }
 
 }

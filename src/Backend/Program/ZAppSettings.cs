@@ -73,6 +73,18 @@
             {
                 _log.Error("AppSettings Recaptucha  ex{ex}", e);
             }
+
+            try
+            {
+                var cache = new Cache();
+                cache.Language = bool.Parse(builder.Configuration["Cache:Language"]);
+                cache.Org = bool.Parse(builder.Configuration["Cache:Org"]);
+                AppSettings.Cache = cache;
+            }
+            catch (Exception e)
+            {
+                _log.Error("AppSettings Cache  ex{ex}", e);
+            }
         }
     
 

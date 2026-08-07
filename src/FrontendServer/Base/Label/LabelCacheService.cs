@@ -31,7 +31,8 @@ namespace FrontendServer.Base.Label
         }
 
         public void PutLabels(string langCode, int? variant, Dictionary<string, LangLabelDto> labels) => _cache.Set(LabelKey(langCode, variant), labels);
-        
+
+        public void Clear() => ((MemoryCache)_cache).Compact(1.0);
 
         public Dictionary<string, LangLabelDto> GetLabels(string langCode, int? variant)
         {

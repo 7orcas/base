@@ -25,7 +25,6 @@
     @if (showList)
     {
         <MudItem xs="1">
-            <Label Size="GC.TextSize.Section" Key="Users"></Label>
             <MudPaper Elevation="0" Outlined="true">
                 <MudList T="UserDto">
                     @for (int i = 0; i < list.Count; i++)
@@ -48,18 +47,67 @@
     @if (userDto != null)
     {
         <MudItem xs="8">
-            <Text Size="GC.TextSize.Section">@userDto.Username</Text>
-            <Text Size="GC.TextSize.Section">@userDto.OrgNrDefault</Text>
-            <Text Size="GC.TextSize.Section">@userDto.Version</Text>
-            <Text Size="GC.TextSize.Section">
-                Updated: @userDto.Updated.ToString("dd/MM/yyyy HH:mm")
-            </Text>
-        
-            <CheckboxField Width=GC.TextFieldWidth.Short
-                           LangCode="Active"
-                           Value="@userDto.IsActive"
-                           ValueChanged="@((bool val) => userDto.IsActive = val)"
-                           ValueExpression="() => userDto.IsActive" />
+            
+            <MudPaper Elevation="0" Outlined="@_debugOutlined">
+                <MudExpansionPanels MultiExpansion="true">
+                    <MudExpansionPanel Text=@GetLabel("ConfigG") Expanded="true">
+                        <TitleContent>
+                            <Label Size="GC.TextSize.Normal" Key="ConfigG"></Label>
+                            <div class="d-flex">
+                            </div>
+                        </TitleContent>
+                        <ChildContent>
+                            <div style="display: flex; flex-wrap: wrap; gap: 20px;">
+                                
+                                <TextField Width=GC.TextFieldWidth.Medium
+                                           LangCode="UserName"
+                                           ReadOnly="true"
+                                           MaxLength="@GC.LenCode"
+                                           Value="@userDto.Username"
+                                           ValueChanged="@((string val) => userDto.Username = val)"
+                                           ValueExpression="() => userDto.Username" />
+
+                                <NumericField Width=GC.TextFieldWidth.Short
+                                              LangCode="OrgD"
+                                              @bind-Value="@userDto.OrgNrDefault" />
+                                
+                                <NumericField Width=GC.TextFieldWidth.Short
+                                              LangCode="LoginA"
+                                              @bind-Value="@userDto.Attempts" />
+
+                                <CheckboxField Width=GC.TextFieldWidth.Short
+                                               LangCode="Active"
+                                               @bind-Value="@userDto.IsActive" />
+
+                                <Version version=@userDto />
+                               
+                            </div>
+                        </ChildContent>
+                    </MudExpansionPanel>
+
+                    @if (userDto?.Accounts?.Any() == true)
+                    {
+                        @foreach (var account in userDto.Accounts)
+                        {
+                            <MudExpansionPanel @key="account.Id" Text=@GetLabel("UserAc") Expanded=@Expand(account)>
+                                <TitleContent>
+                                    @account.OrgCode @ExpandDefault(account)
+                                    <div class="d-flex">
+                                    </div>
+                                </TitleContent>
+                                <ChildContent>
+                                    <MudPaper Class="pa-4 mb-4" Elevation="0">
+                                        <UserAccount accountDto="@account" />
+                                    </MudPaper>
+                                </ChildContent>
+                            </MudExpansionPanel>
+                            <p></p>
+                        }
+                    }
+
+                </MudExpansionPanels>
+            </MudPaper>
+
         </MudItem>
     }
     
@@ -73,7 +121,7 @@
 @using GC = FrontendServer.GlobalConstants;
 @using FrontendServer.Base._Base;
 
-    @code {
+@code {
     private bool showList = false;
     private List<UserDto> list;
     private UserDto? userDto;
@@ -109,7 +157,7 @@
     {
         var dto = list[index];
         if (!dto.IsLoaded || force){
-            userDto = await GetAsync<UserDto>(GC.URL_user + dto.UserId);
+            userDto = await GetAsync<UserDto>(GC.URL_user + dto.Id);
             userDto.HashMe();
             userDto.IsLoaded = true;
             list[index] = userDto;
@@ -122,7 +170,7 @@
     private async Task SaveAsync()
     {
         _isSaving = true;
-        var curIndex = userDto != null? list.FindIndex(d => d.UserId == userDto.UserId) : -1;
+        var curIndex = userDto != null? list.FindIndex(d => d.Id == userDto.Id) : -1;
         // var client = await SetClient();
         for (int i = 0; i < list.Count; i++) {
             var dto = list[i];
@@ -136,7 +184,7 @@
 
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    var o = await GetAsync<UserDto>(GC.URL_user + dto.UserId);
+                    var o = await GetAsync<UserDto>(GC.URL_user + dto.Id);
                     list[i] = o.HashMe().SetLoaded();
                 }
             }
@@ -145,6 +193,21 @@
 
         if (curIndex != -1)
             OnItemSelected(curIndex);
+    }
+
+    private bool Expand(UserDto.UserAccountDto account)
+    {
+        if (userDto == null) return false;
+        return account.OrgNr == userDto.OrgNrDefault;
+    }
+
+    private string ExpandDefault(UserDto.UserAccountDto account)
+    {
+        if (userDto == null || userDto.Accounts == null) return "";
+        if (account.OrgNr == userDto.OrgNrDefault
+            && userDto.Accounts.Count > 1) 
+            return "[" + GetLabel("Default") + "]";
+        return "";
     }
 
     //ToDo

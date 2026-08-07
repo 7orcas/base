@@ -11,15 +11,32 @@ namespace Backend.Base.User
     /// <author>John Stewart</author>
     /// <created>May 11, 2026</created>
     /// <license>**Licence**</license>
-    public class UserRepo : UserRepoI
+    public class UserRepo : BaseRepo, UserRepoI
     {
-
-
         private readonly AppDbContext _context;
 
-        public UserRepo(AppDbContext context)
+        public UserRepo(AppDbContext context,
+            IServiceProvider serviceProvider)
+            : base(serviceProvider)
         {
             _context = context;
+        }
+
+        public async Task<List<UserEnt>> GetList()
+        {
+            var list = new List<UserEnt>();
+            await Sql.Run(
+                    "SELECT * FROM base.zzz ",
+                    r => {
+                        var user = new UserEnt();
+                        user.Id = GetId(r);
+                        user.Username = GetString(r, "xxx");
+                        user.IsActive = IsActive(r);
+                        user.OrgNrDefault = GetInt(r, "orgnrdefault");
+                        list.Add(user);
+                    }
+                );
+            return list;
         }
 
 
@@ -32,12 +49,23 @@ namespace Backend.Base.User
 
         public async Task<UserEnt?> GetById(long id)
         {
-            return await _context.Users.FindAsync(id);
+            try
+            {
+                return await _context.Users
+                    .Include(u => u.Accounts)
+                    .FirstOrDefaultAsync(x => x.Id == id);
+
+            }
+            catch (Exception ex)
+            {
+                _log.Error($"Error retrieving user with ID {id}", ex);
+                return null;
+            }
         }
 
         public async Task<UserEnt?> Update(UserDto user)
         {
-            var existingUser = await _context.Users.FindAsync(user.UserId);
+            var existingUser = await _context.Users.FindAsync(user.Id);
 
             if (existingUser == null)
             {
@@ -45,6 +73,8 @@ namespace Backend.Base.User
             }
             existingUser.Encode();
             existingUser.Username = user.Username;
+            existingUser.OrgNrDefault = user.OrgNrDefault;
+
             existingUser.IsActive = user.IsActive;
             existingUser.Version = user.Version + 1;
             existingUser.Updated = DateTimeOffset.UtcNow;

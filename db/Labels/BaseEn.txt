@@ -12,8 +12,11 @@ Off,Off
 SaveRec,Save
 SaveChg,Save Changes
 Verify,Verify
+Default,Default
+Updated,Updated
 Org,Organisation
 Orgs,Organisations
+OrgD,Default Organisation
 Orgs-s,Orgs
 OrgNr,Org Nr
 OrgSub,Configuration of Organisation
@@ -62,10 +65,15 @@ Mfa3,Enter code from Microsoft Authenticator
 MfaEr,Failed to load MFA setup
 LEx,Login Expired|| please log in again.
 BConf,Base Configuration
+Code,Code
 Lang,Language
+LangCode,Lang
 Langs,Languages
 LangCodeV,Language Variant
 Label,Label
+Variant,Variant
+LabelEdit,Edit Label
+Tooltip,Tooltip
 Config,Configuration
 ConfigG,General Configuration
 UnsavedC,There are unsaved changes. Leave anyway?
@@ -73,6 +81,8 @@ LenMax,Max Length
 LenMin,Min Length
 Nr,Number
 AdminM,Admin
+AdminU,User Admin
+AdminL,Language Admin
 Role,Role
 Roles,Roles
 RoleSub,Roles contain permissions. Permissions are cumulative|| i.e.|| they combine to give the user the maximum authorisation.
@@ -101,6 +111,7 @@ UserName,Username
 UserNameM,Masquerade Username
 UserNameEx,Username already exists
 UserRs,User Roles
+UserAc,Account
 LDM,Light/Dark Mode
 Logout,Logout
 Login,Login
@@ -108,6 +119,7 @@ LoginUP,Invalid Username and/or Password
 LoginXPX,Maximum login attempts have been reached|| your login is locked.
 LoginWP,Warning you have been reached %% attempts.
 LoginAX,Maximum login attempts are %%.
+LoginA,Login attempts.
 LoginWPX,Your login is locked for %% minutes.
 LoginLO,Your login is locked out until %%
 LoginIL,Your login is inactive
@@ -143,4 +155,5 @@ CaptchaR,ReCAPTCHA is required
 Val0,Can''t be empty
 Val1,Can''t contain spaces
 Ver,Version
+Clas,Classification
 <LAST>,<LAST LINE>

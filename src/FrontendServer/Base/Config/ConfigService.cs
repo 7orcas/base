@@ -42,7 +42,7 @@ namespace FrontendServer.Base.Config
                 var cjson = cdto.Result.ToString();
                 config = JsonConvert.DeserializeObject<AppConfigDto>(cjson);
 
-config.DebugMode = true; //DELETE ME
+//config.DebugMode = true; //DELETE ME
 
                 OnInitialized?.Invoke(); // Notify subscribers
                 return config;

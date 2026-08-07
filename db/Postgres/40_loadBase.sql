@@ -61,19 +61,91 @@ VALUES
  'john.stewart@7orcas.com', 1, 'en', true, false);
 INSERT INTO base.zzz (id, xxx, yyy, email, orgnrdefault, langcode)
 VALUES
-(2, 'user', '1.VJXOTS5/KLiukWt4kMACAw==.KUeftBqtDfYlkZ8D4qNIAGm4g3cdoVB+67e5bIO8qRI=', --xx123
- 'xx123', 1, 'en'),
-(-1, '$', '1.8da2kjhE7Yjh8LpInlivMQ==.jRwSyq64a4AYu6mSxBYaZ3tWgyRhPD2ZJlzHovwBYr0=', --$
- 'js@7orcas.com', 1, 'en');
+ (2, 'user', '1.VJXOTS5/KLiukWt4kMACAw==.KUeftBqtDfYlkZ8D4qNIAGm4g3cdoVB+67e5bIO8qRI=', 'xx123', 1, 'en'),
+ (-1, '$', '1.8da2kjhE7Yjh8LpInlivMQ==.jRwSyq64a4AYu6mSxBYaZ3tWgyRhPD2ZJlzHovwBYr0=', 'js@7orcas.com', 1, 'en'),
+ (11, 'user11', '1.VJXOTS5/KLiukWt4kMACAw==.KUeftBqtDfYlkZ8D4qNIAGm4g3cdoVB+67e5bIO8qRI=', 'xx123', 1, 'en'),
+ (12, 'user12', '1.VJXOTS5/KLiukWt4kMACAw==.KUeftBqtDfYlkZ8D4qNIAGm4g3cdoVB+67e5bIO8qRI=', 'xx123', 1, 'en'),
+ (13, 'user13', '1.VJXOTS5/KLiukWt4kMACAw==.KUeftBqtDfYlkZ8D4qNIAGm4g3cdoVB+67e5bIO8qRI=', 'xx123', 1, 'en'),
+ (14, 'user14', '1.VJXOTS5/KLiukWt4kMACAw==.KUeftBqtDfYlkZ8D4qNIAGm4g3cdoVB+67e5bIO8qRI=', 'xx123', 1, 'en'),
+ (15, 'user15', '1.VJXOTS5/KLiukWt4kMACAw==.KUeftBqtDfYlkZ8D4qNIAGm4g3cdoVB+67e5bIO8qRI=', 'xx123', 1, 'en'),
+ (16, 'user16', '1.VJXOTS5/KLiukWt4kMACAw==.KUeftBqtDfYlkZ8D4qNIAGm4g3cdoVB+67e5bIO8qRI=', 'xx123', 1, 'en'),
+ (17, 'user17', '1.VJXOTS5/KLiukWt4kMACAw==.KUeftBqtDfYlkZ8D4qNIAGm4g3cdoVB+67e5bIO8qRI=', 'xx123', 1, 'en'),
+ (18, 'user18', '1.VJXOTS5/KLiukWt4kMACAw==.KUeftBqtDfYlkZ8D4qNIAGm4g3cdoVB+67e5bIO8qRI=', 'xx123', 1, 'en'),
+ (19, 'user19', '1.VJXOTS5/KLiukWt4kMACAw==.KUeftBqtDfYlkZ8D4qNIAGm4g3cdoVB+67e5bIO8qRI=', 'xx123', 1, 'en'),
+ (21, 'user21', '1.VJXOTS5/KLiukWt4kMACAw==.KUeftBqtDfYlkZ8D4qNIAGm4g3cdoVB+67e5bIO8qRI=', 'xx123', 1, 'en'),
+ (22, 'user22', '1.VJXOTS5/KLiukWt4kMACAw==.KUeftBqtDfYlkZ8D4qNIAGm4g3cdoVB+67e5bIO8qRI=', 'xx123', 1, 'en'),
+ (23, 'user23', '1.VJXOTS5/KLiukWt4kMACAw==.KUeftBqtDfYlkZ8D4qNIAGm4g3cdoVB+67e5bIO8qRI=', 'xx123', 1, 'en'),
+ (24, 'user24', '1.VJXOTS5/KLiukWt4kMACAw==.KUeftBqtDfYlkZ8D4qNIAGm4g3cdoVB+67e5bIO8qRI=', 'xx123', 1, 'en'),
+ (25, 'user25', '1.VJXOTS5/KLiukWt4kMACAw==.KUeftBqtDfYlkZ8D4qNIAGm4g3cdoVB+67e5bIO8qRI=', 'xx123', 1, 'en'),
+ (26, 'user26', '1.VJXOTS5/KLiukWt4kMACAw==.KUeftBqtDfYlkZ8D4qNIAGm4g3cdoVB+67e5bIO8qRI=', 'xx123', 1, 'en'),
+ (27, 'user27', '1.VJXOTS5/KLiukWt4kMACAw==.KUeftBqtDfYlkZ8D4qNIAGm4g3cdoVB+67e5bIO8qRI=', 'xx123', 1, 'en'),
+ (28, 'user28', '1.VJXOTS5/KLiukWt4kMACAw==.KUeftBqtDfYlkZ8D4qNIAGm4g3cdoVB+67e5bIO8qRI=', 'xx123', 1, 'en'),
+ (29, 'user29', '1.VJXOTS5/KLiukWt4kMACAw==.KUeftBqtDfYlkZ8D4qNIAGm4g3cdoVB+67e5bIO8qRI=', 'xx123', 1, 'en'),
+ (31, 'user31', '1.VJXOTS5/KLiukWt4kMACAw==.KUeftBqtDfYlkZ8D4qNIAGm4g3cdoVB+67e5bIO8qRI=', 'xx123', 1, 'en'),
+ (32, 'user32', '1.VJXOTS5/KLiukWt4kMACAw==.KUeftBqtDfYlkZ8D4qNIAGm4g3cdoVB+67e5bIO8qRI=', 'xx123', 1, 'en'),
+ (33, 'user33', '1.VJXOTS5/KLiukWt4kMACAw==.KUeftBqtDfYlkZ8D4qNIAGm4g3cdoVB+67e5bIO8qRI=', 'xx123', 1, 'en'),
+ (34, 'user34', '1.VJXOTS5/KLiukWt4kMACAw==.KUeftBqtDfYlkZ8D4qNIAGm4g3cdoVB+67e5bIO8qRI=', 'xx123', 1, 'en'),
+ (35, 'user35', '1.VJXOTS5/KLiukWt4kMACAw==.KUeftBqtDfYlkZ8D4qNIAGm4g3cdoVB+67e5bIO8qRI=', 'xx123', 1, 'en'),
+ (36, 'user36', '1.VJXOTS5/KLiukWt4kMACAw==.KUeftBqtDfYlkZ8D4qNIAGm4g3cdoVB+67e5bIO8qRI=', 'xx123', 1, 'en'),
+ (37, 'user37', '1.VJXOTS5/KLiukWt4kMACAw==.KUeftBqtDfYlkZ8D4qNIAGm4g3cdoVB+67e5bIO8qRI=', 'xx123', 1, 'en'),
+ (38, 'user38', '1.VJXOTS5/KLiukWt4kMACAw==.KUeftBqtDfYlkZ8D4qNIAGm4g3cdoVB+67e5bIO8qRI=', 'xx123', 1, 'en'),
+ (39, 'user39', '1.VJXOTS5/KLiukWt4kMACAw==.KUeftBqtDfYlkZ8D4qNIAGm4g3cdoVB+67e5bIO8qRI=', 'xx123', 1, 'en'),
+ (41, 'user41', '1.VJXOTS5/KLiukWt4kMACAw==.KUeftBqtDfYlkZ8D4qNIAGm4g3cdoVB+67e5bIO8qRI=', 'xx123', 1, 'en'),
+ (42, 'user42', '1.VJXOTS5/KLiukWt4kMACAw==.KUeftBqtDfYlkZ8D4qNIAGm4g3cdoVB+67e5bIO8qRI=', 'xx123', 1, 'en'),
+ (43, 'user43', '1.VJXOTS5/KLiukWt4kMACAw==.KUeftBqtDfYlkZ8D4qNIAGm4g3cdoVB+67e5bIO8qRI=', 'xx123', 1, 'en'),
+ (44, 'user44', '1.VJXOTS5/KLiukWt4kMACAw==.KUeftBqtDfYlkZ8D4qNIAGm4g3cdoVB+67e5bIO8qRI=', 'xx123', 1, 'en'),
+ (45, 'user45', '1.VJXOTS5/KLiukWt4kMACAw==.KUeftBqtDfYlkZ8D4qNIAGm4g3cdoVB+67e5bIO8qRI=', 'xx123', 1, 'en'),
+ (46, 'user46', '1.VJXOTS5/KLiukWt4kMACAw==.KUeftBqtDfYlkZ8D4qNIAGm4g3cdoVB+67e5bIO8qRI=', 'xx123', 1, 'en'),
+ (47, 'user47', '1.VJXOTS5/KLiukWt4kMACAw==.KUeftBqtDfYlkZ8D4qNIAGm4g3cdoVB+67e5bIO8qRI=', 'xx123', 1, 'en'),
+ (48, 'user48', '1.VJXOTS5/KLiukWt4kMACAw==.KUeftBqtDfYlkZ8D4qNIAGm4g3cdoVB+67e5bIO8qRI=', 'xx123', 1, 'en'),
+ (49, 'user49', '1.VJXOTS5/KLiukWt4kMACAw==.KUeftBqtDfYlkZ8D4qNIAGm4g3cdoVB+67e5bIO8qRI=', 'xx123', 1, 'en');
 
+ 
 -- -------------------------------------------------
 -- base.useracc
 -- -------------------------------------------------
 INSERT INTO base.useracc (id, zzzid, orgnr)
 VALUES
-(1, 1, 1),
-(2, 2, 1),
-(3, 2, 2);
+ (1, 1, 1),
+ (11, 1, 2),
+ (2, 2, 1),
+ (3, 2, 2),
+ (111, 11, 1),
+ (112, 12, 1),
+ (113, 13, 1),
+ (114, 14, 1),
+ (115, 15, 1), 
+ (116, 16, 1),
+ (117, 17, 1),
+ (118, 18, 1),
+ (119, 19, 1),
+ (121, 21, 1), 
+ (122, 22, 1),
+ (123, 23, 1),
+ (124, 24, 1),
+ (125, 25, 1),
+ (126, 26, 1), 
+ (127, 27, 1),
+ (128, 28, 1),
+ (129, 29, 1),
+ (131, 31, 1),
+ (132, 32, 1), 
+ (133, 33, 1),
+ (134, 34, 1),
+ (135, 35, 1),
+ (136, 36, 1),
+ (137, 37, 1), 
+ (138, 38, 1),
+ (139, 39, 1),
+ (141, 41, 1),
+ (142, 42, 1),
+ (143, 43, 1),  
+ (144, 44, 1),  
+ (145, 45, 1),  
+ (146, 46, 1),  
+ (147, 47, 1),  
+ (148, 48, 1),  
+ (149, 49, 1);
 
 -- -------------------------------------------------
 -- base.role

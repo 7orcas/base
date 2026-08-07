@@ -1,0 +1,24 @@
+﻿@inherits BasePage
+@using GC = FrontendServer.GlobalConstants;
+
+<div style="
+    display:flex;
+    width:100%;
+    padding:2px 6px;
+    border-radius:4px;
+    color:#666;">
+    <MudText Style="line-height:1;" Typo=Typo.overline Class="ma-0 pa-0">
+        @GetLabel("Updated"):
+        @(TimeZoneInfo.ConvertTime(
+            version.Updated,
+            TimeZoneInfo.Local)
+        .ToString(GC.Date_TS_Format))
+        &nbsp;|&nbsp;
+        @GetLabel("Ver"):
+        @version.Version
+    </MudText>
+</div>
+
+@code {
+    [Parameter] public _BaseVersionDto version { get; set; }
+}
