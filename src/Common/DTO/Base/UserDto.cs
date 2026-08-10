@@ -22,6 +22,7 @@ namespace Common.DTO.Base
         public string? MfaSecret { get; set; }
         public List<UserAccountDto>? Accounts { get; set; }
 
+        public bool IsNew() => Id < 0;
 
         public class UserAccountDto : _BaseVersionDto
         {

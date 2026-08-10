@@ -40,9 +40,8 @@
     public class UserConfigDto
     {
         public bool IsService { get; set; } = false;
-        public bool IsSystemAdmin { get; set; } = false;
-        public bool IsCurrentLanguageAdmin { get; set; } = false;
-        public bool IsActiveLanguageAdmin { get; set; } = false;
+        public bool IsAdminUser { get; set; } = false;
+        public bool IsAdminLang { get; set; } = false;
     }
 
 }

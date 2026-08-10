@@ -133,7 +133,8 @@ namespace Backend.Base.Login
                             OrgNr = GetOrgNr(r),
                             Lastlogin = GetDateTimeNull(r, "lastlogin"),
                             IsActive = IsActive(r),
-                            IsAdmin = GetBoolean(r, "isAdmin"),
+                            IsAdminUser = GetBoolean(r, "isAdminUser"),
+                            IsAdminLang = GetBoolean(r, "isAdminLang"),
                             Classification = GetIntNull(r, "classification")
                         };
                     },

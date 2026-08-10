@@ -19,25 +19,15 @@ namespace Backend.Base.Login.Ent
         public int? Classification {  get; set; }
         public DateTimeOffset? Lastlogin { get; set; }
         public bool IsActive { get; set; }
-        public bool IsAdmin { get; set; }
-        //Update note: Add to service
-
+        public bool IsAdminUser { get; set; }
+        public bool IsAdminLang { get; set; }
 
         public string Username { get; set; }
         public override void Decode() { }
         public override void Encode() { }
 
-
         public List<PermissionCrudEnt> Permissions { get; set; }
-
-        public bool IsSystemAdmin { get; set; } = false;
-        public bool IsCurrentLanguageAdmin { get; set; } = false;
-        public bool IsActiveLanguageAdmin { get; set; } = false;
-
-        public bool IsLanguageAdmin()
-        {
-            return IsCurrentLanguageAdmin || IsActiveLanguageAdmin || IsService();
-        }
+   
         public bool IsService() => LoginId == GC.ServiceLoginId;
 
         /*
@@ -53,7 +43,8 @@ namespace Backend.Base.Login.Ent
                 OrgNr = orgNr,
                 Lastlogin = DateTime.Now,
                 IsActive = true,
-                IsAdmin = true
+                IsAdminUser = true,
+                IsAdminLang = true,
             };
         }
     }

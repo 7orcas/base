@@ -69,7 +69,8 @@ namespace BackendTest.Setup
                 Username = GCT.UserName,
                 OrgNr = orgNr,
                 Classification = 0,
-                IsAdmin = false,
+                IsAdminUser = false,
+                IsAdminLang = false,
                 Permissions = new List<PermissionCrudEnt>
                 {
                     new PermissionCrudEnt { Nr = USER_PERM, Crud = USER_PERM_CRUD }

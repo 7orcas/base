@@ -6,7 +6,7 @@
         <MenuButton Title="@items[index + cLabel]" Link="@items[index + cRoute]" />
     }
 
-    @if (ConfS.Config.User.IsSystemAdmin)
+    @if (ConfS.Config.User.IsAdminUser || ConfS.Config.User.IsAdminLang)
     {
         <div style="width:100%;">
             <MudButton Class="custom-menu-button"

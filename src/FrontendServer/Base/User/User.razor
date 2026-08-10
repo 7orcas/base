@@ -14,6 +14,7 @@
     <LoadingWithError IsLoading=@_isLoading
                         IsSaving=@_isSaving
                         IsError=@_isError
+                        StatusCode=@_statusCode
                         Message=@_errorMessage>
         @exception
     </LoadingWithError>
@@ -22,25 +23,57 @@
 <MudGrid>
 
     <!-- Left Side: List -->
-    @if (showList)
-    {
-        <MudItem xs="1">
-            <MudPaper Elevation="0" Outlined="true">
-                <MudList T="UserDto">
-                    @for (int i = 0; i < list.Count; i++)
-                    {
-                        var index = i;
-                        <div class="@GetListRowOddEvenClass(i)">
-                        <MudListItem 
-                            Value="@list[i]" 
-                            OnClick="() => OnItemSelected(index)"
-                            Text="@list[i].Username" />
-                        </div>
-                    }
-                </MudList>
-            </MudPaper>
-        </MudItem>
-    }
+    <MudItem xs="2">
+        <MudPaper Elevation="0" Outlined="true">
+            <MudTable Style="table-layout: fixed;"
+                    T="UserDto"
+                    Items="@list"
+                    Height="70vh"
+                    FixedHeader="true"
+                    Hover="true"
+                    Bordered="true"
+                    Striped="true">
+
+                        
+                <HeaderContent>
+                    <MudTh colspan="2"><Label Key="UserName" /></MudTh>
+                    <MudTh><Label Key="Active" /></MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd Style="max-width:0px; padding:0px; border-right: none;"
+                            DataLabel="Error"
+                            Class="@GetFirstColumnErrorClass(context)"
+                            @onclick="() => OnItemSelected(context)">
+                        @GetSelectRowPointer(context)
+                    </MudTd>
+                    <MudTd DataLabel="UserName"
+                            Class="@GetSelectRowClass(context)"
+                            @onclick="() => OnItemSelected(context)">
+                        @if (isEditList || @context.IsNew())
+                        {
+                            <MudTextField T="string"
+                                          @bind-Value="context.Username"
+                                            Immediate="true"
+                                            MaxLength="@GC.LenCode"
+                                            Margin="Margin.Dense"
+                                            Variant="Variant.Text" />
+                        }
+                        else
+                        {
+                            @context.Username
+                        }
+                    </MudTd>
+                    <MudTd DataLabel="Active">
+                        <MudCheckBox T="bool"
+                                        ReadOnly="@(!_isCrudU)"
+                                        @bind-Value="context.IsActive" />
+                    </MudTd>
+                </RowTemplate>
+            </MudTable>
+        </MudPaper>
+    </MudItem>
+
+    
 
 
     <!-- Right Side: Details -->
@@ -122,9 +155,10 @@
 @using FrontendServer.Base._Base;
 
 @code {
-    private bool showList = false;
     private List<UserDto> list;
     private UserDto? userDto;
+    private bool isEditList = false;
+    private List<UserDto> selections = new List<UserDto>();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -142,24 +176,29 @@
             else
             {
                 if (list.Count > 0)
-                    Load(0, true);
-
-                showList = list.Count > 1;
+                    Load(list[0], true);
             }
             AddToolbarSave(SaveAsync);
             StateHasChanged();
         }
     }
+    
+    private string GetSelectRowPointer(UserDto dto) => GetSelectRowPointer(selections.Contains(dto));
+    private string GetSelectRowClass(UserDto dto) => GetSelectRowClass(selections.Contains(dto));
 
-    private async void OnItemSelected(int index) => Load(index, false);
-
-    private async void Load(int index, bool force) 
+    private async Task OnItemSelected(UserDto r)
     {
-        var dto = list[index];
+        await Load(r, false);
+        StateHasChanged();
+    }
+
+    private async Task Load(UserDto dto, bool force)
+    {
         if (!dto.IsLoaded || force){
             userDto = await GetAsync<UserDto>(GC.URL_user + dto.Id);
             userDto.HashMe();
             userDto.IsLoaded = true;
+            var index = list.FindIndex(d => d.Id == userDto.Id);
             list[index] = userDto;
         }
         else
@@ -191,8 +230,8 @@
         }
         _isSaving = false;
 
-        if (curIndex != -1)
-            OnItemSelected(curIndex);
+        if (userDto != null)
+            OnItemSelected(userDto);
     }
 
     private bool Expand(UserDto.UserAccountDto account)

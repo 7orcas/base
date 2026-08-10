@@ -65,7 +65,7 @@ namespace Backend.Base.Config
                 if (requestedLangCode.Equals(lang.LangCode))
                 {
                     if (userAccount.IsService()) return requestedLangCode;
-                    if (userAccount.IsActiveLanguageAdmin && lang.IsActive()) return requestedLangCode;
+                    if (userAccount.IsAdminLang && lang.IsActive()) return requestedLangCode;
                 }
                     
             return orgConfig.LangCodeDefault;
@@ -83,14 +83,13 @@ namespace Backend.Base.Config
         {
             var langList = new List<ConfigLanguage>();
 
-            if (!userAccount.IsLanguageAdmin()) return langList;
+            if (!userAccount.IsAdminLang) return langList;
             if (!userAccount.IsService() && !orgConfig.IsLangCodeEditable) return langList;
 
             foreach (var cl in orgConfig.Languages)
             {
                 var up = userAccount.IsService();
                 if (!up && cl.LangCode.Equals(userLangCode)) up = cl.IsEditable;
-                if (!up && userAccount.IsActiveLanguageAdmin) up = cl.IsEditable;
 
                 langList.Add(new ConfigLanguage { 
                     LangCode = cl.LangCode,

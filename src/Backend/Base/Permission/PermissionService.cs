@@ -1,5 +1,6 @@
-﻿using Npgsql;
-using Microsoft.Extensions.Caching.Memory;
+﻿using Microsoft.Extensions.Caching.Memory;
+using Npgsql;
+using Scriban.Parsing;
 using GC = Backend.GlobalConstants;
 
 namespace Backend.Base.Permission
@@ -172,16 +173,26 @@ namespace Backend.Base.Permission
         public bool IsAuthorizedToAccessEndPoint(SessionEnt session, PermissionAtt permAtt, CrudAtt crud)
         {
             if (permAtt == null) return true;
+
             if (session == null) return false;
             if (session.UserAccount.IsService()) return true;
 
-            if (crud != null && crud.Action == GC.CrudIgnore) return true;
+            //ie role - permission not required for this endpoint
+            if (crud != null && crud.Action == GC.CrudIgnore)
+            {
+                //Hard coded admins
+                if (permAtt.Nr == GC.PerUser) return session.UserAccount.IsAdminUser;
+                if (permAtt.Nr == GC.PerLang) return session.UserAccount.IsAdminLang;
+
+                return true;
+            }
 
             var permEnt = GetPermissionEnt(permAtt.Nr);
             if (permEnt == null) return false;
-
+            
             var userCrud = session.GetUserPermissionCrud(permEnt.Nr);
             if (userCrud == null) return false; //permission not found in user profile
+
             if (crud == null) return true;
 
             return userCrud.IndexOf(crud.Action) != -1;
