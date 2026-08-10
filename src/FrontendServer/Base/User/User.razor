@@ -237,13 +237,13 @@
     private bool Expand(UserDto.UserAccountDto account)
     {
         if (userDto == null) return false;
-        return account.OrgNr == userDto.OrgNrDefault;
+        return account.orgNr == userDto.OrgNrDefault;
     }
 
     private string ExpandDefault(UserDto.UserAccountDto account)
     {
         if (userDto == null || userDto.Accounts == null) return "";
-        if (account.OrgNr == userDto.OrgNrDefault
+        if (account.orgNr == userDto.OrgNrDefault
             && userDto.Accounts.Count > 1) 
             return "[" + GetLabel("Default") + "]";
         return "";

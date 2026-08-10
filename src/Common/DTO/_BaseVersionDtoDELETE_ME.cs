@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace Common.DTO
 {
-    public abstract class _BaseVersionDto
+    public abstract class _BaseVersionDtoDELETE_ME
     {
-        public DateTimeOffset Updated { get; set; }
-        public int Version { get; set; }
+
     }
 }

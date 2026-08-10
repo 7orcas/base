@@ -9,13 +9,15 @@
 
 namespace Common.DTO
 {
-    public abstract class _BaseFieldsDto<T> : _BaseDto<T> where T : _BaseDto<T>
+    public abstract class _BaseFieldsDto<T> : _BaseDtoDELETE_ME<T> where T : _BaseDtoDELETE_ME<T>
     {
         public long Id { get; set; }
         public int orgNr { get; set; }
         public string Code { get; set; }
         public string? Description { get; set; }
         public bool IsActive { get; set; }
+        public DateTimeOffset Updated { get; set; }
+        public int Version { get; set; }
 
         public bool IsNew() => Id < 0;
         

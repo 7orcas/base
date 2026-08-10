@@ -9,7 +9,7 @@
     <NumericField Width=GC.TextFieldWidth.Short
                   LangCode="OrgNr"
                   ReadOnly="true"
-                  @bind-Value="@accountDto.OrgNr" />
+                  @bind-Value="@accountDto.orgNr" />
 
     <NumericField Width=GC.TextFieldWidth.Short
                   LangCode="Clas"
@@ -27,7 +27,9 @@
                    LangCode="AdminL"
                    @bind-Value="@accountDto.IsAdminLang" />
 
+                   <!--
     <Version version=@accountDto />
+    -->
 </div>
 
 @code {

@@ -85,7 +85,7 @@ namespace Backend.Base.User
             {
                 Id = account.Id,
                 UserId = account.UserId,
-                OrgNr = account.OrgNr,
+                orgNr = account.OrgNr,
                 OrgCode = org.Code,
                 IsActive = account.IsActive,
                 IsAdminUser = account.IsAdminUser,

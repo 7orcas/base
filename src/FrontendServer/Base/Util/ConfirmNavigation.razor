@@ -1,5 +1,5 @@
 ﻿@inherits BasePage
-@typeparam T where T : _BaseDto<T>
+@typeparam T where T : _BaseDtoDELETE_ME<T>
 
 <!-- ConfirmExternalNavigation="true" -->
 <NavigationLock OnBeforeInternalNavigation="HandleNavigation" />
@@ -7,8 +7,8 @@
 @using GC = FrontendServer.GlobalConstants;
 
 @code {
-    [Parameter] public _BaseDto<T> Dto { get; set; }
-    [Parameter] public IEnumerable<_BaseDto<T>> List { get; set; }
+    [Parameter] public _BaseDtoDELETE_ME<T> Dto { get; set; }
+    [Parameter] public IEnumerable<_BaseDtoDELETE_ME<T>> List { get; set; }
 
     private async Task HandleNavigation(LocationChangingContext context)
     {

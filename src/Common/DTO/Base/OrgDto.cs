@@ -1,6 +1,6 @@
 ﻿namespace Common.DTO.Base
 {
-    public class OrgDto : _BaseDto<OrgDto>
+    public class OrgDto : _BaseDtoDELETE_ME<OrgDto>
     {
         public int Nr { get; set; }
         public string Code { get; set; }

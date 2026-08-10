@@ -1,20 +1,20 @@
-﻿using System.Security.Cryptography;
+﻿
+
+using System.Security.Cryptography;
 using System.Text;
-using System.Text.Json;
 using System.Text.Json.Serialization;
 
 /// <summary>
 /// Base controls for Dto's
 /// - Hashcodes used for detecting changes
-/// Created: June 2025
+/// Created: August 2026
 /// [*Licence*]
 /// Author: John Stewart
 /// </summary>
 
-namespace Common.DTO
+namespace FrontendServer.Base._Base
 {
-    public abstract class _BaseDto<T> : _BaseVersionDto where T : _BaseDto<T>
-
+    public abstract class BaseModel<T>
     {
         /// <summary>
         /// Is this Dto fully loaded?
@@ -40,11 +40,11 @@ namespace Common.DTO
         {
             if (!string.IsNullOrEmpty(OriginalHashCode))
                 throw new InvalidOperationException("HashCode already created");
-            
+
             OriginalHashCode = GetHash((T)(object)this);
-            return (T)(object)this; 
+            return (T)(object)this;
         }
-        
+
         public T SetLoaded()
         {
             IsLoaded = true;
@@ -67,24 +67,25 @@ namespace Common.DTO
         private string GetHash(T dto)
         {
             //Remove irrelevant fields
-            var o = dto.OriginalHashCode;
-            dto.OriginalHashCode = null;
-            var l = dto.IsLoaded;
-            dto.IsLoaded = false;
-            var e = dto.IsError;
-            dto.IsError = false;
+            //var o = dto.OriginalHashCode;
+            //dto.OriginalHashCode = null;
+            //var l = dto.IsLoaded;
+            //dto.IsLoaded = false;
+            //var e = dto.IsError;
+            //dto.IsError = false;
 
-            var json = JsonSerializer.Serialize(dto);
-            using var sha256 = SHA256.Create();
-            var hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(json));
-            var hash = Convert.ToHexString(hashBytes);
-            
-            //Reset fields
-            dto.OriginalHashCode = o;
-            dto.IsLoaded = l;
-            dto.IsError = e;
+            //var json = JsonSerializer.Serialize(dto);
+            //using var sha256 = SHA256.Create();
+            //var hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(json));
+            //var hash = Convert.ToHexString(hashBytes);
 
-            return hash;
+            ////Reset fields
+            //dto.OriginalHashCode = o;
+            //dto.IsLoaded = l;
+            //dto.IsError = e;
+
+            //return hash;
+            return "";
         }
 
     }
