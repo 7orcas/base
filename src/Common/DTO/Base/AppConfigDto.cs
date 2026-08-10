@@ -1,6 +1,6 @@
 ﻿namespace Common.DTO.Base
 {
-    public class AppConfigDto : _BaseDtoDELETE_ME<AppConfigDto>
+    public class AppConfigDto : _BaseDto
     {
         public OrgConfigDto Org { get; set; }
         public long UniqueUserId { get; set; }

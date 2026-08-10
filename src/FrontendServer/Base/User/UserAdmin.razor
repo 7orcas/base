@@ -1,0 +1,302 @@
+﻿@attribute [Route(BaseRoutes.UserRoute)]
+@inherits BasePage
+@attribute [Authorize]
+
+
+<ConfirmNavigation List="list" />
+
+<Header @key="_pageCode"
+        TitleKey="UserAdm"
+        PageCode=@_pageCode
+        ToolBarButtonsRight="toolBarButtonsRight" />
+
+@if (_isLoading || _isError || _isSaving)
+{
+    <LoadingWithError IsLoading=@_isLoading
+                        IsSaving=@_isSaving
+                        IsError=@_isError
+                        StatusCode=@_statusCode
+                        Message=@_errorMessage>
+        @exception
+    </LoadingWithError>
+}
+
+<MudGrid>
+
+    <!-- Left Side: List -->
+    <MudItem xs="2">
+        <MudPaper Elevation="0" Outlined="true">
+            <MudTable Style="table-layout: fixed;"
+                      T="Model"
+                      Items="@list"
+                      Height="70vh"
+                      FixedHeader="true"
+                      Hover="true"
+                      Bordered="true"
+                      Striped="true">
+
+                        
+                <HeaderContent>
+                    <MudTh colspan="2"><Label Key="UserName" /></MudTh>
+                    <MudTh><Label Key="Active" /></MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd Style="max-width:0px; padding:0px; border-right: none;"
+                            DataLabel="Error"
+                            Class="@GetListColumnErrorClass(context)"
+                           @onclick="() => OnItemSelected(context)">
+                        @GetListSelectRowPointer(context, selections)
+                    </MudTd>
+                    <MudTd DataLabel="UserName"
+                           Class="@GetListSelectRowClass(context, selections)"
+                            @onclick="() => OnItemSelected(context)">
+                        @if (isEditList || @context.IsNew())
+                        {
+                            <MudTextField T="string"
+                                          @bind-Value="context.dto.Username"
+                                            Immediate="true"
+                                            MaxLength="@GC.LenCode"
+                                            Margin="Margin.Dense"
+                                            Variant="Variant.Text" />
+                        }
+                        else
+                        {
+                            @context.dto.Username
+                        }
+                    </MudTd>
+                    <MudTd DataLabel="Active">
+                        <MudCheckBox T="bool"
+                                        ReadOnly="@(!_isCrudU)"
+                                        @bind-Value="context.IsActive" />
+                    </MudTd>
+                </RowTemplate>
+            </MudTable>
+        </MudPaper>
+    </MudItem>
+
+    
+
+
+    <!-- Right Side: Details -->
+        <MudItem xs="8">
+            <MudPaper Elevation="0" Outlined="@_debugOutlined">
+          
+                <div style="max-height: @tableHeight; overflow-y: auto;">
+
+                    <table class="mud-table mud-table-hover mud-table-bordered mud-table-striped full-width-table" style="width: 100%;">
+
+                        <!-- Header -->
+                        <thead class="mud-table-head">
+                            <tr class="mud-table-row">
+                                @for (int i = 0; i < selections.Count; i++)
+                                {
+                                    <th></th>
+                                }
+                            </tr>
+                        </thead>
+
+                        <tbody class="mud-table-body">
+                            <tr class="mud-table-row">
+                            @foreach (var record in selections)
+                                {
+                                var dto = record.dto;
+
+                                    <td style="vertical-align: top;">
+
+                                    <MudExpansionPanels MultiExpansion="true">
+                                        <MudExpansionPanel Text=@GetLabel("ConfigG") Expanded="true">
+                                            <TitleContent>
+                                                <Label Size="GC.TextSize.Normal" Key="ConfigG"></Label>
+                                                <div class="d-flex">
+                                                </div>
+                                            </TitleContent>
+                                            <ChildContent>
+                                                <div style="display: flex; flex-wrap: wrap; gap: 20px;">
+
+                                                    <TextField Width=GC.TextFieldWidth.Medium
+                                                        LangCode="UserName"
+                                                        ReadOnly="true"
+                                                        MaxLength="@GC.LenCode"
+                                                        Value="dto.Username"
+                                                        ValueChanged="@((string val) => dto.Username = val)"
+                                                        ValueExpression="() => dto.Username" />
+
+                                                    <NumericField Width=GC.TextFieldWidth.Short
+                                                        LangCode="OrgD"
+                                                        @bind-Value="dto.OrgNr" />
+
+                                                    <NumericField Width=GC.TextFieldWidth.Short
+                                                        LangCode="LoginA"
+                                                        @bind-Value="dto.Attempts" />
+
+                                                    <CheckboxField Width=GC.TextFieldWidth.Short
+                                                        LangCode="Active"
+                                                        @bind-Value="dto.IsActive" />
+
+                                                    <Version version=dto />
+
+                                                </div>
+                                            </ChildContent>
+                                        </MudExpansionPanel>
+                                        @if (dto.Accounts?.Any() == true)
+                                        {
+                                            @foreach (var account in dto.Accounts)
+                                            {
+                                                <MudExpansionPanel @key="account.Id" Text=@GetLabel("UserAc") Expanded=@Expand(account, dto)>
+                                                    <TitleContent>
+                                                        @account.OrgCode @ExpandDefault(account, dto)
+                                                        <div class="d-flex">
+                                                        </div>
+                                                    </TitleContent>
+                                                    <ChildContent>
+                                                        <MudPaper Class="pa-4 mb-4" Elevation="0">
+                                                            <UserAccount accountDto="account" />
+                                                        </MudPaper>
+                                                    </ChildContent>
+                                                </MudExpansionPanel>
+                                            }
+                                        }
+
+                                    </MudExpansionPanels>
+                                </td>
+                            }
+                            </tr>
+                        </tbody>
+
+                    </table>
+                </div>
+
+            </MudPaper>
+
+        </MudItem>
+    
+    
+</MudGrid>
+
+@using Dto = UserDto
+@using Model = BaseModel<UserDto>
+@using System.Net
+@using MudBlazor
+@using FrontendServer.Base.Util
+@using System.Text;
+@using sysJ = System.Text.Json
+@using GC = FrontendServer.GlobalConstants;
+@using FrontendServer.Base._Base;
+
+@code {
+    private List<Model> list;
+    private List<Model> selections = new List<Model>();
+    private bool isEditList = false;
+    private int maxSelections = 2;
+    private string tableHeight = "70vh";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await InitialiseBasePage(GC.PerOrg);
+            _pageCode = BaseRoutes.UserPageCode;
+
+            var listX = await GetAsync<List<UserDto>>(GC.URL_user_list);
+            list = new List<Model>();
+            foreach (var u in listX)
+            {
+                list.Add(new Model(u));
+            }
+
+            if (list == null)
+            {
+                //probably expired login
+            }
+            else
+            {
+                if (list.Count > 0)
+                    Load(list[0], true);
+            }
+            AddToolbarSave(SaveAsync);
+            StateHasChanged();
+        }
+    }
+
+  
+    private async Task OnItemSelected(Model r)
+    {
+        await Load(r, false);
+        StateHasChanged();
+    }
+
+    private async Task Load(Model dto, bool force)
+    {
+        if (!dto.IsLoaded || force){
+            var userDtoX = await GetAsync<Dto>(GC.URL_user + dto.Id);
+            var userDtoZ = new Model(userDtoX);
+            userDtoZ.HashMe();
+            userDtoZ.IsLoaded = true;
+            var indexX = list.FindIndex(d => d.Id == userDtoZ.Id);
+            list[indexX] = userDtoZ;
+            dto = userDtoZ;
+        }
+        
+        var index = selections.FindIndex(s => s.Id == dto.Id);
+
+        //Already selected?
+        if (index >= 0)
+            selections.RemoveAt(index);
+        else
+        {
+            if (selections.Count >= maxSelections)
+                selections.RemoveAt(0);
+
+            selections.Add(dto);
+        }
+
+
+        StateHasChanged();
+    }
+
+    private async Task SaveAsync()
+    {
+        _isSaving = true;
+
+        for (int i = 0; i < list.Count; i++) {
+            var dto = list[i];
+            if (dto.IsLoaded && dto.HasChanged()) {
+
+                var response = await PostAsync<UserDto>(GC.URL_user_update, dto.dto);
+
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    var userDtoX = await GetAsync<UserDto>(GC.URL_user + dto.Id);
+                    var userDto = new Model(userDtoX);
+                    userDto.HashMe();
+                    userDto.SetLoaded();
+                    list[i] = userDto;
+                }
+            }
+        }
+        _isSaving = false;
+    }
+
+    private bool Expand(UserDto.UserAccountDto account, UserDto user)
+    {
+        return account.OrgNr == user.OrgNr;
+    }
+
+    private string ExpandDefault(UserDto.UserAccountDto account, UserDto user)
+    {
+        if (account.OrgNr == user.OrgNr
+            && user.Accounts.Count > 1) 
+            return "[" + GetLabel("Default") + "]";
+        return "";
+    }
+
+    //ToDo
+    private async void Export() 
+    {
+
+    }
+
+    private string Label(string key) => GetLabel(key);
+    protected override async Task OnInitializedAsync() => _isLoading = true;
+    
+}

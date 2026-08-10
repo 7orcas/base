@@ -35,7 +35,7 @@
                         </TitleContent>
                         <ChildContent>
                             <MudGrid>
-                                <MudCheckBox Label="@Label("IsAdminLanguage")" @bind-Value="@configDto.Label.IsAdminLanguage" Variant="Variant.Filled"></MudCheckBox>
+                                <MudCheckBox Label="@Label("IsAdminLanguage")" @bind-Value="@configDto.dto.Label.IsAdminLanguage" Variant="Variant.Filled"></MudCheckBox>
                             </MudGrid>
 
                         </ChildContent>
@@ -59,7 +59,7 @@
 
 @inject ConfigService ConfigService
 @code {
-    private AppConfigDto? configDto;
+    private BaseModel<AppConfigDto>? configDto;
     
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -67,7 +67,8 @@
         {
             await InitialiseBasePage(GC.PerConfig);
             _pageCode = BaseRoutes.ConfigPageCode;
-            configDto = ConfigService.Config;
+            var configDtoX = ConfigService.Config;
+            configDto = new BaseModel<AppConfigDto>(configDtoX);
             _isLoading = false;
                         
             AddToolbarSave(SaveAsync);

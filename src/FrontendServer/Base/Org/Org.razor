@@ -188,7 +188,7 @@
 
     @code {
     private bool showList = false;
-    private List<OrgDto> list;
+    private List<BaseModel<OrgDto>> list;
     private OrgDto? orgDto;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -198,7 +198,13 @@
             await InitialiseBasePage(GC.PerOrg);
             _pageCode = BaseRoutes.OrgPageCode;
 
-            list = await GetAsync<List<OrgDto>>(GC.URL_org_list);
+            var listX = await GetAsync<List<OrgDto>>(GC.URL_org_list);
+            list = new List<BaseModel<OrgDto>>();
+            foreach (var u in listX)
+            {
+                list.Add(new BaseModel<OrgDto>(u));
+            }
+
 
             if (list == null)
             {
@@ -222,20 +228,21 @@
     {
         var dto = list[index];
         if (!dto.IsLoaded || force){
-            orgDto = await GetAsync<OrgDto>(GC.URL_org + dto.Nr);
+            var orgDtoX = await GetAsync<OrgDto>(GC.URL_org + dto.dto.Nr);
+            var orgDto = new BaseModel<OrgDto>(orgDtoX);
             orgDto.HashMe();
             orgDto.IsLoaded = true;
             list[index] = orgDto;
         }
         else
-            orgDto = dto;
+            orgDto = dto.dto;
         StateHasChanged();
     }
 
     private async Task SaveAsync()
     {
         _isSaving = true;
-        var curIndex = orgDto != null? list.FindIndex(d => d.Nr == orgDto.Nr) : -1;
+        var curIndex = orgDto != null? list.FindIndex(d => d.dto.Nr == orgDto.Nr) : -1;
         // var client = await SetClient();
         for (int i = 0; i < list.Count; i++) {
             var dto = list[i];
@@ -245,12 +252,15 @@
                 // var content = new StringContent(json, Encoding.UTF8, "application/json");
                 // var response = await client.PostAsync(GC.URL_org_update, content);
 
-                var response = await PostAsync<OrgDto>(GC.URL_org_update, dto);
+                var response = await PostAsync<OrgDto>(GC.URL_org_update, dto.dto);
 
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    var o = await GetAsync<OrgDto>(GC.URL_org + dto.Nr);
-                    list[i] = o.HashMe().SetLoaded();
+                    var orgDtoX = await GetAsync<OrgDto>(GC.URL_org + dto.dto.Nr);
+                    var orgDto = new BaseModel<OrgDto>(orgDtoX);
+                    orgDto.HashMe();
+                    orgDto.SetLoaded();
+                    list[i] = orgDto;
                 }
             }
         }

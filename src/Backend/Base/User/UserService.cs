@@ -55,7 +55,7 @@ namespace Backend.Base.User
                 Id = user.Id,
                 Username = user.Username,
                 IsEmailVerified = user.IsEmailVerified,
-                OrgNrDefault = user.OrgNrDefault,
+                OrgNr = user.OrgNrDefault,
                 LangCode = user.LangCode,
                 Attempts = user.Attempts,
                 AttemptsLockout = user.AttemptsLockout,
@@ -85,7 +85,7 @@ namespace Backend.Base.User
             {
                 Id = account.Id,
                 UserId = account.UserId,
-                orgNr = account.OrgNr,
+                OrgNr = account.OrgNr,
                 OrgCode = org.Code,
                 IsActive = account.IsActive,
                 IsAdminUser = account.IsAdminUser,

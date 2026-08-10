@@ -16,6 +16,7 @@ namespace Backend.Base.Login
     {
         private readonly HttpClient _httpClient;
         private readonly LabelServiceI _labelService;
+        private static readonly System.Text.Json.JsonSerializerOptions _jsonOptions = new() { PropertyNameCaseInsensitive = true };
         private readonly TokenServiceI _tokenService;
 
         public RobotService(IServiceProvider serviceProvider,
@@ -47,7 +48,7 @@ namespace Backend.Base.Login
 
             var content = await response.Content.ReadAsStringAsync();
 
-            var result = JsonSerializer.Deserialize<RobotResponse>(content);
+            var result = JsonSerializer.Deserialize<RobotResponse>(content, _jsonOptions);
 
 
             _log.Debug("reCAPTCHA response: {Content}", content);

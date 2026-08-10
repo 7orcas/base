@@ -104,7 +104,7 @@ COMMENT ON COLUMN base.zzz.yyy IS 'User password';
 COMMENT ON COLUMN base.zzz.attempts IS 'Current number of consecutive login fails';
 COMMENT ON COLUMN base.zzz.attemptslockout IS 'The start timestamp of a login lockout';
 COMMENT ON COLUMN base.zzz.isemailverified IS 'User''s email address has been verified';
-COMMENT ON COLUMN base.zzz.orgnrdefault IS 'Used for determining the user''s org settings, eg password reset';
+COMMENT ON COLUMN base.zzz.orgnrdefault IS 'Default org, used for determining the user''s org settings, eg password reset';
 COMMENT ON COLUMN base.zzz.ismfarequired IS 'Depends on the org, if org = optional then mfa is used if true';
 
 CREATE TABLE base.useracc (

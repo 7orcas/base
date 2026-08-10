@@ -10,7 +10,7 @@ namespace Backend.Base
     public partial class BaseController
     {
         public async Task<List<ValDto>> Validate<T,E,V>(List<T> dtos, List<E> entsInDb)
-             where T : _BaseDto<T>
+             where T : _BaseDto
              where E : BaseEntity<E>
              where V : ValidatorI<T>, new()
         {
@@ -56,7 +56,7 @@ namespace Backend.Base
 
         /// Check for duplicate codes between the dtos and entities in the BD <summary>
         public async Task<List<ValDto>> ValidateCodesInDB<T, E>(List<T> dtos, List<E> entsInDb)
-             where T : _BaseDto<T>
+             where T : _BaseDto
              where E : BaseEntity<E>
         {
             var session = HttpContext.Items["session"] as SessionEnt;
@@ -67,7 +67,7 @@ namespace Backend.Base
         /// Check for duplicate codes between the dtos and entities in the BD <summary>
         [NonAction]
         public async Task<List<ValDto>> ValidateCodesInDB<T, E>(List<T> dtos, List<E> entsInDb, SessionEnt session, Dictionary<string, string> langDic)
-             where T : _BaseDto<T>
+             where T : _BaseDto
              where E : BaseEntity<E>
         {
             var validations = new List<ValDto>();
@@ -109,7 +109,7 @@ namespace Backend.Base
 
         /// Check for duplicate codes within the dtos
         public async Task<List<ValDto>> ValidateCodesNew<T>(List<T> dtos)
-            where T : _BaseDto<T>
+            where T : _BaseDto
         {
             var session = HttpContext.Items["session"] as SessionEnt;
             var langDic = await _labelService.GetLangCodeDic(session);
@@ -119,7 +119,7 @@ namespace Backend.Base
         /// Check for duplicate codes within the dtos
         [NonAction]
         public async Task<List<ValDto>> ValidateCodesNew<T>(List<T> dtos, SessionEnt session, Dictionary<string, string> langDic)
-            where T : _BaseDto<T>
+            where T : _BaseDto
         {
             var validations = new List<ValDto>();
 
@@ -158,7 +158,7 @@ namespace Backend.Base
 
         /// Check that records in the DB haven't already been changed
         public async Task<List<ValDto>> ValidateUpdateDateTime<T, E>(List<T> dtos, List<E> entsInDb)
-            where T : _BaseDto<T>
+            where T : _BaseDto
             where E : BaseEntity<E>
         {
             var session = HttpContext.Items["session"] as SessionEnt;
@@ -169,7 +169,7 @@ namespace Backend.Base
         /// Check that records in the DB haven't already been changed
         [NonAction]
         public async Task<List<ValDto>> ValidateUpdateDateTime<T, E>(List<T> dtos, List<E> entsInDb, SessionEnt session, Dictionary<string, string> langDic)
-            where T : _BaseDto<T>
+            where T : _BaseDto
             where E : BaseEntity<E>
         {
             var validations = new List<ValDto>();

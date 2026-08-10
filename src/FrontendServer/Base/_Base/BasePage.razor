@@ -126,6 +126,26 @@
     public string GetListRowOddEvenClass(int i) => (i % 2 == 0 ? " list-odd-row" : " list-even-row") + GetLightDarkClassSuffix();
     public string GetSelectRowPointer(bool selected) => selected ? "*" : "";
     public string GetSelectRowClass(bool selected) => selected ? " selected-row" : "";
-    public string GetFirstColumnErrorClass<T>(T dto) where T : _BaseDtoDELETE_ME<T> => dto.IsError ? "first-colum-error" + GetLightDarkClassSuffix() : "";
+    public string GetFirstColumnErrorClass(_BaseDto dto) => dto.IsError ? "first-colum-error" + GetLightDarkClassSuffix() : "";   
     public string GetLightDarkClassSuffix() => TS.IsDarkMode ? "-dark" : "-light";
+
+    public string GetListColumnErrorClass<T>(BaseModel<T> model) where T : _BaseDto
+    {
+        return model.IsError
+            ? "first-colum-error" + GetLightDarkClassSuffix()
+            : "";
+    }
+
+    public string GetListSelectRowPointer<T>(BaseModel<T> model, List<BaseModel<T>> selections) where T : _BaseDto
+    {
+        return selections.Contains(model) ? "*" : "";
+    }
+
+    public string GetListSelectRowClass<T>(BaseModel<T> model, List<BaseModel<T>> selections) where T : _BaseDto
+    {
+        return selections.Contains(model) ? " selected-row" : "";
+    }
+
+
+
 }

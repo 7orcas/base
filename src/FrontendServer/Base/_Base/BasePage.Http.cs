@@ -122,7 +122,7 @@ namespace FrontendServer.Base._Base
             return default;
         }
 
-        protected async Task<HttpResponseMessage> PostAsync<T>(string url, _BaseDtoDELETE_ME<T> dto) where T : _BaseDtoDELETE_ME<T>
+        protected async Task<HttpResponseMessage> PostAsync<T>(string url, _BaseDto dto) where T : _BaseDto
         {
             _isSaving = true;
             await ValidateAccess();
@@ -136,7 +136,7 @@ namespace FrontendServer.Base._Base
             return response;
         }
 
-        protected async Task<_ResponseDto> PostAsync<T>(string url, IEnumerable<T> dtos) where T : _BaseDto<T>
+        protected async Task<_ResponseDto> PostAsync<T>(string url, IEnumerable<T> dtos) where T : _BaseDto
         {
             _isSaving = true;
             _isValidationError = false;

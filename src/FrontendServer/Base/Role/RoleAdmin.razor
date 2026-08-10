@@ -47,7 +47,7 @@ else
                             <MudTh><Label Key="Active" /></MudTh>
                         </HeaderContent>
                         <RowTemplate>
-                            <MudTd Style="max-width:px; padding:0px; border-right: none;"
+                            <MudTd Style="max-width:1px; padding:0px; border-right: none;"
                                    DataLabel="Error"
                                    Class="@GetFirstColumnErrorClass(context)"
                                    @onclick="() => OnItemSelected(context)">
@@ -147,14 +147,14 @@ else
                             </thead>
                             <tbody class="mud-table-body">
 
-                                @foreach (var permission in selections.First().RolePermissions)
+                                @foreach (var permission in selections.First().dto.RolePermissions)
                                 {
                                     <tr class="mud-table-row">
 
                                         <td class="mud-table-cell">@permission.Permission</td>
                                         @foreach (var role in selections)
                                         {
-                                            var matching = role.RolePermissions.FirstOrDefault(p => p.PermissionNr == permission.PermissionNr);
+                                            var matching = role.dto.RolePermissions.FirstOrDefault(p => p.PermissionNr == permission.PermissionNr);
                                             <td class="mud-table-cell" style="@styleDivLeft">
                                                 <MudCheckBox T="bool"
                                                              Style="@styleCB"
@@ -216,8 +216,8 @@ else
     private string styleDivLeft = "text-align: center; border-left-style:double; border-left-width:3px; border-left-style:groove;";
     private string styleCB = "align-items: center;";
     private List<PermissionDto> permissions;
-    private List<RoleDto> roles;
-    private List<RoleDto> selections = new List<RoleDto>();
+    private List<BaseModel<RoleDto>> roles;
+    private List<BaseModel<RoleDto>> selections = new List<BaseModel<RoleDto>>();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -252,16 +252,22 @@ else
 
     private async Task Load()
     {
-        roles = await GetAsync<List<RoleDto>>(GC.URL_role_list);
+        var rolesX = await GetAsync<List<RoleDto>>(GC.URL_role_list);
+
+        roles = new List<BaseModel<RoleDto>>();
+        foreach (var r in rolesX)
+        {
+            roles.Add(new BaseModel<RoleDto>(r));
+        }
 
         //Reselect
         if (selections.Count > 0)
         {
-            var x = new List<RoleDto>(selections);
+            var x = new List<BaseModel<RoleDto>>(selections);
             selections.Clear();
             foreach (var r in x)
             {
-                var s = roles.Find(z => z.Code.Equals(r.Code));
+                var s = roles.Find(z => z.dto.Code.Equals(r.Code));
                 if (s != null)
                     await Select(s, false);
             }
@@ -276,26 +282,27 @@ else
         StateHasChanged();
     }
 
-    private async Task OnItemSelected(RoleDto r) 
+    private async Task OnItemSelected(BaseModel<RoleDto> r)
     {
         await Select(r, false);
         StateHasChanged();
     }
 
-    private async Task Select(RoleDto dto, bool force)
+    private async Task Select(BaseModel<RoleDto> r, bool force)
     {
         int index = -1;
-        if (!dto.IsLoaded || force)
+        if (!r.IsLoaded || force)
         {
-            var roleDto = await GetAsync<RoleDto>(GC.URL_role + dto.Id, true);
+            var roleDtoX = await GetAsync<RoleDto>(GC.URL_role + r.Id, true);
+            var roleDto = new BaseModel<RoleDto>(roleDtoX);
             roleDto.HashMe();
             roleDto.IsLoaded = true;
-            index = roles.FindIndex(r => r.Id == dto.Id);
+            index = roles.FindIndex(s => s.Id == r.Id);
             roles[index] = roleDto;
-            dto = roleDto;
+            r = roleDto;
         }
 
-        index = selections.FindIndex(r => r.Id == dto.Id);
+        index = selections.FindIndex(s => s.Id == r.Id);
 
         //Already selected?
         if (index >= 0)
@@ -305,12 +312,13 @@ else
             if (selections.Count >= maxSelections)
                 selections.RemoveAt(0);
 
-            selections.Add(dto);
+            selections.Add(r);
         }
     }
 
-    private string GetSelectRowPointer(RoleDto dto) => GetSelectRowPointer(selections.Contains(dto));
-    private string GetSelectRowClass(RoleDto dto) => GetSelectRowClass(selections.Contains(dto));
+    private string GetSelectRowPointer(BaseModel<RoleDto> dto) => GetSelectRowPointer(selections.Contains(dto));
+    private string GetSelectRowClass(BaseModel<RoleDto> dto) => GetSelectRowClass(selections.Contains(dto));
+    private string GetFirstColumnErrorClass(BaseModel<RoleDto> dto) => GetFirstColumnErrorClass(dto.dto);
 
     private bool IsCrud(RolePermissionDto p, string crudChar) => !string.IsNullOrEmpty(p.Crud) && p.Crud.Contains(crudChar);
 
@@ -350,7 +358,7 @@ else
         {
             var dto = roles[i];
             if (dto.IsLoaded && dto.HasChanged())
-                updates.Add(dto);
+                updates.Add(dto.dto);
         }
 
         if (updates.Count>0)
@@ -377,9 +385,10 @@ else
                 Code = GetLabel("New").ToUpper(),
                 IsActive = true,
                 Updated = DateTime.Now,
-                IsLoaded = true,
                 RolePermissions = new List<RolePermissionDto>(),
             };
+        var roleDto = new BaseModel<RoleDto>(role);
+        roleDto.IsLoaded = true;
 
         //Add permissions 
         var roleX = roles[0];
@@ -394,9 +403,9 @@ else
                 IsActive = true,
             });
 
-        role.HashMe();
-        roles.Insert(0, role);
-        Select(role, false);
+        roleDto.HashMe();
+        roles.Insert(0, roleDto);
+        Select(roleDto, false);
         await Task.CompletedTask;
     }
 

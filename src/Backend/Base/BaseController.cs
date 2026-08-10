@@ -46,11 +46,11 @@ namespace Backend.Base
             return i1 == i2;
         }
 
-        protected T LoadDto<E, T>(BaseEntity<E> e) where T : _BaseDto<T>, new()
+        protected T LoadDto<E, T>(BaseEntity<E> e) where T : _BaseDto, new()
         {
             var dto = new T();
             dto.Id = e.Id;
-            dto.orgNr = e.OrgNr;
+            dto.OrgNr = e.OrgNr;
             dto.Code = e.Code;
             dto.Description = e.Description;
             dto.Updated = e.Updated;
@@ -59,13 +59,13 @@ namespace Backend.Base
             return dto;
         }
 
-        protected E LoadEnt<E, D>(_BaseDto<D> dto)
+        protected E LoadEnt<E, D>(_BaseDto dto)
             where E : BaseEntity<E>, new()
-            where D : _BaseDto<D>
+            where D : _BaseDto
         {
             var ent = new E();
             ent.Id = dto.Id;
-            ent.OrgNr = dto.orgNr;
+            ent.OrgNr = dto.OrgNr;
             ent.Code = dto.Code;
             ent.Description = dto.Description;
             ent.Updated = dto.Updated;

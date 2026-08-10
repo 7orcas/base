@@ -9,16 +9,18 @@
 
 namespace Common.DTO
 {
-    public abstract class _BaseDto<T> : _BaseDtoDELETE_ME<T> where T : _BaseDtoDELETE_ME<T>
+    public abstract class _BaseDto
     {
         public long Id { get; set; }
-        public int orgNr { get; set; }
-        public string Code { get; set; }
+        public int OrgNr { get; set; }
+        public string? Code { get; set; }
         public string? Description { get; set; }
         public bool IsActive { get; set; }
         public DateTimeOffset Updated { get; set; }
         public int Version { get; set; }
 
+        public bool IsDelete { get; set; } = false;
+        public bool IsError { get; set; } = false;
         public bool IsNew() => Id < 0;
         
     }

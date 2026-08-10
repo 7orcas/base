@@ -1,6 +1,6 @@
 ﻿namespace Common.DTO.Base
 {
-    public class RoleDto : _BaseDto<RoleDto>
+    public class RoleDto : _BaseDto
     {
         public List<RolePermissionDto> RolePermissions { get; set; }
     }

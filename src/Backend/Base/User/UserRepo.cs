@@ -26,7 +26,7 @@ namespace Backend.Base.User
         {
             var list = new List<UserEnt>();
             await Sql.Run(
-                    "SELECT * FROM base.zzz ",
+                    "SELECT * FROM base.zzz ORDER BY zzz ",
                     r => {
                         var user = new UserEnt();
                         user.Id = GetId(r);
@@ -73,7 +73,8 @@ namespace Backend.Base.User
             }
             existingUser.Encode();
             existingUser.Username = user.Username;
-            existingUser.OrgNrDefault = user.OrgNrDefault;
+            existingUser.OrgNrDefault = user.OrgNr;
+            existingUser.Attempts = user.Attempts;
 
             existingUser.IsActive = user.IsActive;
             existingUser.Version = user.Version + 1;
