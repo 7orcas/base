@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Common.DTO.Base
 {
-    public class UserDto : _BaseFieldsDto<UserDto>
+    public class UserDto : _BaseDto<UserDto>
     {
         public string Username { get; set; }
         public bool IsEmailVerified { get; set; }
@@ -20,7 +20,7 @@ namespace Common.DTO.Base
         public string? MfaSecret { get; set; }
         public List<UserAccountDto>? Accounts { get; set; }
 
-        public class UserAccountDto : _BaseFieldsDto<UserAccountDto>
+        public class UserAccountDto : _BaseDto<UserAccountDto>
         {
             public long UserId { get; set; }
             public string OrgCode { get; set; }
@@ -31,7 +31,7 @@ namespace Common.DTO.Base
             public List<UserAccountRoleDto>? Roles { get; set; }
         }
 
-        public class UserAccountRoleDto : _BaseFieldsDto<UserAccountRoleDto>
+        public class UserAccountRoleDto : _BaseDto<UserAccountRoleDto>
         {
             public long RoleId { get; set; }
             public string Role { get; set; }

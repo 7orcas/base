@@ -10,7 +10,7 @@ using GC = Common.GlobalConstants;
 
 namespace Common.Validator
 {
-    public abstract class _BaseVal<T, D> where T : _BaseVal<T,D> where D : _BaseFieldsDto<D>
+    public abstract class _BaseVal<T, D> where T : _BaseVal<T,D> where D : _BaseDto<D>
     {
         public ValDto val {  get; } = new ValDto();
 

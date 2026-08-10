@@ -46,7 +46,7 @@ namespace Backend.Base
             return i1 == i2;
         }
 
-        protected T LoadDto<E, T>(BaseEntity<E> e) where T : _BaseFieldsDto<T>, new()
+        protected T LoadDto<E, T>(BaseEntity<E> e) where T : _BaseDto<T>, new()
         {
             var dto = new T();
             dto.Id = e.Id;
@@ -59,9 +59,9 @@ namespace Backend.Base
             return dto;
         }
 
-        protected E LoadEnt<E, D>(_BaseFieldsDto<D> dto)
+        protected E LoadEnt<E, D>(_BaseDto<D> dto)
             where E : BaseEntity<E>, new()
-            where D : _BaseFieldsDto<D>
+            where D : _BaseDto<D>
         {
             var ent = new E();
             ent.Id = dto.Id;

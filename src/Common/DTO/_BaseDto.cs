@@ -9,7 +9,7 @@
 
 namespace Common.DTO
 {
-    public abstract class _BaseFieldsDto<T> : _BaseDtoDELETE_ME<T> where T : _BaseDtoDELETE_ME<T>
+    public abstract class _BaseDto<T> : _BaseDtoDELETE_ME<T> where T : _BaseDtoDELETE_ME<T>
     {
         public long Id { get; set; }
         public int orgNr { get; set; }

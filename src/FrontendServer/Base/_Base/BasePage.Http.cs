@@ -136,7 +136,7 @@ namespace FrontendServer.Base._Base
             return response;
         }
 
-        protected async Task<_ResponseDto> PostAsync<T>(string url, IEnumerable<T> dtos) where T : _BaseFieldsDto<T>
+        protected async Task<_ResponseDto> PostAsync<T>(string url, IEnumerable<T> dtos) where T : _BaseDto<T>
         {
             _isSaving = true;
             _isValidationError = false;
