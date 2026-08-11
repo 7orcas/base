@@ -65,7 +65,7 @@ namespace Backend.Base.User
 
         public async Task<UserEnt?> Update(UserDto user)
         {
-            var existingUser = await _context.Users.FindAsync(user.Id);
+            var existingUser = await GetById(user.Id);
 
             if (existingUser == null)
             {
@@ -77,8 +77,61 @@ namespace Backend.Base.User
             existingUser.Attempts = user.Attempts;
 
             existingUser.IsActive = user.IsActive;
-            existingUser.Version = user.Version + 1;
-            existingUser.Updated = DateTimeOffset.UtcNow;
+            VersionIncrement(existingUser);
+
+            foreach (var accountDto in user.Accounts ?? new List<UserDto.UserAccountDto>())
+            {
+                var existingAccount = existingUser.Accounts.FirstOrDefault(a => a.Id == accountDto.Id);
+                if (existingAccount != null)
+                {
+                    // Update existing account
+                    existingAccount.LastLogin = accountDto.LastLogin;
+                    existingAccount.Classification = accountDto.Classification;
+                    existingAccount.IsAdminUser = accountDto.IsAdminUser;
+                    existingAccount.IsAdminLang = accountDto.IsAdminLang;
+                    VersionIncrement(existingAccount);
+                    // Update roles
+                    //foreach (var roleDto in accountDto.Roles ?? new List<UserDto.UserAccountRoleDto>())
+                    //{
+                    //    var existingRole = existingAccount.Roles.FirstOrDefault(r => r.Id == roleDto.Id);
+                    //    if (existingRole != null)
+                    //    {
+                    //        existingRole.RoleId = roleDto.RoleId;
+                    //        existingRole.Role = roleDto.Role;
+                    //    }
+                    //    else
+                    //    {
+                    //        // Add new role
+                    //        existingAccount.Roles.Add(new UserAccountRoleEnt
+                    //        {
+                    //            RoleId = roleDto.RoleId,
+                    //            Role = roleDto.Role
+                    //        });
+                    //    }
+                    //}
+                }
+                else
+                {
+                    // Add new account
+                    var newAccount = new UserAccountEnt
+                    {
+                        UserId = user.Id,
+                        OrgNr = accountDto.OrgNr,
+                        LastLogin = accountDto.LastLogin,
+                        Classification = accountDto.Classification,
+                        IsAdminUser = accountDto.IsAdminUser,
+                        IsAdminLang = accountDto.IsAdminLang,
+
+                        //Roles = accountDto.Roles?.Select(r => new UserAccountRoleEnt
+                        //{
+                        //    RoleId = r.RoleId,
+                        //    Role = r.Role
+                        //}).ToList() ?? new List<UserAccountRoleEnt>()
+                    };
+                    VersionIncrement(newAccount);
+                    existingUser.Accounts.Add(newAccount);
+                }
+            }
 
             //Update all fields
             //_context.Entry(existingUser).CurrentValues.SetValues(user);

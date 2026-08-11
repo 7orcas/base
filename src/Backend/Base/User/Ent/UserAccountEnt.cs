@@ -12,7 +12,7 @@ using GC = Backend.GlobalConstants;
 
 namespace Backend.Base.User.Ent
 {
-    public class UserAccountEnt : BaseEncode
+    public class UserAccountEnt : BaseEncode, VersionI
     {
         public long Id { get; set; }
         public long UserId { get; set; }

@@ -14,14 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Base\Util\LoadingWithError.razor.css" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Base\Util\LoadingWithError.razor.css" />
-  </ItemGroup>
-
-  <ItemGroup>
 	<PackageReference Include="MudBlazor" Version="8.7.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 	<PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />

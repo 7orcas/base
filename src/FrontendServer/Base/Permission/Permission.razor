@@ -10,12 +10,12 @@
 
 @if (_isLoading || _isError || _isSaving)
 {
-    <LoadingWithError IsLoading=@_isLoading
+    <LoadingWithErrorDepciated IsLoading=@_isLoading
                       IsSaving=@_isSaving
                       IsError=@_isError
                       Message=@_errorMessage>
         @exception
-    </LoadingWithError>
+    </LoadingWithErrorDepciated>
 }
 else
 {

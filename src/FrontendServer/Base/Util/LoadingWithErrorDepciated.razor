@@ -1,6 +1,6 @@
 ﻿@inherits BasePage
 
-@if (@LoadStatus.IsLoading || @LoadStatus.IsSaving)
+@if (IsLoading || IsSaving)
 {
     <div class="loading-overlay">
         <div class="loading-spinner">
@@ -8,18 +8,18 @@
         </div>
     </div>
 }
-else if (@LoadStatus.IsError)
+else if (IsError)
 {
-    if (@LoadStatus.StatusCode == StatusCodes.Status401Unauthorized)
+    if (StatusCode == StatusCodes.Status401Unauthorized)
     {
             <h2>@lEx</h2>
     }
-    else if (@LoadStatus.StatusCode == StatusCodes.Status403Forbidden)
+    else if (StatusCode == StatusCodes.Status403Forbidden)
     {
         <h2>@nAuthX</h2>
         <div class="error-content">
             <div class="title">@nAuthA</div>
-            <div class="message">@LoadStatus.Message</div>
+            <div class="message">@Message</div>
             @ChildContent
         </div>
     }
@@ -33,7 +33,7 @@ else if (@LoadStatus.IsError)
 
         <div class="error-content">
             <div class="title">Error detail (copy to your system admin):</div>
-            <div class="message">@LoadStatus.Message</div>
+            <div class="message">@Message</div>
             @ChildContent
         </div>
     }
@@ -42,7 +42,11 @@ else if (@LoadStatus.IsError)
 @using GC = FrontendServer.GlobalConstants;
 
 @code {
-    [Parameter] public LoadStatus LoadStatus { get; set; }
+    [Parameter] public bool IsLoading { get; set; }
+    [Parameter] public bool IsSaving { get; set; }
+    [Parameter] public bool IsError { get; set; }
+    [Parameter] public int? StatusCode { get; set; } = -1;
+    [Parameter] public MarkupString? Message { get; set; }
     [Parameter] public RenderFragment ChildContent { get; set; }
 
     private string nAuthX;

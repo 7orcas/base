@@ -15,10 +15,16 @@
 @code {
     [Inject] protected IJSRuntime JS { get; set; }
 
+    public LoadStatus loadStatus = new LoadStatus(); //This will replace the attributes below
+//DELETE ME
+public bool _isLoading = false;
+public bool _isError = false;
+public bool _isSaving = false;
+public int? _statusCode;
+public MarkupString? _errorMessage;
+public Exception? exception;
+
     public bool _stateChangedToggle = false;
-    public bool _isLoading = false;
-    public bool _isError = false;
-    public bool _isSaving = false;
     public bool _isValidationError = false;
     public bool _isCrudC = false;
     public bool _isCrudR = false;
@@ -28,10 +34,7 @@
     public string? _pageCode;
     public string? _entityLangKey;
     private string? _token;
-    public MarkupString? _errorMessage;
-    public int? _statusCode;
     //public ErrorBoundary? errorBoundary;
-    public Exception? exception;
     private AppConfigDto _config;
     private Dictionary<string, LangLabelDto> _labels;
     public List<ToolBarButton> toolBarButtonsLeft = new List<ToolBarButton>();
@@ -138,14 +141,17 @@
 
     public string GetListSelectRowPointer<T>(BaseModel<T> model, List<BaseModel<T>> selections) where T : _BaseDto
     {
-        return selections.Contains(model) ? "*" : "";
+        return Contains(model, selections) ? "*" : "";
     }
 
     public string GetListSelectRowClass<T>(BaseModel<T> model, List<BaseModel<T>> selections) where T : _BaseDto
     {
-        return selections.Contains(model) ? " selected-row" : "";
+        return Contains(model, selections) ? " selected-row" : "";
     }
 
-
+    public bool Contains<T>(BaseModel<T> model, List<BaseModel<T>> selections) where T : _BaseDto
+    {
+        return selections.Any(x => x.Id == model.Id);
+    }
 
 }

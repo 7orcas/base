@@ -10,7 +10,7 @@
 namespace Backend.Base.User.Ent
 {
 
-    public class UserEnt : BaseEncode
+    public class UserEnt : BaseEncode, VersionI
     {
         public long Id { get; set; }
         public string Username { get; set; }

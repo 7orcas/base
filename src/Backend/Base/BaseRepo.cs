@@ -8,5 +8,15 @@
         {
             _log = Log.Logger;
         }
+
+        protected void VersionIncrement(VersionI entity)
+        {
+            if (entity.Version == null)
+                entity.Version = 0;
+            
+            entity.Version++;
+            entity.Updated = DateTimeOffset.UtcNow;
+        }
+
     }
 }

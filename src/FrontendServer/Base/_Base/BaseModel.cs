@@ -21,7 +21,7 @@ namespace FrontendServer.Base._Base
             dto = _dto;
         }
 
-        public T dto { get; private set;  }
+        public T dto { get; set; }
 
         /// <summary>
         /// Is this Dto fully loaded?
@@ -36,25 +36,31 @@ namespace FrontendServer.Base._Base
         /// </summary>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>
-        public T HashMe()
+        public BaseModel<T> HashMe()
         {
             if (!string.IsNullOrEmpty(OriginalHashCode))
                 throw new InvalidOperationException("HashCode already created");
 
             OriginalHashCode = GetHash(dto);
-            return dto;
+            return this;
         }
 
-        public T SetLoaded()
+        public BaseModel<T> ClearHash()
+        {
+            OriginalHashCode = null;
+            return this;
+        }
+
+        public BaseModel<T> SetLoaded()
         {
             IsLoaded = true;
-            return dto;
+            return this;
         }
 
-        public T SetError()
+        public BaseModel<T> SetError()
         {
             IsError = true;
-            return dto;
+            return this;
         }
 
         public bool HasChanged()

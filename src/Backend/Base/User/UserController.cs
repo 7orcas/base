@@ -87,10 +87,11 @@ namespace Backend.Base.User
         {
             var session = HttpContext.Items["session"] as SessionEnt;
             var user = await _userService.UpdateUser(dto);
+            var userDto = await _userService.Populate(user);
             var r = new _ResponseDto
             {
                 SuccessMessage = "Ok",
-                Result = user
+                Result = userDto
             };
             return Ok(r);
         }
