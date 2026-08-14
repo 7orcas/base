@@ -80,8 +80,8 @@ else
             </MudItem>
         }
         <!-- Right Side: Details -->
-        <MudItem xs="9">
-            <MudPaper Elevation="0" Outlined="true">
+        <MudItem xs="10">
+            <MudPaper Elevation="0" Outlined="false" Style="padding-right:20px;">
                 <UserDetailsPanel Selections="list" TableHeight="tableHeight" />
             </MudPaper>
         </MudItem>
@@ -99,7 +99,6 @@ else
     private bool showList = true;
     private List<BaseModel<UserDto>> list = new List<BaseModel<UserDto>>();
     private List<long> selections = new List<long>();
-    // private Dictionary<long, BaseModel<UserDto>> loads = new Dictionary<long, BaseModel<UserDto>>();
     private bool isEditList = false;
     private int maxSelections = 2;
     private string tableHeight = "70vh";

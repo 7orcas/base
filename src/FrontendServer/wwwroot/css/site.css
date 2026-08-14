@@ -264,18 +264,3 @@ a, .btn-link {
     background: #1976d2;
 }
 
-.bottom-bar {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 60px;
-    width: 100%;
-    padding: 0 16px;
-    z-index: 1200;
-    display: flex;
-    align-items: center;
-    padding-left: 16px;
-    border-top: 1px solid var(--mud-palette-lines-default);
-    background-color: var(--mud-palette-surface);
-}

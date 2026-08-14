@@ -107,6 +107,7 @@ PermEff,Effective Permissions
 User,User
 Users,Users
 UserAdm,User Administration
+UserA,Add New User
 UserName,Username
 UserNameM,Masquerade Username
 UserNameEx,Username already exists
@@ -156,4 +157,5 @@ Val0,Can''t be empty
 Val1,Can''t contain spaces
 Ver,Version
 Clas,Classification
+Chat,Chat
 <LAST>,<LAST LINE>

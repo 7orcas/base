@@ -16,9 +16,9 @@
     {
         <MudLayout>
 
-            <MudAppBar Elevation="1" 
-                       Class="@($"main-title{GetLightDarkClassSuffix()}")"
-                       Style="width:100%; left:0; right:0;">
+            <MudAppBar Style="width:100%; left:0; right:0; height:6%;"
+                       Class="@($"main-title{GetLightDarkClassSuffix()}")"                       
+                       Elevation="1">
                 
                 <MudText Style="display: flex; align-items: center; width: 100%; justify-content: space-between;">
 
@@ -64,6 +64,10 @@
                                                Variant="Variant.Text">
                                         <MudText Typo="Typo.h6">@GetLabel("Logout")</MudText>
                                     </MudButton>
+                                    
+                                    <MudButton OnClick="OpenChat">
+                                        <MudText Typo="Typo.h6">@GetLabel("Chat")</MudText>
+                                    </MudButton>
 
                                     <div style="margin-left:9px;">
                                         <MudSwitch @bind-Value="_isDarkMode"
@@ -87,9 +91,10 @@
                 </MudText>
             </MudAppBar>
 
-            <MudMainContent Class="main-content-fill-screen">
+            <MudMainContent Style="height:96%;"
+                            Class="main-content-fill-screen">
 
-                <div style="display:flex;height:calc(100vh - 64px - 60px);">
+                <div style="display:flex;">
 
                     <div id="leftPanel" class="left-panel @($"main-menu{GetLightDarkClassSuffix()}")" style="width:@($"{_leftPanelWidth}px");">
                         <MainMenu />
@@ -114,7 +119,10 @@
             </MudMainContent>
 
 
-            <MudPaper Class="bottom-bar d-flex justify-space-between align-center" Elevation="1" Square="true">
+            <MudPaper Style="background-color:red; height:4%;" 
+                      Class="bottom-bar d-flex justify-space-between align-center" 
+                      Elevation="0" 
+                      Square="true">
                 <div style="display: flex; align-items: center;">
                     111
                 </div>
@@ -122,7 +130,7 @@
                     2222222222222222222222222222222222222222222222222222222222
                 </div>
                 <div style="display: flex; align-items: center; gap: 12px;">
-                    333
+                    333x
                 </div>
             </MudPaper>
 
@@ -198,6 +206,11 @@
     private void ResetLabels()
     {
         LS.Reset();
+    }
+
+    private void OpenChat()
+    {
+        _chatOpen = !_chatOpen;
     }
 
     private string GetLabel(string key)
