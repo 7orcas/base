@@ -139,6 +139,15 @@ public Exception? exception;
             : "";
     }
 
+    public string GetListSelectRowPointer(bool isSelected) 
+    {
+        return isSelected ? "*" : "";
+    }
+    public string GetListSelectRowClass(bool isSelected)
+    {
+        return isSelected ? " selected-row" : "";
+    }
+
     public string GetListSelectRowPointer<T>(BaseModel<T> model, List<BaseModel<T>> selections) where T : _BaseDto
     {
         return Contains(model, selections) ? "*" : "";

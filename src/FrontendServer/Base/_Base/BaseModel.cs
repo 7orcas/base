@@ -27,6 +27,7 @@ namespace FrontendServer.Base._Base
         /// Is this Dto fully loaded?
         /// </summary>
         public bool IsLoaded { get; set; } = false;
+        public bool IsSelected { get; set; } = false;
 
         public string? OriginalHashCode { get; set; }
 
@@ -77,6 +78,8 @@ namespace FrontendServer.Base._Base
             OriginalHashCode = null;
             var l = IsLoaded;
             IsLoaded = false;
+            var s = IsSelected;
+            IsSelected = false;
             var e = IsError;
             IsError = false;
 
@@ -88,6 +91,7 @@ namespace FrontendServer.Base._Base
             //Reset fields
             OriginalHashCode = o;
             IsLoaded = l;
+            IsSelected = s;
             IsError = e;
 
             return hash;

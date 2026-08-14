@@ -1,0 +1,96 @@
+﻿@inherits BaseComponent
+
+@using MudBlazor
+@using GC = FrontendServer.GlobalConstants;
+@using FrontendServer.Base._Base;
+
+<div style="max-height: @TableHeight; overflow-y: auto;">
+
+    <table class="mud-table mud-table-hover mud-table-bordered mud-table-striped full-width-table" style="width: 100%;">
+
+        <tbody class="mud-table-body">
+            <tr class="XXmud-table-row">
+                @foreach (var record in Selections.Where(x => x.IsSelected))
+                {
+                var dto = record.dto;
+
+                <td @key="record.Id" style="vertical-align: top; padding: 2px;">
+
+                    <MudExpansionPanels MultiExpansion="true">
+                        <MudExpansionPanel Text=@GetLabel("ConfigG") Expanded="true">
+                            <TitleContent>
+                                <Label Size="GC.TextSize.Normal" Key="ConfigG"></Label>
+                                <div class="d-flex">
+                                </div>
+                            </TitleContent>
+                            <ChildContent>
+                                <div style="display: flex; flex-wrap: wrap; gap: 20px;">
+
+                                    <TextField Width=GC.TextFieldWidth.Medium
+                                        LangCode="UserName"
+                                        ReadOnly="true"
+                                        MaxLength="@GC.LenCode"
+                                        @bind-Value="dto.Username" />
+
+                                    <NumericField Width=GC.TextFieldWidth.Short
+                                        LangCode="OrgD"
+                                        @bind-Value="dto.OrgNr" />
+
+                                    <NumericField Width=GC.TextFieldWidth.Short
+                                        LangCode="LoginA"
+                                        @bind-Value="dto.Attempts" />
+
+                                    <CheckboxField Width=GC.TextFieldWidth.Short
+                                        LangCode="Active"
+                                        @bind-Value="dto.IsActive" />
+
+                                    <Version version=dto />
+
+                                </div>
+                            </ChildContent>
+                        </MudExpansionPanel>
+                        @if (dto.Accounts?.Any() == true)
+                        {
+                            @foreach (var account in dto.Accounts)
+                            {
+                                <MudExpansionPanel @key="account.Id" Text=@GetLabel("UserAc") Expanded=@Expand(account, dto) Style="padding:1px;">
+                                    <TitleContent>
+                                        @account.OrgCode @ExpandDefault(account, dto)
+                                        <div class="d-flex">
+                                        </div>
+                                    </TitleContent>
+                                    <ChildContent>
+                                        <MudPaper Class="pa-4 mb-4" Elevation="0">
+                                            <UserAccount accountDto="account" />
+                                        </MudPaper>
+                                    </ChildContent>
+                                </MudExpansionPanel>
+                            }
+                        }
+
+                    </MudExpansionPanels>
+                </td>
+            }
+            </tr>
+        </tbody>
+
+    </table>
+</div>
+
+@code {
+    [Parameter] public List<BaseModel<UserDto>> Selections { get; set; } = new List<BaseModel<UserDto>>();
+    [Parameter] public string TableHeight { get; set; } = "70vh";
+
+    private bool Expand(UserDto.UserAccountDto account, UserDto user)
+    {
+        return account.OrgNr == user.OrgNr;
+    }
+
+    private string ExpandDefault(UserDto.UserAccountDto account, UserDto user)
+    {
+        if (account.OrgNr == user.OrgNr
+            && user.Accounts.Count > 1)
+            return "[" + GetLabel("Default") + "]";
+        return "";
+    }
+}
