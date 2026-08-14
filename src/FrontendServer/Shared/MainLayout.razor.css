@@ -9,6 +9,16 @@ main {
     flex: 1 1 auto;
 }
 
+.main-content-fill-screen {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    width: 100%;
+    margin: 0px;
+}
+
+
 .sidebar {
     background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
 }
@@ -32,30 +42,6 @@ main {
     text-overflow: ellipsis;
 }
 
-.bottom-bar {
-    overflow: hidden;
-    box-sizing: border-box;
-    padding: 0 16px;
-}
-
-/* DELETE ME */
-.XXbottom-bar {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 40px;
-    line-height: 40px;
-    width: 100%;
-    padding: 0 16px;
-    z-index: 1200;
-    display: flex;
-    align-items: center;
-    padding-left: 16px;
-    border-top: 1px solid var(--mud-palette-lines-default);
-    background-color: var(--mud-palette-surface);
-}
-/*
 @media (max-width: 640.98px) {
     .top-row:not(.auth) {
         display: none;
@@ -93,4 +79,3 @@ main {
         padding-right: 1.5rem !important;
     }
 }
-*/

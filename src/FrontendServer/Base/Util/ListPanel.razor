@@ -1,0 +1,67 @@
+﻿@inherits BasePage
+@typeparam TDto where TDto : _BaseDto
+@using MudBlazor
+@using GC = FrontendServer.GlobalConstants;
+@using FrontendServer.Base._Base;
+
+<MudTable Style="table-layout:fixed; width:100%;"
+          T="ListModel<TDto>"
+          Items="@List"
+          Height="70vh"
+          FixedHeader="true"
+          Hover="true"
+          Bordered="true"
+          Striped="true">
+
+
+    <ColGroup>
+        <col style="width:1%;" />
+        <col style="width:69%;" />
+        <col style="width:30%;" />
+    </ColGroup>
+    <HeaderContent>
+        <MudTh></MudTh>
+        <MudTh><Label Key=@CodeKey /></MudTh>
+        <MudTh><Label Key="Active" /></MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd Style="padding:0px; border-right: none;"
+               @key="context.Id"
+               DataLabel="Error"
+               Class="@GetListColumnErrorClass(context)"
+               @onclick="() => OnItemSelected.InvokeAsync(context)">
+            @GetListSelectRowPointer(context.IsSelected)
+        </MudTd>
+        <MudTd DataLabel="UserName"
+               Class="@GetListSelectRowClass(context.IsSelected)"
+               @onclick="() => OnItemSelected.InvokeAsync(context)">
+            @if (IsEditCode || @context.IsNew())
+            {
+                <MudTextField T="string"
+                              @bind-Value="context.dto.Code"
+                              Immediate="true"
+                              MaxLength="@GC.LenCode"
+                              Margin="Margin.Dense"
+                              Variant="Variant.Text" />
+            }
+            else
+            {
+                @context.dto.Code
+            }
+        </MudTd>
+        <MudTd DataLabel="Active">
+            <MudCheckBox T="bool" ReadOnly="@(!IsEditActive)" @bind-Value="context.IsActive" />
+        </MudTd>
+    </RowTemplate>
+</MudTable>
+
+
+@code {
+    [Parameter] public List<ListModel<TDto>> List { get; set; } = new List<ListModel<TDto>>();
+    [Parameter] public EventCallback<ListModel<TDto>> OnItemSelected { get; set; }
+    [Parameter] public string CodeKey { get; set; } = "Code";
+    [Parameter] public bool IsEditCode { get; set; } = false;
+    [Parameter] public bool IsEditActive { get; set; } = false;
+
+
+}

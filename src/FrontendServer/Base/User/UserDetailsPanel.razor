@@ -78,7 +78,7 @@
 </div>
 
 @code {
-    [Parameter] public List<BaseModel<UserDto>> Selections { get; set; } = new List<BaseModel<UserDto>>();
+    [Parameter] public List<ListModel<UserDto>> Selections { get; set; } = new List<ListModel<UserDto>>();
     [Parameter] public string TableHeight { get; set; } = "70vh";
 
     private bool Expand(UserDto.UserAccountDto account, UserDto user)

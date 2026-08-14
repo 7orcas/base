@@ -41,7 +41,7 @@ namespace Backend.Base.User
             var list = new List<UserDto>();
 
             foreach (var user in users)
-                list.Add(await _userService.Populate(user));
+                list.Add(await _userService.PopulateAsList(user));
             
             var r = new _ResponseDto
             {

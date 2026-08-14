@@ -59,7 +59,7 @@
 
 @inject ConfigService ConfigService
 @code {
-    private BaseModel<AppConfigDto>? configDto;
+    private ListModel<AppConfigDto>? configDto;
     
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -68,7 +68,7 @@
             await InitialiseBasePage(GC.PerConfig);
             _pageCode = BaseRoutes.ConfigPageCode;
             var configDtoX = ConfigService.Config;
-            configDto = new BaseModel<AppConfigDto>(configDtoX);
+            configDto = new ListModel<AppConfigDto>(configDtoX);
             _isLoading = false;
                         
             AddToolbarSave(SaveAsync);

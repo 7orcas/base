@@ -1,7 +1,6 @@
-﻿@attribute [Route(BaseRoutes.UserRoute)]
-@inherits BasePage
+﻿@inherits BasePage
+@attribute [Route(BaseRoutes.UserRoute)]
 @attribute [Authorize]
-
 
 <ConfirmNavigation List="list" />
 
@@ -19,70 +18,25 @@
 }
 else
 {
-    <MudGrid Class="mt-4">
+    <MudGrid Style="height:100%;">
 
-        @if (showList)
+        @if (listUtil.ShowList)
         {
-            <!-- Left Side: List -->
-            <MudItem xs="2">
-                <MudPaper Elevation="0" Outlined="true">
-                    <MudTable Style="table-layout:fixed; width:100%;"
-                              T="BaseModel<UserDto>"
-                            Items="@list"
-                            Height="70vh"
-                            FixedHeader="true"
-                            Hover="true"
-                            Bordered="true"
-                            Striped="true">
-
-
-                    <ColGroup>
-                        <col style="width:1%;" />
-                        <col style="width:69%;" />
-                        <col style="width:30%;" />
-                    </ColGroup>
-                    <HeaderContent>
-                            <MudTh></MudTh>
-                            <MudTh><Label Key="UserName" /></MudTh>
-                            <MudTh><Label Key="Active" /></MudTh>
-                        </HeaderContent>
-                        <RowTemplate>
-                            <MudTd Style="padding:0px; border-right: none;"
-                                    @key="context.Id"
-                                    DataLabel="Error"
-                                    Class="@GetListColumnErrorClass(context)"
-                                    @onclick="() => OnItemSelected(context)">
-                                @GetListSelectRowPointer(context.IsSelected)
-                            </MudTd>
-                            <MudTd DataLabel="UserName"
-                                Class="@GetListSelectRowClass(context.IsSelected)"
-                                @onclick="() => OnItemSelected(context)">
-                                @if (isEditList || @context.IsNew())
-                                {
-                                    <MudTextField T="string"
-                                                @bind-Value="context.dto.Username"
-                                                Immediate="true"
-                                                MaxLength="@GC.LenCode"
-                                                Margin="Margin.Dense"
-                                                Variant="Variant.Text" />
-                                }
-                                else
-                                {
-                                    @context.dto.Username
-                                }
-                            </MudTd>
-                            <MudTd DataLabel="Active">
-                                <MudCheckBox T="bool" ReadOnly="@(!_isCrudU)" @bind-Value="context.IsActive" />
-                            </MudTd>
-                        </RowTemplate>
-                    </MudTable>
+            <!-- Left Side List -->
+            <MudItem xs="2" Style="height:100%;">
+                <MudPaper Elevation="0" Outlined="true" Style="height:100%;">
+                    <ListPanel TDto="UserDto"
+                               List="@list" 
+                               CodeKey="UserName"
+                               OnItemSelected="@OnItemSelected" />
                 </MudPaper>
             </MudItem>
         }
-        <!-- Right Side: Details -->
+        <!-- Right Side Details -->
         <MudItem xs="10">
             <MudPaper Elevation="0" Outlined="false" Style="padding-right:20px;">
-                <UserDetailsPanel Selections="list" TableHeight="tableHeight" />
+                <UserDetailsPanel Selections="list" 
+                    TableHeight=@tableHeight />
             </MudPaper>
         </MudItem>
     
@@ -96,11 +50,8 @@ else
 @using FrontendServer.Base._Base;
 
 @code {
-    private bool showList = true;
-    private List<BaseModel<UserDto>> list = new List<BaseModel<UserDto>>();
-    private List<long> selections = new List<long>();
-    private bool isEditList = false;
-    private int maxSelections = 2;
+    private List<ListModel<UserDto>> list = new List<ListModel<UserDto>>();
+    private ListUtil<UserDto> listUtil = new ListUtil<UserDto>();
     private string tableHeight = "70vh";
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -113,30 +64,27 @@ else
             var listX = await GetAsync<List<UserDto>>(GC.URL_user_list);
 
             if (listX == null)
-            {
                 loadStatus.SetError();
-            }
             else
             {
                 foreach (var u in listX)
                 {
-                    list.Add(new BaseModel<UserDto>(u));
+                    u.Code = u.Username; //for the list table
+                    list.Add(new ListModel<UserDto>(u));
                 }
             }
 
-            if (list == null)
-            {
-                //probably expired login
-            }
+            if (list == null) { } //ToDo probably expired login
             else
             {
                 if (list.Count > 0)
                     Load(list[0]);
             }
 
-            //testing DELETE ME
-            Load(list[1]);
-            Load(list[2]);
+//testing DELETE ME
+listUtil.MaxSelections = 20;
+Load(list[1]);
+Load(list[2]);
 
             AddToolbarSave(SaveAsync);
 
@@ -151,46 +99,21 @@ else
     }
 
 
-    private async Task OnItemSelected(BaseModel<UserDto> r)
+    private async Task OnItemSelected(ListModel<UserDto> r)
     {
         await Load(r);
-        //StateHasChanged();
     }
 
-    private async Task Load(BaseModel<UserDto> dto)
+    private async Task Load(ListModel<UserDto> dto)
     {
-        var index = list.FindIndex(s => s.Id == dto.Id);
-
         if (!dto.IsLoaded)
         {
             var record = await GetAsync<UserDto>(GC.URL_user + dto.Id, true);
-            dto.dto = record;
-            dto.IsLoaded = true;
-            dto.HashMe();
+            record.Code = record.Username; //for the list table
+            dto.Load(record);
         }
 
-
-        //Already selected?
-        if (dto.IsSelected)
-        {
-            dto.IsSelected = false;
-            index = selections.FindIndex(s => s == dto.Id);
-            selections.RemoveAt(index);
-        }
-        else
-        {
-            if (selections.Count >= maxSelections)
-            {
-                var x = list.Find(s => s.Id == selections[0]);
-                x.IsSelected = false;
-                selections.RemoveAt(0);
-            }
-
-
-            dto.IsSelected = true;
-            selections.Add(dto.Id);
-        }
-
+        listUtil.Select(dto);
         StateHasChanged();
     }
 
@@ -209,10 +132,9 @@ else
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
                     var updatedDto = await GetAsync<UserDto>(GC.URL_user + dto.Id);
-                    dto.dto = updatedDto;
-                    dto.ClearHash()
-                       .HashMe()
-                       .SetLoaded();
+                    dto.ClearHash();
+                    updatedDto.Code = updatedDto.Username; //for the list table
+                    dto.Load(updatedDto);
                 }
             }
         }

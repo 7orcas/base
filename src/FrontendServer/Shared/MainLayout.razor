@@ -14,9 +14,9 @@
     }
     else
     {
-        <MudLayout>
+        <MudLayout Style="height:100%; display: flex; flex-direction: column;">
 
-            <MudAppBar Style="width:100%; left:0; right:0; height:6%;"
+            <MudAppBar Style="width:100%; left:0; right:0;"
                        Class="@($"main-title{GetLightDarkClassSuffix()}")"                       
                        Elevation="1">
                 
@@ -91,10 +91,9 @@
                 </MudText>
             </MudAppBar>
 
-            <MudMainContent Style="height:96%;"
-                            Class="main-content-fill-screen">
+            <MudMainContent Class="main-content main-content-fill-screen" Style="flex: 1 1 auto; min-height: 0 !important; overflow: hidden; height:100%;">
 
-                <div style="display:flex;">
+                <div style="display:flex; height: 100%">
 
                     <div id="leftPanel" class="left-panel @($"main-menu{GetLightDarkClassSuffix()}")" style="width:@($"{_leftPanelWidth}px");">
                         <MainMenu />
@@ -102,7 +101,7 @@
 
                     <div id="leftSplitter" class="splitter"></div>
 
-                    <div class="main-panel">
+                    <div class="main-panel" style="height: 100%;">
                         @Body
                     </div>
 
@@ -119,7 +118,7 @@
             </MudMainContent>
 
 
-            <MudPaper Style="background-color:red; height:4%;" 
+            <MudPaper Style="height: 40px; flex-shrink: 0;"
                       Class="bottom-bar d-flex justify-space-between align-center" 
                       Elevation="0" 
                       Square="true">

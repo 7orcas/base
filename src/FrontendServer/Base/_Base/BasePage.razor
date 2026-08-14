@@ -132,7 +132,7 @@ public Exception? exception;
     public string GetFirstColumnErrorClass(_BaseDto dto) => dto.IsError ? "first-colum-error" + GetLightDarkClassSuffix() : "";   
     public string GetLightDarkClassSuffix() => TS.IsDarkMode ? "-dark" : "-light";
 
-    public string GetListColumnErrorClass<T>(BaseModel<T> model) where T : _BaseDto
+    public string GetListColumnErrorClass<T>(ListModel<T> model) where T : _BaseDto
     {
         return model.IsError
             ? "first-colum-error" + GetLightDarkClassSuffix()
@@ -148,17 +148,17 @@ public Exception? exception;
         return isSelected ? " selected-row" : "";
     }
 
-    public string GetListSelectRowPointer<T>(BaseModel<T> model, List<BaseModel<T>> selections) where T : _BaseDto
+    public string GetListSelectRowPointer<T>(ListModel<T> model, List<ListModel<T>> selections) where T : _BaseDto
     {
         return Contains(model, selections) ? "*" : "";
     }
 
-    public string GetListSelectRowClass<T>(BaseModel<T> model, List<BaseModel<T>> selections) where T : _BaseDto
+    public string GetListSelectRowClass<T>(ListModel<T> model, List<ListModel<T>> selections) where T : _BaseDto
     {
         return Contains(model, selections) ? " selected-row" : "";
     }
 
-    public bool Contains<T>(BaseModel<T> model, List<BaseModel<T>> selections) where T : _BaseDto
+    public bool Contains<T>(ListModel<T> model, List<ListModel<T>> selections) where T : _BaseDto
     {
         return selections.Any(x => x.Id == model.Id);
     }

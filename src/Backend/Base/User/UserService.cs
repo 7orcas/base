@@ -47,6 +47,21 @@ namespace Backend.Base.User
             return await _userRepo.Update(user);
         }
 
+        public async Task<UserDto> PopulateAsList(UserEnt user)
+        {
+
+            UserDto userDto = new UserDto()
+            {
+                Id = user.Id,
+                Username = user.Username,
+                IsActive = user.IsActive,
+                Updated = user.Updated,
+                Version = user.Version,
+            };
+
+            return userDto;
+        }
+
         public async Task<UserDto> Populate(UserEnt user)
         {
 

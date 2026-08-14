@@ -1,5 +1,4 @@
-﻿
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -12,11 +11,11 @@ using System.Text.Json.Serialization;
 /// Author: John Stewart
 /// </summary>
 
-namespace FrontendServer.Base._Base
+namespace FrontendServer.Base.Util
 {
-    public class BaseModel<T> where T : Common.DTO._BaseDto
+    public class ListModel<T> where T : Common.DTO._BaseDto
     {
-        public BaseModel (T _dto)
+        public ListModel (T _dto)
         {
             dto = _dto;
         }
@@ -29,7 +28,13 @@ namespace FrontendServer.Base._Base
         public bool IsLoaded { get; set; } = false;
         public bool IsSelected { get; set; } = false;
 
-        public string? OriginalHashCode { get; set; }
+        public ListModel<T> Load(T record)
+        {
+            dto = record;
+            IsLoaded = true;
+            HashMe();
+            return this;
+        }
 
 
         /// <summary>
@@ -37,7 +42,7 @@ namespace FrontendServer.Base._Base
         /// </summary>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>
-        public BaseModel<T> HashMe()
+        public ListModel<T> HashMe()
         {
             if (!string.IsNullOrEmpty(OriginalHashCode))
                 throw new InvalidOperationException("HashCode already created");
@@ -46,19 +51,19 @@ namespace FrontendServer.Base._Base
             return this;
         }
 
-        public BaseModel<T> ClearHash()
+        public ListModel<T> ClearHash()
         {
             OriginalHashCode = null;
             return this;
         }
 
-        public BaseModel<T> SetLoaded()
+        public ListModel<T> SetLoaded()
         {
             IsLoaded = true;
             return this;
         }
 
-        public BaseModel<T> SetError()
+        public ListModel<T> SetError()
         {
             IsError = true;
             return this;
@@ -71,17 +76,20 @@ namespace FrontendServer.Base._Base
             return !hashCode.Equals(OriginalHashCode);
         }
 
+        public string? OriginalHashCode { get; set; }
         private string GetHash(T dto)
         {
             //Remove irrelevant fields
-            var o = OriginalHashCode;
-            OriginalHashCode = null;
-            var l = IsLoaded;
-            IsLoaded = false;
-            var s = IsSelected;
-            IsSelected = false;
-            var e = IsError;
-            IsError = false;
+            //var o = OriginalHashCode;
+            //OriginalHashCode = null;
+            //var l = IsLoaded;
+            //IsLoaded = false;
+            //var s = IsSelected;
+            //IsSelected = false;
+            //var e = IsError;
+            //IsError = false;
+            //var c = code;
+            //code = null;
 
             var json = JsonSerializer.Serialize(dto);
             using var sha256 = SHA256.Create();
@@ -89,10 +97,11 @@ namespace FrontendServer.Base._Base
             var hash = Convert.ToHexString(hashBytes);
 
             //Reset fields
-            OriginalHashCode = o;
-            IsLoaded = l;
-            IsSelected = s;
-            IsError = e;
+            //OriginalHashCode = o;
+            //IsLoaded = l;
+            //IsSelected = s;
+            //IsError = e;
+            //code = c;
 
             return hash;
         }

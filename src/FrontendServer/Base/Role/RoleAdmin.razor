@@ -216,8 +216,8 @@ else
     private string styleDivLeft = "text-align: center; border-left-style:double; border-left-width:3px; border-left-style:groove;";
     private string styleCB = "align-items: center;";
     private List<PermissionDto> permissions;
-    private List<BaseModel<RoleDto>> roles;
-    private List<BaseModel<RoleDto>> selections = new List<BaseModel<RoleDto>>();
+    private List<ListModel<RoleDto>> roles;
+    private List<ListModel<RoleDto>> selections = new List<ListModel<RoleDto>>();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -254,16 +254,16 @@ else
     {
         var rolesX = await GetAsync<List<RoleDto>>(GC.URL_role_list);
 
-        roles = new List<BaseModel<RoleDto>>();
+        roles = new List<ListModel<RoleDto>>();
         foreach (var r in rolesX)
         {
-            roles.Add(new BaseModel<RoleDto>(r));
+            roles.Add(new ListModel<RoleDto>(r));
         }
 
         //Reselect
         if (selections.Count > 0)
         {
-            var x = new List<BaseModel<RoleDto>>(selections);
+            var x = new List<ListModel<RoleDto>>(selections);
             selections.Clear();
             foreach (var r in x)
             {
@@ -282,19 +282,19 @@ else
         StateHasChanged();
     }
 
-    private async Task OnItemSelected(BaseModel<RoleDto> r)
+    private async Task OnItemSelected(ListModel<RoleDto> r)
     {
         await Select(r, false);
         StateHasChanged();
     }
 
-    private async Task Select(BaseModel<RoleDto> r, bool force)
+    private async Task Select(ListModel<RoleDto> r, bool force)
     {
         int index = -1;
         if (!r.IsLoaded || force)
         {
             var roleDtoX = await GetAsync<RoleDto>(GC.URL_role + r.Id, true);
-            var roleDto = new BaseModel<RoleDto>(roleDtoX);
+            var roleDto = new ListModel<RoleDto>(roleDtoX);
             roleDto.HashMe();
             roleDto.IsLoaded = true;
             index = roles.FindIndex(s => s.Id == r.Id);
@@ -316,9 +316,9 @@ else
         }
     }
 
-    private string GetSelectRowPointer(BaseModel<RoleDto> dto) => GetSelectRowPointer(selections.Contains(dto));
-    private string GetSelectRowClass(BaseModel<RoleDto> dto) => GetSelectRowClass(selections.Contains(dto));
-    private string GetFirstColumnErrorClass(BaseModel<RoleDto> dto) => GetFirstColumnErrorClass(dto.dto);
+    private string GetSelectRowPointer(ListModel<RoleDto> dto) => GetSelectRowPointer(selections.Contains(dto));
+    private string GetSelectRowClass(ListModel<RoleDto> dto) => GetSelectRowClass(selections.Contains(dto));
+    private string GetFirstColumnErrorClass(ListModel<RoleDto> dto) => GetFirstColumnErrorClass(dto.dto);
 
     private bool IsCrud(RolePermissionDto p, string crudChar) => !string.IsNullOrEmpty(p.Crud) && p.Crud.Contains(crudChar);
 
@@ -387,7 +387,7 @@ else
                 Updated = DateTime.Now,
                 RolePermissions = new List<RolePermissionDto>(),
             };
-        var roleDto = new BaseModel<RoleDto>(role);
+        var roleDto = new ListModel<RoleDto>(role);
         roleDto.IsLoaded = true;
 
         //Add permissions 
