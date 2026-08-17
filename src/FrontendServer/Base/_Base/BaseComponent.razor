@@ -40,6 +40,8 @@
         return CS.IsDebugBorder ? " border:5px solid " + color + ";" : string.Empty;
     }
 
+    public LabelService GetLabelService() => LS;
+
     //Convenience methods
     public AppConfigDto GetConfig() => CS.Config;
     public bool IsLabel(string labelCode) => LS.IsLabel(labelCode);

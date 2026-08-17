@@ -3,6 +3,9 @@ Oops,Something went wrong! Please see your system admin.
 UnKnError,An unexpected error occurred.
 PWait,Please wait...
 New,New
+Edit,Edit
+EditM,Edit Mode
+ViewM,View Mode
 Close,Close
 Delete,Delete
 Send,Send
