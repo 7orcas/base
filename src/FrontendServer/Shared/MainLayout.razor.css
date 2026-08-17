@@ -1,12 +1,35 @@
+/*
+DELETE ME    
 .page {
     position: relative;
     display: flex;
     flex-direction: column;
     min-height: 100vh;
 }
+*/
+.layout-root {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
 
 main {
     flex: 1 1 auto;
+}
+
+::deep .mud-main-content {
+    padding-top: 0 !important;
+}
+
+::deep .main-title-light {
+    background-color: #1565C0 !important;
+    color: white !important;
+    border: none;
+}
+
+::deep .main-title-dark {
+    background-color: #373740 !important;
+    color: #FFFFFFB2 !important;
 }
 
 .main-content-fill-screen {
@@ -42,6 +65,7 @@ main {
     text-overflow: ellipsis;
 }
 
+/* DELETE ME
 @media (max-width: 640.98px) {
     .top-row:not(.auth) {
         display: none;
@@ -79,3 +103,4 @@ main {
         padding-right: 1.5rem !important;
     }
 }
+*/

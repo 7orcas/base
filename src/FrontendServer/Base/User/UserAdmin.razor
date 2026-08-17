@@ -4,44 +4,49 @@
 
 <ConfirmNavigation List="list" />
 
-<Header @key="_pageCode"
-        TitleKey="UserAdm"
-        PageCode=@_pageCode
-        ToolBarButtonsLeft="toolBarButtonsLeft"
-        ToolBarButtonsRight="toolBarButtonsRight" />
 
-@if (loadStatus.Show())
-{
-    <LoadingWithError LoadStatus=@loadStatus>
-        @exception
-    </LoadingWithError>
-}
-else
-{
-    <MudGrid Style="height:100%;">
+<div style="height:100%; display:flex; flex-direction:column;         border:5px solid yellow">
 
-        @if (listUtil.ShowList)
-        {
-            <!-- Left Side List -->
-            <MudItem xs="2" Style="height:100%;">
-                <MudPaper Elevation="0" Outlined="true" Style="height:100%;">
-                    <ListPanel TDto="UserDto"
-                               List="@list" 
-                               CodeKey="UserName"
-                               OnItemSelected="@OnItemSelected" />
+    <Header @key="_pageCode"
+            TitleKey="UserAdm"
+            PageCode=@_pageCode
+            ToolBarButtonsLeft="toolBarButtonsLeft"
+            ToolBarButtonsRight="toolBarButtonsRight" />
+    
+
+    @if (loadStatus.Show())
+    {
+        <LoadingWithError LoadStatus=@loadStatus>
+            @exception
+        </LoadingWithError>
+    }
+    else
+    {
+        <MudGrid Spacing="0" Style="flex:1; min-height:0; height:0;   border:5px solid orange;">
+
+            @if (listUtil.ShowList)
+            {
+                <!-- Left Side List -->
+                <MudItem xs="2" Style="height:100%; display:flex; flex-direction:column; min-height:0;">
+                    <MudPaper Elevation="0" Outlined="true" Style="flex:1; min-height:0; height:100%; ">
+                        <ListPanel TDto="UserDto"
+                                   List="@list" 
+                                   CodeKey="UserName"
+                                   OnItemSelected="@OnItemSelected" />
+                    </MudPaper>
+                </MudItem>
+            }
+            <!-- Right Side Details -->
+            <MudItem xs="10">
+                <MudPaper Elevation="0" Outlined="false" Style="padding-right:20px;">
+                    <UserDetailsPanel Selections="list" 
+                        TableHeight=@tableHeight />
                 </MudPaper>
             </MudItem>
-        }
-        <!-- Right Side Details -->
-        <MudItem xs="10">
-            <MudPaper Elevation="0" Outlined="false" Style="padding-right:20px;">
-                <UserDetailsPanel Selections="list" 
-                    TableHeight=@tableHeight />
-            </MudPaper>
-        </MudItem>
     
-    </MudGrid>
-}
+        </MudGrid>
+    }
+</div>
 
 @using System.Net
 @using MudBlazor
