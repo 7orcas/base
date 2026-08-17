@@ -24,7 +24,6 @@ main {
 ::deep .main-title-light {
     background-color: #1565C0 !important;
     color: white !important;
-    border: none;
 }
 
 ::deep .main-title-dark {
