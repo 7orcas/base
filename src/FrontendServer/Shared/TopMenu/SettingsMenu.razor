@@ -1,0 +1,52 @@
+﻿
+
+<MudMenu ActivationEvent="MouseEvent.MouseOver"
+            AnchorOrigin="Origin.BottomLeft"
+            TransformOrigin="Origin.TopLeft"
+            OffsetY="true"
+            Dense="true">
+    <ActivatorContent>
+        <MudIconButton Icon="@Icons.Material.Filled.ManageAccounts"
+                        Color="Color.Inherit"
+                        Size="Size.Large" />
+    </ActivatorContent>
+    <ChildContent>
+        <MudStack Spacing="1" Style="align-items: flex-start;">
+            <MudButton Class="custom-menu-button"
+                        Link="true"
+                        OnClick="@Logout"
+                        Color="Color.Inherit"
+                        Variant="Variant.Text">
+                <MudText Typo="Typo.h6">@GetLabel("Logout")</MudText>
+            </MudButton>
+
+            <div style="margin-left:9px;">
+                <MudSwitch T="bool"
+                           Value="IsDarkMode"
+                           ValueChanged="@(v => IsDarkModeChanged.InvokeAsync(v))">
+                    <MudText Typo="Typo.h6">@GetLabel("LDM")</MudText>
+                </MudSwitch>
+            </div>
+            <MenuButton Title="@GetLabel("ChgPw")" Link="@AppRoutes.ChangePWRoute" />
+            <MenuButton Title="@GetLabel("Config")" Link="@AppRoutes.ConfigRoute" />
+
+            <MudButton OnClick="ResetLabels">
+                <MudText Typo="Typo.h6">*Reset Labels*</MudText>
+            </MudButton>
+        </MudStack>
+    </ChildContent>
+</MudMenu>
+
+
+@inject LabelService LS
+@inject LogoutService LgS
+@inject ThemeService TS
+
+@code {
+    [Parameter] public bool IsDarkMode { get; set; }
+    [Parameter] public EventCallback<bool> IsDarkModeChanged { get; set; }
+    
+    private void ResetLabels() => LS.Reset();
+    private string GetLabel(string key) => LS.GetLabel(key);
+    private async Task Logout() => await LgS.LogoutAsync();
+}

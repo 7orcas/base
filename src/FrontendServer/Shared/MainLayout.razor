@@ -45,47 +45,8 @@
                             Icon="@Icons.Material.Filled.Chat"
                             OnClick="ToggleChat" />
 
-                        <MudMenu ActivationEvent="MouseEvent.MouseOver"
-                                 AnchorOrigin="Origin.BottomLeft"
-                                 TransformOrigin="Origin.TopLeft"
-                                 OffsetY="true"
-                                 Dense="true">
-                            <ActivatorContent>
-                                <MudIconButton Icon="@Icons.Material.Filled.ManageAccounts"
-                                               Color="Color.Inherit"
-                                               Size="Size.Large"/>
-                            </ActivatorContent>
-                            <ChildContent>
-                                <MudStack Spacing="1" Style="align-items: flex-start;">
-                                    <MudButton Class="custom-menu-button"
-                                               Link="true"
-                                               OnClick="@Logout"
-                                               Color="Color.Inherit"
-                                               Variant="Variant.Text">
-                                        <MudText Typo="Typo.h6">@GetLabel("Logout")</MudText>
-                                    </MudButton>
-                                    
-                                    <MudButton OnClick="OpenChat">
-                                        <MudText Typo="Typo.h6">@GetLabel("Chat")</MudText>
-                                    </MudButton>
+                        <SettingsMenu @bind-IsDarkMode="_isDarkMode" />
 
-                                    <div style="margin-left:9px;">
-                                        <MudSwitch @bind-Value="_isDarkMode"
-                                                   T="bool"
-                                                   LabelPlacement="Placement.Start"
-                                                    >
-                                            <MudText Typo="Typo.h6">@GetLabel("LDM")</MudText>
-                                        </MudSwitch>
-                                    </div>
-                                    <MenuButton Title="@GetLabel("ChgPw")" Link="@AppRoutes.ChangePWRoute" />
-                                    <MenuButton Title="@GetLabel("Config")" Link="@AppRoutes.ConfigRoute" />
-                                    
-                                    <MudButton OnClick="ResetLabels" >
-                                        <MudText Typo="Typo.h6">*Reset Labels*</MudText>
-                                    </MudButton>
-                                </MudStack>
-                            </ChildContent>
-                        </MudMenu>
                     </div>
 
                 </div>
@@ -206,22 +167,9 @@
         InvokeAsync(StateHasChanged);
     }
 
-    private void ResetLabels()
-    {
-        LS.Reset();
-    }
-
-    private void OpenChat()
-    {
-        _chatOpen = !_chatOpen;
-    }
-
-    private string GetLabel(string key)
-    {
-        return LS.GetLabel(key);
-    }
-
+    private void OpenChat() => _chatOpen = !_chatOpen;
     private void ToggleChat() => _chatOpen = !_chatOpen;
+    private string GetLabel(string key) => LS.GetLabel(key);
     private async Task Logout() => await LgS.LogoutAsync();
     
     public void Dispose() 
