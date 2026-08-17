@@ -28,7 +28,8 @@ namespace FrontendServer.Base.Config
         public bool IsInitialized => config != null;
         public AppConfigDto? Config => config;
         public bool IsDebugMode => config != null && config.DebugMode;
-        
+        public bool IsDebugBorder => false;
+
         public void Set(AppConfigDto config) => this.config = config;
 
         public async Task<AppConfigDto> Initialise()

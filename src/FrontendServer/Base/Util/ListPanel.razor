@@ -6,7 +6,7 @@
 
 <div style="height:100%; display:flex; flex-direction:column; min-height:0;">
 
-    <MudTable Style="flex:1; min-height:0; table-layout:fixed; width:100%;              border:5px solid blue"
+    <MudTable Style="@($"flex:1; min-height:0; table-layout:fixed; width:100%; {@GetDebugBorder("blue")}")"
               T="ListModel<TDto>"
               Items="@List"
               Height="100%"

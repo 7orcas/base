@@ -14,9 +14,9 @@
     }
     else
     {
-        <MudLayout Style="height:100vh; display: flex; flex-direction: column;          border:5px solid red;">
+        <MudLayout Style="@($"height:100vh; display: flex; flex-direction: column; {GetDebugBorder("black")}")">
 
-            <MudPaper Style="width:100%; left:0; right:0;       border:5px solid yellow;"
+            <MudPaper Style=@($"width:100%; left:0; right:0;{GetDebugBorder("grey")}")"
                        Class="@($"main-title{GetLightDarkClassSuffix()}")"                       
                        Elevation="0">
                 
@@ -92,20 +92,20 @@
             </MudPaper>
 
             <MudMainContent Class="main-content main-content-fill-screen" 
-                            Style="flex: 1 1 auto; min-height: 0 !important; overflow: hidden; height:100%;     border:5px solid pink;">
+                            Style=@($"flex: 1 1 auto; min-height: 0 !important; overflow: hidden; height:100%; {GetDebugBorder("pink")}")">
 
                 <div style="display:flex; height: 100%">
 
                     <div id="leftPanel" 
                         class="left-panel @($"main-menu{GetLightDarkClassSuffix()}")" 
-                         style="width:@($"{_leftPanelWidth}px");      border:5px solid brown">
+                         style="width:@($"{_leftPanelWidth}px"); @($"{GetDebugBorder("brown")}")">
                         <MainMenu />
                     </div>
 
                     <div id="leftSplitter" class="splitter"></div>
 
                     <div class="main-panel" 
-                         style="height: 100%;         border:5px solid brown">
+                         style="height: 100%;@GetDebugBorder("brown")">
                         @Body
                     </div>
 
@@ -249,6 +249,12 @@
     public async ValueTask DisposeAsync()
     {
         _objRef?.Dispose();
+    }
+
+    public string GetDebugBorder(string color)
+    {
+        if (ConfS == null) return string.Empty;
+        return ConfS.IsDebugBorder ? " border:5px solid " + color + ";" : string.Empty;
     }
 
 }

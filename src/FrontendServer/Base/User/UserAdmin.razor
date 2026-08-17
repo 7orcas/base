@@ -5,7 +5,7 @@
 <ConfirmNavigation List="list" />
 
 
-<div style="height:100%; display:flex; flex-direction:column;         border:5px solid yellow">
+<div style="height:100%; display:flex; flex-direction:column; @GetDebugBorder("yellow")">
 
     <Header @key="_pageCode"
             TitleKey="UserAdm"
@@ -22,7 +22,7 @@
     }
     else
     {
-        <MudGrid Spacing="0" Style="flex:1; min-height:0; height:0;   border:5px solid orange;">
+        <MudGrid Spacing="0" Style="@($"flex:1; min-height:0; height:0;{GetDebugBorder("orange")}")">
 
             @if (listUtil.ShowList)
             {
