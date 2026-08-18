@@ -32,9 +32,9 @@ namespace Backend.Base.User
             _userRepo = userRepo;
         }
 
-        public async Task<List<UserEnt>> GetUserList()
+        public async Task<List<UserEnt>> GetUserList(UserSearch search)
         {
-            return await _userRepo.GetList();
+            return await _userRepo.GetList(search);
         }
 
         public async Task<UserEnt?> GetUser(long id)

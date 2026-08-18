@@ -2,6 +2,7 @@
 using MudBlazor;
 using Newtonsoft.Json;
 using System.ComponentModel;
+using System.Net;
 using System.Text;
 using GC = FrontendServer.GlobalConstants;
 
@@ -156,6 +157,20 @@ namespace FrontendServer.Base._Base
 
             _isSaving = false;
             loadStatus.ResetSaving();
+            return response;
+        }
+
+        protected async Task<HttpResponseMessage> PostAsync<T, S>(string url, S search) where S : _BaseSearch
+        {
+            loadStatus.SetSearch();
+            await ValidateAccess();
+            var client = await GetClient();
+
+            var json = System.Text.Json.JsonSerializer.Serialize(search);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = await client.PostAsync(url, content);
+
+            loadStatus.ResetSearch();
             return response;
         }
 

@@ -33,11 +33,11 @@ namespace Backend.Base.User
 
         [CrudAtt(GC.CrudIgnore)]  //ToDo
         [AuditListAtt(GC.EntityTypeUser)]
-        [HttpGet("list")]
-        public async Task<IActionResult> Get()
+        [HttpPost("list")]
+        public async Task<IActionResult> Get([FromBody] UserSearch search)
         {
             var session = HttpContext.Items["session"] as SessionEnt;
-            var users = await _userService.GetUserList();
+            var users = await _userService.GetUserList(search);
             var list = new List<UserDto>();
 
             foreach (var user in users)

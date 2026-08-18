@@ -52,12 +52,14 @@
 @using FrontendServer.Base.Util
 @using GC = FrontendServer.GlobalConstants;
 @using FrontendServer.Base._Base;
+@using Newtonsoft.Json;
+@inject IDialogService DialogService
 
 @code {
     private List<ListModel<UserDto>> list = new List<ListModel<UserDto>>();
     private ListUtil<UserDto> listUtil = new ListUtil<UserDto>();
     private FormStatus formStatus = new FormStatus();
-    
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -65,30 +67,7 @@
             await InitialiseBasePage(GC.PerUser);
             _pageCode = BaseRoutes.UserPageCode;
 
-            var listX = await GetAsync<List<UserDto>>(GC.URL_user_list);
-
-            if (listX == null)
-                loadStatus.SetError();
-            else
-            {
-                foreach (var u in listX)
-                {
-                    u.Code = u.Username; //for the list table
-                    list.Add(new ListModel<UserDto>(u));
-                }
-            }
-
-            if (list == null) { } //ToDo probably expired login
-            else
-            {
-                if (list.Count > 0)
-                    Load(list[0]);
-            }
-
-            //testing DELETE ME
-            //listUtil.MaxSelections = 20;
-            Load(list[1]);
-            Load(list[2]);
+            //  await Load();
 
             AddToolbarSave(SaveAsync);
 
@@ -108,11 +87,85 @@
                     Action = AddRecord
                 });
 
-            GetLabel("UserAdm");
+
+            toolBarButtonsLeft.Add(new ToolBarButton
+{
+    LangKey = "Search",
+    Action = Search
+});
 
             StateHasChanged();
         }
     }
+
+    private async Task Search()
+    {
+        var dialog = await DialogService.ShowAsync<UserSearchDialog>("Search Users");
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            var data = (UserSearchDialog.SearchData)result.Data;
+
+            var search = new UserSearch
+            {
+                Username = data.Username,
+                Email = data.Email
+            };
+
+            await Load(search);
+        }
+
+    }
+
+
+
+
+    private async Task Load(UserSearch search)
+    {
+        var response = await PostAsync<_ResponseDto, UserSearch>(GC.URL_user_list, search);
+
+        list.Clear();
+        List<UserDto> listX = null;
+
+        if (response.StatusCode == HttpStatusCode.OK)
+        {
+            var r = await response.Content.ReadAsStringAsync();
+            var dto = JsonConvert.DeserializeObject<_ResponseDto>(r);
+
+            if (dto.Valid)
+                listX = JsonConvert.DeserializeObject<List<UserDto>>(dto.Result.ToString());
+
+        }
+
+
+        if (listX == null)
+            loadStatus.SetError();
+        else
+        {
+            foreach (var u in listX)
+            {
+                u.Code = u.Username; //for the list table
+                list.Add(new ListModel<UserDto>(u));
+            }
+        }
+
+        if (list == null) { } //ToDo probably expired login
+        else
+        {
+            if (list.Count > 0)
+                Load(list[0]);
+        }
+
+        //testing DELETE ME
+        //listUtil.MaxSelections = 20;
+        Load(list[1]);
+        Load(list[2]);
+
+
+       // await Search();
+    }
+
 
 
     private async Task OnItemSelected(ListModel<UserDto> r)
@@ -177,6 +230,6 @@
 
     }
 
-    protected override async Task OnInitializedAsync() => loadStatus.SetLoading();
+    //protected override async Task OnInitializedAsync() => loadStatus.SetLoading();
 
 }

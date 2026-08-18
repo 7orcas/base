@@ -22,21 +22,21 @@ namespace Backend.Base.User
             _context = context;
         }
 
-        public async Task<List<UserEnt>> GetList()
+        public async Task<List<UserEnt>> GetList(UserSearch search)
         {
-            var list = new List<UserEnt>();
-            await Sql.Run(
-                    "SELECT * FROM base.zzz ORDER BY zzz ",
-                    r => {
-                        var user = new UserEnt();
-                        user.Id = GetId(r);
-                        user.Username = GetString(r, "xxx");
-                        user.IsActive = IsActive(r);
-                        user.OrgNrDefault = GetInt(r, "orgnrdefault");
-                        list.Add(user);
-                    }
-                );
-            return list;
+            var sql = "SELECT id, xxx AS Username, isActive, orgnrdefault AS OrgNrDefault "
+                        + "FROM base.zzz "
+                        + "WHERE 1=1";
+
+
+    if (!string.IsNullOrEmpty(search.Username))
+    {
+        sql += " AND xxx LIKE '%" + search.Username + "%'";
+    }
+
+     sql += " ORDER BY xxx";
+
+            return await GetList<UserEnt>(sql);
         }
 
 

@@ -1,4 +1,5 @@
 ﻿using Npgsql;
+using System.Data;
 using System.Reflection.Metadata;
 
 /// <summary>
@@ -12,6 +13,11 @@ namespace Backend.Base.Database
 {
     public class Sql
     {
+        public static IDbConnection GetConnection()
+        {
+            return new NpgsqlConnection(AppSettings.DBMainConnection);
+        }
+
 
         public static async Task Run(
             string sqlString,

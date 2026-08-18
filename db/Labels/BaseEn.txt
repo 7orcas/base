@@ -10,6 +10,7 @@ Close,Close
 Delete,Delete
 Send,Send
 Cancel,Cancel
+Search,Search
 On,On
 Off,Off
 SaveRec,Save

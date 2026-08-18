@@ -2,6 +2,8 @@
 global using Common.DTO;
 global using Common.DTO.App;
 global using Common.DTO.Base;
+global using Common.Search;
+global using Common.Search.Base;
 global using Common.Request;
 global using Serilog;
 global using Backend.Base;
@@ -33,3 +35,4 @@ global using Backend.Base.Template.Emails;
 global using Backend.Core.Middleware;
 global using Backend.Program;
 global using System.Diagnostics;
+global using Dapper;

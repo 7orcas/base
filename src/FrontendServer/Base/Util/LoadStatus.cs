@@ -7,6 +7,7 @@ namespace FrontendServer.Base.Util
         public bool IsLoading { get; set; } = false;
         public bool IsError { get; set; } = false;
         public bool IsSaving { get; set; } = false;
+        public bool IsSearch { get; set; } = false;
         public int? StatusCode { get; set; }
         public MarkupString? ErrorMessage { get; set; }
         public MarkupString? Message { get; set; }
@@ -15,7 +16,7 @@ namespace FrontendServer.Base.Util
 
         public Boolean Show()
         {
-            return IsLoading || IsError || IsSaving;
+            return IsLoading || IsError || IsSaving || IsSearch;
         }
 
 
@@ -37,10 +38,20 @@ namespace FrontendServer.Base.Util
             IsSaving = true;
             return this;
         }
-
         public LoadStatus ResetSaving()
         {
             IsSaving = false;
+            return this;
+        }
+
+        public LoadStatus SetSearch()
+        {
+            IsSearch = true;
+            return this;
+        }
+        public LoadStatus ResetSearch()
+        {
+            IsSearch = false;
             return this;
         }
 

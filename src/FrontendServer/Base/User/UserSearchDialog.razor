@@ -1,0 +1,90 @@
+﻿@inherits BasePage
+
+ 
+
+
+<MudDialog Class="search-dialog">
+    <DialogContent>
+        <MudGrid>
+            <MudItem xs="12" >
+                <MudPaper Class="pa-4" style="background-color: #f2f2f2;  border: 1px solid black;">
+                    <MudForm @ref="form" @bind-IsValid="@success">
+            
+                        <MudTextField T="string" Label="@lLabel" OnBlur="@OnBlu" @ref="usernameField" @bind-Value="username" />
+
+
+
+                        <div class="d-flex align-right search-buttons">
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(!success)" Class="ml-auto" OnClick="Search">@GetLabel("Search")</MudButton>
+                            <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="@CloseDialog" style="margin-left: 10px">@GetLabel("Cancel")</MudButton>
+                        </div>
+                
+                    </MudForm>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </DialogContent>
+</MudDialog>
+
+
+@using GC = FrontendServer.GlobalConstants;
+
+@code {
+    [CascadingParameter] private IMudDialogInstance? MudDialog { get; set; }
+    
+    
+    //Single label
+    private string? username = "user";
+    private bool success  = true;
+
+    //Headings
+    private string? lLabel = "XYZ123";
+    
+    MudForm form;
+    MudTextField<string> usernameField;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await InitialiseBasePage(GC.PerUser);
+            lLabel = GetLabelHighlightNoKey("Username");
+            
+            StateHasChanged();
+        }
+    }
+
+    protected override async Task OnInitializedAsync() => _isLoading = true;
+    private void CloseDialog() => MudDialog.Close();
+    
+
+    private void OnBlu()
+    {
+        
+    }
+
+    private async Task Search()
+    {
+        await form.Validate();
+        if (success)
+        {
+            MudDialog.Close(DialogResult.Ok(new SearchData
+            {
+                Username = username,
+                //Email = Email
+            }));
+        }
+        else
+        {
+            Console.WriteLine("Form is invalid.");
+        }   
+    }
+
+    public class SearchData
+    {
+        public string Username { get; set; }
+        public string Email { get; set; }
+    }
+
+
+}

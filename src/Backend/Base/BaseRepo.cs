@@ -18,5 +18,24 @@
             entity.Updated = DateTimeOffset.UtcNow;
         }
 
+        public async Task<List<T>> GetList<T>(string sql) 
+        {
+            try
+            {
+                using var conn = Sql.GetConnection();
+                var result = await conn.QueryAsync<T>(sql);
+                return result.ToList();
+            }
+            catch (Exception ex)
+            {
+                Log.Logger.Error(
+                    ex,
+                    "Sql failed: {Sql}",
+                    sql);
+
+                throw;
+            }
+        }
+
     }
 }
