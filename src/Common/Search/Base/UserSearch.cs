@@ -10,5 +10,11 @@ namespace Common.Search.Base
     {
         public string? Username { get; set; }
         public string? Email { get; set; }
+        
+        public bool IsValid()
+        {
+            return !string.IsNullOrEmpty(Username) || !string.IsNullOrEmpty(Email);
+        }
     }
+
 }

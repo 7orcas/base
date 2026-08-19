@@ -1,54 +1,26 @@
 ﻿@inherits BasePage
 
  
+<BaseSearchDialog Width="700px"
+                  Height="400px"
+                  TitleKey="UserSr"
+                  SubmitAction="Submit"
+                  IsValid="data.IsValid()">
 
-
-<MudDialog Class="search-dialog" Style="width:700px; height:500px;">
-    <TitleContent>
-        <div class="d-flex align-center w-100">
-            <MudText Typo="Typo.h6" Class="flex-grow-1">
-                @GetLabel("Search")
-            </MudText>
-
-            <MudButton Variant="Variant.Filled"
-                       Color="Color.Secondary"
-                       OnClick="@CloseDialog">
-                @GetLabel("Cancel")
-            </MudButton>
-        </div>
-    </TitleContent>
-
-    <DialogContent>
-        <MudForm @ref="form" @bind-IsValid="@success">
-@* 
-            <MudTextField T="string" 
-                          Style="@GetStyle(GC.TextFieldWidth.Medium)"
-                Label="@GetLabel("Username")" 
+    <TextField Width=GC.TextFieldWidth.Medium
+                LangCode="UserName"
+                MaxLength="@GC.LenCode"
                 Immediate="true"
-                @ref="usernameField" 
-                @bind-Value="username" 
-                OnKeyDown="HandleKeyDown" />
- *@
-            <TextField Width=GC.TextFieldWidth.Medium
-                       LangCode="UserName"
-                       MaxLength="@GC.LenCode"
-                       @bind-Value="username" />
+                @ref="usernameField"
+                @bind-Value="data.Username" />
 
-        </MudForm>
-    </DialogContent>
+    <TextField Width=GC.TextFieldWidth.Medium
+               LangCode="Email"
+               MaxLength="@GC.LenEmail"
+               Immediate="true"
+               @bind-Value="data.Email" />
 
-    <DialogActions>
-        <MudButton 
-            Variant="Variant.Filled" 
-            Color="Color.Primary" 
-            Disabled="@(!success)" 
-            Class="ml-auto" 
-            OnClick="Submit">
-                @GetLabel("Search")
-        </MudButton>
-        
-    </DialogActions>
-</MudDialog>
+</BaseSearchDialog>
 
 
 @using GC = FrontendServer.GlobalConstants;
@@ -56,69 +28,29 @@
 @code {
     [CascadingParameter] private IMudDialogInstance? MudDialog { get; set; }
 
-    private string? username = "user";
-
-    private bool success  = true;
-
-    MudForm form;
-    MudTextField<string> usernameField;
+    private UserSearch data = new UserSearch ();
+    private TextField usernameField;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            await InitialiseBasePage(GC.PerUser);
 
-
-            await Task.Delay(100);
-          //  await usernameField!.FocusAsync();
-
-            StateHasChanged();
+            await InvokeAsync(async () =>
+            {
+                await Task.Yield();
+                await Task.Delay(100);
+                await usernameField!.FocusAsync();
+                StateHasChanged();
+            });
         }
     }
-
-    protected override async Task OnInitializedAsync() => _isLoading = true;
-
-    private void CloseDialog()
-    {
-        MudDialog.Cancel();
-    }
-    
-
-    private void OnBlu()
-    {
         
-    }
 
     private async Task Submit()
     {
-        await form.Validate();
-        if (success)
-        {
-            MudDialog.Close(DialogResult.Ok(new SearchData
-            {
-                Username = username,
-                //Email = Email
-            }));
-        }
-        else
-        {
-            Console.WriteLine("Form is invalid.");
-        }   
+        if (data.IsValid())
+            MudDialog.Close(DialogResult.Ok(data));
     }
-
-    private async Task HandleKeyDown(KeyboardEventArgs e)
-    {
-        if (e.Key == "Enter")
-            await Submit();
-    }
-
-
-    public class SearchData
-    {
-        public string Username { get; set; }
-        public string Email { get; set; }
-    }
-
 
 }

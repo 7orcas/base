@@ -11,6 +11,7 @@ Delete,Delete
 Send,Send
 Cancel,Cancel
 Search,Search
+SearchIn,Invalid Search
 On,On
 Off,Off
 SaveRec,Save
@@ -112,6 +113,7 @@ User,User
 Users,Users
 UserAdm,User Administration
 UserA,Add New User
+UserSr,User Search
 UserName,Username
 UserNameM,Masquerade Username
 UserNameEx,Username already exists

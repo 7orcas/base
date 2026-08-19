@@ -5,23 +5,33 @@
 @using GC = FrontendServer.GlobalConstants;
 
 <MudTextField Style="@GetStyle(Width)"
+              @ref="_textField"
               Label="@label"
               MaxLength="@MaxLength"
               ReadOnly="@ReadOnly"
+              Immediate="@Immediate"
               Value="@Value"
               ValueChanged="@ValueChanged"
               ValueExpression="@ValueExpression"
-              Variant=@MudVariant />
+              Variant="@MudVariant" />
 
 @code {
     [Parameter] public string LangCode { get; set; }
     [Parameter] public GC.TextFieldWidth Width { get; set; } = GC.TextFieldWidth.Medium;
     [Parameter] public int MaxLength { get; set; } = 20;
     [Parameter] public bool ReadOnly { get; set; } = false;
+    [Parameter] public bool Immediate { get; set; } = false;
     [Parameter] public string Value { get; set; }
     [Parameter] public EventCallback<string> ValueChanged { get; set; }
     [Parameter] public Expression<Func<string>> ValueExpression { get; set; }
-
-    private string label = loading;
+    
+    private string label = "loading..";
     protected override void OnInitialized() => label = GetLabel(LangCode);
+
+    private MudTextField<string>? _textField;
+    public Task FocusAsync()
+    {                   
+        var vt = _textField?.FocusAsync() ?? default(ValueTask);
+        return vt.AsTask();
+    }
 }

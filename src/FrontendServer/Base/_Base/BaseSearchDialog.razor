@@ -1,6 +1,6 @@
 ﻿@inherits BasePage
 
-<MudDialog Class="search-dialog" Style="width:700px; height:500px;">
+<MudDialog Class="search-dialog" Style="@($"width:{Width}; height:{Height};")">
     <TitleContent>
         <div class="d-flex align-center w-100">
             <MudText Typo="Typo.h6" Class="flex-grow-1">
@@ -16,17 +16,19 @@
     </TitleContent>
 
     <DialogContent>
-        <MudForm @ref="form" @bind-IsValid="@success">
-            @ChildContent
-        </MudForm>
+        <div @onkeydown="HandleKeyDown">
+            <MudForm >
+                @ChildContent
+            </MudForm>
+        </div>
     </DialogContent>
 
     <DialogActions>
         <MudButton Variant="Variant.Filled"
                    Color="Color.Primary"
-                   Disabled="@(!success)"
+                   Disabled="!IsValid"
                    Class="ml-auto"
-                   OnClick="Submit">
+                   OnClick="SubmitAction">
             @GetLabel("Search")
         </MudButton>
 
@@ -34,76 +36,23 @@
 </MudDialog>
 
 
-@using GC = FrontendServer.GlobalConstants;
-
 @code {
     [CascadingParameter] private IMudDialogInstance? MudDialog { get; set; }
-    [CascadingParameter] private string TitleKey { get; set; } = "Search";
+    [Parameter] public string Width { get; set; } = "700px";
+    [Parameter] public string Height { get; set; } = "500px";
+    [Parameter] public string TitleKey { get; set; } = "Search";
     [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public EventCallback SubmitAction { get; set; } = new();
+    [Parameter] public bool IsValid { get; set; } = true;
 
-    private string? username = "user";
-
-    private bool success = true;
-
-    MudForm form;
-    MudTextField<string> usernameField;
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await InitialiseBasePage(GC.PerUser);
-
-
-            await Task.Delay(100);
-            //  await usernameField!.FocusAsync();
-
-            StateHasChanged();
-        }
-    }
-
-    protected override async Task OnInitializedAsync() => _isLoading = true;
-
-    private void CloseDialog()
-    {
-        MudDialog.Cancel();
-    }
-
-    
-    private void OnBlu()
-    {
-
-    }
-
-    private async Task Submit()
-    {
-        await form.Validate();
-        if (success)
-        {
-            MudDialog.Close(DialogResult.Ok(new SearchData
-            {
-                Username = username,
-                //Email = Email
-            }));
-        }
-        else
-        {
-            Console.WriteLine("Form is invalid.");
-        }
-    }
+    private void CloseDialog() => MudDialog.Cancel();
+        
+    private void OnBlu(){}
 
     private async Task HandleKeyDown(KeyboardEventArgs e)
     {
         if (e.Key == "Enter")
-            await Submit();
+            await SubmitAction.InvokeAsync();
     }
-
-
-    public class SearchData
-    {
-        public string Username { get; set; }
-        public string Email { get; set; }
-    }
-
 
 }

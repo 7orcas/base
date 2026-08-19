@@ -112,15 +112,15 @@
 
         if (!result.Canceled)
         {
-            var data = (UserSearchDialog.SearchData)result.Data;
+            var data = (UserSearch)result.Data;
 
-            var search = new UserSearch
-            {
-                Username = data.Username,
-                Email = data.Email
-            };
+            // var search = new UserSearch
+            // {
+            //     Username = data.Username,
+            //     Email = data.Email
+            // };
 
-            await Load(search);
+            await Load(data);
         }
         
     }
