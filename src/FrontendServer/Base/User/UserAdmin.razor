@@ -93,7 +93,7 @@
     LangKey = "Search",
     Action = Search
 });
-
+            Search();
             StateHasChanged();
         }
     }
@@ -103,12 +103,11 @@
         var options = new DialogOptions
         {
             CloseOnEscapeKey = false,
-            BackdropClick = false,
-            MaxWidth = MaxWidth.False,
+            BackdropClick = false
         };
 
 
-        var dialog = await DialogService.ShowAsync<UserSearchDialog>("Search Users", options);
+        var dialog = await DialogService.ShowAsync<UserSearchDialog>("", options);
         var result = await dialog.Result;
 
         if (!result.Canceled)

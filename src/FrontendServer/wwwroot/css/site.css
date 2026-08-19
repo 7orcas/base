@@ -241,3 +241,8 @@ a, .btn-link {
     background: #1976d2;
 }
 
+.search-dialog .mud-dialog-title {
+    background-color: red;
+    color: white;
+}
+

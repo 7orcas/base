@@ -1,13 +1,10 @@
 ﻿@inherits BasePage
 
- 
-
-
 <MudDialog Class="search-dialog" Style="width:700px; height:500px;">
     <TitleContent>
         <div class="d-flex align-center w-100">
             <MudText Typo="Typo.h6" Class="flex-grow-1">
-                @GetLabel("Search")
+                @GetLabel(TitleKey)
             </MudText>
 
             <MudButton Variant="Variant.Filled"
@@ -20,33 +17,19 @@
 
     <DialogContent>
         <MudForm @ref="form" @bind-IsValid="@success">
-@* 
-            <MudTextField T="string" 
-                          Style="@GetStyle(GC.TextFieldWidth.Medium)"
-                Label="@GetLabel("Username")" 
-                Immediate="true"
-                @ref="usernameField" 
-                @bind-Value="username" 
-                OnKeyDown="HandleKeyDown" />
- *@
-            <TextField Width=GC.TextFieldWidth.Medium
-                       LangCode="UserName"
-                       MaxLength="@GC.LenCode"
-                       @bind-Value="username" />
-
+            @ChildContent
         </MudForm>
     </DialogContent>
 
     <DialogActions>
-        <MudButton 
-            Variant="Variant.Filled" 
-            Color="Color.Primary" 
-            Disabled="@(!success)" 
-            Class="ml-auto" 
-            OnClick="Submit">
-                @GetLabel("Search")
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   Disabled="@(!success)"
+                   Class="ml-auto"
+                   OnClick="Submit">
+            @GetLabel("Search")
         </MudButton>
-        
+
     </DialogActions>
 </MudDialog>
 
@@ -55,10 +38,12 @@
 
 @code {
     [CascadingParameter] private IMudDialogInstance? MudDialog { get; set; }
+    [CascadingParameter] private string TitleKey { get; set; } = "Search";
+    [Parameter] public RenderFragment? ChildContent { get; set; }
 
     private string? username = "user";
 
-    private bool success  = true;
+    private bool success = true;
 
     MudForm form;
     MudTextField<string> usernameField;
@@ -71,7 +56,7 @@
 
 
             await Task.Delay(100);
-          //  await usernameField!.FocusAsync();
+            //  await usernameField!.FocusAsync();
 
             StateHasChanged();
         }
@@ -83,11 +68,11 @@
     {
         MudDialog.Cancel();
     }
-    
 
+    
     private void OnBlu()
     {
-        
+
     }
 
     private async Task Submit()
@@ -104,7 +89,7 @@
         else
         {
             Console.WriteLine("Form is invalid.");
-        }   
+        }
     }
 
     private async Task HandleKeyDown(KeyboardEventArgs e)
