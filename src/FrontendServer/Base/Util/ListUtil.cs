@@ -5,7 +5,7 @@ namespace FrontendServer.Base.Util
     public class ListUtil<T> where T : Common.DTO._BaseDto
     {
         public int MaxSelections { get; set; } = 2;
-        public bool ShowList { get; set; } = true;
+        public bool ShowList { get; set; } = false;
         private List<ListModel<T>> Selections = new List<ListModel<T>>();
 
         public void Select(ListModel<T> model)

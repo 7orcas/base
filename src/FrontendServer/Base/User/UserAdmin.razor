@@ -100,7 +100,15 @@
 
     private async Task Search()
     {
-        var dialog = await DialogService.ShowAsync<UserSearchDialog>("Search Users");
+        var options = new DialogOptions
+        {
+            CloseOnEscapeKey = false,
+            BackdropClick = false,
+            MaxWidth = MaxWidth.False,
+        };
+
+
+        var dialog = await DialogService.ShowAsync<UserSearchDialog>("Search Users", options);
         var result = await dialog.Result;
 
         if (!result.Canceled)
@@ -115,7 +123,7 @@
 
             await Load(search);
         }
-
+        
     }
 
 
@@ -143,6 +151,7 @@
             loadStatus.SetError();
         else
         {
+            listUtil.ShowList = true;
             foreach (var u in listX)
             {
                 u.Code = u.Username; //for the list table
@@ -159,8 +168,8 @@
 
         //testing DELETE ME
         //listUtil.MaxSelections = 20;
-        Load(list[1]);
-        Load(list[2]);
+if (list.Count > 1) Load(list[1]);
+if (list.Count > 2) Load(list[2]);
 
 
        // await Search();

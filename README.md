@@ -54,3 +54,4 @@ Run Swagger
 
 Azure Notes:
 - Data protection keys need to be stored in blob
+- Use Let's Encrypt to get a free certificate

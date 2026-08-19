@@ -1,7 +1,7 @@
 ﻿
-.search-dialog {
-    width: 80vw;
-    max-width: 1200px;
+::deep .mud-dialog.search-dialog {
+    width: 600px !important;
+    height: 500px !important;
 }
 
 

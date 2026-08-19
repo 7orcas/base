@@ -3,7 +3,7 @@
  
 
 
-<MudDialog Class="search-dialog">
+<MudDialog Class="search-dialog" Style="width:700px; height:500px;">
     <DialogContent>
         <MudGrid>
             <MudItem xs="12" >
@@ -31,15 +31,15 @@
 
 @code {
     [CascadingParameter] private IMudDialogInstance? MudDialog { get; set; }
-    
-    
+
+
     //Single label
     private string? username = "user";
     private bool success  = true;
 
     //Headings
     private string? lLabel = "XYZ123";
-    
+
     MudForm form;
     MudTextField<string> usernameField;
 
@@ -49,13 +49,17 @@
         {
             await InitialiseBasePage(GC.PerUser);
             lLabel = GetLabelHighlightNoKey("Username");
-            
+
             StateHasChanged();
         }
     }
 
     protected override async Task OnInitializedAsync() => _isLoading = true;
-    private void CloseDialog() => MudDialog.Close();
+
+    private void CloseDialog()
+    {
+        MudDialog.Cancel();
+    }
     
 
     private void OnBlu()

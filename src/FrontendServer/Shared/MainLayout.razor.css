@@ -24,11 +24,13 @@ main {
 ::deep .main-title-light {
     background-color: #1565C0 !important;
     color: white !important;
+    border-radius: 0 !important;
 }
 
 ::deep .main-title-dark {
     background-color: #373740 !important;
     color: #FFFFFFB2 !important;
+    border-radius: 0 !important;
 }
 
 .main-content-fill-screen {
