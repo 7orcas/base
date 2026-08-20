@@ -55,3 +55,6 @@ Run Swagger
 Azure Notes:
 - Data protection keys need to be stored in blob
 - Use Let's Encrypt to get a free certificate
+
+Postpres Notes:
+- Could use Neon for free db hosting: https://neon.com/docs/introduction/plans
