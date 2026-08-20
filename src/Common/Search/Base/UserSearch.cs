@@ -13,7 +13,7 @@ namespace Common.Search.Base
         
         public bool IsValid()
         {
-            return !string.IsNullOrEmpty(Username) || !string.IsNullOrEmpty(Email);
+            return true || !string.IsNullOrEmpty(Username) || !string.IsNullOrEmpty(Email);
         }
     }
 

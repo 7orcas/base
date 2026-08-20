@@ -1,5 +1,7 @@
 ﻿@inherits BasePage
 @attribute [Route(BaseRoutes.UserRoute)]
+@attribute [PageCode(BaseRoutes.UserPageCode)]
+@attribute [PagePermission(GC.PerUser)]
 @attribute [Authorize]
 
 <ConfirmNavigation List="list" />
@@ -12,7 +14,8 @@
             PageCode=@_pageCode
             ToolBarButtonsLeft="toolBarButtonsLeft"
             ToolBarButtonsRight="toolBarButtonsRight" />
-    
+
+    <div style="margin-top:10px; border-bottom: 1px solid #ccc; margin-bottom:2px;"></div>
 
     @if (loadStatus.Show())
     {
@@ -22,7 +25,7 @@
     }
     else
     {
-        <MudGrid Spacing="0" Style="@($"flex:1; min-height:0; height:0;{GetDebugBorder("orange")}")">
+        <MudGrid Class="no-wrap-grid" Spacing="0" Style="@($"flex:1; min-height:0; height:0;{GetDebugBorder("orange")}")">
 
             @if (listUtil.ShowList)
             {
@@ -39,10 +42,11 @@
             <!-- Right Side Details -->
             <MudItem xs="10" Style="height:100%; display:flex; flex-direction:column; min-height:0;">
                 <MudPaper Elevation="0" Outlined="false" Style="flex:1; min-height:0; overflow:auto; padding-right:20px;">
-                    <UserDetailsPanel Selections="list" FormStatus=@formStatus />
+                    <UserDetailsPanel Selections="list" 
+                                      FormStatus=@formStatus />
                 </MudPaper>
             </MudItem>
-    
+
         </MudGrid>
     }
 </div>
@@ -64,8 +68,18 @@
     {
         if (firstRender)
         {
-            await InitialiseBasePage(GC.PerUser);
-            _pageCode = BaseRoutes.UserPageCode;
+            var attr1 = GetType()
+                        .GetCustomAttributes(typeof(PagePermissionAttribute), true)
+                        .Cast<PagePermissionAttribute>()
+                        .FirstOrDefault();
+
+            await InitialiseBasePage(attr1.Code);
+
+            var attr2 = GetType()
+                        .GetCustomAttributes(typeof(PageCodeAttribute), true)
+                        .Cast<PageCodeAttribute>()
+                        .FirstOrDefault();
+            _pageCode = attr2?.Code;
 
             //  await Load();
 
@@ -77,22 +91,21 @@
                 {
                     GetLabel = formStatus.GetEditModeLabel,
                     Action = EditRecord
-
                 });
 
             if (_isCrudC)
                 toolBarButtonsLeft.Add(new ToolBarButton
                 {
-                    LangKey = "UserA",
+                    LangKey = "AddN",
                     Action = AddRecord
                 });
 
-
             toolBarButtonsLeft.Add(new ToolBarButton
-{
-    LangKey = "Search",
-    Action = Search
-});
+            {
+                LangKey = "Search",
+                Action = Search
+            });
+
             Search();
             StateHasChanged();
         }

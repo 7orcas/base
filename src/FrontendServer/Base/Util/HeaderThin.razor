@@ -13,7 +13,7 @@
         <div class="toolbar-container">
             @if (isToolbar)
             {
-                <MudPaper Elevation="0" Outlined="@_debugOutlined">
+                
                     <div class="toolbar">
                         <div class="toolbar-left">
                             <!-- Left Buttons -->
@@ -39,15 +39,18 @@
                                 else
                                 {
                                     <MudButton OnClick="b.Action">
-                                        <Label Key="@b.LangKey"
-                                               Class="@GetButtonClass(b)"
-                                               Size="GC.TextSize.ButtonText"
-                                               HideTooltip=true>
-                                        </Label>
+                                        <div class="@GetButtonClass(b) label label-no-link">
+                                            <Label Key="@b.LangKey"
+                                                   Size="GC.TextSize.ButtonText"
+                                                   HideTooltip=true>
+                                            </Label>
+                                        </div>
                                     </MudButton>
                                 }
                             }
                         </div>
+
+                        
 
                         <!-- Right Buttons -->
                         <div class="toolbar-right">
@@ -65,17 +68,18 @@
                                 else
                                 {
                                     <MudButton OnClick="b.Action">
-                                        <Label Key="@b.LangKey"
-                                               Class="@GetButtonClass(b)"
-                                               Size="GC.TextSize.ButtonText"
-                                               HideTooltip=true>
-                                        </Label>
+                                        <div class="@GetButtonClass(b) label label-no-link">
+                                            <Label Key="@b.LangKey"
+                                                   Size="GC.TextSize.ButtonText"
+                                                   HideTooltip=true>
+                                            </Label>
+                                        </div>
                                     </MudButton>
                                 }
                             }
                         </div>
                     </div>
-                </MudPaper>
+                
             }
         </div>
         
@@ -120,6 +124,7 @@
     private string? subtitle;
     private bool isSubTitle;
     private bool isToolbar = false;
+    private bool isToolbarLR = false;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -131,6 +136,7 @@
 
             isToolbar = IsButtons(ToolBarButtonsLeft);
             isToolbar = isToolbar || IsButtons(ToolBarButtonsRight);
+            isToolbarLR = IsButtons(ToolBarButtonsLeft) && IsButtons(ToolBarButtonsRight);
 
             StateHasChanged();
         }
