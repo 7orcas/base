@@ -27,7 +27,7 @@ namespace Backend.Base.User.Ent
 
 
         public UserEnt User { get; set; }
-
+        public ICollection<UserAccountRoleEnt> Roles { get; set; } = new List<UserAccountRoleEnt>();
 
         public override void Decode() { }
         public override void Encode() { }

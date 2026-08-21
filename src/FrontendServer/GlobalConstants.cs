@@ -48,9 +48,10 @@
         public enum TextFieldWidth
         {
             Ignore = 0,
-            Short = 1,
-            Medium = 2,
-            Long = 3,
+            TextShort = 1,
+            TextMedium = 2,
+            TextLong = 3,
+            Int = 4,
         }
 
     }

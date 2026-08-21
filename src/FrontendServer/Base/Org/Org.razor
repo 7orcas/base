@@ -60,28 +60,28 @@
                         </TitleContent>
                         <ChildContent>
                             <div style="display: flex; flex-wrap: wrap; gap: 20px;">
-                                <NumericField Width=GC.TextFieldWidth.Short
+                                <NumericField Width=GC.TextFieldWidth.TextShort
                                               LangCode="Nr"
                                               ReadOnly="true"
                                               Value="@orgDto.Nr"
                                               ValueChanged="@((int val) => orgDto.Nr = val)"
                                               ValueExpression="() => orgDto.Nr" />
                                 
-                                <TextField Width=GC.TextFieldWidth.Short
+                                <TextField Width=GC.TextFieldWidth.TextShort
                                            LangCode="Code"
                                            MaxLength="@GC.LenCode"
                                            Value="@orgDto.Code"
                                            ValueChanged="@((string val) => orgDto.Code = val)"
                                            ValueExpression="() => orgDto.Code" />
 
-                                <TextField Width=GC.TextFieldWidth.Medium
+                                <TextField Width=GC.TextFieldWidth.TextMedium
                                            LangCode="Desc"
                                            MaxLength="@GC.LenDescription"
                                            Value="@orgDto.Description"
                                            ValueChanged="@((string val) => orgDto.Description = val)"
                                            ValueExpression="() => orgDto.Description" />
 
-                                <CheckboxField Width=GC.TextFieldWidth.Short
+                                <CheckboxField Width=GC.TextFieldWidth.TextShort
                                                LangCode="Active"
                                                Value="@orgDto.IsActive"
                                                ValueChanged="@((bool val) => orgDto.IsActive = val)"
@@ -96,14 +96,14 @@
                         </TitleContent>
                         <ChildContent>
                             <div style="display: flex; flex-wrap: wrap; gap: 20px;">
-                                <TextField Width=GC.TextFieldWidth.Short
+                                <TextField Width=GC.TextFieldWidth.TextShort
                                            LangCode="LangCode"
                                            MaxLength="@GC.LenLangCode"
                                            Value="@orgDto.LangCode"
                                            ValueChanged="@((string val) => orgDto.LangCode = val)"
                                            ValueExpression="() => orgDto.LangCode"/>
                                 
-                                <NumericNullField Width=GC.TextFieldWidth.Short
+                                <NumericNullField Width=GC.TextFieldWidth.TextShort
                                             LangCode="LangCodeV"
                                             Value="@orgDto.LangLabelVariant"
                                             ValueChanged="@((int? val) => orgDto.LangLabelVariant = val ?? 0)"
@@ -142,13 +142,13 @@
                         </TitleContent>
                         <ChildContent>
                             <div style="display: flex; flex-wrap: wrap; gap: 20px;">
-                                <NumericField Width=GC.TextFieldWidth.Short
+                                <NumericField Width=GC.TextFieldWidth.TextShort
                                               LangCode="LenMin"
                                               Value="@orgDto.PasswordRule.MinLength"
                                               ValueChanged="@((int val) => orgDto.PasswordRule.MinLength = val)"
                                               ValueExpression="() => orgDto.PasswordRule.MinLength" />
 
-                                <NumericField Width=GC.TextFieldWidth.Short
+                                <NumericField Width=GC.TextFieldWidth.TextShort
                                               LangCode="LenMax"
                                               Value="@orgDto.PasswordRule.MaxLength"
                                               ValueChanged="@((int val) => orgDto.PasswordRule.MaxLength = val)"

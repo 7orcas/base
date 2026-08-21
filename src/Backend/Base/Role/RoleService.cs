@@ -1,4 +1,5 @@
 ﻿using Common.Validator;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.IdentityModel.Tokens;
 using Npgsql;
 using System.Data;
@@ -26,13 +27,23 @@ namespace Backend.Base.Role
         }
 
         /// <summary>
-        /// Return a user's Roles
+        /// Return a user's specific roles
         /// </summary>
         /// <param name="session"></param>
         /// <returns></returns>
-        public async Task<List<UserAccountRoleEnt>> GetUserRoles(SessionEnt session)
+        public async Task<List<RoleUserAccountEnt>> GetUserRoles(SessionEnt session)
         {
-            var list = new List<UserAccountRoleEnt>();
+            return await GetUserRoles(session.Org.Nr, session.UserAccount.Id);
+        }
+
+        /// <summary>
+        /// Return a user's specific roles
+        /// </summary>
+        /// <param name="orgNr"></param>
+        /// <returns></returns>
+        public async Task<List<RoleUserAccountEnt>> GetUserRoles(int orgNr, long userAccountId)
+        {
+            var list = new List<RoleUserAccountEnt>();
             try
             {
                 var sql = "SELECT r.id, r.code, r.descr, r.orgNr, zr.updated, zr.isActive " +
@@ -44,7 +55,7 @@ namespace Backend.Base.Role
 
                 await Sql.Run(sql + "AND r.orgNr = @orgNr" + by,
                     r => {
-                        list.Add(new UserAccountRoleEnt() {
+                        list.Add(new RoleUserAccountEnt() {
                             RoleId = GetId(r),
                             Code = GetCode(r),
                             Description = GetDescription(r),
@@ -53,13 +64,13 @@ namespace Backend.Base.Role
                             IsActive = IsActive(r),
                         });
                     },
-                    new NpgsqlParameter("@userId", session.UserAccount.Id),
-                    new NpgsqlParameter("@orgNr", session.Org.Nr)
+                    new NpgsqlParameter("@userId", userAccountId),
+                    new NpgsqlParameter("@orgNr", orgNr)
                 );
 
                 await Sql.Run(sql + "AND r.orgNr = " + GC.BaseOrgNr + by,
                     r => {
-                        list.Add(new UserAccountRoleEnt()
+                        list.Add(new RoleUserAccountEnt()
                         {
                             RoleId = GetId(r),
                             Code = GetCode(r),
@@ -69,7 +80,7 @@ namespace Backend.Base.Role
                             IsActive = IsActive(r),
                         });
                     },
-                    new NpgsqlParameter("@userId", session.UserAccount.Id)
+                    new NpgsqlParameter("@userId", userAccountId)
                 );
 
                 return list.OrderBy(r => r.Code).ToList();
@@ -77,7 +88,7 @@ namespace Backend.Base.Role
             catch
             {
                 //ToDo Logme
-                return new List<UserAccountRoleEnt>();
+                return new List<RoleUserAccountEnt>();
             }
         }
 
@@ -88,6 +99,17 @@ namespace Backend.Base.Role
         /// <returns></returns>
         public async Task<List<RoleEnt>> GetRoles(SessionEnt session)
         {
+            return await GetRoles(session.Org.Nr);
+        }
+
+
+        /// <summary>
+        /// Return all Roles for the org and base org (nr=0)
+        /// </summary>
+        /// <param name="orgNr"></param>
+        /// <returns></returns>
+        public async Task<List<RoleEnt>> GetRoles(int orgNr)
+        {
             var list = new List<RoleEnt>();
             try
             {
@@ -96,7 +118,7 @@ namespace Backend.Base.Role
 
                 await Sql.Run(sql + "WHERE r.orgNr = @orgNr" + by,
                     r =>  list.Add(GetBaseEntity<RoleEnt>(r)),
-                    new NpgsqlParameter("@orgNr", session.Org.Nr)
+                    new NpgsqlParameter("@orgNr", orgNr)
                 );
 
                 await Sql.Run(sql + "WHERE r.orgNr = " + GC.BaseOrgNr + by,

@@ -8,7 +8,7 @@
               @ref="_textField"
               Label="@label"
               MaxLength="@MaxLength"
-              ReadOnly="@ReadOnly"
+              ReadOnly="@IsReadOnly"
               Immediate="@Immediate"
               Value="@Value"
               ValueChanged="@ValueChanged"
@@ -17,16 +17,19 @@
 
 @code {
     [Parameter] public string LangCode { get; set; }
-    [Parameter] public GC.TextFieldWidth Width { get; set; } = GC.TextFieldWidth.Medium;
+    [Parameter] public GC.TextFieldWidth Width { get; set; } = GC.TextFieldWidth.TextMedium;
     [Parameter] public int MaxLength { get; set; } = 20;
     [Parameter] public bool ReadOnly { get; set; } = false;
     [Parameter] public bool Immediate { get; set; } = false;
     [Parameter] public string Value { get; set; }
     [Parameter] public EventCallback<string> ValueChanged { get; set; }
     [Parameter] public Expression<Func<string>> ValueExpression { get; set; }
+    [Parameter] public FormStatus? FormStatus { get; set; }
     
     private string label = "loading..";
     protected override void OnInitialized() => label = GetLabel(LangCode);
+
+    private bool IsReadOnly => ReadOnly ? true : (!FormStatus?.IsEditMode ?? false);
 
     private MudTextField<string>? _textField;
     public Task FocusAsync()

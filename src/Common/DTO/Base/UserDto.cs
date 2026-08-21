@@ -9,6 +9,7 @@ namespace Common.DTO.Base
     public class UserDto : _BaseDto
     {
         public string Username { get; set; }
+        public string Email { get; set; }
         public bool IsEmailVerified { get; set; }
         public string LangCode { get; set; }
         public int Attempts { get; set; }
@@ -28,16 +29,23 @@ namespace Common.DTO.Base
             public bool IsAdminUser { get; set; }
             public bool IsAdminLang { get; set; }
             public List<UserAccountRoleDto>? Roles { get; set; }
+            public List<UserAccountPermissionDto>? Permissions { get; set; }
         }
 
         public class UserAccountRoleDto : _BaseDto
         {
             public long RoleId { get; set; }
             public string Role { get; set; }
+            public bool IsRoleActive { get; set; }
 
         }
 
-
+        public class UserAccountPermissionDto 
+        {
+            public int PermissionNr { get; set; }
+            public string Code { get; set; }
+            public string Crud { get; set; }
+        }
 
     }
 }

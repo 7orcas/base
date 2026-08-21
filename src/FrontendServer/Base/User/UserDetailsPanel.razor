@@ -19,32 +19,36 @@
                     <MudExpansionPanels MultiExpansion="true">
                         <MudExpansionPanel Text=@GetLabel("ConfigG") Expanded="true">
                             <TitleContent>
-                                <Label Size="GC.TextSize.Normal" Key="ConfigG"></Label>
-                                <div class="d-flex">
+                                <div class="expansion-title">
+                                    <Label Size="GC.TextSize.Normal" Key="ConfigG"></Label>
                                 </div>
                             </TitleContent>
                             <ChildContent>
                                 <div style="display: flex; flex-wrap: wrap; gap: 20px;">
 
-                                    <TextField Width=GC.TextFieldWidth.Medium
-                                        LangCode="UserName"
-                                        ReadOnly="true"
-                                        MaxLength="@GC.LenCode"
-                                        @bind-Value="dto.Username" />
+                                    <TextField Width=GC.TextFieldWidth.TextMedium
+                                                LangCode="UserName"
+                                                ReadOnly="true"
+                                                MaxLength="@GC.LenCode"
+                                                @bind-Value="dto.Username" />
 
-                                    <NumericField Width=GC.TextFieldWidth.Short
-                                        LangCode="OrgD"
-                                        FormStatus=@FormStatus
-                                        @bind-Value="dto.OrgNr" />
+                                    <TextField Width=GC.TextFieldWidth.TextMedium
+                                                LangCode="Email"
+                                                FormStatus=@FormStatus
+                                                MaxLength="@GC.LenEmail"
+                                                @bind-Value="dto.Email" />
 
-                                    <NumericField Width=GC.TextFieldWidth.Short
-                                        LangCode="LoginA"
-                                        FormStatus=@FormStatus
-                                        @bind-Value="dto.Attempts" />
+                                    <NumericField LangCode="OrgD"
+                                                FormStatus=@FormStatus
+                                                @bind-Value="dto.OrgNr" />
 
-                                    <CheckboxField Width=GC.TextFieldWidth.Short
-                                        LangCode="Active"
-                                        @bind-Value="dto.IsActive" />
+                                    <NumericField LangCode="LoginA"
+                                                FormStatus=@FormStatus
+                                                @bind-Value="dto.Attempts" />
+
+                                    <CheckboxField Width=GC.TextFieldWidth.TextShort
+                                                LangCode="Active"
+                                                @bind-Value="dto.IsActive" />
 
                                     <Version version=dto />
 
@@ -57,13 +61,14 @@
                             {
                                 <MudExpansionPanel @key="account.Id" Text=@GetLabel("UserAc") Expanded=@Expand(account, dto) Style="padding:1px;">
                                     <TitleContent>
-                                        @account.OrgCode @ExpandDefault(account, dto)
-                                        <div class="d-flex">
+                                        <div class="expansion-title">
+                                            @GetLabel("UserAc") : @account.OrgCode @ExpandDefault(account, dto)
                                         </div>
                                     </TitleContent>
                                     <ChildContent>
                                         <MudPaper Class="pa-4 mb-4" Elevation="0">
-                                            <UserAccount accountDto="account" />
+                                            <UserAccount accountDto="account"
+                                                         FormStatus="@FormStatus" />
                                         </MudPaper>
                                     </ChildContent>
                                 </MudExpansionPanel>
@@ -81,7 +86,7 @@
 
 @code {
     [Parameter] public List<ListModel<UserDto>> Selections { get; set; } = new List<ListModel<UserDto>>();
-    [Parameter] public FormStatus FormStatus { get; set; } = new();
+    [Parameter] public FormStatus? FormStatus { get; set; }
 
     private bool Expand(UserDto.UserAccountDto account, UserDto user)
     {

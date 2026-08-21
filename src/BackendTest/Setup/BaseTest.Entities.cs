@@ -192,13 +192,13 @@ namespace BackendTest.Setup
             return list;
         }
 
-        public List<UserAccountRoleEnt> GetUserRoles()
+        public List<RoleUserAccountEnt> GetUserRoles()
         {
-            return new List<UserAccountRoleEnt>
+            return new List<RoleUserAccountEnt>
             {
-                new UserAccountRoleEnt { Id = 1, RoleId = 1, Code = ROLE_1 , UserAccountId = USER_ACCOUNT_ID_1 , orgNr = ORG_NR},
-                new UserAccountRoleEnt { Id = 2, RoleId = 2, Code = ROLE_2 , UserAccountId = USER_ACCOUNT_ID_1 , orgNr = ORG_NR },
-                new UserAccountRoleEnt { Id = 3, RoleId = 3, Code = ROLE_3 , UserAccountId = USER_ACCOUNT_ID_1 , orgNr = ORG_NR }
+                new RoleUserAccountEnt { Id = 1, RoleId = 1, Code = ROLE_1 , UserAccountId = USER_ACCOUNT_ID_1 , orgNr = ORG_NR},
+                new RoleUserAccountEnt { Id = 2, RoleId = 2, Code = ROLE_2 , UserAccountId = USER_ACCOUNT_ID_1 , orgNr = ORG_NR },
+                new RoleUserAccountEnt { Id = 3, RoleId = 3, Code = ROLE_3 , UserAccountId = USER_ACCOUNT_ID_1 , orgNr = ORG_NR }
             };
         }
 

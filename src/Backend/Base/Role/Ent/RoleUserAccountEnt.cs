@@ -10,7 +10,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Backend.Base.Role.Ent
 {
-    public class UserAccountRoleEnt 
+    public class RoleUserAccountEnt 
     {
         public long Id { get; set; }
         public long RoleId { set; get; }

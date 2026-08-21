@@ -12,8 +12,10 @@
         string s = width switch
         {
             GC.TextFieldWidth.Ignore => "",
-            GC.TextFieldWidth.Short => "width: 200px;",
-            GC.TextFieldWidth.Long => "width: 800px;",
+            GC.TextFieldWidth.TextShort => "width: 200px;",
+            GC.TextFieldWidth.TextMedium => "width: 400px;",
+            GC.TextFieldWidth.TextLong => "width: 600px;",
+            GC.TextFieldWidth.Int => "width: 100px;",
             _ => "width: 500px;"
         };
 

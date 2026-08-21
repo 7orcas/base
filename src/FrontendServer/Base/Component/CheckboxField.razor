@@ -6,6 +6,7 @@
 
 <MudCheckBox Style="@GetStyle(@Width)"
              Label="@label"
+             ReadOnly="@IsReadOnly"
              Value="@Value"
              ValueChanged="@ValueChanged"
              ValueExpression="@ValueExpression"
@@ -13,11 +14,15 @@
 
 @code {
     [Parameter] public string LangCode { get; set; }
-    [Parameter] public GC.TextFieldWidth Width { get; set; } = GC.TextFieldWidth.Medium;
+    [Parameter] public GC.TextFieldWidth Width { get; set; } = GC.TextFieldWidth.TextShort;
     [Parameter] public bool Value { get; set; }
+    [Parameter] public bool ReadOnly { get; set; } = false;
     [Parameter] public EventCallback<bool> ValueChanged { get; set; }
     [Parameter] public Expression<Func<bool>> ValueExpression { get; set; }
+    [Parameter] public FormStatus? FormStatus { get; set; }
 
     private string label = loading;
     protected override void OnInitialized() => label = GetLabel(LangCode);
+
+    private bool IsReadOnly => ReadOnly ? true : (!FormStatus?.IsEditMode ?? false);
 }

@@ -41,7 +41,7 @@ namespace Backend.Base.User
             var list = new List<UserDto>();
 
             foreach (var user in users)
-                list.Add(await _userService.PopulateAsList(user));
+                list.Add(await _userService.PopulateList(user));
             
             var r = new _ResponseDto
             {
@@ -67,6 +67,7 @@ namespace Backend.Base.User
                 return NotFound();
             }
 
+            var session = HttpContext.Items["session"] as SessionEnt;
             var userDto = await _userService.Populate(user);
             var r = new _ResponseDto
             {

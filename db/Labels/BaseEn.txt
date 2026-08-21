@@ -26,6 +26,7 @@ OrgD,Default Organisation
 Orgs-s,Orgs
 OrgNr,Org Nr
 OrgSub,Configuration of Organisation
+OrgAc,Active in Org
 Conf,Configuration
 ConfSub,User Configuration
 ChgPw,Change Password
@@ -93,6 +94,7 @@ Role,Role
 Roles,Roles
 RoleSub,Roles contain permissions. Permissions are cumulative|| i.e.|| they combine to give the user the maximum authorisation.
 RoleA,Add New Role
+RoleAc,Role Active
 RoleEN,Edit Role Names
 MachSub,Machine record
 NAuth,Not Authorised

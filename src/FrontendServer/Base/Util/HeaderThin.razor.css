@@ -5,6 +5,7 @@
 }
 
 .page-title {
+    margin-left:10px;
     flex: 0 0 auto;
 }
 
@@ -35,6 +36,7 @@
     font-weight: 700;
     font-size: 2.2rem;
     color: #1f5fbf;
+    text-decoration: underline;
 }
 
 .title-light {

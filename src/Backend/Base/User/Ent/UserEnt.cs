@@ -14,6 +14,7 @@ namespace Backend.Base.User.Ent
     {
         public long Id { get; set; }
         public string Username { get; set; }
+        public string Email { get; set; }
         public bool IsEmailVerified { get; set; }
         public int OrgNrDefault { get; set; }
         public string LangCode { get; set; }

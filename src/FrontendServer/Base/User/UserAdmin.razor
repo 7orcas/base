@@ -43,7 +43,7 @@
             <MudItem xs="10" Style="height:100%; display:flex; flex-direction:column; min-height:0;">
                 <MudPaper Elevation="0" Outlined="false" Style="flex:1; min-height:0; overflow:auto; padding-right:20px;">
                     <UserDetailsPanel Selections="list" 
-                                      FormStatus=@formStatus />
+                                      FormStatus="@formStatus" />
                 </MudPaper>
             </MudItem>
 
@@ -68,43 +68,20 @@
     {
         if (firstRender)
         {
-            var attr1 = GetType()
-                        .GetCustomAttributes(typeof(PagePermissionAttribute), true)
-                        .Cast<PagePermissionAttribute>()
-                        .FirstOrDefault();
+            InitialiseBasePage();
 
-            await InitialiseBasePage(attr1.Code);
-
-            var attr2 = GetType()
-                        .GetCustomAttributes(typeof(PageCodeAttribute), true)
-                        .Cast<PageCodeAttribute>()
-                        .FirstOrDefault();
-            _pageCode = attr2?.Code;
-
-            //  await Load();
-
-            AddToolbarSave(SaveAsync);
-
+            //Add standard toolbar
             formStatus.LS = GetLabelService();
+            AddToolbarSearch(Search);
             if (_isCrudU)
-                toolBarButtonsLeft.Add(new ToolBarButton
-                {
-                    GetLabel = formStatus.GetEditModeLabel,
-                    Action = EditRecord
-                });
-
+                AddToolbarEdit(EditRecord, formStatus.GetEditModeLabel);
             if (_isCrudC)
-                toolBarButtonsLeft.Add(new ToolBarButton
-                {
-                    LangKey = "AddN",
-                    Action = AddRecord
-                });
+                AddToolbarAddNew(AddRecord);
 
-            toolBarButtonsLeft.Add(new ToolBarButton
-            {
-                LangKey = "Search",
-                Action = Search
-            });
+            AddToolbarExport(Export);
+
+            if (_isCrudU || _isCrudC)
+                AddToolbarSave(SaveAsync);
 
             Search();
             StateHasChanged();
@@ -113,32 +90,13 @@
 
     private async Task Search()
     {
-        var options = new DialogOptions
-        {
-            CloseOnEscapeKey = false,
-            BackdropClick = false
-        };
-
-
-        var dialog = await DialogService.ShowAsync<UserSearchDialog>("", options);
-        var result = await dialog.Result;
-
+        var result = await Search<UserSearchDialog>();
         if (!result.Canceled)
         {
             var data = (UserSearch)result.Data;
-
-            // var search = new UserSearch
-            // {
-            //     Username = data.Username,
-            //     Email = data.Email
-            // };
-
             await Load(data);
         }
-        
     }
-
-
 
 
     private async Task Load(UserSearch search)
@@ -246,11 +204,9 @@ if (list.Count > 2) Load(list[2]);
     }
 
     //ToDo
-    private async void Export()
+    private async Task Export()
     {
 
     }
-
-    //protected override async Task OnInitializedAsync() => loadStatus.SetLoading();
 
 }

@@ -8,6 +8,7 @@ public class UserConfig : IEntityTypeConfiguration<UserEnt>
         entity.ToTable("zzz", "base");
         entity.Property(e => e.Id).HasColumnName("id");
         entity.Property(e => e.Username).HasColumnName("xxx");
+        entity.Property(e => e.Email).HasColumnName("email");
         entity.Property(e => e.Encoded).HasColumnName("encoded");
         entity.Property(e => e.Updated).HasColumnName("updated");
         entity.Property(e => e.IsActive).HasColumnName("isactive");

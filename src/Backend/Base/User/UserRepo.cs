@@ -53,6 +53,7 @@ namespace Backend.Base.User
             {
                 return await _context.Users
                     .Include(u => u.Accounts)
+                    .ThenInclude(a => a.Roles)
                     .FirstOrDefaultAsync(x => x.Id == id);
 
             }
@@ -73,6 +74,7 @@ namespace Backend.Base.User
             }
             existingUser.Encode();
             existingUser.Username = user.Username;
+            existingUser.Email = user.Email;
             existingUser.OrgNrDefault = user.OrgNr;
             existingUser.Attempts = user.Attempts;
 
@@ -85,7 +87,7 @@ namespace Backend.Base.User
                 if (existingAccount != null)
                 {
                     // Update existing account
-                    existingAccount.LastLogin = accountDto.LastLogin;
+                    //existingAccount.LastLogin = accountDto.LastLogin; Don't do this
                     existingAccount.Classification = accountDto.Classification;
                     existingAccount.IsAdminUser = accountDto.IsAdminUser;
                     existingAccount.IsAdminLang = accountDto.IsAdminLang;
@@ -117,7 +119,7 @@ namespace Backend.Base.User
                     {
                         UserId = user.Id,
                         OrgNr = accountDto.OrgNr,
-                        LastLogin = accountDto.LastLogin,
+                        //LastLogin = accountDto.LastLogin,
                         Classification = accountDto.Classification,
                         IsAdminUser = accountDto.IsAdminUser,
                         IsAdminLang = accountDto.IsAdminLang,

@@ -1,8 +1,11 @@
-﻿using DocumentFormat.OpenXml.Wordprocessing;
+﻿using DocumentFormat.OpenXml.Office2016.Excel;
+using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.Extensions.Caching.Memory;
 using Npgsql;
 using Org.BouncyCastle.Asn1.Ocsp;
 using Superpower.Model;
+using System.Runtime.ConstrainedExecution;
 using GC = Backend.GlobalConstants;
 
 /// <summary>
@@ -19,16 +22,25 @@ namespace Backend.Base.User
     {
         private readonly LabelServiceI _labelService;
         private readonly OrgServiceI _orgService;
+        private readonly RoleServiceI _roleService;
+        private readonly PermissionServiceI _permissionService;
+        private readonly PermissionInitialiseServiceI _permissionInitialiseService;
         private readonly UserRepoI _userRepo;
 
         public UserService(IServiceProvider serviceProvider,
             LabelServiceI labelService,
             OrgServiceI orgService,
+            RoleServiceI roleService,
+            PermissionServiceI permissionService,
+            PermissionInitialiseServiceI permissionInitialiseService,
             UserRepoI userRepo) 
             : base(serviceProvider) 
         {
             _labelService = labelService;
             _orgService = orgService;
+            _roleService = roleService;
+            _permissionService = permissionService;
+            _permissionInitialiseService = permissionInitialiseService;
             _userRepo = userRepo;
         }
 
@@ -47,7 +59,7 @@ namespace Backend.Base.User
             return await _userRepo.Update(user);
         }
 
-        public async Task<UserDto> PopulateAsList(UserEnt user)
+        public async Task<UserDto> PopulateList(UserEnt user)
         {
 
             UserDto userDto = new UserDto()
@@ -64,11 +76,14 @@ namespace Backend.Base.User
 
         public async Task<UserDto> Populate(UserEnt user)
         {
+            var org = await _orgService.GetOrg(user.OrgNrDefault);
+            var labels = await _labelService.GetLangCodeDic(user.LangCode, org.LangLabelVariant);
 
             UserDto userDto = new UserDto()
             {
                 Id = user.Id,
                 Username = user.Username,
+                Email = user.Email,
                 IsEmailVerified = user.IsEmailVerified,
                 OrgNr = user.OrgNrDefault,
                 LangCode = user.LangCode,
@@ -87,16 +102,20 @@ namespace Backend.Base.User
             if (user.Accounts == null) return userDto;
 
             foreach (var a in user.Accounts)
-                userDto.Accounts.Add(await Populate(a));
+                userDto.Accounts.Add(await Populate(a, labels));
 
             return userDto;
         }
 
-        public async Task<UserDto.UserAccountDto> Populate(UserAccountEnt account)
+        private async Task<UserDto.UserAccountDto> Populate(UserAccountEnt account, Dictionary<string, string> labels)
         {
             var org = await _orgService.GetOrg(account.OrgNr);
+            var roles = await _roleService.GetRoles(org.Nr);
+            var rolesById = roles.ToDictionary(r => r.Id);
+            var perms = await _permissionService.LoadEffectivePermissionsInt(account.UserId, org.Nr);
+            var permDic = _permissionInitialiseService.GetPermissions();
 
-            UserDto.UserAccountDto userAccountDto = new UserDto.UserAccountDto()
+            UserDto.UserAccountDto accountDto = new UserDto.UserAccountDto()
             {
                 Id = account.Id,
                 UserId = account.UserId,
@@ -108,12 +127,74 @@ namespace Backend.Base.User
                 Classification = account.Classification,
                 LastLogin = account.LastLogin,
                 Updated = account.Updated,
-                Version = account.Version
+                Version = account.Version,
+                Roles = new List<UserDto.UserAccountRoleDto>(),
+                Permissions = new List<UserDto.UserAccountPermissionDto>()
             };
 
-            return userAccountDto;
+            foreach (var a in account.Roles)
+                accountDto.Roles.Add(await Populate(a));
+
+            //update role info and add in all other roles for the org that the user does not have assigned
+            foreach (var role in roles)
+            {
+                var r = accountDto.Roles.Find(r => r.RoleId == role.Id);
+
+                if (r != null)
+                {
+                    r.Code = role.Code;
+                    r.Description = role.Description;
+                    r.IsRoleActive = role.IsActive;
+                }
+                else
+                {
+                    accountDto.Roles.Add(new UserDto.UserAccountRoleDto
+                    {
+                        RoleId = role.Id,
+                        Code = role.Code,
+                        Description = role.Description,
+                        IsRoleActive = role.IsActive
+                    });
+                }
+            }
+
+            //Remove any roles that are not in the org or the base org
+            accountDto.Roles = accountDto.Roles.Where(r => r.Code != null).ToList();
+            accountDto.Roles.Sort((x, y) => x.Code.CompareTo(y.Code));
+
+            foreach (var perm in perms)
+            {
+                var lk = "?";
+                if (permDic.ContainsKey(perm.Nr))
+                {
+                    lk = (permDic[perm.Nr]).LangKey;
+                    lk = GetLabel(lk, labels);
+                }
+
+                accountDto.Permissions.Add(new UserDto.UserAccountPermissionDto
+                {
+                    PermissionNr = perm.Nr,
+                    Code = lk,
+                    Crud = perm.Crud
+                });
+            }
+
+            return accountDto;
         }
 
+        private async Task<UserDto.UserAccountRoleDto> Populate(UserAccountRoleEnt role)
+        {
+            UserDto.UserAccountRoleDto roleDto = new UserDto.UserAccountRoleDto()
+            {
+                Id = role.Id,
+                RoleId = role.RoleId,
+                IsActive = role.IsActive,
+                Updated = role.Updated,
+                Version = role.Version
+            };
+
+            return roleDto;
+        }
 
 
 

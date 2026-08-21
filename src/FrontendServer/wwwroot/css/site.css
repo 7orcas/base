@@ -229,3 +229,7 @@ a, .btn-link {
     flex-wrap: nowrap !important;
     min-width: 1200px; /* adjust as needed */
 }
+
+.expansion-title {
+    text-decoration:underline;
+}

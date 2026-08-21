@@ -4,34 +4,104 @@
 @using MudBlazor
 @using GC = FrontendServer.GlobalConstants;
 
-<div style="display:flex; flex-wrap:wrap; gap:20px; align-items:center;">
+<div style="display:flex; flex-wrap:wrap; gap:20px;">
 
-    <NumericField Width=GC.TextFieldWidth.Short
-                  LangCode="OrgNr"
-                  ReadOnly="true"
-                  @bind-Value="@accountDto.OrgNr" />
+    <div class="accout-details" style="flex:0 0 100%; display:flex; flex-wrap:wrap; gap:20px; align-items:center;">
+        <NumericField LangCode="OrgNr"
+                      ReadOnly="true"
+                      @bind-Value="@accountDto.OrgNr" />
 
-    <NumericField Width=GC.TextFieldWidth.Short
-                  LangCode="Clas"
-                  @bind-Value="@accountDto.Classification" />
+        <NumericField LangCode="Clas"
+                      FormStatus=@FormStatus
+                      @bind-Value="@accountDto.Classification" />
 
-    <CheckboxField Width=GC.TextFieldWidth.Short
-                   LangCode="Active"
-                   @bind-Value="@accountDto.IsActive" />
+        <CheckboxField LangCode="Active"
+                       FormStatus=@FormStatus
+                       @bind-Value="@accountDto.IsActive" />
 
-    <CheckboxField Width=GC.TextFieldWidth.Short
-                   LangCode="AdminU"
-                   @bind-Value="@accountDto.IsAdminUser" />
+        <CheckboxField LangCode="AdminU"
+                       FormStatus=@FormStatus
+                       @bind-Value="@accountDto.IsAdminUser" />
 
-    <CheckboxField Width=GC.TextFieldWidth.Short
-                   LangCode="AdminL"
-                   @bind-Value="@accountDto.IsAdminLang" />
+        <CheckboxField LangCode="AdminL"
+                       FormStatus=@FormStatus
+                       @bind-Value="@accountDto.IsAdminLang" />
+    </div>
 
-                   <!--
-    <Version version=@accountDto />
-    -->
+    <div class="accout-roles" style="flex:1;">
+        <MudTable Style="@($"flex:1; min-height:0; table-layout:fixed; width:100%; {@GetDebugBorder("blue")}")"
+                  T="UserDto.UserAccountRoleDto"
+                  Items="@accountDto.Roles"
+                  Height="100%"
+                  FixedHeader="true"
+                  Hover="true"
+                  Bordered="true"
+                  Striped="true">
+
+
+            <ColGroup>
+                <col style="width:33%;" />
+                <col style="width:33%;" />
+                <col style="width:33%;" />
+            </ColGroup>
+            <HeaderContent>
+                <MudTh><Label Key="Role" /></MudTh>
+                <MudTh><Label Key="Active" /></MudTh>
+                <MudTh><Label Key="RoleAc" /></MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>
+                    @context.Code
+                </MudTd>
+                <MudTd>
+                    <MudCheckBox T="bool" ReadOnly="@(!IsEditActive)" @bind-Value="context.IsActive" />
+                </MudTd>
+                <MudTd>
+                    <MudCheckBox T="bool" ReadOnly="true" @bind-Value="context.IsRoleActive" />
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    </div>
+
+    <div class="accout-permissions" style="flex:1;">
+        <MudTable Style="@($"flex:1; min-height:0; table-layout:fixed; width:100%; {@GetDebugBorder("blue")}")"
+                  T="UserDto.UserAccountPermissionDto"
+                  Items="@accountDto.Permissions"
+                  Height="100%"
+                  FixedHeader="true"
+                  Hover="true"
+                  Bordered="true"
+                  Striped="true">
+
+
+            <ColGroup>
+                <col style="width:40%;" />
+                <col style="width:25%;" />
+                <col style="width:25%;" />
+            </ColGroup>
+            <HeaderContent>
+                <MudTh><Label Key="Perm" /></MudTh>
+                <MudTh><Label Key="PermNr" /></MudTh>
+                <MudTh><Label Key="Crud" /></MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>
+                    @context.Code
+                </MudTd>
+                <MudTd>
+                    @context.PermissionNr
+                </MudTd>
+                <MudTd>
+                    @context.Crud
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    </div>
 </div>
 
 @code {
     [Parameter] public UserDto.UserAccountDto accountDto { get; set; }
+    [Parameter] public FormStatus? FormStatus { get; set; }
+    
+    public bool IsEditActive => FormStatus == null ? false : FormStatus.IsEditMode;
 }

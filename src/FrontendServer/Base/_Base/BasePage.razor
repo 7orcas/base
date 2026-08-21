@@ -16,13 +16,13 @@
     [Inject] protected IJSRuntime JS { get; set; }
 
     public LoadStatus loadStatus = new LoadStatus(); //This will replace the attributes below
-//DELETE ME
-public bool _isLoading = false;
-public bool _isError = false;
-public bool _isSaving = false;
-public int? _statusCode;
-public MarkupString? _errorMessage;
-public Exception? exception;
+    //DELETE ME
+    public bool _isLoading = false;
+    public bool _isError = false;
+    public bool _isSaving = false;
+    public int? _statusCode;
+    public MarkupString? _errorMessage;
+    public Exception? exception;
 
     public bool _stateChangedToggle = false;
     public bool _isValidationError = false;
@@ -43,6 +43,23 @@ public Exception? exception;
 
     //Debugging
     public bool _debugOutlined = false;
+
+    public async Task InitialiseBasePage()
+    {
+        var pageCodeAttr = GetType()
+                    .GetCustomAttributes(typeof(PageCodeAttribute), true)
+                    .Cast<PageCodeAttribute>()
+                    .FirstOrDefault();
+        _pageCode = pageCodeAttr?.Code;
+
+        var permAttr = GetType()
+                        .GetCustomAttributes(typeof(PagePermissionAttribute), true)
+                        .Cast<PagePermissionAttribute>()
+                        .FirstOrDefault();
+
+        await InitialiseBasePage(permAttr?.Code ?? GC.PerIgnore, null);
+    }
+
 
     public async Task InitialiseBasePage(int permissionNr) => await InitialiseBasePage(permissionNr, null);
 
@@ -73,18 +90,34 @@ public Exception? exception;
         StateHasChanged();
     }
 
-    //Toolbars
-    public void AddToolbarExport(Func<Task> export) => toolBarButtonsRight.Add(new ToolBarButton 
-        { 
-            LangKey = "Export", 
-            Action = export 
-        });
+
+    public void AddToolbarEdit(Func<Task> edit, Func<string> label) => toolBarButtonsLeft.Add(new ToolBarButton
+    {
+        GetLabel = label,
+        Action = edit,
+    });
+    public void AddToolbarAddNew(Func<Task> addNew) => toolBarButtonsLeft.Add(new ToolBarButton
+    {
+        LangKey = "AddN",
+        Action = addNew
+    });
+    public void AddToolbarSearch(Func<Task> search) => toolBarButtonsLeft.Add(new ToolBarButton
+    {
+        LangKey = "Search",
+        Action = search
+    });
     public void AddToolbarSave(Func<Task> save) => toolBarButtonsRight.Add(new ToolBarButton
-        {
-            LangKey = "SaveChg",
-            Action = save,
-            Class = "toolbar-button-highlight"
-        });
+    {
+        LangKey = "SaveChg",
+        Action = save,
+        Class = "toolbar-button-highlight"
+    });
+    public void AddToolbarExport(Func<Task> export) => toolBarButtonsRight.Add(new ToolBarButton 
+    { 
+        LangKey = "Export", 
+        Action = export 
+    });
+
 
 
     //DarkMode
