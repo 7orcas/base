@@ -5,12 +5,13 @@
 @using GC = FrontendServer.GlobalConstants;
 
 <MudNumericField Style="@GetStyle(Width)"
-                    Label="@label"
-                    ReadOnly="@IsReadOnly"
-                    Value="@Value"
-                    ValueChanged="@ValueChanged"
-                    ValueExpression="@ValueExpression"
-                    Variant=@MudVariant />
+                 Class="@GetClass(@IsReadOnly)"
+                 Label="@label"
+                 ReadOnly="@IsReadOnly"
+                 Value="@Value"
+                 ValueChanged="@ValueChanged"
+                 ValueExpression="@ValueExpression"
+                 Variant=@MudVariant />
 
 @code {
     [Parameter] public string LangCode { get; set; }

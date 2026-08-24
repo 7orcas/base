@@ -5,6 +5,7 @@
 @using GC = FrontendServer.GlobalConstants;
 
 <MudTextField Style="@GetStyle(Width)"
+              Class="@GetClass(IsReadOnly)"
               @ref="_textField"
               Label="@label"
               MaxLength="@MaxLength"

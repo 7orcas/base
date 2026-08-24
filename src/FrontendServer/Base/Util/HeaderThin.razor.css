@@ -155,3 +155,11 @@
 .spacer {
     flex: 1;
 }
+
+.edit-border-dark {
+    background-color: var(--button-overlay2-dark) !important;
+}
+
+.edit-border-light {
+    background-color: var(--button-overlay2-light) !important;
+}

@@ -5,6 +5,7 @@
 @using GC = FrontendServer.GlobalConstants;
 
 <MudCheckBox Style="@GetStyle(@Width)"
+             Class="@GetClass(@IsReadOnly)"
              Label="@label"
              ReadOnly="@IsReadOnly"
              Value="@Value"

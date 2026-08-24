@@ -95,6 +95,7 @@
     {
         GetLabel = label,
         Action = edit,
+        GetClass = (FormStatus? formStatus) => formStatus?.IsEditMode ?? true ? "edit-border" : ""
     });
     public void AddToolbarAddNew(Func<Task> addNew) => toolBarButtonsLeft.Add(new ToolBarButton
     {

@@ -115,6 +115,7 @@
     [Parameter] public string TitleKey { get; set; }
     [Parameter] public string SubTitleKey { get; set; }
     [Parameter] public string PageCode { get; set; }
+    [Parameter] public FormStatus? FormStatus { get; set; }
     [Parameter] public List<ToolBarButton> ToolBarButtonsLeft { get; set; } = new();
     [Parameter] public List<ToolBarButton> ToolBarButtonsRight { get; set; } = new();
     [Parameter] public EventCallback CloseAction { get; set; } = new();
@@ -145,16 +146,23 @@
     private bool IsButtons(List<ToolBarButton> l) => l != null && l.Count > 0;
     private string GetTitleClass() => " title title" + GetLightDarkClassSuffix();
     private string GetSubTitleClass() => " subtitle subtitle" + GetLightDarkClassSuffix();
-    
+
     private string GetButtonClass(ToolBarButton b)
     {
         var clazz = " toolbar-button ";
-        
+
         if (!string.IsNullOrEmpty(b.Class))
             clazz += b.Class;
         else
             clazz += "toolbar-button"; 
 
-        return clazz += GetLightDarkClassSuffix();
+        clazz += GetLightDarkClassSuffix();
+
+        if (b.IsClassFn())
+            clazz += " "
+                + b.GetClass(FormStatus)
+                + GetLightDarkClassSuffix();
+
+        return clazz;
     }
 }

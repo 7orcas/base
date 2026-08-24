@@ -1,5 +1,6 @@
 ﻿@inject LabelService LS
 @inject ConfigService CS
+@inject ThemeService TS
 @using MudBlazor
 @using GC = FrontendServer.GlobalConstants;
 
@@ -7,13 +8,13 @@
     public static string loading = "..loading";
     public MudBlazor.Variant MudVariant = MudBlazor.Variant.Outlined;
 
-    public string GetStyle(GC.TextFieldWidth width) 
+    public string GetStyle(GC.TextFieldWidth width)
     {
         string s = width switch
         {
             GC.TextFieldWidth.Ignore => "",
             GC.TextFieldWidth.TextShort => "width: 200px;",
-            GC.TextFieldWidth.TextMedium => "width: 400px;",
+            GC.TextFieldWidth.TextMedium => "width: 400px; max-width: 400px;",
             GC.TextFieldWidth.TextLong => "width: 600px;",
             GC.TextFieldWidth.Int => "width: 100px;",
             _ => "width: 500px;"
@@ -24,7 +25,7 @@
 
         return s;
     }
-    
+
     public Typo GetTypo(GC.TextSize size) => size switch
     {
         GC.TextSize.Heading => Typo.h3,
@@ -35,6 +36,23 @@
         GC.TextSize.ButtonText => Typo.h6,
         _ => Typo.body1
     };
+
+
+    public string GetClass(bool isReadOnly)
+    {
+
+        string s = "component-";
+
+        if (isReadOnly)
+            s += "ro-";
+        else s += "ed-";
+
+        if (TS.IsDarkMode)
+            s += "dark";
+        else s += "light";
+        
+        return s;
+    }
 
     public string GetDebugBorder(string color)
     {
