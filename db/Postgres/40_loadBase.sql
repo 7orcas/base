@@ -104,8 +104,8 @@ VALUES
 -- -------------------------------------------------
 -- base.useracc
 -- -------------------------------------------------
-INSERT INTO base.useracc (id, zzzid, orgnr, isadminuser) VALUES
- (1, 1, 1, true);
+INSERT INTO base.useracc (id, zzzid, orgnr) VALUES
+ (1, 1, 1);
 INSERT INTO base.useracc (id, zzzid, orgnr) VALUES
  (11, 1, 2),
  (2, 2, 1),

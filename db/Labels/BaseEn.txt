@@ -17,6 +17,7 @@ On,On
 Off,Off
 SaveRec,Save
 SaveChg,Save Changes
+Assigned,Assigned
 Verify,Verify
 Default,Default
 Updated,Updated

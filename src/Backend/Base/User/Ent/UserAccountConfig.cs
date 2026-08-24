@@ -14,7 +14,6 @@ namespace Backend.Base.User.Ent
             entity.Property(x => x.OrgNr).HasColumnName("orgnr");
             entity.Property(e => e.Encoded).HasColumnName("encoded");
             entity.Property(x => x.IsActive).HasColumnName("isactive");
-            entity.Property(x => x.IsAdminUser).HasColumnName("isadminuser");
             entity.Property(x => x.IsAdminLang).HasColumnName("isadminlang");
             entity.Property(x => x.Classification).HasColumnName("classification");
             entity.Property(x => x.LastLogin).HasColumnName("lastlogin");

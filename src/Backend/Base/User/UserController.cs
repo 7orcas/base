@@ -78,11 +78,11 @@ namespace Backend.Base.User
         }
 
         /// <summary>
-        /// Update Org
+        /// Update User
         /// </summary>
         /// <returns></returns>
-        [CrudAtt(GC.CrudUpdate)]
-        [AuditListAtt(GC.EntityTypeOrg)]
+        [CrudAtt(GC.CrudIgnore)] //ToDo
+        [AuditListAtt(GC.EntityTypeUser)]
         [HttpPost("update")]
         public async Task<IActionResult> UpdateUser([FromBody] UserDto dto)
         {

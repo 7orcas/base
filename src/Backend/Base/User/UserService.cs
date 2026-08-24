@@ -91,6 +91,7 @@ namespace Backend.Base.User
                 AttemptsLockout = user.AttemptsLockout,
                 LastLogin = user.LastLogin,
                 IsActive = user.IsActive,
+                IsAdminUser = user.IsAdminUser,
                 IsMfaRequired = user.IsMfaRequired,
                 IsMfaEnabled = user.IsMfaEnabled,
                 MfaSecret = user.MfaSecret,
@@ -112,7 +113,7 @@ namespace Backend.Base.User
             var org = await _orgService.GetOrg(account.OrgNr);
             var roles = await _roleService.GetRoles(org.Nr);
             var rolesById = roles.ToDictionary(r => r.Id);
-            var perms = await _permissionService.LoadEffectivePermissionsInt(account.UserId, org.Nr);
+            var perms = await _permissionService.LoadEffectivePermissionsInt(account.Id, org.Nr);
             var permDic = _permissionInitialiseService.GetPermissions();
 
             UserDto.UserAccountDto accountDto = new UserDto.UserAccountDto()
@@ -122,7 +123,6 @@ namespace Backend.Base.User
                 OrgNr = account.OrgNr,
                 OrgCode = org.Code,
                 IsActive = account.IsActive,
-                IsAdminUser = account.IsAdminUser,
                 IsAdminLang = account.IsAdminLang,
                 Classification = account.Classification,
                 LastLogin = account.LastLogin,

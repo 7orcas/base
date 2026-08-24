@@ -22,6 +22,7 @@ namespace Backend.Base.User.Ent
         public DateTimeOffset? AttemptsLockout { get; set; }
         public DateTimeOffset? LastLogin { get; set; }
         public bool IsActive { get; set; }
+        public bool IsAdminUser { get; set; }
         public bool IsMfaRequired { get; set; }
         public bool IsMfaEnabled { get; set; }
         public string? MfaSecret { get; set; }

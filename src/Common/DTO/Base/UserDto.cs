@@ -15,6 +15,7 @@ namespace Common.DTO.Base
         public int Attempts { get; set; }
         public DateTimeOffset? AttemptsLockout { get; set; }
         public DateTimeOffset? LastLogin { get; set; }
+        public bool IsAdminUser { get; set; }
         public bool IsMfaRequired { get; set; }
         public bool IsMfaEnabled { get; set; }
         public string? MfaSecret { get; set; }
@@ -26,7 +27,6 @@ namespace Common.DTO.Base
             public string OrgCode { get; set; }
             public DateTimeOffset? LastLogin { get; set; }
             public int Classification { get; set; }
-            public bool IsAdminUser { get; set; }
             public bool IsAdminLang { get; set; }
             public List<UserAccountRoleDto>? Roles { get; set; }
             public List<UserAccountPermissionDto>? Permissions { get; set; }
@@ -35,7 +35,6 @@ namespace Common.DTO.Base
         public class UserAccountRoleDto : _BaseDto
         {
             public long RoleId { get; set; }
-            public string Role { get; set; }
             public bool IsRoleActive { get; set; }
 
         }

@@ -19,6 +19,7 @@ public class UserConfig : IEntityTypeConfiguration<UserEnt>
         entity.Property(e => e.Attempts).HasColumnName("attempts");
         entity.Property(e => e.AttemptsLockout).HasColumnName("attemptslockout");
         entity.Property(e => e.LastLogin).HasColumnName("lastlogin");
+        entity.Property(e => e.IsAdminUser).HasColumnName("isadminuser");
         entity.Property(e => e.IsMfaRequired).HasColumnName("ismfarequired");
         entity.Property(e => e.IsMfaEnabled).HasColumnName("ismfaenabled");
         entity.Property(e => e.MfaSecret).HasColumnName("mfasecret");

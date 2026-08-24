@@ -19,16 +19,17 @@
                        FormStatus=@FormStatus
                        @bind-Value="@accountDto.IsActive" />
 
-        <CheckboxField LangCode="AdminU"
-                       FormStatus=@FormStatus
-                       @bind-Value="@accountDto.IsAdminUser" />
-
         <CheckboxField LangCode="AdminL"
                        FormStatus=@FormStatus
                        @bind-Value="@accountDto.IsAdminLang" />
     </div>
 
     <div class="accout-roles" style="flex:1;">
+        <div class="useracc-table-title">
+            <MudText>
+                @GetLabel("Roles") :
+            </MudText>
+        </div>
         <MudTable Style="@($"flex:1; min-height:0; table-layout:fixed; width:100%; {@GetDebugBorder("blue")}")"
                   T="UserDto.UserAccountRoleDto"
                   Items="@accountDto.Roles"
@@ -40,30 +41,35 @@
 
 
             <ColGroup>
-                <col style="width:33%;" />
-                <col style="width:33%;" />
-                <col style="width:33%;" />
+                <col style="width:40%;" />
+                <col style="width:25%;" />
+                <col style="width:35%;" />
             </ColGroup>
             <HeaderContent>
                 <MudTh><Label Key="Role" /></MudTh>
                 <MudTh><Label Key="Active" /></MudTh>
-                <MudTh><Label Key="RoleAc" /></MudTh>
+                <MudTh><Label Key="Assigned" /></MudTh>
             </HeaderContent>
             <RowTemplate>
                 <MudTd>
                     @context.Code
                 </MudTd>
                 <MudTd>
-                    <MudCheckBox T="bool" ReadOnly="@(!IsEditActive)" @bind-Value="context.IsActive" />
+                    <MudCheckBox T="bool" ReadOnly="true" @bind-Value="context.IsRoleActive" />
                 </MudTd>
                 <MudTd>
-                    <MudCheckBox T="bool" ReadOnly="true" @bind-Value="context.IsRoleActive" />
+                    <MudCheckBox T="bool" ReadOnly="@(!IsEditActive)" @bind-Value="context.IsActive" />
                 </MudTd>
             </RowTemplate>
         </MudTable>
     </div>
 
     <div class="accout-permissions" style="flex:1;">
+        <div class="useracc-table-title">
+            <MudText>
+                @GetLabel("PermEff") :
+            </MudText>
+        </div>
         <MudTable Style="@($"flex:1; min-height:0; table-layout:fixed; width:100%; {@GetDebugBorder("blue")}")"
                   T="UserDto.UserAccountPermissionDto"
                   Items="@accountDto.Permissions"
@@ -75,21 +81,16 @@
 
 
             <ColGroup>
+                <col style="width:60%;" />
                 <col style="width:40%;" />
-                <col style="width:25%;" />
-                <col style="width:25%;" />
             </ColGroup>
             <HeaderContent>
                 <MudTh><Label Key="Perm" /></MudTh>
-                <MudTh><Label Key="PermNr" /></MudTh>
                 <MudTh><Label Key="Crud" /></MudTh>
             </HeaderContent>
             <RowTemplate>
                 <MudTd>
                     @context.Code
-                </MudTd>
-                <MudTd>
-                    @context.PermissionNr
                 </MudTd>
                 <MudTd>
                     @context.Crud

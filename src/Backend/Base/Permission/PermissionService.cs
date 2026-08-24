@@ -66,9 +66,10 @@ namespace Backend.Base.Permission
             {
                 var sql = "SELECT rp.permissionNr, rp.crud " +
                     "FROM base.rolePermission rp " +
-                        "INNER JOIN base.userAccRole ur ON ur.roleId = rp.roleId " +
-                        "INNER JOIN base.role r ON r.Id = rp.roleId " +
-                    "WHERE ur.userAccId = @userAccId ";
+                        "INNER JOIN base.userAccRole ur ON ur.roleId = rp.roleId AND ur.IsActive = true " +
+                        "INNER JOIN base.role r ON r.Id = rp.roleId AND r.IsActive = true " +
+                    "WHERE rp.IsActive = true " +
+                    "AND ur.userAccId = @userAccId ";
 
                 await Sql.Run(sql + "AND r.orgNr = @orgNr",
                     r =>

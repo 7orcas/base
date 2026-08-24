@@ -64,84 +64,75 @@ namespace Backend.Base.User
             }
         }
 
-        public async Task<UserEnt?> Update(UserDto user)
+        public async Task<UserEnt?> Update(UserDto userDto)
         {
-            var existingUser = await GetById(user.Id);
+            var user = await GetById(userDto.Id);
 
-            if (existingUser == null)
+            if (user == null)
             {
                 return null;
             }
-            existingUser.Encode();
-            existingUser.Username = user.Username;
-            existingUser.Email = user.Email;
-            existingUser.OrgNrDefault = user.OrgNr;
-            existingUser.Attempts = user.Attempts;
+            user.Encode();
+            user.Username = userDto.Username;
+            user.Email = userDto.Email;
+            user.OrgNrDefault = userDto.OrgNr;
+            user.Attempts = userDto.Attempts;
+            user.IsAdminUser = userDto.IsAdminUser;
 
-            existingUser.IsActive = user.IsActive;
-            VersionIncrement(existingUser);
+            user.IsActive = userDto.IsActive;
+            VersionIncrement(user);
 
-            foreach (var accountDto in user.Accounts ?? new List<UserDto.UserAccountDto>())
+            foreach (var accountDto in userDto.Accounts ?? new List<UserDto.UserAccountDto>())
             {
-                var existingAccount = existingUser.Accounts.FirstOrDefault(a => a.Id == accountDto.Id);
-                if (existingAccount != null)
-                {
-                    // Update existing account
-                    //existingAccount.LastLogin = accountDto.LastLogin; Don't do this
-                    existingAccount.Classification = accountDto.Classification;
-                    existingAccount.IsAdminUser = accountDto.IsAdminUser;
-                    existingAccount.IsAdminLang = accountDto.IsAdminLang;
-                    VersionIncrement(existingAccount);
-                    // Update roles
-                    //foreach (var roleDto in accountDto.Roles ?? new List<UserDto.UserAccountRoleDto>())
-                    //{
-                    //    var existingRole = existingAccount.Roles.FirstOrDefault(r => r.Id == roleDto.Id);
-                    //    if (existingRole != null)
-                    //    {
-                    //        existingRole.RoleId = roleDto.RoleId;
-                    //        existingRole.Role = roleDto.Role;
-                    //    }
-                    //    else
-                    //    {
-                    //        // Add new role
-                    //        existingAccount.Roles.Add(new UserAccountRoleEnt
-                    //        {
-                    //            RoleId = roleDto.RoleId,
-                    //            Role = roleDto.Role
-                    //        });
-                    //    }
-                    //}
-                }
-                else
-                {
-                    // Add new account
-                    var newAccount = new UserAccountEnt
-                    {
-                        UserId = user.Id,
-                        OrgNr = accountDto.OrgNr,
-                        //LastLogin = accountDto.LastLogin,
-                        Classification = accountDto.Classification,
-                        IsAdminUser = accountDto.IsAdminUser,
-                        IsAdminLang = accountDto.IsAdminLang,
+                var account = user.Accounts.FirstOrDefault(a => a.Id == accountDto.Id);
 
-                        //Roles = accountDto.Roles?.Select(r => new UserAccountRoleEnt
-                        //{
-                        //    RoleId = r.RoleId,
-                        //    Role = r.Role
-                        //}).ToList() ?? new List<UserAccountRoleEnt>()
+                // Add new account
+                if (account == null)
+                {
+                    account = new UserAccountEnt
+                    {
+                        User = user,
+                        UserId = userDto.Id,
+                        OrgNr = accountDto.OrgNr,
                     };
-                    VersionIncrement(newAccount);
-                    existingUser.Accounts.Add(newAccount);
+                    user.Accounts.Add(account);
+                }
+
+                // Update account
+                account.Encode();
+                account.Classification = accountDto.Classification;
+                account.IsAdminLang = accountDto.IsAdminLang;
+                account.IsActive = accountDto.IsActive;
+                VersionIncrement(account);
+
+                // Update roles
+                foreach (var accRoleDto in accountDto.Roles ?? new List<UserDto.UserAccountRoleDto>())
+                {
+                    var accRole = account.Roles.FirstOrDefault(r => r.RoleId == accRoleDto.RoleId);
+                    
+                    // Add new account role if assigned
+                    if (accRole == null && accRoleDto.IsActive)
+                    {
+                        accRole = new UserAccountRoleEnt
+                        {
+                            UserAccount = account,
+                            UserAccountId = account.Id,
+                            RoleId = accRoleDto.RoleId,
+                        };
+                        account.Roles.Add(accRole);
+                    }
+
+                    // Update account role
+                    if (accRole != null)
+                    {
+                        accRole.IsActive = accRoleDto.IsActive;
+                        VersionIncrement(accRole);
+                    }
                 }
             }
 
-            //Update all fields
-            //_context.Entry(existingUser).CurrentValues.SetValues(user);
-            // Update any other properties you want to allow changes to
-
             await _context.SaveChangesAsync();
-
-            return existingUser;
+            return user;
         }
     }
 }

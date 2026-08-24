@@ -46,6 +46,10 @@
                                                 FormStatus=@FormStatus
                                                 @bind-Value="dto.Attempts" />
 
+                                    <CheckboxField LangCode="AdminU"
+                                                FormStatus=@FormStatus
+                                                @bind-Value="@dto.IsAdminUser" />
+
                                     <CheckboxField Width=GC.TextFieldWidth.TextShort
                                                 LangCode="Active"
                                                 @bind-Value="dto.IsActive" />
