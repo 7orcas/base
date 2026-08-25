@@ -125,6 +125,8 @@ namespace Backend.Base.User
                     // Update account role
                     if (accRole != null)
                     {
+                        accRole.FromDate = accRoleDto.FromDate;
+                        accRole.ToDate = accRoleDto.ToDate;
                         accRole.IsActive = accRoleDto.IsActive;
                         VersionIncrement(accRole);
                     }

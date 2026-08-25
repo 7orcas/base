@@ -36,7 +36,8 @@ namespace Common.DTO.Base
         {
             public long RoleId { get; set; }
             public bool IsRoleActive { get; set; }
-
+            public DateTime? FromDate { get; set; }
+            public DateTime? ToDate { get; set; }
         }
 
         public class UserAccountPermissionDto 

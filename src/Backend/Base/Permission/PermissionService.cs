@@ -69,7 +69,9 @@ namespace Backend.Base.Permission
                         "INNER JOIN base.userAccRole ur ON ur.roleId = rp.roleId AND ur.IsActive = true " +
                         "INNER JOIN base.role r ON r.Id = rp.roleId AND r.IsActive = true " +
                     "WHERE rp.IsActive = true " +
-                    "AND ur.userAccId = @userAccId ";
+                    "AND ur.userAccId = @userAccId " +
+                    "AND (ur.fromDate IS NULL OR ur.fromDate <= CURRENT_DATE) " +
+                    "AND (ur.toDate IS NULL OR ur.toDate >= CURRENT_DATE)";
 
                 await Sql.Run(sql + "AND r.orgNr = @orgNr",
                     r =>

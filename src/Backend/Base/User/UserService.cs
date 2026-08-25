@@ -188,6 +188,8 @@ namespace Backend.Base.User
             {
                 Id = role.Id,
                 RoleId = role.RoleId,
+                FromDate = role.FromDate,
+                ToDate = role.ToDate,
                 IsActive = role.IsActive,
                 Updated = role.Updated,
                 Version = role.Version

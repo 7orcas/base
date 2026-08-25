@@ -210,9 +210,12 @@ VALUES
 -- -------------------------------------------------
 -- base.useraccrole
 -- -------------------------------------------------
+INSERT INTO base.useraccrole (id, useraccid, roleid, fromdate, todate)
+VALUES
+(1, 2, 1, '2026-01-01', '2026-12-31');
+
 INSERT INTO base.useraccrole (id, useraccid, roleid)
 VALUES
-(1, 2, 1),
 (2, 2, 2),
 (3, 2, 3),
 (4, 2, 4),

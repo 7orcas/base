@@ -41,14 +41,18 @@
 
 
             <ColGroup>
-                <col style="width:40%;" />
-                <col style="width:25%;" />
-                <col style="width:35%;" />
+                <col style="width:20%;" />
+                <col style="width:20%;" />
+                <col style="width:20%;" />
+                <col style="width:20%;" />
+                <col style="width:20%;" />
             </ColGroup>
             <HeaderContent>
                 <MudTh><Label Key="Role" /></MudTh>
                 <MudTh><Label Key="Active" /></MudTh>
                 <MudTh><Label Key="Assigned" /></MudTh>
+                <MudTh><Label Key="EffFrom" /></MudTh>
+                <MudTh><Label Key="EffTo" /></MudTh>
             </HeaderContent>
             <RowTemplate>
                 <MudTd>
@@ -59,6 +63,21 @@
                 </MudTd>
                 <MudTd>
                     <MudCheckBox T="bool" ReadOnly="@(!IsEditActive)" @bind-Value="context.IsActive" />
+                </MudTd>
+                <MudTd>
+                    <MudDatePicker @bind-Date="context.FromDate"
+                                   Editable="true"
+                                   Disabled="@(!IsEditActive)"
+                                   DateFormat="yyyy-MM-dd"
+                                   Clearable="true" />
+                </MudTd>
+
+                <MudTd>
+                    <MudDatePicker @bind-Date="context.ToDate"
+                                   Editable="true"
+                                   Disabled="@(!IsEditActive)"
+                                   DateFormat="yyyy-MM-dd"
+                                   Clearable="true" />
                 </MudTd>
             </RowTemplate>
         </MudTable>

@@ -17,6 +17,8 @@ namespace Backend.Base.User.Ent
         public long UserAccountId { get; set; }
         public long RoleId { get; set; }
         public bool IsActive { get; set; }
+        public DateTime? FromDate { get; set; }
+        public DateTime? ToDate { get; set; }
         public DateTimeOffset Updated { get; set; }
         public int Version { get; set; }
 

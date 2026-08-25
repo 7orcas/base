@@ -97,6 +97,8 @@ RoleSub,Roles contain permissions. Permissions are cumulative|| i.e.|| they comb
 RoleA,Add New Role
 RoleAc,Role Active
 RoleEN,Edit Role Names
+EffFrom,Effective from
+EffTo,Effective to
 MachSub,Machine record
 NAuth,Not Authorised
 NAuthX,You are not authorised to view this page
