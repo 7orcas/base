@@ -9,10 +9,10 @@
 
 <div style="height:100%; display:flex; flex-direction:column; @GetDebugBorder("yellow")">
 
-    <HeaderThin @key="_pageCode"
+    <HeaderThin @key=pageStatus.pageCode
             TitleKey="UserAdm"
-            PageCode=@_pageCode
-                FormStatus="@formStatus"
+            PageCode=@pageStatus.pageCode
+                PageStatus="@pageStatus"
             ToolBarButtonsLeft="toolBarButtonsLeft"
             ToolBarButtonsRight="toolBarButtonsRight" />
 
@@ -43,8 +43,8 @@
             <!-- Right Side Details -->
             <MudItem xs="10" Style="height:100%; display:flex; flex-direction:column; min-height:0;">
                 <MudPaper Elevation="0" Outlined="false" Style="flex:1; min-height:0; overflow:auto; padding-right:20px;">
-                    <UserDetailsPanel Selections="list" 
-                                      FormStatus="@formStatus" />
+                    <UserDetailsPanel Selections="listUtil.Selections"
+                                      pageStatus="@pageStatus" />
                 </MudPaper>
             </MudItem>
 
@@ -63,7 +63,7 @@
 @code {
     private List<ListModel<UserDto>> list = new List<ListModel<UserDto>>();
     private ListUtil<UserDto> listUtil = new ListUtil<UserDto>();
-    private FormStatus formStatus = new FormStatus();
+
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -72,16 +72,15 @@
             InitialiseBasePage();
 
             //Add standard toolbar
-            formStatus.LS = GetLabelService();
             AddToolbarSearch(Search);
-            if (_isCrudU)
-                AddToolbarEdit(EditRecord, formStatus.GetEditModeLabel);
-            if (_isCrudC)
+            if (pageStatus.isCrudU)
+                AddToolbarEdit(EditRecord, pageStatus.GetEditModeLabel);
+            if (pageStatus.isCrudC)
                 AddToolbarAddNew(AddRecord);
 
             AddToolbarExport(Export);
 
-            if (_isCrudU || _isCrudC)
+            if (pageStatus.isCrudU || pageStatus.isCrudC)
                 AddToolbarSave(SaveAsync);
 
             Search();
@@ -139,11 +138,11 @@
 
         //testing DELETE ME
         //listUtil.MaxSelections = 20;
-// if (list.Count > 1) Load(list[1]);
-// if (list.Count > 2) Load(list[2]);
+        // if (list.Count > 1) Load(list[1]);
+        // if (list.Count > 2) Load(list[2]);
 
 
-       // await Search();
+        // await Search();
     }
 
 
@@ -175,10 +174,11 @@
             var dto = list[i];
             if (dto.IsLoaded && dto.HasChanged())
             {
-
                 var response = await PostAsync<UserDto>(GC.URL_user_update, dto.dto);
 
-                if (response.StatusCode == HttpStatusCode.OK)
+                //ToDo Error checking
+
+                if (response.StatusCode == HttpStatusCode.OK && !dto.IsDelete)
                 {
                     var updatedDto = await GetAsync<UserDto>(GC.URL_user + dto.Id);
                     dto.ClearHash();
@@ -187,14 +187,25 @@
                 }
             }
         }
+
+        var listX = new List<ListModel<UserDto>>();
+        for (int i = 0; i < list.Count; i++)
+        {
+            if (!list[i].IsDelete)
+                listX.Add(list[i]);
+            else
+                listUtil.Remove(list[i]);
+        }
+        list = listX;
+
         loadStatus.ResetSaving();
         StateHasChanged();
     }
 
     private async Task EditRecord()
     {
-        if (!_isCrudU) return;
-        formStatus.ToggleEdit();
+        if (!pageStatus.isCrudU) return;
+        pageStatus.ToggleEdit();
         StateHasChanged();
         await Task.CompletedTask;
     }

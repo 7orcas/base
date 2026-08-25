@@ -1,13 +1,19 @@
 ﻿namespace FrontendServer.Base.Component
 {
-    public class FormStatus
+    public class PageStatus
     {
         public LabelService LS { get; set; }
+        public bool isCrudC = false;
+        public bool isCrudR = false;
+        public bool isCrudU = false;
+        public bool isCrudD = false;
+        public bool isCrudRO = true;
+        public string? pageCode;
 
 
         public bool IsEditMode { get; set; } = false;
         
-        public FormStatus ToggleEdit()
+        public PageStatus ToggleEdit()
         {
             IsEditMode = !IsEditMode;
             return this;

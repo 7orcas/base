@@ -1,13 +1,15 @@
-﻿@attribute [Route(BaseRoutes.OrgRoute)]
-@inherits BasePage
+﻿@inherits BasePage
+@attribute [Route(BaseRoutes.OrgRoute)]
+@attribute [PageCode(BaseRoutes.OrgPageCode)]
+@attribute [PagePermission(GC.PerOrg)]
 @attribute [Authorize]
 
 <ConfirmNavigation List="list" />
 
-<Header @key="_pageCode"
+<Header @key=pageStatus.pageCode
     TitleKey="Org" 
     SubTitleKey="OrgSub" 
-    PageCode=@_pageCode
+    PageCode=@pageStatus.pageCode
     ToolBarButtonsRight="toolBarButtonsRight" />
 
 @if (_isLoading || _isError || _isSaving)
@@ -195,8 +197,7 @@
     {
         if (firstRender)
         {
-            await InitialiseBasePage(GC.PerOrg);
-            _pageCode = BaseRoutes.OrgPageCode;
+            await InitialiseBasePage();
 
             var listX = await GetAsync<List<OrgDto>>(GC.URL_org_list);
             list = new List<ListModel<OrgDto>>();

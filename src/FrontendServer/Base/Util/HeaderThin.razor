@@ -115,7 +115,7 @@
     [Parameter] public string TitleKey { get; set; }
     [Parameter] public string SubTitleKey { get; set; }
     [Parameter] public string PageCode { get; set; }
-    [Parameter] public FormStatus? FormStatus { get; set; }
+    [Parameter] public PageStatus? PageStatus { get; set; }
     [Parameter] public List<ToolBarButton> ToolBarButtonsLeft { get; set; } = new();
     [Parameter] public List<ToolBarButton> ToolBarButtonsRight { get; set; } = new();
     [Parameter] public EventCallback CloseAction { get; set; } = new();
@@ -160,7 +160,7 @@
 
         if (b.IsClassFn())
             clazz += " "
-                + b.GetClass(FormStatus)
+                + b.GetClass(PageStatus)
                 + GetLightDarkClassSuffix();
 
         return clazz;

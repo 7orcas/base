@@ -165,6 +165,10 @@ a, .btn-link {
     font-weight: bold !important;
 }
 
+.deleted-row {
+    text-decoration: line-through;
+}
+
 .first-colum-error-light {
     color: var(--row-error-color-light) !important;
     background-color: var(--row-error-bg-light) !important;

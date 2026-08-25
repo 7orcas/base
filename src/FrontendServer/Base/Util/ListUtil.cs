@@ -6,7 +6,7 @@ namespace FrontendServer.Base.Util
     {
         public int MaxSelections { get; set; } = 2;
         public bool ShowList { get; set; } = false;
-        private List<ListModel<T>> Selections = new List<ListModel<T>>();
+        public List<ListModel<T>> Selections = new List<ListModel<T>>();
 
         public void Select(ListModel<T> model)
         {
@@ -27,6 +27,13 @@ namespace FrontendServer.Base.Util
                 model.IsSelected = true;
                 Selections.Add(model);
             }
+        }
+
+        public void Remove (ListModel<T> model)
+        {
+            var index = Selections.FindIndex(s => s.Id == model.Id);
+            if (index >= 0)
+                Selections.RemoveAt(index);
         }
     }
 }

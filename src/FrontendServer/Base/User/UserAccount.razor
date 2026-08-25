@@ -12,19 +12,19 @@
                       @bind-Value="@accountDto.OrgNr" />
 
         <NumericField LangCode="Clas"
-                      FormStatus=@FormStatus
+                      PageStatus=@pageStatus
                       @bind-Value="@accountDto.Classification" />
 
         <CheckboxField LangCode="Active"
-                       FormStatus=@FormStatus
+                       PageStatus=@pageStatus
                        @bind-Value="@accountDto.IsActive" />
 
         <CheckboxField LangCode="AdminL"
-                       FormStatus=@FormStatus
+                       PageStatus=@pageStatus
                        @bind-Value="@accountDto.IsAdminLang" />
     </div>
 
-    <div class="accout-roles" style="flex:1;">
+    <div class="accout-roles" style="flex:2;">
         <div class="useracc-table-title">
             <MudText>
                 @GetLabel("Roles") :
@@ -67,16 +67,16 @@
                 <MudTd>
                     <MudDatePicker @bind-Date="context.FromDate"
                                    Editable="true"
-                                   Disabled="@(!IsEditActive)"
-                                   DateFormat="yyyy-MM-dd"
+                                   Disabled="@(!IsEditActive || !context.IsActive)"
+                                   DateFormat=@GC.Date_Format
                                    Clearable="true" />
                 </MudTd>
 
                 <MudTd>
                     <MudDatePicker @bind-Date="context.ToDate"
                                    Editable="true"
-                                   Disabled="@(!IsEditActive)"
-                                   DateFormat="yyyy-MM-dd"
+                                   Disabled="@(!IsEditActive || !context.IsActive)"
+                                   DateFormat=@GC.Date_Format
                                    Clearable="true" />
                 </MudTd>
             </RowTemplate>
@@ -121,7 +121,7 @@
 
 @code {
     [Parameter] public UserDto.UserAccountDto accountDto { get; set; }
-    [Parameter] public FormStatus? FormStatus { get; set; }
+    [Parameter] public PageStatus? pageStatus { get; set; }
     
-    public bool IsEditActive => FormStatus == null ? false : FormStatus.IsEditMode;
+    public bool IsEditActive => pageStatus == null ? false : pageStatus.IsEditMode;
 }

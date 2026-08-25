@@ -6,7 +6,7 @@
 
 <Header TitleKey="Cfg"
         SubTitleKey="ConfSub"
-        PageCode=@_pageCode
+        PageCode=@pageStatus.pageCode
         ToolBarButtonsRight="toolBarButtonsRight" />
 
 @if (_isLoading || _isError || _isSaving)
@@ -66,7 +66,7 @@
         if (firstRender)
         {
             await InitialiseBasePage(GC.PerConfig);
-            _pageCode = BaseRoutes.ConfigPageCode;
+            pageStatus.pageCode = BaseRoutes.ConfigPageCode;
             var configDtoX = ConfigService.Config;
             configDto = new ListModel<AppConfigDto>(configDtoX);
             _isLoading = false;

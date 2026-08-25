@@ -24,14 +24,10 @@
     public MarkupString? _errorMessage;
     public Exception? exception;
 
+    public PageStatus pageStatus = new PageStatus();
+
     public bool _stateChangedToggle = false;
     public bool _isValidationError = false;
-    public bool _isCrudC = false;
-    public bool _isCrudR = false;
-    public bool _isCrudU = false;
-    public bool _isCrudD = false;
-    public bool _isCrudRO = true;
-    public string? _pageCode;
     public string? _entityLangKey;
     private string? _token;
     //public ErrorBoundary? errorBoundary;
@@ -50,7 +46,7 @@
                     .GetCustomAttributes(typeof(PageCodeAttribute), true)
                     .Cast<PageCodeAttribute>()
                     .FirstOrDefault();
-        _pageCode = pageCodeAttr?.Code;
+        pageStatus.pageCode = pageCodeAttr?.Code;
 
         var permAttr = GetType()
                         .GetCustomAttributes(typeof(PagePermissionAttribute), true)
@@ -81,6 +77,8 @@
 
         if (permissionNr != GC.PerIgnore)
             SetCrud(permissionNr);
+
+        pageStatus.LS = GetLabelService();
     }
 
     //Force an update
@@ -95,12 +93,17 @@
     {
         GetLabel = label,
         Action = edit,
-        GetClass = (FormStatus? formStatus) => formStatus?.IsEditMode ?? true ? "edit-border" : ""
+        GetClass = (PageStatus? pageStatus) => pageStatus?.IsEditMode ?? true ? "edit-border" : ""
     });
     public void AddToolbarAddNew(Func<Task> addNew) => toolBarButtonsLeft.Add(new ToolBarButton
     {
         LangKey = "AddN",
         Action = addNew
+    });
+    public void AddToolbarDelete(Func<Task> delete) => toolBarButtonsLeft.Add(new ToolBarButton
+    {
+        LangKey = "Delete",
+        Action = delete
     });
     public void AddToolbarSearch(Func<Task> search) => toolBarButtonsLeft.Add(new ToolBarButton
     {
@@ -131,22 +134,22 @@
     {
         if (ConfS.Config.User.IsService)
         {
-            _isCrudC = _isCrudR = _isCrudU = _isCrudD = true;
-            _isCrudRO = false;
+            pageStatus.isCrudC = pageStatus.isCrudR = pageStatus.isCrudU = pageStatus.isCrudD = true;
+            pageStatus.isCrudRO = false;
             return;
         }
 
-        _isCrudRO = true;
+        pageStatus.isCrudRO = true;
 
         var p = PermS.GetPermission(permissionNr);
         if (p == null || 
             string.IsNullOrEmpty(p.Crud)) return;
 
-        _isCrudC = p.Crud.Contains(GC.CrudCreate);
-        _isCrudR = p.Crud.Contains(GC.CrudRead);
-        _isCrudU = p.Crud.Contains(GC.CrudUpdate);
-        _isCrudD = p.Crud.Contains(GC.CrudDelete);
-        _isCrudRO = !_isCrudC && !_isCrudU && !_isCrudD;
+        pageStatus.isCrudC = p.Crud.Contains(GC.CrudCreate);
+        pageStatus.isCrudR = p.Crud.Contains(GC.CrudRead);
+        pageStatus.isCrudU = p.Crud.Contains(GC.CrudUpdate);
+      //  pageStatus.isCrudD = p.Crud.Contains(GC.CrudDelete);
+        pageStatus.isCrudRO = !pageStatus.isCrudC && !pageStatus.isCrudU && !pageStatus.isCrudD;
     }
 
 
@@ -177,9 +180,10 @@
     {
         return isSelected ? "*" : "";
     }
-    public string GetListSelectRowClass(bool isSelected)
+    public string GetListRowClass<T>(ListModel<T> model) where T : _BaseDto
     {
-        return isSelected ? " selected-row" : "";
+        return (model.IsSelected ? " selected-row" : "") + 
+               (model.IsDelete ? " deleted-row" : "");
     }
 
     public string GetListSelectRowPointer<T>(ListModel<T> model, List<ListModel<T>> selections) where T : _BaseDto

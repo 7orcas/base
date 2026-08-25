@@ -72,7 +72,7 @@ else
                             </MudTd>
                             <MudTd DataLabel="Active">
                                 <MudCheckBox T="bool"
-                                             ReadOnly="@(!_isCrudU)"
+                                             ReadOnly="@(!pageStatus.isCrudU)"
                                              @bind-Value="context.IsActive"/>
                             </MudTd>
                         </RowTemplate>
@@ -104,7 +104,7 @@ else
                                                               @bind-Value="@selections[index].Code"
                                                               Label="@GetLabel("Role")"
                                                               Immediate="true"
-                                                              ReadOnly="@(!_isCrudU || @selections[index].IsNew())"
+                                                              ReadOnly="@(!pageStatus.isCrudU || @selections[index].IsNew())"
                                                               MaxLength="@GC.LenCode"
                                                               Margin="Margin.Dense"
                                                               Variant="Variant.Text" />
@@ -113,7 +113,7 @@ else
                                                               @bind-Value="@selections[index].Description"
                                                               Immediate="true"
                                                               Label="@GetLabel("Desc")"
-                                                              ReadOnly="@(!_isCrudU || @selections[index].IsNew())"
+                                                              ReadOnly="@(!pageStatus.isCrudU || @selections[index].IsNew())"
                                                               MaxLength="@GC.LenDescription"
                                                               Margin="Margin.Dense"
                                                               Variant="Variant.Text" />
@@ -121,12 +121,12 @@ else
                                                 <div class="d-flex gap-4 mt-2">
                                                     <MudCheckBox T="bool"
                                                                  Label="@GetLabel("Active")"
-                                                                 ReadOnly="@(!_isCrudU)"
+                                                                 ReadOnly="@(!pageStatus.isCrudU)"
                                                                  @bind-Value="@selections[index].IsActive" />
 
                                                     <MudCheckBox T="bool"
                                                                  Label="@GetLabel("Delete")"
-                                                                 ReadOnly="@(!_isCrudU)"
+                                                                 ReadOnly="@(!pageStatus.isCrudU)"
                                                                  @bind-Value="@selections[index].IsDelete" />
                                                 </div>
                                             </MudPaper>
@@ -160,28 +160,28 @@ else
                                                              Style="@styleCB"
                                                              Value="@IsCrud(matching, GC.CrudCreate)"
                                                              ValueChanged="@(v => SetCrud(matching, GC.CrudCreate, v))"
-                                                             ReadOnly="@(!_isCrudU)" />
+                                                             ReadOnly="@(!pageStatus.isCrudU)" />
                                             </td>
                                             <td class="mud-table-cell">
                                                 <MudCheckBox T="bool"
                                                              Style="@styleCB"
                                                              Value="@IsCrud(matching, GC.CrudRead)"
                                                              ValueChanged="@(v => SetCrud(matching, GC.CrudRead, v))"
-                                                             ReadOnly="@(!_isCrudU)" />
+                                                             ReadOnly="@(!pageStatus.isCrudU)" />
                                             </td>
                                             <td class="mud-table-cell">
                                                 <MudCheckBox T="bool"
                                                              Style="@styleCB"
                                                              Value="@IsCrud(matching, GC.CrudUpdate)"
                                                              ValueChanged="@(v => SetCrud(matching, GC.CrudUpdate, v))"
-                                                             ReadOnly="@(!_isCrudU)" />
+                                                             ReadOnly="@(!pageStatus.isCrudU)" />
                                             </td>
                                             <td class="mud-table-cell">
                                                 <MudCheckBox T="bool"
                                                              Style="@styleCB"
                                                              Value="@IsCrud(matching, GC.CrudDelete)"
                                                              ValueChanged="@(v => SetCrud(matching, GC.CrudDelete, v))"
-                                                             ReadOnly="@(!_isCrudU)" />
+                                                             ReadOnly="@(!pageStatus.isCrudU)" />
                                             </td>
 
                                         }
@@ -224,19 +224,19 @@ else
         if (firstRender)
         {
             await InitialiseBasePage(GC.PerRole, "Role");
-            _pageCode = BaseRoutes.OrgPageCode;
+            pageStatus.pageCode = BaseRoutes.OrgPageCode;
 
             await Load();
             permissions = await GetAsync<List<PermissionDto>>(GC.URL_perm_list);
 
             showList = roles.Count > 1;
 
-            if (_isCrudU)
+            if (pageStatus.isCrudU)
                 toolBarButtonsLeft.Add(new ToolBarButton { 
                     GetLabel = GetLabelRoleEdit,
                     Action = EditRoles });
 
-            if (_isCrudC)
+            if (pageStatus.isCrudC)
                 toolBarButtonsLeft.Add(new ToolBarButton { 
                     LangKey = "RoleA", 
                     Action = AddRole });
@@ -342,7 +342,7 @@ else
 
     private async Task EditRoles()
     {
-        if (!_isCrudU) return;
+        if (!pageStatus.isCrudU) return;
         editRoles = !editRoles;
         await Task.CompletedTask;
     }

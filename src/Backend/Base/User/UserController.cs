@@ -87,8 +87,13 @@ namespace Backend.Base.User
         public async Task<IActionResult> UpdateUser([FromBody] UserDto dto)
         {
             var session = HttpContext.Items["session"] as SessionEnt;
+
             var user = await _userService.UpdateUser(dto);
-            var userDto = await _userService.Populate(user);
+            var userDto = null as UserDto;
+
+            if (user != null)
+                userDto = await _userService.Populate(user);
+
             var r = new _ResponseDto
             {
                 SuccessMessage = "Ok",

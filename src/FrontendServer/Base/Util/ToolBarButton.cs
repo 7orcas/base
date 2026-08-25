@@ -11,7 +11,7 @@ namespace FrontendServer.Base.Util
         public bool IsLabel() => Label != null;
         public Func<string> GetLabel { get; set; }
         public bool IsLabelFn() => GetLabel != null;
-        public Func<FormStatus?, string> GetClass { get; set; }
+        public Func<PageStatus?, string> GetClass { get; set; }
         public bool IsClassFn() => GetClass != null;
     }
 }

@@ -72,6 +72,15 @@ namespace Backend.Base.User
             {
                 return null;
             }
+
+            //Cascade delete
+            if (userDto.IsDelete)
+            {
+                _context.Users.Remove(user);
+                await _context.SaveChangesAsync();
+                return null;
+            }
+
             user.Encode();
             user.Username = userDto.Username;
             user.Email = userDto.Email;

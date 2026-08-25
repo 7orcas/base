@@ -79,30 +79,10 @@ namespace FrontendServer.Base.Util
         public string? OriginalHashCode { get; set; }
         private string GetHash(T dto)
         {
-            //Remove irrelevant fields
-            //var o = OriginalHashCode;
-            //OriginalHashCode = null;
-            //var l = IsLoaded;
-            //IsLoaded = false;
-            //var s = IsSelected;
-            //IsSelected = false;
-            //var e = IsError;
-            //IsError = false;
-            //var c = code;
-            //code = null;
-
             var json = JsonSerializer.Serialize(dto);
             using var sha256 = SHA256.Create();
             var hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(json));
             var hash = Convert.ToHexString(hashBytes);
-
-            //Reset fields
-            //OriginalHashCode = o;
-            //IsLoaded = l;
-            //IsSelected = s;
-            //IsError = e;
-            //code = c;
-
             return hash;
         }
 

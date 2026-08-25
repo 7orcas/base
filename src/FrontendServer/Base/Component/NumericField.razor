@@ -17,12 +17,12 @@
     [Parameter] public string LangCode { get; set; }
     [Parameter] public GC.TextFieldWidth Width { get; set; } = GC.TextFieldWidth.Int;
     [Parameter] public bool ReadOnly { get; set; } = false;
-    [Parameter] public FormStatus? FormStatus { get; set; }
+    [Parameter] public PageStatus? PageStatus { get; set; }
     [Parameter] public int Value { get; set; }
     [Parameter] public EventCallback<int> ValueChanged { get; set; }
     [Parameter] public Expression<Func<int>> ValueExpression { get; set; }
 
-    private bool IsReadOnly => ReadOnly ? true : (!FormStatus?.IsEditMode ?? false);
+    private bool IsReadOnly => ReadOnly ? true : (!PageStatus?.IsEditMode ?? false);
 
     private string label = loading;
     protected override void OnInitialized() => label = GetLabel(LangCode);

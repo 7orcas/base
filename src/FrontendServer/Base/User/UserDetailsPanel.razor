@@ -20,7 +20,14 @@
                         <MudExpansionPanel Text=@GetLabel("ConfigG") Expanded="true">
                             <TitleContent>
                                 <div class="expansion-title">
-                                    <Label Size="GC.TextSize.Normal" Key="ConfigG"></Label>
+                                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                                        <Label Size="GC.TextSize.Normal" Key="ConfigG"></Label>
+                                        <CheckboxField Width=GC.TextFieldWidth.TextShort
+                                                        LangCode="Delete"
+                                                        ReadOnly="!IsDeleteActive"
+                                                        @bind-Value="dto.IsDelete"
+                                                        @bind-Value:after="OnDeleteChanged" />
+                                    </div>
                                 </div>
                             </TitleContent>
                             <ChildContent>
@@ -34,20 +41,20 @@
 
                                     <TextField Width=GC.TextFieldWidth.TextMedium
                                                 LangCode="Email"
-                                                FormStatus=@FormStatus
+                                                PageStatus=@pageStatus
                                                 MaxLength="@GC.LenEmail"
                                                 @bind-Value="dto.Email" />
 
                                     <NumericField LangCode="OrgD"
-                                                FormStatus=@FormStatus
+                                                PageStatus=@pageStatus
                                                 @bind-Value="dto.OrgNr" />
 
                                     <NumericField LangCode="LoginA"
-                                                FormStatus=@FormStatus
+                                                PageStatus=@pageStatus
                                                 @bind-Value="dto.Attempts" />
 
                                     <CheckboxField LangCode="AdminU"
-                                                FormStatus=@FormStatus
+                                                PageStatus=@pageStatus
                                                 @bind-Value="@dto.IsAdminUser" />
 
                                     <CheckboxField Width=GC.TextFieldWidth.TextShort
@@ -72,7 +79,7 @@
                                     <ChildContent>
                                         <MudPaper Class="pa-4 mb-4" Elevation="0">
                                             <UserAccount accountDto="account"
-                                                         FormStatus="@FormStatus" />
+                                                         PageStatus="@pageStatus" />
                                         </MudPaper>
                                     </ChildContent>
                                 </MudExpansionPanel>
@@ -90,7 +97,7 @@
 
 @code {
     [Parameter] public List<ListModel<UserDto>> Selections { get; set; } = new List<ListModel<UserDto>>();
-    [Parameter] public FormStatus? FormStatus { get; set; }
+    [Parameter] public PageStatus? pageStatus { get; set; }
 
     private bool Expand(UserDto.UserAccountDto account, UserDto user)
     {
@@ -104,4 +111,11 @@
             return "[" + GetLabel("Default") + "]";
         return "";
     }
+
+    private void OnDeleteChanged()
+    {
+        StateHasChanged();
+    }
+
+    private bool IsDeleteActive => pageStatus == null ? false : pageStatus.isCrudD;
 }

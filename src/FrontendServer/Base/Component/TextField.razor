@@ -25,12 +25,12 @@
     [Parameter] public string Value { get; set; }
     [Parameter] public EventCallback<string> ValueChanged { get; set; }
     [Parameter] public Expression<Func<string>> ValueExpression { get; set; }
-    [Parameter] public FormStatus? FormStatus { get; set; }
+    [Parameter] public PageStatus? PageStatus { get; set; }
     
     private string label = "loading..";
     protected override void OnInitialized() => label = GetLabel(LangCode);
 
-    private bool IsReadOnly => ReadOnly ? true : (!FormStatus?.IsEditMode ?? false);
+    private bool IsReadOnly => ReadOnly ? true : (!PageStatus?.IsEditMode ?? false);
 
     private MudTextField<string>? _textField;
     public Task FocusAsync()

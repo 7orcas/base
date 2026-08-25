@@ -3,10 +3,10 @@
 @attribute [Authorize]
 
 
-<Header @key="_pageCode"
+<Header @key="pageStatus.pageCode"
         TitleKey="Machine"
         SubTitleKey="MachineSub"
-        PageCode=@_pageCode/>
+        PageCode=@pageStatus.pageCode/>
 
 @if (_isLoading || _isError || _isSaving)
 {
@@ -65,7 +65,7 @@
         if (firstRender)
         {
             await InitialiseBasePage(GC.PerMach);
-            _pageCode = AppRoutes.MachinesPageCode;
+            pageStatus.pageCode = AppRoutes.MachinesPageCode;
             machines = await GetAsync<List<MachineDto>>("api/Machine/list");
 
             StateHasChanged();

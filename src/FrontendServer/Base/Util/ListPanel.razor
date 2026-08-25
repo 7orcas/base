@@ -35,7 +35,7 @@
                 @GetListSelectRowPointer(context.IsSelected)
             </MudTd>
             <MudTd DataLabel="UserName"
-                   Class="@GetListSelectRowClass(context.IsSelected)"
+                   Class="@GetListRowClass(context)"
                    @onclick="() => OnItemSelected.InvokeAsync(context)">
                 @if (IsEditCode || @context.IsNew())
                 {
