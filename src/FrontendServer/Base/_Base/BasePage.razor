@@ -79,6 +79,7 @@
             SetCrud(permissionNr);
 
         pageStatus.LS = GetLabelService();
+        loadStatus.OnChange += Refresh;
     }
 
     //Force an update
@@ -122,12 +123,21 @@
         Action = export 
     });
 
-
+    private void Refresh() 
+    {
+        Console.WriteLine("Refresh called");
+        StateHasChanged();
+    }
 
     //DarkMode
     protected override void OnInitialized() => TS.OnThemeChanged += OnThemeChanged;
     private void OnThemeChanged() => InvokeAsync(StateHasChanged);
-    public void Dispose() => TS.OnThemeChanged -= OnThemeChanged;
+    
+    public void Dispose() 
+    {
+        TS.OnThemeChanged -= OnThemeChanged;
+        loadStatus.OnChange -= Refresh;
+    }
 
     //Permissions
     public void SetCrud (int permissionNr)

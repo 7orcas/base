@@ -1,14 +1,6 @@
 ﻿@inherits BasePage
 
-@if (@LoadStatus.IsLoading || @LoadStatus.IsSaving || @LoadStatus.IsSearch)
-{
-    <div class="loading-overlay">
-        <div class="loading-spinner">
-            <p>...</p>
-        </div>
-    </div>
-}
-else if (@LoadStatus.IsError)
+if (@LoadStatus.IsError)
 {
     if (@LoadStatus.StatusCode == StatusCodes.Status401Unauthorized)
     {

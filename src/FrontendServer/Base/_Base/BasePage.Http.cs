@@ -72,7 +72,8 @@ namespace FrontendServer.Base._Base
         public async Task<T> GetAsync<T>(string url, bool surpressLoading)
         {
             _isLoading = !surpressLoading;
-            loadStatus.IsLoading = !surpressLoading;
+            if (!surpressLoading)
+                loadStatus.SetLoading();
             await ValidateAccess();
 
             var client = await GetClient();

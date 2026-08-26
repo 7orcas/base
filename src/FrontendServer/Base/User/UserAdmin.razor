@@ -18,14 +18,16 @@
 
     <div style="margin-top:10px; border-bottom: 1px solid #ccc; margin-bottom:2px;"></div>
 
-    @if (loadStatus.Show())
+    @if (loadStatus.IsError)
     {
-        <LoadingWithError LoadStatus=@loadStatus>
+        <Error LoadStatus=@loadStatus>
             @exception
-        </LoadingWithError>
+        </Error>
     }
     else
     {
+        <Loading LoadStatus=@loadStatus />
+        
         <MudGrid Class="no-wrap-grid" Spacing="0" Style="@($"flex:1; min-height:0; height:0;{GetDebugBorder("orange")}")">
 
             @if (listUtil.ShowList)
@@ -71,10 +73,11 @@
         {
             InitialiseBasePage();
 
+            //Always make edit mode
+            pageStatus.IsEditMode = true;
+
             //Add standard toolbar
             AddToolbarSearch(Search);
-            if (pageStatus.isCrudU)
-                AddToolbarEdit(EditRecord, pageStatus.GetEditModeLabel);
             if (pageStatus.isCrudC)
                 AddToolbarAddNew(AddRecord);
 
@@ -156,7 +159,7 @@
     {
         if (!dto.IsLoaded)
         {
-            var record = await GetAsync<UserDto>(GC.URL_user + dto.Id, true);
+            var record = await GetAsync<UserDto>(GC.URL_user + dto.Id, false);
             record.Code = record.Username; //for the list table
             dto.Load(record);
         }

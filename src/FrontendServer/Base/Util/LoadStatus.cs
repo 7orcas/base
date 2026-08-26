@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using MudBlazor;
 
 namespace FrontendServer.Base.Util
 {
@@ -12,9 +13,10 @@ namespace FrontendServer.Base.Util
         public MarkupString? ErrorMessage { get; set; }
         public MarkupString? Message { get; set; }
         public Exception? Exception { get; set; }
-        
+        public event Action? OnChange;
 
-        public Boolean Show()
+
+        public Boolean ShowSpinner()
         {
             return IsLoading || IsError || IsSaving || IsSearch;
         }
@@ -24,18 +26,21 @@ namespace FrontendServer.Base.Util
         public LoadStatus SetLoading()
         {
             IsLoading = true;
+            NotifyStateChanged();
             return this;
         }
 
         public LoadStatus ResetLoading()
         {
             IsLoading = false;
+            NotifyStateChanged();
             return this;
         }
 
         public LoadStatus SetSaving()
         {
             IsSaving = true;
+            NotifyStateChanged();
             return this;
         }
         public LoadStatus ResetSaving()
@@ -47,6 +52,7 @@ namespace FrontendServer.Base.Util
         public LoadStatus SetSearch()
         {
             IsSearch = true;
+            NotifyStateChanged();
             return this;
         }
         public LoadStatus ResetSearch()
@@ -71,6 +77,11 @@ namespace FrontendServer.Base.Util
         {
             StatusCode = statusCode;
             return this;
+        }
+
+        public void NotifyStateChanged()
+        {
+            OnChange?.Invoke();
         }
 
     }
