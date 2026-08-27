@@ -59,9 +59,42 @@ namespace Backend.Base.User
             return await _userRepo.Update(user);
         }
 
+        public async Task<UserDto?> NewUser(SessionEnt session)
+        {
+            var user = new UserEnt()
+            {
+                Id = GetTempId(),
+                OrgNrDefault = session.Org.Nr,
+                Username = "",
+                LangCode = session.Org.LangCode,
+                //IsMfaRequired = org.IsMfaRequired, ToDo
+                //IsMfaEnabled = user.IsMfaEnabled, ToDo
+                IsActive = true,
+                Version = GC.NewRecordVersion,
+                Accounts = new List<UserAccountEnt>()
+            };
+            user.Accounts.Add(NewAccount(user, session));
+
+            return await Populate(user);
+        }
+
+        private UserAccountEnt NewAccount(UserEnt user, SessionEnt session)
+        {
+            return new UserAccountEnt()
+            {
+                Id = GetTempId(),
+                UserId = user.Id,
+                OrgNr = session.Org.Nr,
+                IsActive = true,
+                IsAdminLang = false,
+                Classification = 0,
+                Version = GC.NewRecordVersion
+            };
+        }
+
+
         public async Task<UserDto> PopulateList(UserEnt user)
         {
-
             UserDto userDto = new UserDto()
             {
                 Id = user.Id,

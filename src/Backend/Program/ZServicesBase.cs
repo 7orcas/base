@@ -1,5 +1,6 @@
 ﻿using Backend.Base.DataProtection;
 using Backend.Base.Email;
+using Backend.Base.Id;
 using Backend.Base.Registration;
 
 namespace Backend.Program
@@ -8,6 +9,8 @@ namespace Backend.Program
     {
         static public void Configure(WebApplicationBuilder builder)
         {
+            builder.Services.AddSingleton<TempIdServiceI, TempIdService>();
+
             builder.Services.AddScoped<AuditServiceI, AuditService>();
             builder.Services.AddScoped<LabelServiceI, LabelService>();
             builder.Services.AddScoped<ConfigServiceI, ConfigService>();

@@ -66,13 +66,18 @@ namespace Backend.Base.User
 
         public async Task<UserEnt?> Update(UserDto userDto)
         {
-            var user = await GetById(userDto.Id);
+            var user = null as UserEnt;
+
+            if (userDto.IsNew())
+                user = new UserEnt() { 
+                    Password = "temp" //ToDo
+                };
+            else
+                user = await GetById(userDto.Id);
 
             if (user == null)
-            {
                 return null;
-            }
-
+           
             //Cascade delete
             if (userDto.IsDelete)
             {
@@ -84,6 +89,7 @@ namespace Backend.Base.User
             user.Encode();
             user.Username = userDto.Username;
             user.Email = userDto.Email;
+            user.LangCode = userDto.LangCode;
             user.OrgNrDefault = userDto.OrgNr;
             user.Attempts = userDto.Attempts;
             user.IsAdminUser = userDto.IsAdminUser;
@@ -93,19 +99,22 @@ namespace Backend.Base.User
 
             foreach (var accountDto in userDto.Accounts ?? new List<UserDto.UserAccountDto>())
             {
-                var account = user.Accounts.FirstOrDefault(a => a.Id == accountDto.Id);
+                var account = null as UserAccountEnt;
 
                 // Add new account
-                if (account == null)
+                if (accountDto.IsNew())
                 {
-                    account = new UserAccountEnt
+                    account = new UserAccountEnt()
                     {
                         User = user,
-                        UserId = userDto.Id,
+                        UserId = user.Id,
                         OrgNr = accountDto.OrgNr,
                     };
                     user.Accounts.Add(account);
                 }
+                else
+                    account = user.Accounts.FirstOrDefault(a => a.Id == accountDto.Id);
+
 
                 // Update account
                 account.Encode();

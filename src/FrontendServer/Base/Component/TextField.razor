@@ -10,6 +10,8 @@
               Label="@label"
               MaxLength="@MaxLength"
               ReadOnly="@IsReadOnly"
+              OnKeyDown="@OnKeyDown"
+              OnKeyUp="@OnKeyUp"
               Immediate="@Immediate"
               Value="@Value"
               ValueChanged="@ValueChanged"
@@ -24,6 +26,8 @@
     [Parameter] public bool Immediate { get; set; } = false;
     [Parameter] public string Value { get; set; }
     [Parameter] public EventCallback<string> ValueChanged { get; set; }
+    [Parameter] public EventCallback<KeyboardEventArgs> OnKeyDown { get; set; }
+    [Parameter] public EventCallback<KeyboardEventArgs> OnKeyUp { get; set; }
     [Parameter] public Expression<Func<string>> ValueExpression { get; set; }
     [Parameter] public PageStatus? PageStatus { get; set; }
     

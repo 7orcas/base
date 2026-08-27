@@ -8,6 +8,7 @@ public abstract class BaseService : SqlUtils
 {
     protected readonly Serilog.ILogger _log;
     public AuditServiceI _auditService;
+    public TempIdServiceI _tempIdService;
 
     public BaseService(IServiceProvider serviceProvider) 
     { 
@@ -20,6 +21,7 @@ public abstract class BaseService : SqlUtils
         // Create a scoped service provider
         using var scope = serviceProvider.CreateScope();
         _auditService = scope.ServiceProvider.GetRequiredService<AuditServiceI>();
+        _tempIdService = scope.ServiceProvider.GetRequiredService<TempIdServiceI>();
     }
 
     //public T ReadBaseEntity<T>(NpgsqlDataReader r) where T : BaseEntity<T>, new()
@@ -107,6 +109,11 @@ public abstract class BaseService : SqlUtils
         return !string.IsNullOrEmpty(value1) && 
             !string.IsNullOrEmpty(value2) && 
             value1.Equals(value2);
+    }
+
+    public long GetTempId()
+    {
+        return _tempIdService.GetTempId();
     }
 
 }

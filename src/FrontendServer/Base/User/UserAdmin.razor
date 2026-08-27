@@ -46,6 +46,7 @@
             <MudItem xs="10" Style="height:100%; display:flex; flex-direction:column; min-height:0;">
                 <MudPaper Elevation="0" Outlined="false" Style="flex:1; min-height:0; overflow:auto; padding-right:20px;">
                     <UserDetailsPanel Selections="listUtil.Selections"
+                                      Refresh="@Refresh"
                                       pageStatus="@pageStatus" />
                 </MudPaper>
             </MudItem>
@@ -65,6 +66,7 @@
 @code {
     private List<ListModel<UserDto>> list = new List<ListModel<UserDto>>();
     private ListUtil<UserDto> listUtil = new ListUtil<UserDto>();
+    private MudTable<ListModel<UserDto>> _listTable;
 
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -148,7 +150,7 @@
         // await Search();
     }
 
-
+    private void Refresh() => StateHasChanged();
 
     private async Task OnItemSelected(ListModel<UserDto> r)
     {
@@ -159,7 +161,7 @@
     {
         if (!dto.IsLoaded)
         {
-            var record = await GetAsync<UserDto>(GC.URL_user + dto.Id, false);
+            var record = await GetAsync<UserDto>(GC.URL_user_get + dto.Id, false);
             record.Code = record.Username; //for the list table
             dto.Load(record);
         }
@@ -175,7 +177,7 @@
         for (int i = 0; i < list.Count; i++)
         {
             var dto = list[i];
-            if (dto.IsLoaded && dto.HasChanged())
+            if (dto.IsLoaded && (dto.HasChanged() || dto.IsNew()))
             {
                 var response = await PostAsync<UserDto>(GC.URL_user_update, dto.dto);
 
@@ -183,7 +185,7 @@
 
                 if (response.StatusCode == HttpStatusCode.OK && !dto.IsDelete)
                 {
-                    var updatedDto = await GetAsync<UserDto>(GC.URL_user + dto.Id);
+                    var updatedDto = await GetAsync<UserDto>(GC.URL_user_get + dto.Id);
                     dto.ClearHash();
                     updatedDto.Code = updatedDto.Username; //for the list table
                     dto.Load(updatedDto);
@@ -215,7 +217,12 @@
 
     private async Task AddRecord()
     {
-
+        var dto = await GetAsync<UserDto>(GC.URL_user_new, false);
+        dto.Code = dto.Username; //for the list table
+        var rec = new ListModel<UserDto>(dto);
+        rec.IsLoaded = true;
+        list.Insert(0, rec);
+        OnItemSelected(rec);
     }
 
     //ToDo

@@ -102,5 +102,21 @@ namespace Backend.Base.User
             return Ok(r);
         }
 
+        [CrudAtt(GC.CrudIgnore)]  //ToDo
+        [AuditListAtt(GC.EntityTypeUser)]
+        [HttpGet("new")]
+        public async Task<IActionResult> New()
+        {
+            var session = HttpContext.Items["session"] as SessionEnt;
+            var userDto = await _userService.NewUser(session);
+            
+            var r = new _ResponseDto
+            {
+                SuccessMessage = "Ok",
+                Result = userDto
+            };
+            return Ok(r);
+        }
+
     }
 }

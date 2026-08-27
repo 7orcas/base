@@ -16,12 +16,6 @@ namespace FrontendServer.Base.Util
         public event Action? OnChange;
 
 
-        public Boolean ShowSpinner()
-        {
-            return IsLoading || IsError || IsSaving || IsSearch;
-        }
-
-
         //Convenience methods
         public LoadStatus SetLoading()
         {
@@ -33,7 +27,6 @@ namespace FrontendServer.Base.Util
         public LoadStatus ResetLoading()
         {
             IsLoading = false;
-            NotifyStateChanged();
             return this;
         }
 

@@ -59,9 +59,14 @@ namespace Backend.Base.Permission
         /// <param name="userAccountId"></param>
         /// <param name="orgNr"></param>
         /// <returns></returns>
-        public async Task<List<PermissionCrudEnt>> LoadEffectivePermissionsInt(long userAccountId, long orgNr)
+        public async Task<List<PermissionCrudEnt>> LoadEffectivePermissionsInt(long? userAccountId, long orgNr)
         {
             var perms = new Dictionary<int, PermissionCrudEnt>(); //permission number / crud
+            
+            if (userAccountId == null)
+                return new List<PermissionCrudEnt>();
+
+
             try
             {
                 var sql = "SELECT rp.permissionNr, rp.crud " +

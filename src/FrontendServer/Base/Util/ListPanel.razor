@@ -8,6 +8,7 @@
 
     <MudTable Style="@($"flex:1; min-height:0; table-layout:fixed; width:100%; {@GetDebugBorder("blue")}")"
               T="ListModel<TDto>"
+              @ref="_tableRef"
               Items="@List"
               Height="100%"
               FixedHeader="true"
@@ -34,10 +35,10 @@
                    @onclick="() => OnItemSelected.InvokeAsync(context)">
                 @GetListSelectRowPointer(context.IsSelected)
             </MudTd>
-            <MudTd DataLabel="UserName"
+            <MudTd DataLabel="CodeKey"
                    Class="@GetListRowClass(context)"
                    @onclick="() => OnItemSelected.InvokeAsync(context)">
-                @if (IsEditCode || @context.IsNew())
+                @if (IsEditCode || IsEditCodeNew)
                 {
                     <MudTextField T="string"
                                   @bind-Value="context.dto.Code"
@@ -63,7 +64,21 @@
     [Parameter] public EventCallback<ListModel<TDto>> OnItemSelected { get; set; }
     [Parameter] public string CodeKey { get; set; } = "Code";
     [Parameter] public bool IsEditCode { get; set; } = false;
+    [Parameter] public bool IsEditCodeNew { get; set; } = false;
     [Parameter] public bool IsEditActive { get; set; } = false;
+    [Parameter] public EventCallback<MudTable<ListModel<TDto>>> TableRefChanged { get; set; }
+
+
+    private MudTable<ListModel<TDto>> _tableRef;
+
+
+    
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await TableRefChanged.InvokeAsync(_tableRef);
+    }
 
 
 }

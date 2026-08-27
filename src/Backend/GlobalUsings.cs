@@ -11,6 +11,7 @@ global using Backend.Base.Database;
 global using Backend.Base.Mfa;
 global using Backend.Base.Token;
 global using Backend.Base.Entity;
+global using Backend.Base.Id;
 global using Backend.Base.Config;
 global using Backend.Base.Config.Ent;
 global using Backend.Base.Label;
