@@ -9,5 +9,6 @@ namespace Backend.Base.User
         Task<UserDto?> NewUser(SessionEnt session);
         Task<UserDto> PopulateList(UserEnt user);
         Task<UserDto> Populate(UserEnt user);
+        Task<List<ValidationMessageDto>> ValidateUser(SessionEnt session, UserDto user);
     }
 }

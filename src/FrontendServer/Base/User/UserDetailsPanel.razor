@@ -14,9 +14,19 @@
                 {
                 var dto = record.dto;
 
-                <td @key="record.Id" style="vertical-align: top; padding: 1px;">
+                <td @key="record.Id" style="vertical-align: top; padding: 1px; background-color:white">
 
                     <MudExpansionPanels MultiExpansion="true">
+
+                        @if (record.IsValidation())
+                        {
+                                <MudExpansionPanel @key="record" Text=@GetValidationLabel(record) Expanded=true Style="padding:1px;" Class="@GetValidationClass(record)">
+                                <ChildContent>
+                                    <ErrorPanel List="record.Validation.Messages" />
+                                </ChildContent>
+                            </MudExpansionPanel>
+                        }
+
                         <MudExpansionPanel Text=@GetLabel("ConfigG") Expanded="true">
                             <TitleContent>
                                 <div class="expansion-title">
@@ -126,6 +136,24 @@
         record.dto.Username = value;
         record.dto.Code = value;
         await Refresh.InvokeAsync();
+    }
+
+    private string GetValidationLabel(ListModel<UserDto> record)
+    {
+        if (record.Validation.MessageCount > 1)
+            return GetLabel("ValMs");
+        return GetLabel("ValM");
+    }
+
+    private string GetValidationClass(ListModel<UserDto> record)
+    {
+        if (record.IsValidationError())
+            return "error-row" + DarkModeSuffix();
+
+        if (record.IsValidationWarning())
+            return "warning-row" + DarkModeSuffix();
+
+        return string.Empty;
     }
 
     private bool IsDeleteActive => pageStatus == null ? false : pageStatus.isCrudD;

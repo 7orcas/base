@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Backend.Data;
+using GC = Backend.GlobalConstants;
 
 namespace Backend.Base.User
 {
@@ -26,7 +27,7 @@ namespace Backend.Base.User
         {
             var sql = "SELECT id, xxx AS Username, isActive, orgnrdefault AS OrgNrDefault "
                         + "FROM base.zzz "
-                        + "WHERE 1=1";
+                        + "WHERE id != " + GC.ServiceLoginId + " ";
 
 
     if (!string.IsNullOrEmpty(search.Username))

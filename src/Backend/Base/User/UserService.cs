@@ -5,6 +5,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Npgsql;
 using Org.BouncyCastle.Asn1.Ocsp;
 using Superpower.Model;
+using System.Net.Mail;
 using System.Runtime.ConstrainedExecution;
 using GC = Backend.GlobalConstants;
 
@@ -53,6 +54,91 @@ namespace Backend.Base.User
         {
             return await _userRepo.GetById(id);
         }
+
+        public async Task<List<ValidationMessageDto>> ValidateUser(SessionEnt session, UserDto user)
+        {
+            var org = await _orgService.GetOrg(session.Org.Nr);
+            var labels = await _labelService.GetLangCodeDic(session.UserConfig.LangCodeCurrent, org.LangLabelVariant);
+
+            var messages = new List<ValidationMessageDto>();
+
+            if (user.IsNew())
+            {
+                var res = _orgService.ValidatePassword(user.Password, org, labels);
+                if (!res.valid)
+                {
+                    messages.Add(new ValidationMessageDto
+                    {
+                        Message = res.message,
+                        IsError = true
+                    });
+                }
+            }
+
+            var man = GetLabel("ManF", labels) + ": ";
+            var max = GetLabel("MaxL", labels) + ": ";
+
+            if (string.IsNullOrEmpty(user.Username))
+            {
+                messages.Add(new ValidationMessageDto
+                {
+                    Message = man + GetLabel("UserName", labels),
+                    IsError = true
+                });
+            }
+
+            if (!string.IsNullOrEmpty(user.Username) && user.Username.Length > 40)
+            {
+                messages.Add(new ValidationMessageDto
+                {
+                    Message = max + GetLabel("UserName", labels),
+                    IsError = true
+                });
+            }
+
+            if (org.IsEmailRequired && string.IsNullOrEmpty(user.Email))
+            {
+                messages.Add(new ValidationMessageDto
+                {
+                    Message = man + GetLabel("Email", labels),
+                    IsError = true
+                });
+            }
+
+            if (!string.IsNullOrEmpty(user.Email) && user.Email.Length > 100)
+            {
+                messages.Add(new ValidationMessageDto
+                {
+                    Message = max + GetLabel("Email", labels),
+                    IsError = true
+                });
+            }
+
+            if (!string.IsNullOrEmpty(user.Email) && !IsValidEmail(user.Email))
+            {
+                messages.Add(new ValidationMessageDto
+                {
+                    Message = GetLabel("EmailInvalid", labels),
+                    IsWarning = true
+                });
+            }
+
+            return messages;
+        }
+
+        private bool IsValidEmail(string email)
+        {
+            try
+            {
+                var addr = new MailAddress(email);
+                return addr.Address == email;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
 
         public async Task<UserEnt?> UpdateUser(UserDto user)
         {

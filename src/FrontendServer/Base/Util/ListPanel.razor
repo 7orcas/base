@@ -14,7 +14,8 @@
               FixedHeader="true"
               Hover="true"
               Bordered="true"
-              Striped="true">
+              Striped="true"
+              RowClassFunc="GetRowClass">
 
 
         <ColGroup>
@@ -49,7 +50,7 @@
                 }
                 else
                 {
-                    @context.dto.Code
+                    @GetCode(context)
                 }
             </MudTd>
             <MudTd DataLabel="Active">
@@ -71,13 +72,34 @@
 
     private MudTable<ListModel<TDto>> _tableRef;
 
-
-    
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
             await TableRefChanged.InvokeAsync(_tableRef);
+    }
+
+    private string GetCode(ListModel<TDto> item)
+    {
+        var code = item.Code;
+
+        if (item.IsValidationError())
+            code += " (" + GetLabel("Error") + ")";
+
+        else if (item.IsValidationWarning())
+            code += " (" + GetLabel("Warning") + ")";
+
+        return code;
+    }
+
+    private string GetRowClass(ListModel<TDto> item, int index)
+    {
+        if (item.IsValidationError())
+            return "error-row" + GetLightDarkClassSuffix();
+
+        else if (item.IsValidationWarning())
+            return "warning-row" + GetLightDarkClassSuffix();
+
+        return string.Empty;
     }
 
 

@@ -1,0 +1,41 @@
+﻿@inherits BasePage
+@using MudBlazor
+@using FrontendServer.Base._Base;
+
+<div style="height:100%; display:flex; flex-direction:column; min-height:0;">
+
+    <MudTable Style="@($"flex:1; min-height:0; table-layout:fixed; width:100%; {@GetDebugBorder("red")}")"
+              T="ValidationMessageDto"
+              Items="@List"
+              Height="100%"
+              FixedHeader="true"
+              Hover="true"
+              Bordered="true"
+              Striped="true">
+
+        <ColGroup>
+            <col style="width:30%;" />
+            <col style="width:70%;" />
+        </ColGroup>
+        <RowTemplate>
+            <MudTd Style="padding-left:5px; border-right: none;">
+                @GetType(context):
+            </MudTd>
+            <MudTd Style="text-align:left">
+                @context.Message
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
+
+</div>
+@code {
+    [Parameter] public List<ValidationMessageDto> List { get; set; } = new List<ValidationMessageDto>();
+
+    private string GetType(ValidationMessageDto dto)
+    {
+        if (dto.IsError) return GetLabel("Error");
+        if (dto.IsWarning) return GetLabel("Warning");
+        return string.Empty;
+    }
+
+}

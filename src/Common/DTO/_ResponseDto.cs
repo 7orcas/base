@@ -11,11 +11,20 @@ namespace Common.DTO
         public string? SuccessMessage { get; set; }
         public object? Result { get; set; }
 
+        public List<ValidationDto>? Validations { get; set; } 
     }
 
-    public class Validation
+    public class ValidationDto
     {
         public long Id { get; set; }
+        public List<ValidationMessageDto>? Messages { get; set; }
+    }
+
+    public class ValidationMessageDto
+    {
+        public string Message { get; set; }
+        public bool IsWarning { get; set; } = false;
+        public bool IsError { get; set; } = false;
     }
 
 }

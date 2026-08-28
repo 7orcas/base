@@ -9,7 +9,8 @@ namespace Common.DTO.Base
     public class UserDto : _BaseDto
     {
         public string Username { get; set; }
-        public string Email { get; set; }
+        public string? Password { get; set; }
+        public string? Email { get; set; }
         public bool IsEmailVerified { get; set; }
         public string LangCode { get; set; }
         public int Attempts { get; set; }

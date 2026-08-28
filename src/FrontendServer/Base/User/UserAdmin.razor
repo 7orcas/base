@@ -172,13 +172,12 @@
 
     private async Task SaveAsync()
     {
-
-
         //Get records to be updated
         var updates = new List<ListModel<UserDto>>();
         for (int i = 0; i < list.Count; i++)
         {
             var rec = list[i];
+            rec.ResetValidation();
             if (rec.IsUpdateable())
                 updates.Add(rec);
         }
@@ -192,13 +191,23 @@
         };
         var response = await PostAsync<List<UserDto>>(GC.URL_user_update, updatesX);
 
+        var r2 = null as _ResponseDto;
 
         if (response.StatusCode == HttpStatusCode.OK)
         {
             var r1 = await response.Content.ReadAsStringAsync();
-            var r2 = JsonConvert.DeserializeObject<_ResponseDto>(r1);
-            //if (!r2.Valid) //ToDo
+            r2 = JsonConvert.DeserializeObject<_ResponseDto>(r1);
+        }
+        else
+        {
+            //ToDo error response
+            return;
+        }
 
+
+
+        if (r2.Valid)
+        {
             List<UserDto> dtos = JsonConvert.DeserializeObject<List<UserDto>>(r2.Result.ToString());
 
             var deletes = new List<ListModel<UserDto>>();
@@ -236,7 +245,22 @@
             }
 
         }
-        //ToDo error response
+        else
+        {
+            List<ValidationDto> vals = r2?.Validations;
+            for (int i = 0; i < updates.Count; i++)
+            {
+                var rec = updates[i];
+                var val = vals.FirstOrDefault(x => x.Id == rec.Id);
+                if (val != null)
+                {
+                    rec.Validation = new ValidationModel
+                    {
+                        Validation = val
+                    };
+                }
+            }
+        }
 
         loadStatus.ResetSaving();
         StateHasChanged();

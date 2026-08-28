@@ -91,7 +91,25 @@ namespace Backend.Base.User
             var list = update.Updates as List<UserDto>;
             var listU = new List<UserDto> ();
 
+
             //Validate //ToDo
+            var vals = new List<ValidationDto> ();
+            foreach (var dto in list)
+            {
+                var messages = await _userService.ValidateUser(session, dto);
+                if (messages.Count > 0)
+                    vals.Add(new ValidationDto { Id = dto.Id, Messages = messages });
+            }
+
+            if (vals.Count > 0)
+            {
+                var v = new _ResponseDto
+                {
+                    Valid = false,
+                    Validations = vals
+                };
+                return Ok(v);
+            }
 
             foreach (var dto in list)
             {
