@@ -23,6 +23,7 @@
                                     <div style="display:flex; justify-content:space-between; align-items:center;">
                                         <Label Size="GC.TextSize.Normal" Key="ConfigG"></Label>
                                         <CheckboxField Width=GC.TextFieldWidth.TextShort
+                                                        Class="delete-checkbox"
                                                         LangCode="Delete"
                                                         ReadOnly="!IsDeleteActive"
                                                         @bind-Value="dto.IsDelete"

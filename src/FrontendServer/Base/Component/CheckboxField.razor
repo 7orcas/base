@@ -5,7 +5,7 @@
 @using GC = FrontendServer.GlobalConstants;
 
 <MudCheckBox Style="@GetStyle(@Width)"
-             Class="@GetClass(@IsReadOnly)"
+             Class="@GetClassLocal()"
              Label="@label"
              ReadOnly="@IsReadOnly"
              Value="@Value"
@@ -15,6 +15,7 @@
 
 @code {
     [Parameter] public string LangCode { get; set; }
+    [Parameter] public string? Class { get; set; }
     [Parameter] public GC.TextFieldWidth Width { get; set; } = GC.TextFieldWidth.TextShort;
     [Parameter] public bool Value { get; set; }
     [Parameter] public bool ReadOnly { get; set; } = false;
@@ -26,4 +27,12 @@
     protected override void OnInitialized() => label = GetLabel(LangCode);
 
     private bool IsReadOnly => ReadOnly ? true : (!PageStatus?.IsEditMode ?? false);
+    
+    private string GetClassLocal()
+    {
+        var baseclass = GetClass(IsReadOnly);
+        var additionalClass = !string.IsNullOrEmpty(Class) ? Class + DarkModeSuffix() : "";
+
+        return baseclass + " " + additionalClass;
+    }
 }

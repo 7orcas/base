@@ -264,3 +264,12 @@ a, .btn-link {
     background-color: #2D2D2D !important;
     color: #FFFFFF !important;
 }
+
+.delete-checkbox-dark {
+    background-color: white;
+    color: red;
+}
+
+.delete-checkbox-light {
+    color: red;
+}

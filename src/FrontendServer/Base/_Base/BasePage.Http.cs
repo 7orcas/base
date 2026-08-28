@@ -161,6 +161,22 @@ namespace FrontendServer.Base._Base
             return response;
         }
 
+        protected async Task<HttpResponseMessage> PostAsync<T>(string url, UpdateRequest<T> updates) 
+        {
+            _isSaving = true;
+            loadStatus.SetSaving();
+            await ValidateAccess();
+            var client = await GetClient();
+
+            var json = System.Text.Json.JsonSerializer.Serialize(updates);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = await client.PostAsync(url, content);
+
+            _isSaving = false;
+            loadStatus.ResetSaving();
+            return response;
+        }
+
         protected async Task<HttpResponseMessage> PostAsync<T, S>(string url, S search) where S : _BaseSearch
         {
             loadStatus.SetSearch();

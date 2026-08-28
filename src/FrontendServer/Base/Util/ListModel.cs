@@ -2,6 +2,7 @@
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using static MudBlazor.Colors;
 
 /// <summary>
 /// Base controls for Dto's
@@ -34,6 +35,14 @@ namespace FrontendServer.Base.Util
             IsLoaded = true;
             HashMe();
             return this;
+        }
+
+        public bool IsUpdateable()
+        {
+            return IsLoaded &&
+                (HasChanged()
+                || dto.IsNewable()
+                || dto.IsDeleteable());
         }
 
 

@@ -84,20 +84,26 @@ namespace Backend.Base.User
         [CrudAtt(GC.CrudIgnore)] //ToDo
         [AuditListAtt(GC.EntityTypeUser)]
         [HttpPost("update")]
-        public async Task<IActionResult> UpdateUser([FromBody] UserDto dto)
+        public async Task<IActionResult> UpdateUser([FromBody] UpdateRequest<List<UserDto>> update)
         {
             var session = HttpContext.Items["session"] as SessionEnt;
 
-            var user = await _userService.UpdateUser(dto);
-            var userDto = null as UserDto;
+            var list = update.Updates as List<UserDto>;
+            var listU = new List<UserDto> ();
 
-            if (user != null)
-                userDto = await _userService.Populate(user);
+            //Validate //ToDo
+
+            foreach (var dto in list)
+            {
+                var user = await _userService.UpdateUser(dto);
+                if (user != null)
+                    listU.Add(await _userService.Populate(user));
+            }
 
             var r = new _ResponseDto
             {
                 SuccessMessage = "Ok",
-                Result = userDto
+                Result = listU
             };
             return Ok(r);
         }

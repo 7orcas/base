@@ -172,36 +172,71 @@
 
     private async Task SaveAsync()
     {
+
+
+        //Get records to be updated
+        var updates = new List<ListModel<UserDto>>();
+        for (int i = 0; i < list.Count; i++)
+        {
+            var rec = list[i];
+            if (rec.IsUpdateable())
+                updates.Add(rec);
+        }
+        if (updates.Count == 0) return;
+
         loadStatus.SetSaving();
 
-        for (int i = 0; i < list.Count; i++)
+        var updatesX = new UpdateRequest<List<UserDto>>()
         {
-            var dto = list[i];
-            if (dto.IsLoaded && (dto.HasChanged() || dto.IsNew()))
+            Updates = updates.Select(x => x.dto).ToList()
+        };
+        var response = await PostAsync<List<UserDto>>(GC.URL_user_update, updatesX);
+
+
+        if (response.StatusCode == HttpStatusCode.OK)
+        {
+            var r1 = await response.Content.ReadAsStringAsync();
+            var r2 = JsonConvert.DeserializeObject<_ResponseDto>(r1);
+            //if (!r2.Valid) //ToDo
+
+            List<UserDto> dtos = JsonConvert.DeserializeObject<List<UserDto>>(r2.Result.ToString());
+
+            var deletes = new List<ListModel<UserDto>>();
+            for (int i = 0; i < list.Count; i++)
             {
-                var response = await PostAsync<UserDto>(GC.URL_user_update, dto.dto);
+                var rec = list[i];
+                var recU = updates.FirstOrDefault(x => x.Id == rec.Id);
 
-                //ToDo Error checking
+                if (recU == null) continue; 
 
-                if (response.StatusCode == HttpStatusCode.OK && !dto.IsDelete)
+                if (rec.IsDelete)
                 {
-                    var updatedDto = await GetAsync<UserDto>(GC.URL_user_get + dto.Id);
-                    dto.ClearHash();
-                    updatedDto.Code = updatedDto.Username; //for the list table
-                    dto.Load(updatedDto);
+                    deletes.Add(rec);
+                    continue;
                 }
-            }
-        }
 
-        var listX = new List<ListModel<UserDto>>();
-        for (int i = 0; i < list.Count; i++)
-        {
-            if (!list[i].IsDelete)
-                listX.Add(list[i]);
-            else
-                listUtil.Remove(list[i]);
+                var dto = null as UserDto;
+                if (rec.IsNew())
+                    dto = dtos.FirstOrDefault(x => x.Username == rec.dto.Username);
+                else
+                    dto = dtos.FirstOrDefault(x => x.Id == rec.Id);
+
+
+                if (dto == null) continue;
+
+                rec.ClearHash();
+                dto.Code = dto.Username; //for the list table
+                rec.Load(dto);
+            }
+
+            foreach (var rec in deletes)
+            {
+                listUtil.Remove(rec);
+                list.Remove(rec);
+            }
+
         }
-        list = listX;
+        //ToDo error response
 
         loadStatus.ResetSaving();
         StateHasChanged();

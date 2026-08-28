@@ -107,7 +107,6 @@ namespace Backend.Base.User
                     account = new UserAccountEnt()
                     {
                         User = user,
-                        UserId = user.Id,
                         OrgNr = accountDto.OrgNr,
                     };
                     user.Accounts.Add(account);
@@ -134,7 +133,7 @@ namespace Backend.Base.User
                         accRole = new UserAccountRoleEnt
                         {
                             UserAccount = account,
-                            UserAccountId = account.Id,
+                            //UserAccountId = account.Id,
                             RoleId = accRoleDto.RoleId,
                         };
                         account.Roles.Add(accRole);
@@ -150,7 +149,9 @@ namespace Backend.Base.User
                     }
                 }
             }
-
+            if (userDto.IsNew())
+                _context.Users.Add(user);
+            
             await _context.SaveChangesAsync();
             return user;
         }

@@ -50,7 +50,7 @@
         if (TS.IsDarkMode)
             s += "dark";
         else s += "light";
-        
+
         return s;
     }
 
@@ -69,4 +69,5 @@
     public string GetLabel(string labelCode) => LS.GetLabel(labelCode);
     public string GetLabelHighlightNoKey(string labelCode) => LS.GetLabelHighlightNoKey(labelCode);
     public string? GetTooltip(string labelCode) => LS.GetTooltip(labelCode);
+    public string DarkModeSuffix() => TS.IsDarkMode? "-dark" : "-light";
 }

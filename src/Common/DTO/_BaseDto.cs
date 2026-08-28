@@ -22,6 +22,9 @@ namespace Common.DTO
         public bool IsDelete { get; set; } = false;
         public bool IsError { get; set; } = false;
         public bool IsNew() => Id < 0;
-        
+
+        public bool IsNewable() => IsNew() && !IsDelete;
+        public bool IsDeleteable() => IsDelete && !IsNew();
+
     }
 }
