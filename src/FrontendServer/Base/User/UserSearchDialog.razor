@@ -1,0 +1,56 @@
+﻿@inherits BasePage
+
+ 
+<BaseSearchDialog Width="700px"
+                  Height="400px"
+                  TitleKey="UserSr"
+                  SubmitAction="Submit"
+                  IsValid="data.IsValid()">
+
+    <TextField Width=GC.TextFieldWidth.TextMedium
+                LangCode="UserName"
+                MaxLength="@GC.LenCode"
+                Immediate="true"
+                @ref="usernameField"
+                @bind-Value="data.Username" />
+
+    <TextField Width=GC.TextFieldWidth.TextMedium
+               LangCode="Email"
+               MaxLength="@GC.LenEmail"
+               Immediate="true"
+               @bind-Value="data.Email" />
+
+</BaseSearchDialog>
+
+
+@using GC = FrontendServer.GlobalConstants;
+
+@code {
+    [CascadingParameter] private IMudDialogInstance? MudDialog { get; set; }
+
+    private UserSearch data = new UserSearch ();
+    private TextField usernameField;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+
+            await InvokeAsync(async () =>
+            {
+                await Task.Yield();
+                await Task.Delay(100);
+                await usernameField!.FocusAsync();
+                StateHasChanged();
+            });
+        }
+    }
+        
+
+    private async Task Submit()
+    {
+        if (data.IsValid())
+            MudDialog.Close(DialogResult.Ok(data));
+    }
+
+}

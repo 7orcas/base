@@ -12,6 +12,7 @@
         public const string UserRoleRoute    = "userrole";
         public const string RoleRoute        = "role";
         public const string AuditRoute       = "audit";
+        public const string UserRoute        = "user";
 
         //Page Codes
         public const string HomeCode         = "hme001";
@@ -22,6 +23,7 @@
         public const string UserRolePageCode = "uro001";
         public const string RolePageCode     = "rol001";
         public const string AuditPageCode    = "aud001";
+        public const string UserPageCode     = "usr001";
 
         static protected readonly string[] BasePageCodeRoutes = {
             HomeCode,               HomeRoute,
@@ -32,6 +34,7 @@
             UserRolePageCode,       UserRoleRoute,
             RolePageCode,           RoleRoute,
             AuditPageCode,          AuditRoute,
+            UserPageCode,           UserRoute,
         };
 
     }

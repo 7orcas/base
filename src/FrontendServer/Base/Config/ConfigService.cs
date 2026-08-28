@@ -28,7 +28,8 @@ namespace FrontendServer.Base.Config
         public bool IsInitialized => config != null;
         public AppConfigDto? Config => config;
         public bool IsDebugMode => config != null && config.DebugMode;
-        
+        public bool IsDebugBorder => false;
+
         public void Set(AppConfigDto config) => this.config = config;
 
         public async Task<AppConfigDto> Initialise()
@@ -42,7 +43,7 @@ namespace FrontendServer.Base.Config
                 var cjson = cdto.Result.ToString();
                 config = JsonConvert.DeserializeObject<AppConfigDto>(cjson);
 
-config.DebugMode = true; //DELETE ME
+//config.DebugMode = true; //DELETE ME
 
                 OnInitialized?.Invoke(); // Notify subscribers
                 return config;

@@ -1,4 +1,6 @@
-﻿namespace FrontendServer.Base.Util
+﻿using FrontendServer.Base.Component;
+
+namespace FrontendServer.Base.Util
 {
     public class ToolBarButton
     {
@@ -6,8 +8,10 @@
         public string? Label { get; set; }
         public string? Class { get; set; }
         public Func<Task> Action { get; set; }
-        public Func<string> GetLabel { get; set; }
         public bool IsLabel() => Label != null;
+        public Func<string> GetLabel { get; set; }
         public bool IsLabelFn() => GetLabel != null;
+        public Func<PageStatus?, string> GetClass { get; set; }
+        public bool IsClassFn() => GetClass != null;
     }
 }

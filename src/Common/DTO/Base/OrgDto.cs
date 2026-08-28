@@ -1,14 +1,11 @@
 ﻿namespace Common.DTO.Base
 {
-    public class OrgDto : _BaseDto<OrgDto>
+    public class OrgDto : _BaseDto
     {
         public int Nr { get; set; }
-        public string Code { get; set; }
-        public string? Description { get; set; }
         public string? Icon { get; set; }
         public DateTimeOffset Updated { get; set; }
         public int Version { get; set; }
-        public bool IsActive { get; set; }
         public string LangCode { get; set; }
         public int LangLabelVariant { get; set; }
 

@@ -1,5 +1,6 @@
-﻿using Npgsql;
-using Microsoft.Extensions.Caching.Memory;
+﻿using Microsoft.Extensions.Caching.Memory;
+using Npgsql;
+using Scriban.Parsing;
 using GC = Backend.GlobalConstants;
 
 namespace Backend.Base.Permission
@@ -58,16 +59,24 @@ namespace Backend.Base.Permission
         /// <param name="userAccountId"></param>
         /// <param name="orgNr"></param>
         /// <returns></returns>
-        public async Task<List<PermissionCrudEnt>> LoadEffectivePermissionsInt(long userAccountId, long orgNr)
+        public async Task<List<PermissionCrudEnt>> LoadEffectivePermissionsInt(long? userAccountId, long orgNr)
         {
             var perms = new Dictionary<int, PermissionCrudEnt>(); //permission number / crud
+            
+            if (userAccountId == null)
+                return new List<PermissionCrudEnt>();
+
+
             try
             {
                 var sql = "SELECT rp.permissionNr, rp.crud " +
                     "FROM base.rolePermission rp " +
-                        "INNER JOIN base.userAccRole ur ON ur.roleId = rp.roleId " +
-                        "INNER JOIN base.role r ON r.Id = rp.roleId " +
-                    "WHERE ur.userAccId = @userAccId ";
+                        "INNER JOIN base.userAccRole ur ON ur.roleId = rp.roleId AND ur.IsActive = true " +
+                        "INNER JOIN base.role r ON r.Id = rp.roleId AND r.IsActive = true " +
+                    "WHERE rp.IsActive = true " +
+                    "AND ur.userAccId = @userAccId " +
+                    "AND (ur.fromDate IS NULL OR ur.fromDate <= CURRENT_DATE) " +
+                    "AND (ur.toDate IS NULL OR ur.toDate >= CURRENT_DATE)";
 
                 await Sql.Run(sql + "AND r.orgNr = @orgNr",
                     r =>
@@ -172,16 +181,26 @@ namespace Backend.Base.Permission
         public bool IsAuthorizedToAccessEndPoint(SessionEnt session, PermissionAtt permAtt, CrudAtt crud)
         {
             if (permAtt == null) return true;
+
             if (session == null) return false;
             if (session.UserAccount.IsService()) return true;
 
-            if (crud != null && crud.Action == GC.CrudIgnore) return true;
+            //ie role - permission not required for this endpoint
+            if (crud != null && crud.Action == GC.CrudIgnore)
+            {
+                //Hard coded admins
+                if (permAtt.Nr == GC.PerUser) return session.UserAccount.IsAdminUser;
+                if (permAtt.Nr == GC.PerLang) return session.UserAccount.IsAdminLang;
+
+                return true;
+            }
 
             var permEnt = GetPermissionEnt(permAtt.Nr);
             if (permEnt == null) return false;
-
+            
             var userCrud = session.GetUserPermissionCrud(permEnt.Nr);
             if (userCrud == null) return false; //permission not found in user profile
+
             if (crud == null) return true;
 
             return userCrud.IndexOf(crud.Action) != -1;

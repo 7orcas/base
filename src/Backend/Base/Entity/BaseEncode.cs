@@ -12,7 +12,7 @@ namespace Backend.Base.Entity
 {
     public abstract class BaseEncode
     {
-        public string Encoded { get; set; } = string.Empty;
+        public string? Encoded { get; set; } = string.Empty;
         public abstract void Decode();
         public abstract void Encode();
 

@@ -114,9 +114,9 @@ namespace Backend.Base.Login
             return login;
         }
 
-        public async Task<UserAccountEnt?> GetAccount(long loginId, int orgNr)
+        public async Task<LoginAccountEnt?> GetAccount(long loginId, int orgNr)
         {
-            var account = null as UserAccountEnt;
+            var account = null as LoginAccountEnt;
 
             try
             {
@@ -126,14 +126,15 @@ namespace Backend.Base.Login
                         "AND orgNr = @orgNr",
                     r =>
                     {
-                        account = new UserAccountEnt
+                        account = new LoginAccountEnt
                         {
                             Id = GetId(r),
                             LoginId = GetId(r, "zzzId"),
                             OrgNr = GetOrgNr(r),
                             Lastlogin = GetDateTimeNull(r, "lastlogin"),
                             IsActive = IsActive(r),
-                            IsAdmin = GetBoolean(r, "isAdmin"),
+                            IsAdminUser = GetBoolean(r, "isAdminUser"),
+                            IsAdminLang = GetBoolean(r, "isAdminLang"),
                             Classification = GetIntNull(r, "classification")
                         };
                     },

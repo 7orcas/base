@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Common.DTO.Base
 {
-    public class UserRoleDto : _BaseFieldsDto<UserRoleDto>
+    public class UserRoleDto : _BaseDto
     {
         public long RoleId { set; get; }
 

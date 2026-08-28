@@ -1,0 +1,269 @@
+﻿@inherits BasePage
+@attribute [Route(BaseRoutes.UserRoute)]
+@attribute [PageCode(BaseRoutes.UserPageCode)]
+@attribute [PagePermission(GC.PerUser)]
+@attribute [Authorize]
+
+<ConfirmNavigation List="list" />
+
+
+<div style="height:100%; display:flex; flex-direction:column; @GetDebugBorder("yellow")">
+
+    <HeaderThin @key=pageStatus.pageCode
+            TitleKey="UserAdm"
+            PageCode=@pageStatus.pageCode
+                PageStatus="@pageStatus"
+            ToolBarButtonsLeft="toolBarButtonsLeft"
+            ToolBarButtonsRight="toolBarButtonsRight" />
+
+    <div style="margin-top:10px; border-bottom: 1px solid #ccc; margin-bottom:2px;"></div>
+
+    @if (loadStatus.IsError)
+    {
+        <Error LoadStatus=@loadStatus>
+            @exception
+        </Error>
+    }
+    else
+    {
+        <Loading LoadStatus=@loadStatus />
+        
+        <MudGrid Class="no-wrap-grid" Spacing="0" Style="@($"flex:1; min-height:0; height:0;{GetDebugBorder("orange")}")">
+
+            @if (listUtil.ShowList)
+            {
+                <!-- Left Side List -->
+                <MudItem xs="2" Style="height:100%; display:flex; flex-direction:column; min-height:0; max-width:300px;">
+                    <MudPaper Elevation="0" Outlined="true" Style="flex:1; min-height:0; display:flex; flex-direction:column;">
+                        <ListPanel TDto="UserDto"
+                                   List="@list" 
+                                   CodeKey="UserName"
+                                   OnItemSelected="@OnItemSelected" />
+                    </MudPaper>
+                </MudItem>
+            }
+            <!-- Right Side Details -->
+            <MudItem xs="10" Style="height:100%; display:flex; flex-direction:column; min-height:0;">
+                <MudPaper Elevation="0" Outlined="false" Style="flex:1; min-height:0; overflow:auto; padding-right:20px;">
+                    <UserDetailsPanel Selections="listUtil.Selections"
+                                      Refresh="@Refresh"
+                                      pageStatus="@pageStatus" />
+                </MudPaper>
+            </MudItem>
+
+        </MudGrid>
+    }
+</div>
+
+@using System.Net
+@using MudBlazor
+@using FrontendServer.Base.Util
+@using GC = FrontendServer.GlobalConstants;
+@using FrontendServer.Base._Base;
+@using Newtonsoft.Json;
+@inject IDialogService DialogService
+
+@code {
+    private List<ListModel<UserDto>> list = new List<ListModel<UserDto>>();
+    private ListUtil<UserDto> listUtil = new ListUtil<UserDto>();
+    private MudTable<ListModel<UserDto>> _listTable;
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            InitialiseBasePage();
+
+            //Always make edit mode
+            pageStatus.IsEditMode = true;
+
+            //Add standard toolbar
+            AddToolbarSearch(Search);
+            if (pageStatus.isCrudC)
+                AddToolbarAddNew(AddRecord);
+
+            AddToolbarExport(Export);
+
+            if (pageStatus.isCrudU || pageStatus.isCrudC)
+                AddToolbarSave(SaveAsync);
+
+            Search();
+            StateHasChanged();
+        }
+    }
+
+    private async Task Search()
+    {
+        var result = await Search<UserSearchDialog>();
+        if (!result.Canceled)
+        {
+            var data = (UserSearch)result.Data;
+            await Load(data);
+        }
+    }
+
+
+    private async Task Load(UserSearch search)
+    {
+        var response = await PostAsync<_ResponseDto, UserSearch>(GC.URL_user_list, search);
+
+        list.Clear();
+        List<UserDto> listX = null;
+
+        if (response.StatusCode == HttpStatusCode.OK)
+        {
+            var r = await response.Content.ReadAsStringAsync();
+            var dto = JsonConvert.DeserializeObject<_ResponseDto>(r);
+
+            if (dto.Valid)
+                listX = JsonConvert.DeserializeObject<List<UserDto>>(dto.Result.ToString());
+
+        }
+
+
+        if (listX == null)
+            loadStatus.SetError();
+        else
+        {
+            listUtil.ShowList = true;
+            foreach (var u in listX)
+            {
+                u.Code = u.Username; //for the list table
+                list.Add(new ListModel<UserDto>(u));
+            }
+        }
+
+        if (list == null) { } //ToDo probably expired login
+        else
+        {
+            if (list.Count > 0)
+                Load(list[0]);
+        }
+
+        //testing DELETE ME
+        //listUtil.MaxSelections = 20;
+        // if (list.Count > 1) Load(list[1]);
+        // if (list.Count > 2) Load(list[2]);
+
+
+        // await Search();
+    }
+
+    private void Refresh() => StateHasChanged();
+
+    private async Task OnItemSelected(ListModel<UserDto> r)
+    {
+        await Load(r);
+    }
+
+    private async Task Load(ListModel<UserDto> dto)
+    {
+        if (!dto.IsLoaded)
+        {
+            var record = await GetAsync<UserDto>(GC.URL_user_get + dto.Id, false);
+            record.Code = record.Username; //for the list table
+            dto.Load(record);
+        }
+
+        listUtil.Select(dto);
+        StateHasChanged();
+    }
+
+    private async Task SaveAsync()
+    {
+
+
+        //Get records to be updated
+        var updates = new List<ListModel<UserDto>>();
+        for (int i = 0; i < list.Count; i++)
+        {
+            var rec = list[i];
+            if (rec.IsUpdateable())
+                updates.Add(rec);
+        }
+        if (updates.Count == 0) return;
+
+        loadStatus.SetSaving();
+
+        var updatesX = new UpdateRequest<List<UserDto>>()
+        {
+            Updates = updates.Select(x => x.dto).ToList()
+        };
+        var response = await PostAsync<List<UserDto>>(GC.URL_user_update, updatesX);
+
+
+        if (response.StatusCode == HttpStatusCode.OK)
+        {
+            var r1 = await response.Content.ReadAsStringAsync();
+            var r2 = JsonConvert.DeserializeObject<_ResponseDto>(r1);
+            //if (!r2.Valid) //ToDo
+
+            List<UserDto> dtos = JsonConvert.DeserializeObject<List<UserDto>>(r2.Result.ToString());
+
+            var deletes = new List<ListModel<UserDto>>();
+            for (int i = 0; i < list.Count; i++)
+            {
+                var rec = list[i];
+                var recU = updates.FirstOrDefault(x => x.Id == rec.Id);
+
+                if (recU == null) continue; 
+
+                if (rec.IsDelete)
+                {
+                    deletes.Add(rec);
+                    continue;
+                }
+
+                var dto = null as UserDto;
+                if (rec.IsNew())
+                    dto = dtos.FirstOrDefault(x => x.Username == rec.dto.Username);
+                else
+                    dto = dtos.FirstOrDefault(x => x.Id == rec.Id);
+
+
+                if (dto == null) continue;
+
+                rec.ClearHash();
+                dto.Code = dto.Username; //for the list table
+                rec.Load(dto);
+            }
+
+            foreach (var rec in deletes)
+            {
+                listUtil.Remove(rec);
+                list.Remove(rec);
+            }
+
+        }
+        //ToDo error response
+
+        loadStatus.ResetSaving();
+        StateHasChanged();
+    }
+
+    private async Task EditRecord()
+    {
+        if (!pageStatus.isCrudU) return;
+        pageStatus.ToggleEdit();
+        StateHasChanged();
+        await Task.CompletedTask;
+    }
+
+    private async Task AddRecord()
+    {
+        var dto = await GetAsync<UserDto>(GC.URL_user_new, false);
+        dto.Code = dto.Username; //for the list table
+        var rec = new ListModel<UserDto>(dto);
+        rec.IsLoaded = true;
+        list.Insert(0, rec);
+        OnItemSelected(rec);
+    }
+
+    //ToDo
+    private async Task Export()
+    {
+
+    }
+
+}

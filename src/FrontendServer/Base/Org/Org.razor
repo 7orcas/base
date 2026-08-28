@@ -1,23 +1,25 @@
-﻿@attribute [Route(BaseRoutes.OrgRoute)]
-@inherits BasePage
+﻿@inherits BasePage
+@attribute [Route(BaseRoutes.OrgRoute)]
+@attribute [PageCode(BaseRoutes.OrgPageCode)]
+@attribute [PagePermission(GC.PerOrg)]
 @attribute [Authorize]
 
 <ConfirmNavigation List="list" />
 
-<Header @key="_pageCode"
+<Header @key=pageStatus.pageCode
     TitleKey="Org" 
     SubTitleKey="OrgSub" 
-    PageCode=@_pageCode
+    PageCode=@pageStatus.pageCode
     ToolBarButtonsRight="toolBarButtonsRight" />
 
 @if (_isLoading || _isError || _isSaving)
 {
-    <LoadingWithError IsLoading=@_isLoading
+    <LoadingWithErrorDepciated IsLoading=@_isLoading
                         IsSaving=@_isSaving
                         IsError=@_isError
                         Message=@_errorMessage>
         @exception
-    </LoadingWithError>
+    </LoadingWithErrorDepciated>
 }
 
 <MudGrid>
@@ -60,28 +62,28 @@
                         </TitleContent>
                         <ChildContent>
                             <div style="display: flex; flex-wrap: wrap; gap: 20px;">
-                                <NumericField Width=GC.TextFieldWidth.Short
+                                <NumericField Width=GC.TextFieldWidth.TextShort
                                               LangCode="Nr"
                                               ReadOnly="true"
                                               Value="@orgDto.Nr"
                                               ValueChanged="@((int val) => orgDto.Nr = val)"
                                               ValueExpression="() => orgDto.Nr" />
                                 
-                                <TextField Width=GC.TextFieldWidth.Short
+                                <TextField Width=GC.TextFieldWidth.TextShort
                                            LangCode="Code"
                                            MaxLength="@GC.LenCode"
                                            Value="@orgDto.Code"
                                            ValueChanged="@((string val) => orgDto.Code = val)"
                                            ValueExpression="() => orgDto.Code" />
 
-                                <TextField Width=GC.TextFieldWidth.Medium
+                                <TextField Width=GC.TextFieldWidth.TextMedium
                                            LangCode="Desc"
                                            MaxLength="@GC.LenDescription"
                                            Value="@orgDto.Description"
                                            ValueChanged="@((string val) => orgDto.Description = val)"
                                            ValueExpression="() => orgDto.Description" />
 
-                                <CheckboxField Width=GC.TextFieldWidth.Short
+                                <CheckboxField Width=GC.TextFieldWidth.TextShort
                                                LangCode="Active"
                                                Value="@orgDto.IsActive"
                                                ValueChanged="@((bool val) => orgDto.IsActive = val)"
@@ -96,14 +98,14 @@
                         </TitleContent>
                         <ChildContent>
                             <div style="display: flex; flex-wrap: wrap; gap: 20px;">
-                                <TextField Width=GC.TextFieldWidth.Short
+                                <TextField Width=GC.TextFieldWidth.TextShort
                                            LangCode="LangCode"
                                            MaxLength="@GC.LenLangCode"
                                            Value="@orgDto.LangCode"
                                            ValueChanged="@((string val) => orgDto.LangCode = val)"
                                            ValueExpression="() => orgDto.LangCode"/>
                                 
-                                <NumericNullField Width=GC.TextFieldWidth.Short
+                                <NumericNullField Width=GC.TextFieldWidth.TextShort
                                             LangCode="LangCodeV"
                                             Value="@orgDto.LangLabelVariant"
                                             ValueChanged="@((int? val) => orgDto.LangLabelVariant = val ?? 0)"
@@ -142,13 +144,13 @@
                         </TitleContent>
                         <ChildContent>
                             <div style="display: flex; flex-wrap: wrap; gap: 20px;">
-                                <NumericField Width=GC.TextFieldWidth.Short
+                                <NumericField Width=GC.TextFieldWidth.TextShort
                                               LangCode="LenMin"
                                               Value="@orgDto.PasswordRule.MinLength"
                                               ValueChanged="@((int val) => orgDto.PasswordRule.MinLength = val)"
                                               ValueExpression="() => orgDto.PasswordRule.MinLength" />
 
-                                <NumericField Width=GC.TextFieldWidth.Short
+                                <NumericField Width=GC.TextFieldWidth.TextShort
                                               LangCode="LenMax"
                                               Value="@orgDto.PasswordRule.MaxLength"
                                               ValueChanged="@((int val) => orgDto.PasswordRule.MaxLength = val)"
@@ -188,17 +190,22 @@
 
     @code {
     private bool showList = false;
-    private List<OrgDto> list;
+    private List<ListModel<OrgDto>> list;
     private OrgDto? orgDto;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            await InitialiseBasePage(GC.PerOrg);
-            _pageCode = BaseRoutes.OrgPageCode;
+            await InitialiseBasePage();
 
-            list = await GetAsync<List<OrgDto>>(GC.URL_org_list);
+            var listX = await GetAsync<List<OrgDto>>(GC.URL_org_list);
+            list = new List<ListModel<OrgDto>>();
+            foreach (var u in listX)
+            {
+                list.Add(new ListModel<OrgDto>(u));
+            }
+
 
             if (list == null)
             {
@@ -222,20 +229,21 @@
     {
         var dto = list[index];
         if (!dto.IsLoaded || force){
-            orgDto = await GetAsync<OrgDto>(GC.URL_org + dto.Nr);
+            var orgDtoX = await GetAsync<OrgDto>(GC.URL_org + dto.dto.Nr);
+            var orgDto = new ListModel<OrgDto>(orgDtoX);
             orgDto.HashMe();
             orgDto.IsLoaded = true;
             list[index] = orgDto;
         }
         else
-            orgDto = dto;
+            orgDto = dto.dto;
         StateHasChanged();
     }
 
     private async Task SaveAsync()
     {
         _isSaving = true;
-        var curIndex = orgDto != null? list.FindIndex(d => d.Nr == orgDto.Nr) : -1;
+        var curIndex = orgDto != null? list.FindIndex(d => d.dto.Nr == orgDto.Nr) : -1;
         // var client = await SetClient();
         for (int i = 0; i < list.Count; i++) {
             var dto = list[i];
@@ -245,12 +253,15 @@
                 // var content = new StringContent(json, Encoding.UTF8, "application/json");
                 // var response = await client.PostAsync(GC.URL_org_update, content);
 
-                var response = await PostAsync<OrgDto>(GC.URL_org_update, dto);
+                var response = await PostAsync<OrgDto>(GC.URL_org_update, dto.dto);
 
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    var o = await GetAsync<OrgDto>(GC.URL_org + dto.Nr);
-                    list[i] = o.HashMe().SetLoaded();
+                    var orgDtoX = await GetAsync<OrgDto>(GC.URL_org + dto.dto.Nr);
+                    var orgDto = new ListModel<OrgDto>(orgDtoX);
+                    orgDto.HashMe();
+                    orgDto.SetLoaded();
+                    list[i] = orgDto;
                 }
             }
         }

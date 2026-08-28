@@ -8,7 +8,7 @@
 
 namespace Backend.Base.Config.Ent
 {
-    public class LanguageConfig
+    public class ConfigLanguage
     {
         public string LangCode { get; set; }
         public bool IsVisible { get; set; } = false;

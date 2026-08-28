@@ -1,0 +1,132 @@
+﻿@inherits BaseComponent
+
+@using MudBlazor
+@using GC = FrontendServer.GlobalConstants;
+@using FrontendServer.Base._Base;
+
+<div style="height:100%; overflow:auto;">
+
+    <table style="flex:1; min-height:0; table-layout:fixed; width:100%;@GetDebugBorder("pink")">
+
+        <tbody class="mud-table-body">
+            <tr class="XXmud-table-row">
+                @foreach (var record in Selections.Where(x => x.IsSelected))
+                {
+                var dto = record.dto;
+
+                <td @key="record.Id" style="vertical-align: top; padding: 1px;">
+
+                    <MudExpansionPanels MultiExpansion="true">
+                        <MudExpansionPanel Text=@GetLabel("ConfigG") Expanded="true">
+                            <TitleContent>
+                                <div class="expansion-title">
+                                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                                        <Label Size="GC.TextSize.Normal" Key="ConfigG"></Label>
+                                        <CheckboxField Width=GC.TextFieldWidth.TextShort
+                                                        Class="delete-checkbox"
+                                                        LangCode="Delete"
+                                                        ReadOnly="!IsDeleteActive"
+                                                        @bind-Value="dto.IsDelete"
+                                                        @bind-Value:after="OnDeleteChanged" />
+                                    </div>
+                                </div>
+                            </TitleContent>
+                            <ChildContent>
+                                <div style="display: flex; flex-wrap: wrap; gap: 20px;">
+
+                                    <TextField Width=GC.TextFieldWidth.TextMedium
+                                                LangCode="UserName"
+                                                ReadOnly="!dto.IsNew()"
+                                                MaxLength="@GC.LenCode"
+                                                Immediate="true"
+                                                Value="@dto.Username"
+                                                ValueChanged="@(v => UsernameChanged(v, record))" />
+
+                                    <TextField Width=GC.TextFieldWidth.TextMedium
+                                                LangCode="Email"
+                                                PageStatus=@pageStatus
+                                                MaxLength="@GC.LenEmail"
+                                                @bind-Value="dto.Email" />
+
+                                    <NumericField LangCode="OrgD"
+                                                PageStatus=@pageStatus
+                                                @bind-Value="dto.OrgNr" />
+
+                                    <NumericField LangCode="LoginA"
+                                                PageStatus=@pageStatus
+                                                @bind-Value="dto.Attempts" />
+
+                                    <CheckboxField LangCode="AdminU"
+                                                PageStatus=@pageStatus
+                                                @bind-Value="@dto.IsAdminUser" />
+
+                                    <CheckboxField Width=GC.TextFieldWidth.TextShort
+                                                LangCode="Active"
+                                                @bind-Value="dto.IsActive" />
+
+                                    <Version version=dto />
+
+                                </div>
+                            </ChildContent>
+                        </MudExpansionPanel>
+                        @if (dto.Accounts?.Any() == true)
+                        {
+                            @foreach (var account in dto.Accounts)
+                            {
+                                <MudExpansionPanel @key="account.Id" Text=@GetLabel("UserAc") Expanded=@Expand(account, dto) Style="padding:1px;">
+                                    <TitleContent>
+                                        <div class="expansion-title">
+                                            @GetLabel("UserAc") : @account.OrgCode @ExpandDefault(account, dto)
+                                        </div>
+                                    </TitleContent>
+                                    <ChildContent>
+                                        <MudPaper Class="pa-4 mb-4" Elevation="0">
+                                            <UserAccount accountDto="account"
+                                                         PageStatus="@pageStatus" />
+                                        </MudPaper>
+                                    </ChildContent>
+                                </MudExpansionPanel>
+                            }
+                        }
+
+                    </MudExpansionPanels>
+                </td>
+            }
+            </tr>
+        </tbody>
+
+    </table>
+</div>
+
+@code {
+    [Parameter] public List<ListModel<UserDto>> Selections { get; set; } = new List<ListModel<UserDto>>();
+    [Parameter] public EventCallback Refresh { get; set; }
+    [Parameter] public PageStatus? pageStatus { get; set; }
+
+    private bool Expand(UserDto.UserAccountDto account, UserDto user)
+    {
+        return account.OrgNr == user.OrgNr;
+    }
+
+    private string ExpandDefault(UserDto.UserAccountDto account, UserDto user)
+    {
+        if (account.OrgNr == user.OrgNr
+            && user.Accounts.Count > 1)
+            return "[" + GetLabel("Default") + "]";
+        return "";
+    }
+
+    private void OnDeleteChanged()
+    {
+        StateHasChanged();
+    }
+
+    private async Task UsernameChanged(string value, ListModel<UserDto> record)
+    {
+        record.dto.Username = value;
+        record.dto.Code = value;
+        await Refresh.InvokeAsync();
+    }
+
+    private bool IsDeleteActive => pageStatus == null ? false : pageStatus.isCrudD;
+}

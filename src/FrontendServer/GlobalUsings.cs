@@ -2,6 +2,8 @@
 global using Common.DTO;
 global using Common.DTO.App;
 global using Common.DTO.Base;
+global using Common.Search;
+global using Common.Search.Base;
 global using Common.Validator;
 global using Common.Validator.Base;
 global using Common.Request;

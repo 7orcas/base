@@ -1,21 +1,23 @@
-﻿@attribute [Route(BaseRoutes.PermRoute)]
-@inherits BasePage
+﻿@inherits BasePage
+@attribute [Route(BaseRoutes.PermRoute)]
+@attribute [PageCode(BaseRoutes.PermPageCode)]
+@attribute [PagePermission(GC.PerOrg)]
 @attribute [Authorize]
 
-<Header @key="_pageCode"
+<Header @key=pageStatus.pageCode
         TitleKey="UserPerm"
         SubTitleKey="UserPermSub"
-        PageCode=@_pageCode
+        PageCode=@pageStatus.pageCode
         ToolBarButtonsLeft="toolBarButtons" />
 
 @if (_isLoading || _isError || _isSaving)
 {
-    <LoadingWithError IsLoading=@_isLoading
+    <LoadingWithErrorDepciated IsLoading=@_isLoading
                       IsSaving=@_isSaving
                       IsError=@_isError
                       Message=@_errorMessage>
         @exception
-    </LoadingWithError>
+    </LoadingWithErrorDepciated>
 }
 else
 {
@@ -101,8 +103,7 @@ else
     {
         if (firstRender)
         {
-            await InitialiseBasePage(GC.PerPerm);
-            _pageCode = BaseRoutes.PermPageCode;
+            await InitialiseBasePage();
 
             permissions = PS.AllPermissions;
             effective = PS.Permissions;

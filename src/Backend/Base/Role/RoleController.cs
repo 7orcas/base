@@ -46,7 +46,7 @@ namespace Backend.Base.Role
                 list.Add(new UserRoleDto
                 {
                     RoleId = m.RoleId,
-                    orgNr = m.orgNr.HasValue? m.orgNr.Value : GC.BaseOrgNr,
+                    OrgNr = m.orgNr.HasValue? m.orgNr.Value : GC.BaseOrgNr,
                     Code = m.Code,
                     Description = m.Description,
                     Updated = m.Updated,
@@ -154,7 +154,7 @@ Debug.WriteLine(m.Code + " " + m.Id);
 
             //New roles require orgNr
             foreach (var dto in dtos.Where(e => e.IsNew()))
-                dto.orgNr = session.Org.Nr;
+                dto.OrgNr = session.Org.Nr;
 
             //Get current codes and updated date/time from db
             var roles = await _RoleService.GetRoles(session);

@@ -1,0 +1,58 @@
+﻿@inherits BasePage
+
+<MudDialog Class="search-dialog" Style="@($"width:{Width}; height:{Height};")">
+    <TitleContent>
+        <div class="d-flex align-center w-100">
+            <MudText Typo="Typo.h6" Class="flex-grow-1">
+                @GetLabel(TitleKey)
+            </MudText>
+
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Secondary"
+                       OnClick="@CloseDialog">
+                @GetLabel("Cancel")
+            </MudButton>
+        </div>
+    </TitleContent>
+
+    <DialogContent>
+        <div @onkeydown="HandleKeyDown">
+            <MudForm >
+                @ChildContent
+            </MudForm>
+        </div>
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   Disabled="!IsValid"
+                   Class="ml-auto"
+                   OnClick="SubmitAction">
+            @GetLabel("Search")
+        </MudButton>
+
+    </DialogActions>
+</MudDialog>
+
+
+@code {
+    [CascadingParameter] private IMudDialogInstance? MudDialog { get; set; }
+    [Parameter] public string Width { get; set; } = "700px";
+    [Parameter] public string Height { get; set; } = "500px";
+    [Parameter] public string TitleKey { get; set; } = "Search";
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public EventCallback SubmitAction { get; set; } = new();
+    [Parameter] public bool IsValid { get; set; } = true;
+
+    private void CloseDialog() => MudDialog.Cancel();
+        
+    private void OnBlu(){}
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+            await SubmitAction.InvokeAsync();
+    }
+
+}

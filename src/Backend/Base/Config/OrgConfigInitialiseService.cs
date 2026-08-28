@@ -46,7 +46,7 @@ namespace Backend.Base.Config
             foreach (var org in orgs)
             {
                 //Config languages
-                var lConfigs = new List<LanguageConfig>();
+                var lConfigs = new List<ConfigLanguage>();
                 foreach (var l in org.Encoding.Languages)
                 {
                     var v = ValidateLanguage(org, l, langCodes);
@@ -54,7 +54,7 @@ namespace Backend.Base.Config
                 }
 
                 //Config Org
-                var oConfig = new OrgConfig()
+                var oConfig = new ConfigOrg()
                 {
                     orgNr = org.Nr,
                     LangCodeDefault = org.LangCode,
@@ -79,13 +79,13 @@ namespace Backend.Base.Config
             return list;
         }
 
-        private LanguageConfig? ValidateLanguage(OrgEnt org, Language orgLang, List<LangCode> langCodes)
+        private ConfigLanguage? ValidateLanguage(OrgEnt org, Language orgLang, List<LangCode> langCodes)
         {
             //Lang Code must exist in database
             var lc = langCodes.Find(c => c.Code == orgLang.LangCode);
             if (lc == null) return null;
 
-            return new LanguageConfig()
+            return new ConfigLanguage()
             {
                 LangCode = orgLang.LangCode,
                 IsVisible = orgLang.IsVisible,

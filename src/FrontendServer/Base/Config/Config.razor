@@ -6,17 +6,17 @@
 
 <Header TitleKey="Cfg"
         SubTitleKey="ConfSub"
-        PageCode=@_pageCode
+        PageCode=@pageStatus.pageCode
         ToolBarButtonsRight="toolBarButtonsRight" />
 
 @if (_isLoading || _isError || _isSaving)
 {
-    <LoadingWithError IsLoading=@_isLoading
+    <LoadingWithErrorDepciated IsLoading=@_isLoading
                         IsSaving=@_isSaving
                         IsError=@_isError
                         Message=@_errorMessage>
         @exception
-    </LoadingWithError>
+    </LoadingWithErrorDepciated>
 }
 
 <p></p>
@@ -35,7 +35,7 @@
                         </TitleContent>
                         <ChildContent>
                             <MudGrid>
-                                <MudCheckBox Label="@Label("IsAdminLanguage")" @bind-Value="@configDto.Label.IsAdminLanguage" Variant="Variant.Filled"></MudCheckBox>
+                                <MudCheckBox Label="@Label("IsAdminLanguage")" @bind-Value="@configDto.dto.Label.IsAdminLanguage" Variant="Variant.Filled"></MudCheckBox>
                             </MudGrid>
 
                         </ChildContent>
@@ -59,15 +59,16 @@
 
 @inject ConfigService ConfigService
 @code {
-    private AppConfigDto? configDto;
+    private ListModel<AppConfigDto>? configDto;
     
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
             await InitialiseBasePage(GC.PerConfig);
-            _pageCode = BaseRoutes.ConfigPageCode;
-            configDto = ConfigService.Config;
+            pageStatus.pageCode = BaseRoutes.ConfigPageCode;
+            var configDtoX = ConfigService.Config;
+            configDto = new ListModel<AppConfigDto>(configDtoX);
             _isLoading = false;
                         
             AddToolbarSave(SaveAsync);

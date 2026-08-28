@@ -1,7 +1,7 @@
 ﻿@inherits LayoutComponentBase
 
 <div class="layout-root">
-
+    
     <MudThemeProvider DefaultScrollbar="true" @bind-IsDarkMode="_isDarkMode" />
     <MudPopoverProvider />
     <MudDialogProvider />
@@ -9,18 +9,18 @@
 
     @if (!ConfS.IsInitialized)
     {
-        <Loading />
+        <Spinner />
         @Body
     }
     else
     {
-        <MudLayout>
+        <MudLayout Style="@($"height:100vh; display: flex; flex-direction: column; {GetDebugBorder("black")}")">
 
-            <MudAppBar Elevation="1" 
-                       Class="@($"main-title{GetLightDarkClassSuffix()}")"
-                       Style="width:100%; left:0; right:0;">
+            <MudPaper Style=@($"width:100%; left:0; right:0;{GetDebugBorder("grey")}")"
+                       Class="@($"main-title{GetLightDarkClassSuffix()}")"                       
+                       Elevation="0">
                 
-                <MudText Style="display: flex; align-items: center; width: 100%; justify-content: space-between;">
+                <div style="display: flex; align-items: center; width: 100%; justify-content: space-between;">
 
                     <div style="display: flex; align-items: center;">
                         <MudButton Href="@AppRoutes.HomeRoute">
@@ -28,6 +28,9 @@
                                     alt="Icon"
                                     style="width:48px;height:48px;" />
                         </MudButton>
+                        <div style="color:red;background-color:white;">
+                            @ShowDebugMode()
+                        </div>
                     </div>
 
                     <!-- Center: Menu items -->
@@ -42,55 +45,28 @@
                             Icon="@Icons.Material.Filled.Chat"
                             OnClick="ToggleChat" />
 
-                        <MudMenu ActivationEvent="MouseEvent.MouseOver"
-                                 AnchorOrigin="Origin.BottomLeft"
-                                 TransformOrigin="Origin.TopLeft"
-                                 OffsetY="true"
-                                 Dense="true">
-                            <ActivatorContent>
-                                <MudIconButton Icon="@Icons.Material.Filled.ManageAccounts"
-                                               Color="Color.Inherit"
-                                               Size="Size.Large"/>
-                            </ActivatorContent>
-                            <ChildContent>
-                                <MudStack Spacing="1" Style="align-items: flex-start;">
-                                    <MudButton Class="custom-menu-button"
-                                               Link="true"
-                                               OnClick="@Logout"
-                                               Color="Color.Inherit"
-                                               Variant="Variant.Text">
-                                        <MudText Typo="Typo.h6">@GetLabel("Logout")</MudText>
-                                    </MudButton>
+                        <SettingsMenu @bind-IsDarkMode="_isDarkMode" />
 
-                                    <div style="margin-left:9px;">
-                                        <MudSwitch @bind-Value="_isDarkMode"
-                                                   T="bool"
-                                                   LabelPlacement="Placement.Start"
-                                                    >
-                                            <MudText Typo="Typo.h6">@GetLabel("LDM")</MudText>
-                                        </MudSwitch>
-                                    </div>
-                                    <MenuButton Title="@GetLabel("ChgPw")" Link="@AppRoutes.ChangePWRoute" />
-                                    <MenuButton Title="@GetLabel("Config")" Link="@AppRoutes.ConfigRoute" />
-                                </MudStack>
-                            </ChildContent>
-                        </MudMenu>
                     </div>
 
-                </MudText>
-            </MudAppBar>
+                </div>
+            </MudPaper>
 
-            <MudMainContent Class="main-content-fill-screen">
+            <MudMainContent Class="main-content main-content-fill-screen" 
+                            Style=@($"flex: 1 1 auto; min-height: 0 !important; overflow: hidden; height:100%; {GetDebugBorder("pink")}")">
 
-                <div style="display:flex;height:calc(100vh - 64px - 60px);">
+                <div style="display:flex; height: 100%">
 
-                    <div id="leftPanel" class="left-panel @($"main-menu{GetLightDarkClassSuffix()}")" style="width:@($"{_leftPanelWidth}px");">
+                    <div id="leftPanel" 
+                        class="left-panel @($"main-menu{GetLightDarkClassSuffix()}")" 
+                         style="width:@($"{_leftPanelWidth}px"); @($"{GetDebugBorder("brown")}")">
                         <MainMenu />
                     </div>
 
                     <div id="leftSplitter" class="splitter"></div>
 
-                    <div class="main-panel">
+                    <div class="main-panel" 
+                         style="height: 100%;@GetDebugBorder("brown")">
                         @Body
                     </div>
 
@@ -107,7 +83,10 @@
             </MudMainContent>
 
 
-            <MudPaper Class="bottom-bar d-flex justify-space-between align-center" Elevation="1" Square="true">
+            <MudPaper Style="height: 40px; flex-shrink: 0;"
+                      Class="bottom-bar d-flex justify-space-between align-center" 
+                      Elevation="0" 
+                      Square="true">
                 <div style="display: flex; align-items: center;">
                     111
                 </div>
@@ -115,7 +94,7 @@
                     2222222222222222222222222222222222222222222222222222222222
                 </div>
                 <div style="display: flex; align-items: center; gap: 12px;">
-                    333
+                    333x
                 </div>
             </MudPaper>
 
@@ -176,50 +155,21 @@
 
     public string GetLightDarkClassSuffix() => TS.IsDarkMode ? "-dark" : "-light";
 
-    //DeleteMe
-    // private MudTheme _theme = new MudTheme
-    //     {
-    //         PaletteLight = new PaletteLight
-    //         {
-    //             // AppbarText = "#FFFFFF",
-    //             // AppbarBackground = "#1976d2",
-
-    //             // Primary = "#1976d2",
-    //             // Secondary = "#e91e63",
-    //             // Background = "#f5f5f5",
-    //             // TextPrimary = "#212121",
-    //             // DrawerBackground = "#FFFF00" // "#ffffff",
-
-    //         },
-    //         PaletteDark = new PaletteDark
-    //         {
-    //             // AppbarBackground = "#2A2D3E",   // Soft steel blue-gray
-    //             // AppbarText = "#E0E0E0",         // Muted white for comfort
-
-    //             // Background = "#2C2F3A", //"#1E1E2F",         // Deep but not harsh
-    //             // Surface = "#2A2D3E",            // Match or complement AppBar
-    //             // Primary = "#90CAF9",            // Soft blue (Material Blue 200)
-    //             // PrimaryContrastText = "#1E1E2F",// Text on primary buttons
-
-    //             // TextPrimary = "#E0E0E0",        // Light gray for standard text
-    //             // TextSecondary = "#A0A0B2",      // Dimmer for subtext
-    //             // DrawerBackground = "#2C2F3A",   // Slightly lighter for depth
-    //         },
-    //     };
-
-
+    private string ShowDebugMode()
+    {
+        if (@ConfS.IsDebugMode)
+            return "Debug mode is on ";
+        return "";
+    }
 
     private void RefreshLayout() 
     {
         InvokeAsync(StateHasChanged);
     }
 
-    private string GetLabel(string key)
-    {
-        return LS.GetLabel(key);
-    }
-
+    private void OpenChat() => _chatOpen = !_chatOpen;
     private void ToggleChat() => _chatOpen = !_chatOpen;
+    private string GetLabel(string key) => LS.GetLabel(key);
     private async Task Logout() => await LgS.LogoutAsync();
     
     public void Dispose() 
@@ -247,6 +197,12 @@
     public async ValueTask DisposeAsync()
     {
         _objRef?.Dispose();
+    }
+
+    public string GetDebugBorder(string color)
+    {
+        if (ConfS == null) return string.Empty;
+        return ConfS.IsDebugBorder ? " border:5px solid " + color + ";" : string.Empty;
     }
 
 }

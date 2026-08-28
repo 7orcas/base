@@ -27,6 +27,11 @@ namespace FrontendServer.Base._Base
             ConfS.Set(config);
         }
 
+        public string GetDebugBorder(string color)
+        {
+            if (ConfS == null) return string.Empty;
+            return ConfS.IsDebugBorder ? " border:5px solid " + color + ";": string.Empty;
+        }
 
     }
 }

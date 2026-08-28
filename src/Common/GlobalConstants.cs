@@ -43,6 +43,7 @@ namespace Common
         public const int LenCode        = 15;
         public const int LenDescription = 50;
         public const int LenLangCode    = 4;
+        public const int LenEmail       = 50;
 
         //Validation Status
         public const int ValStatusOk      = 0;

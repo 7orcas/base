@@ -1,0 +1,127 @@
+﻿@inherits BaseComponent
+
+@using System.Linq.Expressions
+@using MudBlazor
+@using GC = FrontendServer.GlobalConstants;
+
+<div style="display:flex; flex-wrap:wrap; gap:20px;">
+
+    <div class="accout-details" style="flex:0 0 100%; display:flex; flex-wrap:wrap; gap:20px; align-items:center;">
+        <NumericField LangCode="OrgNr"
+                      ReadOnly="true"
+                      @bind-Value="@accountDto.OrgNr" />
+
+        <NumericField LangCode="Clas"
+                      PageStatus=@pageStatus
+                      @bind-Value="@accountDto.Classification" />
+
+        <CheckboxField LangCode="Active"
+                       PageStatus=@pageStatus
+                       @bind-Value="@accountDto.IsActive" />
+
+        <CheckboxField LangCode="AdminL"
+                       PageStatus=@pageStatus
+                       @bind-Value="@accountDto.IsAdminLang" />
+    </div>
+
+    <div class="accout-roles" style="flex:2;">
+        <div class="useracc-table-title">
+            <MudText>
+                @GetLabel("Roles") :
+            </MudText>
+        </div>
+        <MudTable Style="@($"flex:1; min-height:0; table-layout:fixed; width:100%; {@GetDebugBorder("blue")}")"
+                  T="UserDto.UserAccountRoleDto"
+                  Items="@accountDto.Roles"
+                  Height="100%"
+                  FixedHeader="true"
+                  Hover="true"
+                  Bordered="true"
+                  Striped="true">
+
+
+            <ColGroup>
+                <col style="width:20%;" />
+                <col style="width:20%;" />
+                <col style="width:20%;" />
+                <col style="width:20%;" />
+                <col style="width:20%;" />
+            </ColGroup>
+            <HeaderContent>
+                <MudTh><Label Key="Role" /></MudTh>
+                <MudTh><Label Key="Active" /></MudTh>
+                <MudTh><Label Key="Assigned" /></MudTh>
+                <MudTh><Label Key="EffFrom" /></MudTh>
+                <MudTh><Label Key="EffTo" /></MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>
+                    @context.Code
+                </MudTd>
+                <MudTd>
+                    <MudCheckBox T="bool" ReadOnly="true" @bind-Value="context.IsRoleActive" />
+                </MudTd>
+                <MudTd>
+                    <MudCheckBox T="bool" ReadOnly="@(!IsEditActive)" @bind-Value="context.IsActive" />
+                </MudTd>
+                <MudTd>
+                    <MudDatePicker @bind-Date="context.FromDate"
+                                   Editable="true"
+                                   Disabled="@(!IsEditActive || !context.IsActive)"
+                                   DateFormat=@GC.Date_Format
+                                   Clearable="true" />
+                </MudTd>
+
+                <MudTd>
+                    <MudDatePicker @bind-Date="context.ToDate"
+                                   Editable="true"
+                                   Disabled="@(!IsEditActive || !context.IsActive)"
+                                   DateFormat=@GC.Date_Format
+                                   Clearable="true" />
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    </div>
+
+    <div class="accout-permissions" style="flex:1;">
+        <div class="useracc-table-title">
+            <MudText>
+                @GetLabel("PermEff") :
+            </MudText>
+        </div>
+        <MudTable Style="@($"flex:1; min-height:0; table-layout:fixed; width:100%; {@GetDebugBorder("blue")}")"
+                  T="UserDto.UserAccountPermissionDto"
+                  Items="@accountDto.Permissions"
+                  Height="100%"
+                  FixedHeader="true"
+                  Hover="true"
+                  Bordered="true"
+                  Striped="true">
+
+
+            <ColGroup>
+                <col style="width:60%;" />
+                <col style="width:40%;" />
+            </ColGroup>
+            <HeaderContent>
+                <MudTh><Label Key="Perm" /></MudTh>
+                <MudTh><Label Key="Crud" /></MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>
+                    @context.Code
+                </MudTd>
+                <MudTd>
+                    @context.Crud
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    </div>
+</div>
+
+@code {
+    [Parameter] public UserDto.UserAccountDto accountDto { get; set; }
+    [Parameter] public PageStatus? pageStatus { get; set; }
+    
+    public bool IsEditActive => pageStatus == null ? false : pageStatus.IsEditMode;
+}

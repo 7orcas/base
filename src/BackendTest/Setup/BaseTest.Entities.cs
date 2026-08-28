@@ -39,7 +39,7 @@ namespace BackendTest.Setup
                 UserAccount = CreateUserAccount(orgNr, userAccId)
             };
 
-            var orgConfig = new OrgConfig() {
+            var orgConfig = new ConfigOrg() {
                 orgNr = orgNr,
                 LangCodeDefault = LANG_CODE_DEFAULT,
                 IsLangCodeEditable = true,
@@ -50,9 +50,9 @@ namespace BackendTest.Setup
             return session;
         }
 
-        public UserConfig CreateUserConfig(int orgNr)
+        public ConfigUser CreateUserConfig(int orgNr)
         {
-            var userConfig = new UserConfig
+            var userConfig = new ConfigUser
                 {
                     orgNr = orgNr,
                     LangCodeCurrent = LANG_CODE_DEFAULT,
@@ -61,16 +61,16 @@ namespace BackendTest.Setup
             return userConfig;
         }
 
-        public UserAccountEnt CreateUserAccount(int orgNr, int userAccId)
+        public LoginAccountEnt CreateUserAccount(int orgNr, int userAccId)
         {
-            var acc = new UserAccountEnt
+            var acc = new LoginAccountEnt
             {
                 Id = userAccId,
                 Username = GCT.UserName,
                 OrgNr = orgNr,
-                LangCode = LANG_CODE_DEFAULT,
                 Classification = 0,
-                IsAdmin = false,
+                IsAdminUser = false,
+                IsAdminLang = false,
                 Permissions = new List<PermissionCrudEnt>
                 {
                     new PermissionCrudEnt { Nr = USER_PERM, Crud = USER_PERM_CRUD }
@@ -85,15 +85,15 @@ namespace BackendTest.Setup
             var service = new Mock<ConfigServiceI>();
 
             service
-                .Setup(x => x.CreateUserConfig(It.IsAny<UserAccountEnt>(), It.IsAny<OrgEnt>(), It.IsAny<string>()))
+                .Setup(x => x.CreateUserConfig(It.IsAny<LoginAccountEnt>(), It.IsAny<OrgEnt>(), It.IsAny<string>()))
                 .Returns(CreateUserConfig());
 
             return service.Object;
         }
 
-        public UserConfig CreateUserConfig()
+        public ConfigUser CreateUserConfig()
         {
-            var userConfig = new UserConfig
+            var userConfig = new ConfigUser
             {
                 orgNr = ORG_NR,
                 LangCodeCurrent = LANG_CODE_DEFAULT,
@@ -135,13 +135,13 @@ namespace BackendTest.Setup
             };
         }
 
-        public List<LanguageConfig> CreateLanguageConfigs()
+        public List<ConfigLanguage> CreateLanguageConfigs()
         {
-            return new List<LanguageConfig>
+            return new List<ConfigLanguage>
             {
-                new LanguageConfig { LangCode = LANG_CODE_EN, IsVisible = false, IsEditable = true },
-                new LanguageConfig { LangCode = LANG_CODE_DE, IsVisible = true, IsEditable = false },
-                new LanguageConfig { LangCode = LANG_CODE_ES, IsVisible = false, IsEditable = false }
+                new ConfigLanguage { LangCode = LANG_CODE_EN, IsVisible = false, IsEditable = true },
+                new ConfigLanguage { LangCode = LANG_CODE_DE, IsVisible = true, IsEditable = false },
+                new ConfigLanguage { LangCode = LANG_CODE_ES, IsVisible = false, IsEditable = false }
             };
         }
 
@@ -192,13 +192,13 @@ namespace BackendTest.Setup
             return list;
         }
 
-        public List<UserAccountRoleEnt> GetUserRoles()
+        public List<RoleUserAccountEnt> GetUserRoles()
         {
-            return new List<UserAccountRoleEnt>
+            return new List<RoleUserAccountEnt>
             {
-                new UserAccountRoleEnt { Id = 1, RoleId = 1, Code = ROLE_1 , UserAccountId = USER_ACCOUNT_ID_1 , orgNr = ORG_NR},
-                new UserAccountRoleEnt { Id = 2, RoleId = 2, Code = ROLE_2 , UserAccountId = USER_ACCOUNT_ID_1 , orgNr = ORG_NR },
-                new UserAccountRoleEnt { Id = 3, RoleId = 3, Code = ROLE_3 , UserAccountId = USER_ACCOUNT_ID_1 , orgNr = ORG_NR }
+                new RoleUserAccountEnt { Id = 1, RoleId = 1, Code = ROLE_1 , UserAccountId = USER_ACCOUNT_ID_1 , orgNr = ORG_NR},
+                new RoleUserAccountEnt { Id = 2, RoleId = 2, Code = ROLE_2 , UserAccountId = USER_ACCOUNT_ID_1 , orgNr = ORG_NR },
+                new RoleUserAccountEnt { Id = 3, RoleId = 3, Code = ROLE_3 , UserAccountId = USER_ACCOUNT_ID_1 , orgNr = ORG_NR }
             };
         }
 

@@ -27,12 +27,14 @@
         "ASPNETCORE_ENVIRONMENT": "Development",
         "USER": "$",
         "PASSWORD": "$",
+        "zUSER": "1",
+        "zPASSWORD": "1",
         "xUSER": "user",
         "xPASSWORD": "xx123",
         "ORG": "1",
         "LANGCODE": "en",
         "AUTO": "true",
-        "OPENx": "rol001"
+        "OPEN": "usr001"
       }
     },
     "IIS Express": {

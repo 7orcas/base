@@ -120,9 +120,9 @@ namespace Backend.Base.Login
                 }
                 
 
-                UserAccountEnt? account = null;
+                LoginAccountEnt? account = null;
                 if (ServiceAccount != null && login.IsService())
-                    account = UserAccountEnt.GetServiceAccount(request.Org);
+                    account = LoginAccountEnt.GetServiceAccount(request.Org);
                 else
                     account = await _loginRepo.GetAccount(login.Id, request.Org);
 
@@ -161,7 +161,7 @@ namespace Backend.Base.Login
                 }
 
                 //Continue with login process and return tokenkey
-                var langCode = !string.IsNullOrEmpty(request.LangCode) ? request.LangCode : account.LangCode; //Delete me
+                var langCode = !string.IsNullOrEmpty(request.LangCode) ? request.LangCode : login.LangCode; 
                 await InitialiseLogin(login, account, org);
                 var userConfig = _configService.CreateUserConfig(account, org, langCode);
                 var session = await _sessionService.CreateSession(account, org, userConfig, masqueradeId, request.SourceApplication, ipAddress);
@@ -440,7 +440,7 @@ namespace Backend.Base.Login
 
 
 
-        public async Task InitialiseLogin(LoginEnt login, UserAccountEnt account, OrgEnt org)
+        public async Task InitialiseLogin(LoginEnt login, LoginAccountEnt account, OrgEnt org)
         {
             if (login.Id == GC.ServiceLoginId)
                 SetAttemptsService(0);

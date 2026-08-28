@@ -80,7 +80,8 @@ namespace Backend.Base.Config
                     User = new UserConfigDto 
                     {
                         IsService = userAccount.IsService(),
-                        IsSystemAdmin = userAccount.IsService() || userAccount.IsSystemAdmin,
+                        IsAdminUser = userAccount.IsAdminUser,
+                        IsAdminLang = userAccount.IsAdminLang
                     },
 
                     Languages = langs.ToArray(),

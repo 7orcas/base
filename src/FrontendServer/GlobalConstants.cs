@@ -3,7 +3,10 @@
     public class GlobalConstants : Common.GlobalConstants
     {
         public const int AppClient                = 1; //defined in FrontendLogin as well
-        
+
+        public const string Date_TS_Format         = "yyyy-MM-dd HH:mm:ss";
+        public const string Date_Format            = "dd MMM yy";
+
         public const string LabelCacheKey         = "kLabel";
         public const string TokenCacheKey         = "kToken";
         public const string RefreshTokenCacheKey  = "kRefreshToken";
@@ -12,21 +15,29 @@
         public const string UnAuthorizedClientKey = "kUAC";
         public const string BearerKey             = "Bearer";
 
-        public const string URL_logout            = "api/Logout/logout";
-        public const string URL_perm_user         = "api/Permission/userlist";
-        public const string URL_perm_user_eff     = "api/Permission/userlisteff";
-        public const string URL_perm_list         = "api/Permission/list";
-        public const string URL_audit_list        = "api/Audit/list";
-        public const string URL_user_role_list    = "api/Role/userroles";
-        public const string URL_role_list         = "api/Role/roles";
-        public const string URL_role              = "api/Role/get/";
-        public const string URL_role_update       = "api/Role/update/";
-        public const string URL_config            = "api/Config/clientConfig";
-        public const string URL_org_list          = "api/Org/list";
-        public const string URL_org               = "api/Org/get/";
-        public const string URL_org_update        = "api/Org/update";
-        public const string URL_label_clientlist  = "api/Label/clientlist/";
-        public const string URL_label_relatedlist = "api/Label/relatedlist/";
+        private const string URL_base             = "api/";
+        private const string URL_user             = URL_base + "User/";
+
+        public const string URL_logout            = URL_base + "Logout/logout";
+        public const string URL_perm_user         = URL_base + "Permission/userlist";
+        public const string URL_perm_user_eff     = URL_base + "Permission/userlisteff";
+        public const string URL_perm_list         = URL_base + "Permission/list";
+        public const string URL_audit_list        = URL_base + "Audit/list";
+        
+        public const string URL_user_list         = URL_user + "list";
+        public const string URL_user_get          = URL_user + "get/";
+        public const string URL_user_update       = URL_user + "update";
+        public const string URL_user_new          = URL_user + "new";
+        public const string URL_user_role_list    = URL_base + "Role/userroles";
+        public const string URL_role_list         = URL_base + "Role/roles";
+        public const string URL_role              = URL_base + "Role/get/";
+        public const string URL_role_update       = URL_base + "Role/update/";
+        public const string URL_config            = URL_base + "Config/clientConfig";
+        public const string URL_org_list          = URL_base + "Org/list";
+        public const string URL_org               = URL_base + "Org/get/";
+        public const string URL_org_update        = URL_base + "Org/update";
+        public const string URL_label_clientlist  = URL_base + "Label/clientlist/";
+        public const string URL_label_relatedlist = URL_base + "Label/relatedlist/";
 
         public enum TextSize
         {
@@ -43,9 +54,10 @@
         public enum TextFieldWidth
         {
             Ignore = 0,
-            Short = 1,
-            Medium = 2,
-            Long = 3,
+            TextShort = 1,
+            TextMedium = 2,
+            TextLong = 3,
+            Int = 4,
         }
 
     }

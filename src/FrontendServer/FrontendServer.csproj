@@ -7,11 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Base\Util\LoadingWithError.razor.css" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Base\Util\LoadingWithError.razor.css" />
+    <Compile Remove="Base\Session\**" />
+    <Content Remove="Base\Session\**" />
+    <EmbeddedResource Remove="Base\Session\**" />
+    <None Remove="Base\Session\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -26,7 +25,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Base\Session\" />
     <Folder Include="Logs\" />
   </ItemGroup>
 

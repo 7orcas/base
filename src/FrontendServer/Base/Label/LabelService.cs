@@ -15,6 +15,7 @@ namespace FrontendServer.Base.Config
     {
         private readonly ConfigService _configService;
         private readonly LabelCacheService _labelCacheService;
+        private LoginParameters lps;
 
         public LabelService(ProtectedSessionStorage session,
             IHttpClientFactory httpClientFactory,
@@ -48,8 +49,15 @@ namespace FrontendServer.Base.Config
         public string GetLabelHighlightNoKey(string labelCode) => IsLabel(labelCode) ? labels[labelCode].Label : "[" + labelCode + "]";
         public string? GetTooltip(string labelCode) => IsTooltip(labelCode) ? labels[labelCode].Tooltip : null;
 
+        public void Reset()
+        {
+            _labelCacheService.Clear();
+            Initialise(lps);
+        } 
+
         public async Task<Dictionary<string, LangLabelDto>> Initialise(LoginParameters lps)
         {
+            this.lps = lps;
             try
             {
                 if (!_configService.IsInitialized)

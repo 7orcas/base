@@ -10,7 +10,7 @@ using GC = Common.GlobalConstants;
 
 namespace Common.Validator
 {
-    public abstract class _BaseVal<T, D> where T : _BaseVal<T,D> where D : _BaseFieldsDto<D>
+    public abstract class _BaseVal<T, D> where T : _BaseVal<T,D> where D : _BaseDto
     {
         public ValDto val {  get; } = new ValDto();
 
@@ -19,7 +19,7 @@ namespace Common.Validator
             val.Id = dto.Id;
 
             if (orgNr != null && 
-                (dto.orgNr == null || dto.orgNr != orgNr))
+                (dto.OrgNr == null || dto.OrgNr != orgNr))
                 val.AddError(GetLabel("OrgNr", labels), GetLabel("InvO", labels));
 
             if (dto.Code == null || 

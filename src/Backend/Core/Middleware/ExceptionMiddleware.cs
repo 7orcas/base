@@ -50,7 +50,8 @@ namespace Backend.Core.Middleware
             var r = new _ResponseDto
             {
                 Valid = false,
-                StatusCode = (int)HttpStatusCode.InternalServerError
+                StatusCode = (int)HttpStatusCode.InternalServerError,
+                Result = ""
             };
 
 

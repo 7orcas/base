@@ -15,23 +15,22 @@
 @code {
     [Inject] protected IJSRuntime JS { get; set; }
 
-    public bool _stateChangedToggle = false;
+    public LoadStatus loadStatus = new LoadStatus(); //This will replace the attributes below
+    //DELETE ME
     public bool _isLoading = false;
     public bool _isError = false;
     public bool _isSaving = false;
+    public int? _statusCode;
+    public MarkupString? _errorMessage;
+    public Exception? exception;
+
+    public PageStatus pageStatus = new PageStatus();
+
+    public bool _stateChangedToggle = false;
     public bool _isValidationError = false;
-    public bool _isCrudC = false;
-    public bool _isCrudR = false;
-    public bool _isCrudU = false;
-    public bool _isCrudD = false;
-    public bool _isCrudRO = true;
-    public string? _pageCode;
     public string? _entityLangKey;
     private string? _token;
-    public MarkupString? _errorMessage;
-    public int? _statusCode;
     //public ErrorBoundary? errorBoundary;
-    public Exception? exception;
     private AppConfigDto _config;
     private Dictionary<string, LangLabelDto> _labels;
     public List<ToolBarButton> toolBarButtonsLeft = new List<ToolBarButton>();
@@ -40,6 +39,23 @@
 
     //Debugging
     public bool _debugOutlined = false;
+
+    public async Task InitialiseBasePage()
+    {
+        var pageCodeAttr = GetType()
+                    .GetCustomAttributes(typeof(PageCodeAttribute), true)
+                    .Cast<PageCodeAttribute>()
+                    .FirstOrDefault();
+        pageStatus.pageCode = pageCodeAttr?.Code;
+
+        var permAttr = GetType()
+                        .GetCustomAttributes(typeof(PagePermissionAttribute), true)
+                        .Cast<PagePermissionAttribute>()
+                        .FirstOrDefault();
+
+        await InitialiseBasePage(permAttr?.Code ?? GC.PerIgnore, null);
+    }
+
 
     public async Task InitialiseBasePage(int permissionNr) => await InitialiseBasePage(permissionNr, null);
 
@@ -61,6 +77,9 @@
 
         if (permissionNr != GC.PerIgnore)
             SetCrud(permissionNr);
+
+        pageStatus.LS = GetLabelService();
+        loadStatus.OnChange += Refresh;
     }
 
     //Force an update
@@ -70,46 +89,77 @@
         StateHasChanged();
     }
 
-    //Toolbars
-    public void AddToolbarExport(Func<Task> export) => toolBarButtonsRight.Add(new ToolBarButton 
-        { 
-            LangKey = "Export", 
-            Action = export 
-        });
-    public void AddToolbarSave(Func<Task> save) => toolBarButtonsRight.Add(new ToolBarButton
-        {
-            LangKey = "SaveChg",
-            Action = save,
-            Class = "toolbar-button-highlight"
-        });
 
+    public void AddToolbarEdit(Func<Task> edit, Func<string> label) => toolBarButtonsLeft.Add(new ToolBarButton
+    {
+        GetLabel = label,
+        Action = edit,
+        GetClass = (PageStatus? pageStatus) => pageStatus?.IsEditMode ?? true ? "edit-border" : ""
+    });
+    public void AddToolbarAddNew(Func<Task> addNew) => toolBarButtonsLeft.Add(new ToolBarButton
+    {
+        LangKey = "AddN",
+        Action = addNew
+    });
+    public void AddToolbarDelete(Func<Task> delete) => toolBarButtonsLeft.Add(new ToolBarButton
+    {
+        LangKey = "Delete",
+        Action = delete
+    });
+    public void AddToolbarSearch(Func<Task> search) => toolBarButtonsLeft.Add(new ToolBarButton
+    {
+        LangKey = "Search",
+        Action = search
+    });
+    public void AddToolbarSave(Func<Task> save) => toolBarButtonsRight.Add(new ToolBarButton
+    {
+        LangKey = "SaveChg",
+        Action = save,
+        Class = "toolbar-button-highlight"
+    });
+    public void AddToolbarExport(Func<Task> export) => toolBarButtonsRight.Add(new ToolBarButton 
+    { 
+        LangKey = "Export", 
+        Action = export 
+    });
+
+    private void Refresh() 
+    {
+        Console.WriteLine("Refresh called");
+        StateHasChanged();
+    }
 
     //DarkMode
     protected override void OnInitialized() => TS.OnThemeChanged += OnThemeChanged;
     private void OnThemeChanged() => InvokeAsync(StateHasChanged);
-    public void Dispose() => TS.OnThemeChanged -= OnThemeChanged;
+    
+    public void Dispose() 
+    {
+        TS.OnThemeChanged -= OnThemeChanged;
+        loadStatus.OnChange -= Refresh;
+    }
 
     //Permissions
     public void SetCrud (int permissionNr)
     {
         if (ConfS.Config.User.IsService)
         {
-            _isCrudC = _isCrudR = _isCrudU = _isCrudD = true;
-            _isCrudRO = false;
+            pageStatus.isCrudC = pageStatus.isCrudR = pageStatus.isCrudU = pageStatus.isCrudD = true;
+            pageStatus.isCrudRO = false;
             return;
         }
 
-        _isCrudRO = true;
+        pageStatus.isCrudRO = true;
 
         var p = PermS.GetPermission(permissionNr);
         if (p == null || 
             string.IsNullOrEmpty(p.Crud)) return;
 
-        _isCrudC = p.Crud.Contains(GC.CrudCreate);
-        _isCrudR = p.Crud.Contains(GC.CrudRead);
-        _isCrudU = p.Crud.Contains(GC.CrudUpdate);
-        _isCrudD = p.Crud.Contains(GC.CrudDelete);
-        _isCrudRO = !_isCrudC && !_isCrudU && !_isCrudD;
+        pageStatus.isCrudC = p.Crud.Contains(GC.CrudCreate);
+        pageStatus.isCrudR = p.Crud.Contains(GC.CrudRead);
+        pageStatus.isCrudU = p.Crud.Contains(GC.CrudUpdate);
+      //  pageStatus.isCrudD = p.Crud.Contains(GC.CrudDelete);
+        pageStatus.isCrudRO = !pageStatus.isCrudC && !pageStatus.isCrudU && !pageStatus.isCrudD;
     }
 
 
@@ -126,6 +176,39 @@
     public string GetListRowOddEvenClass(int i) => (i % 2 == 0 ? " list-odd-row" : " list-even-row") + GetLightDarkClassSuffix();
     public string GetSelectRowPointer(bool selected) => selected ? "*" : "";
     public string GetSelectRowClass(bool selected) => selected ? " selected-row" : "";
-    public string GetFirstColumnErrorClass<T>(T dto) where T : _BaseDto<T> => dto.IsError ? "first-colum-error" + GetLightDarkClassSuffix() : "";
+    public string GetFirstColumnErrorClass(_BaseDto dto) => dto.IsError ? "first-colum-error" + GetLightDarkClassSuffix() : "";   
     public string GetLightDarkClassSuffix() => TS.IsDarkMode ? "-dark" : "-light";
+
+    public string GetListColumnErrorClass<T>(ListModel<T> model) where T : _BaseDto
+    {
+        return model.IsError
+            ? "first-colum-error" + GetLightDarkClassSuffix()
+            : "";
+    }
+
+    public string GetListSelectRowPointer(bool isSelected) 
+    {
+        return isSelected ? "*" : "";
+    }
+    public string GetListRowClass<T>(ListModel<T> model) where T : _BaseDto
+    {
+        return (model.IsSelected ? " selected-row" : "") + 
+               (model.IsDelete ? " deleted-row" : "");
+    }
+
+    public string GetListSelectRowPointer<T>(ListModel<T> model, List<ListModel<T>> selections) where T : _BaseDto
+    {
+        return Contains(model, selections) ? "*" : "";
+    }
+
+    public string GetListSelectRowClass<T>(ListModel<T> model, List<ListModel<T>> selections) where T : _BaseDto
+    {
+        return Contains(model, selections) ? " selected-row" : "";
+    }
+
+    public bool Contains<T>(ListModel<T> model, List<ListModel<T>> selections) where T : _BaseDto
+    {
+        return selections.Any(x => x.Id == model.Id);
+    }
+
 }
