@@ -12,4 +12,10 @@ namespace Common.DTO
         public object? Result { get; set; }
 
     }
+
+    public class Validation
+    {
+        public long Id { get; set; }
+    }
+
 }
