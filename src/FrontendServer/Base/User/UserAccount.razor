@@ -12,15 +12,15 @@
                       @bind-Value="@accountDto.OrgNr" />
 
         <NumericField LangCode="Clas"
-                      PageStatus=@pageStatus
+                      PageStatus=@PageStatus
                       @bind-Value="@accountDto.Classification" />
 
         <CheckboxField LangCode="Active"
-                       PageStatus=@pageStatus
+                       PageStatus=@PageStatus
                        @bind-Value="@accountDto.IsActive" />
 
         <CheckboxField LangCode="AdminL"
-                       PageStatus=@pageStatus
+                       PageStatus=@PageStatus
                        @bind-Value="@accountDto.IsAdminLang" />
     </div>
 
@@ -121,7 +121,7 @@
 
 @code {
     [Parameter] public UserDto.UserAccountDto accountDto { get; set; }
-    [Parameter] public PageStatus? pageStatus { get; set; }
+    //[Parameter] public PageStatus? pageStatus { get; set; } DELETE_ME
     
-    public bool IsEditActive => pageStatus == null ? false : pageStatus.IsEditMode;
+    public bool IsEditActive => PageStatus == null ? false : PageStatus.IsEditMode;
 }

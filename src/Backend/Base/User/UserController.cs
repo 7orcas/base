@@ -31,6 +31,27 @@ namespace Backend.Base.User
             _userService = userService;
         }
 
+        /// <summary>
+        /// Get User field configurations
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [CrudAtt(GC.CrudIgnore)] //ToDo
+        [AuditListAtt(GC.EntityTypeUser)]
+        [HttpGet("fieldConfigs")]
+        public async Task<IActionResult> GetFieldConfigs()
+        {
+            var session = HttpContext.Items["session"] as SessionEnt;
+            var config = await _userService.GetFieldConfigs(session);
+            
+            var r = new _ResponseDto
+            {
+                SuccessMessage = "Ok",
+                Result = config
+            };
+            return Ok(r);
+        }
+
         [CrudAtt(GC.CrudIgnore)]  //ToDo
         [AuditListAtt(GC.EntityTypeUser)]
         [HttpPost("list")]
@@ -87,20 +108,10 @@ namespace Backend.Base.User
         public async Task<IActionResult> UpdateUser([FromBody] UpdateRequest<List<UserDto>> update)
         {
             var session = HttpContext.Items["session"] as SessionEnt;
-
             var list = update.Updates as List<UserDto>;
-            var listU = new List<UserDto> ();
 
-
-            //Validate //ToDo
-            var vals = new List<ValidationDto> ();
-            foreach (var dto in list)
-            {
-                var messages = await _userService.ValidateUser(session, dto);
-                if (messages.Count > 0)
-                    vals.Add(new ValidationDto { Id = dto.Id, Messages = messages });
-            }
-
+            //Validate 
+            var vals = await _userService.ValidateUser(session, list);
             if (vals.Count > 0)
             {
                 var v = new _ResponseDto
@@ -111,6 +122,8 @@ namespace Backend.Base.User
                 return Ok(v);
             }
 
+            //Do updates
+            var listU = new List<UserDto> ();
             foreach (var dto in list)
             {
                 var user = await _userService.UpdateUser(dto);

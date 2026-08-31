@@ -14,13 +14,9 @@
               Striped="true">
 
         <ColGroup>
-            <col style="width:30%;" />
-            <col style="width:70%;" />
+            <col style="width:100%;" />
         </ColGroup>
         <RowTemplate>
-            <MudTd Style="padding-left:5px; border-right: none;">
-                @GetType(context):
-            </MudTd>
             <MudTd Style="text-align:left">
                 @context.Message
             </MudTd>

@@ -1,4 +1,5 @@
-﻿using DocumentFormat.OpenXml.Office2016.Excel;
+﻿using DocumentFormat.OpenXml.Office2010.ExcelAc;
+using DocumentFormat.OpenXml.Office2016.Excel;
 using DocumentFormat.OpenXml.Spreadsheet;
 using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.Extensions.Caching.Memory;
@@ -7,6 +8,7 @@ using Org.BouncyCastle.Asn1.Ocsp;
 using Superpower.Model;
 using System.Net.Mail;
 using System.Runtime.ConstrainedExecution;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using GC = Backend.GlobalConstants;
 
 /// <summary>
@@ -55,93 +57,40 @@ namespace Backend.Base.User
             return await _userRepo.GetById(id);
         }
 
-        public async Task<List<ValidationMessageDto>> ValidateUser(SessionEnt session, UserDto user)
+        public async Task<_EntityConfigDto> GetFieldConfigs(SessionEnt session)
+        {
+            var org = await _orgService.GetOrg(session.Org.Nr);
+            var labels = await _labelService.GetLangCodeDic(session.UserConfig.LangCodeCurrent, org.LangLabelVariant);
+            var validator = new UserVal(org, labels, _orgService);
+            return validator.GetFieldConfigs();
+        }
+
+        public async Task<List<ValidationDto>> ValidateUser(SessionEnt session, List<UserDto> update)
         {
             var org = await _orgService.GetOrg(session.Org.Nr);
             var labels = await _labelService.GetLangCodeDic(session.UserConfig.LangCodeCurrent, org.LangLabelVariant);
 
-            var messages = new List<ValidationMessageDto>();
+            var validator = new UserVal (org, labels, _orgService);
+            var vals = new List<ValidationDto>();
 
-            if (user.IsNew())
+            foreach (var dto in update)
             {
-                var res = _orgService.ValidatePassword(user.Password, org, labels);
-                if (!res.valid)
-                {
-                    messages.Add(new ValidationMessageDto
-                    {
-                        Message = res.message,
-                        IsError = true
-                    });
-                }
+                if (dto.IsDelete) continue;
+
+                var val = validator.Validate(dto);
+                if (val != null)
+                    vals.Add(val);
             }
 
-            var man = GetLabel("ManF", labels) + ": ";
-            var max = GetLabel("MaxL", labels) + ": ";
-
-            if (string.IsNullOrEmpty(user.Username))
-            {
-                messages.Add(new ValidationMessageDto
-                {
-                    Message = man + GetLabel("UserName", labels),
-                    IsError = true
-                });
-            }
-
-            if (!string.IsNullOrEmpty(user.Username) && user.Username.Length > 40)
-            {
-                messages.Add(new ValidationMessageDto
-                {
-                    Message = max + GetLabel("UserName", labels),
-                    IsError = true
-                });
-            }
-
-            if (org.IsEmailRequired && string.IsNullOrEmpty(user.Email))
-            {
-                messages.Add(new ValidationMessageDto
-                {
-                    Message = man + GetLabel("Email", labels),
-                    IsError = true
-                });
-            }
-
-            if (!string.IsNullOrEmpty(user.Email) && user.Email.Length > 100)
-            {
-                messages.Add(new ValidationMessageDto
-                {
-                    Message = max + GetLabel("Email", labels),
-                    IsError = true
-                });
-            }
-
-            if (!string.IsNullOrEmpty(user.Email) && !IsValidEmail(user.Email))
-            {
-                messages.Add(new ValidationMessageDto
-                {
-                    Message = GetLabel("EmailInvalid", labels),
-                    IsWarning = true
-                });
-            }
-
-            return messages;
+            return vals;
         }
-
-        private bool IsValidEmail(string email)
-        {
-            try
-            {
-                var addr = new MailAddress(email);
-                return addr.Address == email;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
 
         public async Task<UserEnt?> UpdateUser(UserDto user)
         {
+            //No action required
+            if (user.IsNew() && user.IsDelete)
+                return null;
+
             return await _userRepo.Update(user);
         }
 

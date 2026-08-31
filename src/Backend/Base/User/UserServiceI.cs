@@ -1,4 +1,6 @@
 ﻿
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+
 namespace Backend.Base.User
 {
     public interface UserServiceI
@@ -9,6 +11,7 @@ namespace Backend.Base.User
         Task<UserDto?> NewUser(SessionEnt session);
         Task<UserDto> PopulateList(UserEnt user);
         Task<UserDto> Populate(UserEnt user);
-        Task<List<ValidationMessageDto>> ValidateUser(SessionEnt session, UserDto user);
+        Task<_EntityConfigDto> GetFieldConfigs(SessionEnt session);
+        Task<List<ValidationDto>> ValidateUser(SessionEnt session, List<UserDto> update);
     }
 }

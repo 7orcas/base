@@ -5,7 +5,8 @@
 @using GC = FrontendServer.GlobalConstants;
 
 <MudTextField Style="@GetStyle(Width)"
-              Class="@GetClass(IsReadOnly)"
+              Class="@GetClassLocal()"
+              InputType="@InputType"
               @ref="_textField"
               Label="@label"
               MaxLength="@MaxLength"
@@ -21,25 +22,36 @@
 @code {
     [Parameter] public string LangCode { get; set; }
     [Parameter] public GC.TextFieldWidth Width { get; set; } = GC.TextFieldWidth.TextMedium;
-    [Parameter] public int MaxLength { get; set; } = 20;
+    [Parameter] public int MaxLength { get; set; } = GC.LenCode;
     [Parameter] public bool ReadOnly { get; set; } = false;
     [Parameter] public bool Immediate { get; set; } = false;
+    [Parameter] public bool Required { get; set; } = false;
     [Parameter] public string Value { get; set; }
+    [Parameter] public InputType InputType { get; set; } = InputType.Text;
     [Parameter] public EventCallback<string> ValueChanged { get; set; }
     [Parameter] public EventCallback<KeyboardEventArgs> OnKeyDown { get; set; }
     [Parameter] public EventCallback<KeyboardEventArgs> OnKeyUp { get; set; }
     [Parameter] public Expression<Func<string>> ValueExpression { get; set; }
-    [Parameter] public PageStatus? PageStatus { get; set; }
-    
+
     private string label = "loading..";
     protected override void OnInitialized() => label = GetLabel(LangCode);
 
-    private bool IsReadOnly => ReadOnly ? true : (!PageStatus?.IsEditMode ?? false);
+    private bool IsReadOnly => ReadOnly ? true : !IsEditMode();
 
     private MudTextField<string>? _textField;
     public Task FocusAsync()
     {                   
         var vt = _textField?.FocusAsync() ?? default(ValueTask);
         return vt.AsTask();
+    }
+
+    private string GetClassLocal()
+    {
+        var clazz = GetClass(IsReadOnly);
+
+        if (!ReadOnly && IsEditMode() && Required)
+            clazz += " red-border";
+
+        return clazz;
     }
 }

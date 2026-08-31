@@ -386,7 +386,7 @@ namespace Backend.Base.Login
         }
 
 
-        private string PasswordHash(string password) 
+        public string PasswordHash(string password) 
         {
             byte[] salt = RandomNumberGenerator.GetBytes(PasswordConfig.SaltSize);
 

@@ -14,12 +14,15 @@ namespace Backend.Base.User
     /// <license>**Licence**</license>
     public class UserRepo : BaseRepo, UserRepoI
     {
+        private readonly LoginServiceI _loginService;
         private readonly AppDbContext _context;
 
         public UserRepo(AppDbContext context,
+            LoginServiceI loginService,
             IServiceProvider serviceProvider)
             : base(serviceProvider)
         {
+            _loginService = loginService;
             _context = context;
         }
 
@@ -71,7 +74,7 @@ namespace Backend.Base.User
 
             if (userDto.IsNew())
                 user = new UserEnt() { 
-                    Password = "temp" //ToDo
+                    Password = _loginService.PasswordHash(userDto.PasswordNew)
                 };
             else
                 user = await GetById(userDto.Id);

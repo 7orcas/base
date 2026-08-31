@@ -97,6 +97,10 @@ a, .btn-link {
     margin: 2px !important;
 }
 
+.red-border .mud-input-outlined fieldset {
+    border-color: red !important;
+}
+
 .list-even-row-light {
     color: var(--mud-palette-text-primary);
     background-color: var(--mud-palette-surface);

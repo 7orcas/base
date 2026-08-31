@@ -8,6 +8,9 @@ using GC = Common.GlobalConstants;
 /// Author: John Stewart
 /// </summary>
 
+//DELETE_ME
+
+
 namespace Common.Validator
 {
     public abstract class _BaseVal<T, D> where T : _BaseVal<T,D> where D : _BaseDto

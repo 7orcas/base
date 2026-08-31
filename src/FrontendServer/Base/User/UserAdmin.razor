@@ -12,7 +12,7 @@
     <HeaderThin @key=pageStatus.pageCode
             TitleKey="UserAdm"
             PageCode=@pageStatus.pageCode
-                PageStatus="@pageStatus"
+            PageStatus="@pageStatus"
             ToolBarButtonsLeft="toolBarButtonsLeft"
             ToolBarButtonsRight="toolBarButtonsRight" />
 
@@ -47,7 +47,8 @@
                 <MudPaper Elevation="0" Outlined="false" Style="flex:1; min-height:0; overflow:auto; padding-right:20px;">
                     <UserDetailsPanel Selections="listUtil.Selections"
                                       Refresh="@Refresh"
-                                      pageStatus="@pageStatus" />
+                                      PageStatus="@pageStatus" 
+                                      FieldConfigUtil="@fieldConfigUtil" />
                 </MudPaper>
             </MudItem>
 
@@ -62,12 +63,20 @@
 @using FrontendServer.Base._Base;
 @using Newtonsoft.Json;
 @inject IDialogService DialogService
+@inject ConfigFieldService ConfFieldS
 
 @code {
     private List<ListModel<UserDto>> list = new List<ListModel<UserDto>>();
     private ListUtil<UserDto> listUtil = new ListUtil<UserDto>();
     private MudTable<ListModel<UserDto>> _listTable;
+    private FieldConfigUtil fieldConfigUtil;
 
+
+    protected override async Task OnInitializedAsync()
+    {
+        var config = await GetFieldConfigs(GC.URL_user_config);
+        fieldConfigUtil = new FieldConfigUtil(config);
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
