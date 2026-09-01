@@ -25,6 +25,7 @@ namespace Common.DTO
 
         public bool IsNewable() => IsNew() && !IsDelete;
         public bool IsDeleteable() => IsDelete && !IsNew();
+        public bool IsValidatable() => !IsNew();
 
     }
 }

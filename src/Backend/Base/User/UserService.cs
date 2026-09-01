@@ -59,25 +59,26 @@ namespace Backend.Base.User
 
         public async Task<DefinitionDto> GetDefinition(SessionEnt session)
         {
-            var org = await _orgService.GetOrg(session.Org.Nr);
-            var labels = await _labelService.GetLangCodeDic(session.UserConfig.LangCodeCurrent, org.LangLabelVariant);
-            var validator = new UserVal(org, labels, _orgService);
+            var labels = await _labelService.GetLangCodeDic(session.UserConfig.LangCodeCurrent, session.Org.LangLabelVariant);
+            var validator = new UserVal(session, labels, _orgService);
             return validator.GetDefinition();
         }
 
         public async Task<List<ValidationDto>> ValidateUser(SessionEnt session, List<UserDto> update)
         {
-            var org = await _orgService.GetOrg(session.Org.Nr);
-            var labels = await _labelService.GetLangCodeDic(session.UserConfig.LangCodeCurrent, org.LangLabelVariant);
+            var labels = await _labelService.GetLangCodeDic(session.UserConfig.LangCodeCurrent, session.Org.LangLabelVariant);
 
-            var validator = new UserVal (org, labels, _orgService);
+            var validator = new UserVal (session, labels, _orgService);
             var vals = new List<ValidationDto>();
 
             foreach (var dto in update)
             {
-                if (dto.IsDelete) continue;
+                VersionI? version = null;
+                if (dto.IsValidatable())
+                    version = await _userRepo.GetVersion(dto.Id);
+                else if (dto.IsDelete) continue;
 
-                var val = validator.Validate(dto);
+                var val = validator.Validate(dto, version);
                 if (val != null)
                     vals.Add(val);
             }

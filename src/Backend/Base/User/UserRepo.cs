@@ -32,15 +32,19 @@ namespace Backend.Base.User
                         + "FROM base.zzz "
                         + "WHERE id != " + GC.ServiceLoginId + " ";
 
+            if (!string.IsNullOrEmpty(search.Username))
+            {
+                sql += " AND xxx LIKE '%" + search.Username + "%'";
+            }
 
-    if (!string.IsNullOrEmpty(search.Username))
-    {
-        sql += " AND xxx LIKE '%" + search.Username + "%'";
-    }
-
-     sql += " ORDER BY xxx";
+             sql += " ORDER BY xxx";
 
             return await GetList<UserEnt>(sql);
+        }
+
+        public async Task<VersionInfo?> GetVersion(long id)
+        {
+            return await GetVersion(id, "base.zzz");
         }
 
 

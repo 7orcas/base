@@ -89,6 +89,7 @@ Tooltip,Tooltip
 Config,Configuration
 ConfigG,General Configuration
 UnsavedC,There are unsaved changes. Leave anyway?
+UnsavedS,There are unsaved changes, do you want to discard them?
 LenMax,Max Length
 LenMin,Min Length
 Nr,Number
@@ -175,6 +176,8 @@ CaptchaR,ReCAPTCHA is required
 Val0,Can't be empty
 Val1,Can't contain spaces
 Ver,Version
+VerX,This record was changed on %% and is out of date. You must reload it.
+VerC,Version Conflict
 Clas,Classification
 Chat,Chat
 <LAST>,<LAST LINE>

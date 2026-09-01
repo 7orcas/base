@@ -1,11 +1,13 @@
-﻿using System.Net.Mail;
+﻿using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
+using Superpower.Model;
+using System.Net.Mail;
 using GC = Backend.GlobalConstants;
 
 namespace Backend.Base.Entity
 {
     public abstract class BaseValidation <T> where T : _BaseDto
     {
-
+        protected SessionEnt session;
         protected OrgEnt org;
         protected Dictionary<string, string> labels;
         protected List<Info> validations;
@@ -15,16 +17,21 @@ namespace Backend.Base.Entity
         protected string maxLengthEx;
         protected string maxValueEx;
         protected string minValueEx;
+        protected string verX;
+        protected string verC;
 
-        public BaseValidation (OrgEnt? org,  Dictionary<string, string>? labels)
+        public BaseValidation (SessionEnt session, Dictionary<string, string>? labels)
         {
-            this.org = org;
+            this.session = session;
+            this.org = session.Org;
             this.labels = labels;
 
             mandatory = GetLabel("InvF", "Field can't be empty");
             maxLengthEx = GetLabel("InvL", "Field exceeds maximum length"); //has (%%) appended
             maxValueEx = GetLabel("MaxV", "Maximum value exceeded"); //has (%%) appended
             minValueEx = GetLabel("MinV", "Minimum value exceeded"); //has (%%) appended
+            verX = GetLabel("VerX", "This record was changed on %% and is out of date. You must reload it."); //has (%%) appended
+            verC = GetLabel("VerC", "Version Conflict");
 
             Configure();
         }
@@ -45,12 +52,20 @@ namespace Backend.Base.Entity
             return info;
         }
 
-        public ValidationDto? Validate(T dto)
+        public ValidationDto? Validate(T dto, VersionI? version)
         {
             messages = null;
 
             if (validations == null)
                 throw new Exception("Validations are null");
+
+            //Version has changed
+            if (version != null && dto.Version != null && version.Version != dto.Version)
+            {
+                var zone = TimeZoneInfo.ConvertTime(version.Updated, session.TimeZone);
+                var ex = verX.Replace(GC.LabelParameterPrefix, zone.ToString(GC.Date_TS_Format));
+                AddMessage(verC, ex);
+            }
 
             foreach (var info in validations)
             {

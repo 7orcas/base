@@ -18,6 +18,8 @@ namespace Common
         public const string LangCodeDefault      = "en";
         public const int OrgNrDefault            = 0;
 
+        public const string Date_TS_Format = "yyyy-MM-dd HH:mm:ss";
+
         //Login (successful) Actions
         public const int NavigateToFrontendServer     = 0;
         public const int GetAndDisplayJWTtoken        = 1;

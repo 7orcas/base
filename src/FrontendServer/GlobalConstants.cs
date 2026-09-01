@@ -3,8 +3,7 @@
     public class GlobalConstants : Common.GlobalConstants
     {
         public const int AppClient                = 1; //defined in FrontendLogin as well
-
-        public const string Date_TS_Format         = "yyyy-MM-dd HH:mm:ss";
+                
         public const string Date_Format            = "dd MMM yy";
 
         public const string LabelCacheKey         = "kLabel";

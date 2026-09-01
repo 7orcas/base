@@ -103,12 +103,48 @@
 
     private async Task Search()
     {
-        var result = await Search<UserSearchDialog>();
-        if (!result.Canceled)
+        bool confirmed = true;
+        var ok = await ConfirmNavigationIsOk();
+        if (!ok)
         {
-            var data = (UserSearch)result.Data;
-            await Load(data);
+            
+            var parameters = new DialogParameters
+                {
+                    { nameof(ConfirmDialog.Message), GetLabel("UnsavedS") }
+                };
+
+            var options = new DialogOptions
+            {
+                CloseOnEscapeKey = true,
+                MaxWidth = MaxWidth.Small
+            };
+
+            var dialog = await DialogService.ShowAsync<ConfirmDialog>(
+                "Confirm",
+                parameters,
+                options);
+
+            var resultX = await dialog.Result;
+
+            confirmed = !resultX.Canceled;
         }
+
+        if (confirmed)
+        {
+            // User clicked Yes
+            var result = await Search<UserSearchDialog>();
+            if (!result.Canceled)
+            {
+                var data = (UserSearch)result.Data;
+                await Load(data);
+
+            }
+        }
+        else
+        {
+            // User clicked No or closed dialog
+        }
+
     }
 
 
@@ -129,11 +165,11 @@
 
         }
 
-
         if (listX == null)
             loadStatus.SetError();
         else
         {
+            listUtil.Clear();
             listUtil.ShowList = true;
             foreach (var u in listX)
             {
@@ -149,13 +185,6 @@
                 Load(list[0]);
         }
 
-        //testing DELETE ME
-        //listUtil.MaxSelections = 20;
-        // if (list.Count > 1) Load(list[1]);
-        // if (list.Count > 2) Load(list[2]);
-
-
-        // await Search();
     }
 
     private void Refresh() => StateHasChanged();
@@ -273,6 +302,18 @@
         loadStatus.ResetSaving();
         StateHasChanged();
     }
+
+    public async Task<bool> ConfirmNavigationIsOk()
+    {
+        for (int i = 0; list != null && i < list.Count; i++)
+        {
+            var dto = list[i];
+            if (dto.IsLoaded && dto.HasChanged())
+                return false;
+        }
+        return true;
+    }
+
 
     private async Task EditRecord()
     {

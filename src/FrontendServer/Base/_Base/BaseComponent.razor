@@ -74,7 +74,7 @@
     public AppConfigDto GetConfig() => CS.Config;
     public bool IsLabel(string labelCode) => LS.IsLabel(labelCode);
     public bool IsTooltip(string labelCode) => LS.IsTooltip(labelCode);
-    public bool IsEditMode() => PageStatus?.IsEditMode ?? false;
+    public bool IsEditMode() => PageStatus?.IsEditMode ?? true;
     public string GetLabel(string labelCode) => LS.GetLabel(labelCode);
     public string GetLabelHighlightNoKey(string labelCode) => LS.GetLabelHighlightNoKey(labelCode);
     public string? GetTooltip(string labelCode) => LS.GetTooltip(labelCode);

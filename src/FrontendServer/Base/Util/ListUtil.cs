@@ -35,5 +35,8 @@ namespace FrontendServer.Base.Util
             if (index >= 0)
                 Selections.RemoveAt(index);
         }
+
+        public void Clear() => Selections.Clear();
+        
     }
 }
