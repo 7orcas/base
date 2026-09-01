@@ -8,7 +8,7 @@
 @inject ProtectedSessionStorage PS
 @inject CacheService CS
 @inject ConfigService ConfS
-@inject ConfigFieldService ConfFieldS
+@inject FieldDefinitionService FieldDefS
 @inject LabelService LS
 @inject PermissionService PermS
 @inject HttpService HS
@@ -34,7 +34,7 @@
 
     //public ErrorBoundary? errorBoundary;
     private AppConfigDto _config;
-    public _EntityConfigDto _fieldConfigs;
+    public DefinitionDto fields;
     private Dictionary<string, LangLabelDto> _labels;
     public List<ToolBarButton> toolBarButtonsLeft = new List<ToolBarButton>();
     public List<ToolBarButton> toolBarButtonsRight = new List<ToolBarButton>();
@@ -142,10 +142,10 @@
         loadStatus.OnChange -= Refresh;
     }
 
-    public async Task<_EntityConfigDto> GetFieldConfigs(string url)
+    public async Task<DefinitionDto> GetDefinition(string url)
     {
-        _fieldConfigs = await ConfFieldS.Initialise(url);
-        return _fieldConfigs;
+        fields = await FieldDefS.Initialise(url);
+        return fields;
     }
 
 

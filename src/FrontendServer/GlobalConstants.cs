@@ -29,7 +29,7 @@
         public const string URL_user_get          = URL_user + "get/";
         public const string URL_user_update       = URL_user + "update";
         public const string URL_user_new          = URL_user + "new";
-        public const string URL_user_config       = URL_user + "fieldConfigs";
+        public const string URL_user_definition   = URL_user + "definition";
         public const string URL_user_role_list    = URL_base + "Role/userroles";
         public const string URL_role_list         = URL_base + "Role/roles";
         public const string URL_role              = URL_base + "Role/get/";

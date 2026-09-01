@@ -1,5 +1,5 @@
 ﻿
-// DTO field configurations
+// DTO field definitions
 
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Newtonsoft.Json;
@@ -7,18 +7,18 @@ using GC = FrontendServer.GlobalConstants;
 
 namespace FrontendServer.Base.Config
 {
-    public class ConfigFieldService : BaseService
+    public class FieldDefinitionService : BaseService
     {
         public event Action? OnInitialized;
                 
-        public ConfigFieldService(ProtectedSessionStorage session,
+        public FieldDefinitionService(ProtectedSessionStorage session,
             IHttpClientFactory httpClientFactory)
         {
             _session = session;
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<_EntityConfigDto> Initialise(string url)
+        public async Task<DefinitionDto> Initialise(string url)
         {
             var f = await GetFieldFromStorage(url);
             if (f != null) return f;
@@ -33,7 +33,7 @@ namespace FrontendServer.Base.Config
 
                 await _session.SetAsync(GC.FieldConfigCacheKey + url, cjson);
 
-                var fields = JsonConvert.DeserializeObject<_EntityConfigDto>(cjson);
+                var fields = JsonConvert.DeserializeObject<DefinitionDto>(cjson);
                 return fields;
             }
             catch
@@ -42,14 +42,14 @@ namespace FrontendServer.Base.Config
             }
         }
 
-        public async Task<_EntityConfigDto?> GetFieldFromStorage(string url)
+        public async Task<DefinitionDto?> GetFieldFromStorage(string url)
         {
             try
             {
                 var store = await _session.GetAsync<string>(GC.FieldConfigCacheKey + url);
                 if (!store.Success) return null;
 
-                var fields = JsonConvert.DeserializeObject<_EntityConfigDto>(store.Value);
+                var fields = JsonConvert.DeserializeObject<DefinitionDto>(store.Value);
                 return fields;
             }
             catch (Exception ex)

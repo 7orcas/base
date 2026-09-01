@@ -52,17 +52,17 @@ namespace Backend.Base.User
             return await _userRepo.GetList(search);
         }
 
-        public async Task<UserEnt?> GetUser(long id)
+        public async Task<UserEnt?> GetUserById(long id)
         {
             return await _userRepo.GetById(id);
         }
 
-        public async Task<_EntityConfigDto> GetFieldConfigs(SessionEnt session)
+        public async Task<DefinitionDto> GetDefinition(SessionEnt session)
         {
             var org = await _orgService.GetOrg(session.Org.Nr);
             var labels = await _labelService.GetLangCodeDic(session.UserConfig.LangCodeCurrent, org.LangLabelVariant);
             var validator = new UserVal(org, labels, _orgService);
-            return validator.GetFieldConfigs();
+            return validator.GetDefinition();
         }
 
         public async Task<List<ValidationDto>> ValidateUser(SessionEnt session, List<UserDto> update)

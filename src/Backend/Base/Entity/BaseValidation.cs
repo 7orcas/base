@@ -127,20 +127,20 @@ namespace Backend.Base.Entity
             return null;
         }
 
-        public _EntityConfigDto GetFieldConfigs()
+        public DefinitionDto GetDefinition()
         {
             if (validations == null)
                 throw new Exception("Validations are null");
 
 
-            var dto = new _EntityConfigDto()
+            var dto = new DefinitionDto()
             {
-                Fields = new List<FieldConfigDto>()
+                Fields = new List<FieldDto>()
             };
 
             foreach (var info in validations)
             {
-                dto.Fields.Add(new FieldConfigDto() {
+                dto.Fields.Add(new FieldDto() {
                     Name = info.Name,
                     MaxLength = info.MaxLength,
                     MinValue = info.MinValue,

@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace Common.DTO
 {
-    public class _EntityConfigDto
+    public class DefinitionDto
     {
-        public List<FieldConfigDto>? Fields { get; set; }
+        public List<FieldDto>? Fields { get; set; }
     }
 
-    public class FieldConfigDto
+    public class FieldDto
     {
         public string Name { get; set; }
         public int? MaxLength { get; set; }

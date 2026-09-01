@@ -13,7 +13,7 @@ using GC = Backend.GlobalConstants;
 namespace Backend.Base.User
 {
     [Authorize]
-    [PermissionAtt(GC.PerUser)]
+    [PermissionAtt(GC.PerUser)] //Hard coded permission - user must be flagged as User Admin
     [ApiController]
     [Route("api/[controller]")]
     public class UserController : BaseController
@@ -32,27 +32,31 @@ namespace Backend.Base.User
         }
 
         /// <summary>
-        /// Get User field configurations
+        /// Get User entity field definitions
         /// </summary>
-        /// <param name="id"></param>
         /// <returns></returns>
-        [CrudAtt(GC.CrudIgnore)] //ToDo
+        [CrudAtt(GC.CrudRead)]
         [AuditListAtt(GC.EntityTypeUser)]
-        [HttpGet("fieldConfigs")]
-        public async Task<IActionResult> GetFieldConfigs()
+        [HttpGet("definition")]
+        public async Task<IActionResult> GetDefinition()
         {
             var session = HttpContext.Items["session"] as SessionEnt;
-            var config = await _userService.GetFieldConfigs(session);
+            var def = await _userService.GetDefinition(session);
             
             var r = new _ResponseDto
             {
                 SuccessMessage = "Ok",
-                Result = config
+                Result = def
             };
             return Ok(r);
         }
 
-        [CrudAtt(GC.CrudIgnore)]  //ToDo
+        /// <summary>
+        /// Get User list
+        /// </summary>
+        /// <param name="search"></param>
+        /// <returns></returns>
+        [CrudAtt(GC.CrudRead)]
         [AuditListAtt(GC.EntityTypeUser)]
         [HttpPost("list")]
         public async Task<IActionResult> Get([FromBody] UserSearch search)
@@ -77,12 +81,12 @@ namespace Backend.Base.User
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [CrudAtt(GC.CrudIgnore)] //ToDo
+        [CrudAtt(GC.CrudRead)] 
         [AuditListAtt(GC.EntityTypeUser)]
         [HttpGet("get/{id}")]
-        public async Task<IActionResult> GetUser(long id)
+        public async Task<IActionResult> GetUserById(long id)
         {
-            var user = await _userService.GetUser(id);
+            var user = await _userService.GetUserById(id);
             if (user == null)
             {
                 return NotFound();
@@ -99,10 +103,11 @@ namespace Backend.Base.User
         }
 
         /// <summary>
-        /// Update User
+        /// Update, create and delete a User
         /// </summary>
+        /// <param name="update"></param>
         /// <returns></returns>
-        [CrudAtt(GC.CrudIgnore)] //ToDo
+        [CrudAtt(GC.CrudUpdate)] 
         [AuditListAtt(GC.EntityTypeUser)]
         [HttpPost("update")]
         public async Task<IActionResult> UpdateUser([FromBody] UpdateRequest<List<UserDto>> update)
@@ -139,7 +144,12 @@ namespace Backend.Base.User
             return Ok(r);
         }
 
-        [CrudAtt(GC.CrudIgnore)]  //ToDo
+        /// <summary>
+        /// Get a new User entity with default values
+        /// Note it is not saved to the database yet, it is just a template for creating a new user
+        /// </summary>
+        /// <returns></returns>
+        [CrudAtt(GC.CrudCreate)] 
         [AuditListAtt(GC.EntityTypeUser)]
         [HttpGet("new")]
         public async Task<IActionResult> New()

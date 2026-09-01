@@ -22,7 +22,7 @@ namespace Common.Validator
             val.Id = dto.Id;
 
             if (orgNr != null && 
-                (dto.OrgNr == null || dto.OrgNr != orgNr))
+                (dto.OrgNr == null ))//|| dto.OrgNr != orgNr))  <<<-----   doesn't work for Roles
                 val.AddError(GetLabel("OrgNr", labels), GetLabel("InvO", labels));
 
             if (dto.Code == null || 

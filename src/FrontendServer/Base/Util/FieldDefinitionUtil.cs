@@ -2,20 +2,20 @@
 
 namespace FrontendServer.Base.Util
 {
-    public class FieldConfigUtil
+    public class FieldDefinitionUtil
     {
-        private _EntityConfigDto? EntityConfigDto;
+        private DefinitionDto? definitionDto;
 
-        public FieldConfigUtil(_EntityConfigDto? EntityConfigDto) 
+        public FieldDefinitionUtil(DefinitionDto? EntityConfigDto) 
         {
-            this.EntityConfigDto = EntityConfigDto;
+            this.definitionDto = EntityConfigDto;
         }
 
 
-        public FieldConfigDto FindField (string fieldName)
+        public FieldDto FindField (string fieldName)
         {
-            if (EntityConfigDto == null) return null;
-            return EntityConfigDto.Fields.FirstOrDefault(x => x.Name == fieldName);
+            if (definitionDto == null) return null;
+            return definitionDto.Fields.FirstOrDefault(x => x.Name == fieldName);
         }
 
         public int MaxLength (string fieldName)

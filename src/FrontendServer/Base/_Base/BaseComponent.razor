@@ -6,7 +6,7 @@
 
 @code {
     [Parameter] public PageStatus? PageStatus { get; set; }
-    [Parameter] public FieldConfigUtil? FieldConfigUtil { get; set; }
+    [Parameter] public FieldDefinitionUtil? FieldDefinitionUtil { get; set; } = new FieldDefinitionUtil(null);
 
     public static string loading = "..loading";
     public MudBlazor.Variant MudVariant = MudBlazor.Variant.Outlined;
@@ -66,9 +66,9 @@
     public LabelService GetLabelService() => LS;
 
     //Field Config methods
-    public int GetMaxLength(string name) => FieldConfigUtil.MaxLength(name);
-    public bool IsRquired(string name) => FieldConfigUtil.IsRquired(name);
-    public bool IsRquiredNew(string name, bool isNew) => isNew && FieldConfigUtil.IsRquiredNew(name);
+    public int GetMaxLength(string name) => FieldDefinitionUtil.MaxLength(name);
+    public bool IsRquired(string name) => FieldDefinitionUtil.IsRquired(name);
+    public bool IsRquiredNew(string name, bool isNew) => isNew && FieldDefinitionUtil.IsRquiredNew(name);
 
     //Convenience methods
     public AppConfigDto GetConfig() => CS.Config;

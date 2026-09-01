@@ -73,9 +73,7 @@ namespace Backend.Base.User
             var user = null as UserEnt;
 
             if (userDto.IsNew())
-                user = new UserEnt() { 
-                    Password = _loginService.PasswordHash(userDto.PasswordNew)
-                };
+                user = new UserEnt();
             else
                 user = await GetById(userDto.Id);
 
@@ -90,9 +88,16 @@ namespace Backend.Base.User
                 return null;
             }
 
+            //Update password
+            if (!string.IsNullOrEmpty(userDto.PasswordNew))
+            {
+                user.Password = _loginService.PasswordHash(userDto.PasswordNew);
+            }
+
             user.Encode();
             user.Username = userDto.Username;
             user.Email = userDto.Email;
+            user.IsEmailVerified = userDto.IsEmailVerified;
             user.LangCode = userDto.LangCode;
             user.OrgNrDefault = userDto.OrgNr;
             user.Attempts = userDto.Attempts;

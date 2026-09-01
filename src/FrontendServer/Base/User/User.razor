@@ -48,7 +48,7 @@
                     <UserDetailsPanel Selections="listUtil.Selections"
                                       Refresh="@Refresh"
                                       PageStatus="@pageStatus" 
-                                      FieldConfigUtil="@fieldConfigUtil" />
+                                      FieldDefinitionUtil="@fieldDefinitionUtil" />
                 </MudPaper>
             </MudItem>
 
@@ -63,19 +63,18 @@
 @using FrontendServer.Base._Base;
 @using Newtonsoft.Json;
 @inject IDialogService DialogService
-@inject ConfigFieldService ConfFieldS
 
 @code {
     private List<ListModel<UserDto>> list = new List<ListModel<UserDto>>();
     private ListUtil<UserDto> listUtil = new ListUtil<UserDto>();
     private MudTable<ListModel<UserDto>> _listTable;
-    private FieldConfigUtil fieldConfigUtil;
+    private FieldDefinitionUtil fieldDefinitionUtil;
 
 
     protected override async Task OnInitializedAsync()
     {
-        var config = await GetFieldConfigs(GC.URL_user_config);
-        fieldConfigUtil = new FieldConfigUtil(config);
+        var defs = await GetDefinition(GC.URL_user_definition);
+        fieldDefinitionUtil = new FieldDefinitionUtil(defs);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -85,7 +84,7 @@
             InitialiseBasePage();
 
             //Always make edit mode
-            pageStatus.IsEditMode = true;
+            pageStatus.IsEditMode = pageStatus.orCrudCUD();
 
             //Add standard toolbar
             AddToolbarSearch(Search);
