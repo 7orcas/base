@@ -149,24 +149,10 @@ namespace Backend.Base.User
 
             UserDto userDto = new UserDto()
             {
-                Id = user.Id,
-                Username = user.Username,
-                Email = user.Email,
-                IsEmailVerified = user.IsEmailVerified,
                 OrgNr = user.OrgNrDefault,
-                LangCode = user.LangCode,
-                Attempts = user.Attempts,
-                AttemptsLockout = user.AttemptsLockout,
-                LastLogin = user.LastLogin,
-                IsActive = user.IsActive,
-                IsAdminUser = user.IsAdminUser,
-                IsMfaRequired = user.IsMfaRequired,
-                IsMfaEnabled = user.IsMfaEnabled,
-                MfaSecret = user.MfaSecret,
-                Updated = user.Updated,
-                Version = user.Version,
                 Accounts = new List<UserDto.UserAccountDto>()
             };
+            CopyProperties(user, userDto);
 
             if (user.Accounts == null) return userDto;
 
@@ -186,19 +172,11 @@ namespace Backend.Base.User
 
             UserDto.UserAccountDto accountDto = new UserDto.UserAccountDto()
             {
-                Id = account.Id,
-                UserId = account.UserId,
-                OrgNr = account.OrgNr,
                 OrgCode = org.Code,
-                IsActive = account.IsActive,
-                IsAdminLang = account.IsAdminLang,
-                Classification = account.Classification,
-                LastLogin = account.LastLogin,
-                Updated = account.Updated,
-                Version = account.Version,
                 Roles = new List<UserDto.UserAccountRoleDto>(),
                 Permissions = new List<UserDto.UserAccountPermissionDto>()
             };
+            CopyProperties(account, accountDto);
 
             foreach (var a in account.Roles)
                 accountDto.Roles.Add(await Populate(a));
@@ -252,17 +230,8 @@ namespace Backend.Base.User
 
         private async Task<UserDto.UserAccountRoleDto> Populate(UserAccountRoleEnt role)
         {
-            UserDto.UserAccountRoleDto roleDto = new UserDto.UserAccountRoleDto()
-            {
-                Id = role.Id,
-                RoleId = role.RoleId,
-                FromDate = role.FromDate,
-                ToDate = role.ToDate,
-                IsActive = role.IsActive,
-                Updated = role.Updated,
-                Version = role.Version
-            };
-
+            UserDto.UserAccountRoleDto roleDto = new UserDto.UserAccountRoleDto();
+            CopyProperties(role, roleDto);
             return roleDto;
         }
 
