@@ -14,6 +14,7 @@ namespace Common.DTO.Base
         public bool IsEmailVerified { get; set; }
         public string LangCode { get; set; }
         public int Attempts { get; set; }
+        public string? AttemptsMessage { get; set; }
         public DateTimeOffset? AttemptsLockout { get; set; }
         public DateTimeOffset? LastLogin { get; set; }
         public bool IsAdminUser { get; set; }

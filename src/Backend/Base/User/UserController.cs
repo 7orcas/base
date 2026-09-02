@@ -66,7 +66,7 @@ namespace Backend.Base.User
             var list = new List<UserDto>();
 
             foreach (var user in users)
-                list.Add(await _userService.PopulateList(user));
+                list.Add(await _userService.PopulateList(session, user));
             
             var r = new _ResponseDto
             {
@@ -93,7 +93,7 @@ namespace Backend.Base.User
             }
 
             var session = HttpContext.Items["session"] as SessionEnt;
-            var userDto = await _userService.Populate(user);
+            var userDto = await _userService.Populate(session, user);
             var r = new _ResponseDto
             {
                 SuccessMessage = "Ok",
@@ -133,7 +133,7 @@ namespace Backend.Base.User
             {
                 var user = await _userService.UpdateUser(dto);
                 if (user != null)
-                    listU.Add(await _userService.Populate(user));
+                    listU.Add(await _userService.Populate(session, user));
             }
 
             var r = new _ResponseDto

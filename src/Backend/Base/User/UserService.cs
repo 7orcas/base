@@ -7,6 +7,7 @@ using Npgsql;
 using Org.BouncyCastle.Asn1.Ocsp;
 using Superpower.Model;
 using System.Net.Mail;
+using System.Reflection.Emit;
 using System.Runtime.ConstrainedExecution;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using GC = Backend.GlobalConstants;
@@ -111,7 +112,7 @@ namespace Backend.Base.User
             };
             user.Accounts.Add(NewAccount(user, session));
 
-            return await Populate(user);
+            return await Populate(session, user);
         }
 
         private UserAccountEnt NewAccount(UserEnt user, SessionEnt session)
@@ -129,7 +130,7 @@ namespace Backend.Base.User
         }
 
 
-        public async Task<UserDto> PopulateList(UserEnt user)
+        public async Task<UserDto> PopulateList(SessionEnt session, UserEnt user)
         {
             UserDto userDto = new UserDto()
             {
@@ -140,14 +141,20 @@ namespace Backend.Base.User
                 Version = user.Version,
             };
 
+            var attemptsRule = session.Org.Encoding.LoginAttemptRule;
+            if (attemptsRule.LockoutAttempts > 0
+                && user.Attempts > attemptsRule.LockoutAttempts)
+                userDto.AttemptsMessage = GetLabel("LO", session.Labels);
+
             return userDto;
         }
 
-        public async Task<UserDto> Populate(UserEnt user)
+        public async Task<UserDto> Populate(SessionEnt session, UserEnt user)
         {
-            var org = await _orgService.GetOrg(user.OrgNrDefault);
-            var labels = await _labelService.GetLangCodeDic(user.LangCode, org.LangLabelVariant);
+            var org = session.Org;
+            var labels = session.Labels;
 
+            //Load the DTO
             UserDto userDto = new UserDto()
             {
                 OrgNr = user.OrgNrDefault,
@@ -155,6 +162,12 @@ namespace Backend.Base.User
             };
             CopyProperties(user, userDto);
 
+            //Is the user locked out?
+            var attemptsRule = org.Encoding.LoginAttemptRule;
+            if (attemptsRule.LockoutAttempts > 0 
+                && user.Attempts > attemptsRule.LockoutAttempts)
+                userDto.AttemptsMessage = GetLabel("LO", labels);
+            
             if (user.Accounts == null) return userDto;
 
             foreach (var a in user.Accounts)

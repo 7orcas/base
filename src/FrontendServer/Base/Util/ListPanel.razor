@@ -10,6 +10,7 @@
               T="ListModel<TDto>"
               @ref="_tableRef"
               Items="@List"
+              Filter="FilterCode"
               Height="100%"
               FixedHeader="true"
               Hover="true"
@@ -25,7 +26,26 @@
         </ColGroup>
         <HeaderContent>
             <MudTh></MudTh>
-            <MudTh><Label Key=@CodeKey /></MudTh>
+            <MudTh>
+                <div style="display:flex; flex-direction:column;">
+                    <div style="display:flex; align-items:center;">
+                        <Label Key="@CodeKey" />
+                        <MudIconButton Icon="@Icons.Material.Filled.FilterList"
+                                       Size="Size.Small"
+                                       Color="@(_showCodeFilter ? Color.Primary : Color.Default)"
+                                       OnClick="ToggleCodeFilter" />
+                    </div>
+                    @if (_showCodeFilter)
+                    {
+                        <MudTextField T="string"
+                                      @bind-Value="_codeFilter"
+                                      Immediate="true"
+                                      Placeholder="@GetLabel("FilterX")"
+                                      Margin="Margin.Dense"
+                                      Variant="Variant.Text" />
+                    }
+                </div>
+            </MudTh>
             <MudTh><Label Key="Active" /></MudTh>
         </HeaderContent>
         <RowTemplate>
@@ -71,6 +91,8 @@
 
 
     private MudTable<ListModel<TDto>> _tableRef;
+    private bool _showCodeFilter;
+    private string _codeFilter = string.Empty;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -102,5 +124,19 @@
         return string.Empty;
     }
 
+    private void ToggleCodeFilter()
+    {
+        _showCodeFilter = !_showCodeFilter;
+    }
+
+    private bool FilterCode(ListModel<TDto> item)
+    {
+        if (string.IsNullOrWhiteSpace(_codeFilter))
+            return true;
+
+        return item.Code?.Contains(
+            _codeFilter,
+            StringComparison.OrdinalIgnoreCase) == true;
+    }
 
 }

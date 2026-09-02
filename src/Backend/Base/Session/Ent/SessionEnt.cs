@@ -21,6 +21,8 @@ namespace Backend.Base.Session.Ent
         public string IpAddress { get; set; } = string.Empty;
         public TimeZoneInfo TimeZone = TimeZoneInfo.FindSystemTimeZoneById("New Zealand Standard Time");
 
+        public Dictionary<string, string> Labels { get; set; } 
+
         /// <summary>
         /// Return the user's crud value for the permission
         /// Return null if permission not loaded

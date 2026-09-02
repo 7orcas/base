@@ -28,7 +28,7 @@ namespace Backend.Base.User
 
         public async Task<List<UserEnt>> GetList(UserSearch search)
         {
-            var sql = "SELECT id, xxx AS Username, isActive, orgnrdefault AS OrgNrDefault "
+            var sql = "SELECT id, xxx AS Username, isActive, attempts, orgnrdefault AS OrgNrDefault "
                         + "FROM base.zzz "
                         + "WHERE id != " + GC.ServiceLoginId + " ";
 

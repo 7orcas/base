@@ -100,16 +100,18 @@
                                                 PageStatus=@PageStatus
                                                 @bind-Value="dto.OrgNr" />
 
-                                    <NumericField LangCode="LoginA"
-                                                PageStatus=@PageStatus
-                                                @bind-Value="dto.Attempts" />
+                                    <div style="display:flex; align-items:flex-end; gap:5px;">
+                                        <NumericField LangCode="LoginA"
+                                                    PageStatus=@PageStatus
+                                                    @bind-Value="dto.Attempts" />
+                                        <div class="@GetAttemptsClass()">
+                                            @dto.AttemptsMessage
+                                        </div>
+                                    </div>
 
                                     <CheckboxField LangCode="AdminU"
                                                 PageStatus=@PageStatus
                                                 @bind-Value="@dto.IsAdminUser" />
-
-
-
 
                                     <Version version=dto />
 
@@ -194,6 +196,7 @@
         return string.Empty;
     }
 
+    private string GetAttemptsClass() => "error-row" + DarkModeSuffix();
     private bool IsDeleteActive => PageStatus == null ? false : PageStatus.isCrudD;
     private void TogglePassword() => showPassword = !showPassword;
     

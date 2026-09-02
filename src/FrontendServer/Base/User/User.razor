@@ -107,7 +107,7 @@
         var ok = await ConfirmNavigationIsOk();
         if (!ok)
         {
-            
+
             var parameters = new DialogParameters
                 {
                     { nameof(ConfirmDialog.Message), GetLabel("UnsavedS") }
@@ -173,7 +173,7 @@
             listUtil.ShowList = true;
             foreach (var u in listX)
             {
-                u.Code = u.Username; //for the list table
+                u.Code = GetCode(u); //for the list table
                 list.Add(new ListModel<UserDto>(u));
             }
         }
@@ -185,6 +185,12 @@
                 Load(list[0]);
         }
 
+    }
+
+    private string GetCode(UserDto dto)
+    {
+        var message = string.IsNullOrEmpty(dto.AttemptsMessage) ? "" : " (" + dto.AttemptsMessage + ")";
+        return dto.Username + message; //for the list table
     }
 
     private void Refresh() => StateHasChanged();
@@ -199,7 +205,7 @@
         if (!dto.IsLoaded)
         {
             var record = await GetAsync<UserDto>(GC.URL_user_get + dto.Id, false);
-            record.Code = record.Username; //for the list table
+            record.Code = GetCode(record); //for the list table
             dto.Load(record);
         }
 
@@ -271,7 +277,7 @@
                 if (dto == null) continue;
 
                 rec.ClearHash();
-                dto.Code = dto.Username; //for the list table
+                dto.Code = GetCode(dto); //for the list table
                 rec.Load(dto);
             }
 
@@ -326,7 +332,7 @@
     private async Task AddRecord()
     {
         var dto = await GetAsync<UserDto>(GC.URL_user_new, false);
-        dto.Code = dto.Username; //for the list table
+        dto.Code = GetCode(dto); //for the list table
         var rec = new ListModel<UserDto>(dto);
         rec.IsLoaded = true;
         list.Insert(0, rec);

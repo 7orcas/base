@@ -16,6 +16,7 @@ SearchIn,Invalid Search
 Invalid,Invalid
 On,On
 Off,Off
+FilterX,Filter...
 SaveRec,Save
 SaveChg,Save Changes
 Assigned,Assigned
@@ -89,7 +90,7 @@ Tooltip,Tooltip
 Config,Configuration
 ConfigG,General Configuration
 UnsavedC,There are unsaved changes. Leave anyway?
-UnsavedS,There are unsaved changes, do you want to discard them?
+UnsavedS,There are unsaved changes|| do you want to discard them?
 LenMax,Max Length
 LenMin,Min Length
 Nr,Number
@@ -129,6 +130,8 @@ UserNameM,Masquerade Username
 UserNameEx,Username already exists
 UserRs,User Roles
 UserAc,Account
+UserLO,User is locked out
+LO,Locked out
 LDM,Light/Dark Mode
 Logout,Logout
 Login,Login

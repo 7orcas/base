@@ -9,8 +9,8 @@ namespace Backend.Base.User
         Task<List<UserEnt>> GetUserList(UserSearch search);
         Task<UserEnt?> UpdateUser(UserDto user);
         Task<UserDto?> NewUser(SessionEnt session);
-        Task<UserDto> PopulateList(UserEnt user);
-        Task<UserDto> Populate(UserEnt user);
+        Task<UserDto> PopulateList(SessionEnt session, UserEnt user);
+        Task<UserDto> Populate(SessionEnt session, UserEnt user);
         Task<DefinitionDto> GetDefinition(SessionEnt session);
         Task<List<ValidationDto>> ValidateUser(SessionEnt session, List<UserDto> update);
     }
