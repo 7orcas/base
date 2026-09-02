@@ -39,6 +39,7 @@
 
     public class UserConfigDto
     {
+        public string Username { get; set; }
         public bool IsService { get; set; } = false;
         public bool IsAdminUser { get; set; } = false;
         public bool IsAdminLang { get; set; } = false;

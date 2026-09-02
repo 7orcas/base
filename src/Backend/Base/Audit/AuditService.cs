@@ -141,7 +141,7 @@ namespace Backend.Base.Audit
             string? details)
         {
             LogAuditRecord(session.SourceApp,
-                session.Org.Nr,
+                session.OrgNr,
                 session.UserAccount.Id,
                 session.MasqueradeId,
                 entityTypeId,

@@ -1,4 +1,4 @@
-﻿@inherits BasePage
+﻿@inherits BaseComponent
 
 <div style="@GetDebugBorder("green")">
 
@@ -115,7 +115,7 @@
     [Parameter] public string TitleKey { get; set; }
     [Parameter] public string SubTitleKey { get; set; }
     [Parameter] public string PageCode { get; set; }
-    [Parameter] public PageStatus? PageStatus { get; set; }
+    //[Parameter] public PageStatus? PageStatus { get; set; } DELETE_ME
     [Parameter] public List<ToolBarButton> ToolBarButtonsLeft { get; set; } = new();
     [Parameter] public List<ToolBarButton> ToolBarButtonsRight { get; set; } = new();
     [Parameter] public EventCallback CloseAction { get; set; } = new();
@@ -130,7 +130,7 @@
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender){
-            await InitialiseBasePage(GC.PerIgnore);
+           // await InitialiseBasePage(GC.PerIgnore);
             title = GetLabel(TitleKey);
             isSubTitle = !string.IsNullOrEmpty(SubTitleKey);
             subtitle = isSubTitle? GetLabel(SubTitleKey) : null;
@@ -144,8 +144,8 @@
     }
 
     private bool IsButtons(List<ToolBarButton> l) => l != null && l.Count > 0;
-    private string GetTitleClass() => " title title" + GetLightDarkClassSuffix();
-    private string GetSubTitleClass() => " subtitle subtitle" + GetLightDarkClassSuffix();
+    private string GetTitleClass() => " title title" + DarkModeSuffix();
+    private string GetSubTitleClass() => " subtitle subtitle" + DarkModeSuffix();
 
     private string GetButtonClass(ToolBarButton b)
     {
@@ -156,12 +156,12 @@
         else
             clazz += "toolbar-button"; 
 
-        clazz += GetLightDarkClassSuffix();
+        clazz += DarkModeSuffix();
 
         if (b.IsClassFn())
             clazz += " "
                 + b.GetClass(PageStatus)
-                + GetLightDarkClassSuffix();
+                + DarkModeSuffix();
 
         return clazz;
     }

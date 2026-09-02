@@ -62,8 +62,16 @@ namespace Backend.Core.Middleware
                     Type controllerType = controllerActionDescriptor.ControllerTypeInfo.AsType();
                     perm = controllerType.GetCustomAttribute<PermissionAtt>();
                 }
-                    
-                if (_permissionService.IsAuthorizedToAccessEndPoint(session, perm, crud))
+
+                //user must be flagged as User Admin
+                var admin = false;
+                admin = perm != null
+                    && perm.Nr == GC.PerUser
+                    && session.UserAccount != null
+                    && session.UserAccount.IsAdminUser;
+
+
+                if (admin || _permissionService.IsAuthorizedToAccessEndPoint(session, perm, crud))
                 {
                     await _next(context);
                     return;

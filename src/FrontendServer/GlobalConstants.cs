@@ -3,14 +3,15 @@
     public class GlobalConstants : Common.GlobalConstants
     {
         public const int AppClient                = 1; //defined in FrontendLogin as well
-
-        public const string Date_TS_Format         = "yyyy-MM-dd HH:mm:ss";
+                
         public const string Date_Format            = "dd MMM yy";
 
+        public const string VersionKey            = "kV";
         public const string LabelCacheKey         = "kLabel";
         public const string TokenCacheKey         = "kToken";
         public const string RefreshTokenCacheKey  = "kRefreshToken";
-        public const string ConfigCacheKey        = "kConfig";
+        public const string ConfigCacheKey        = "kConf";
+        public const string FieldConfigCacheKey   = "kFConf";
         public const string AuthorizedClientKey   = "kAC";
         public const string UnAuthorizedClientKey = "kUAC";
         public const string BearerKey             = "Bearer";
@@ -28,6 +29,7 @@
         public const string URL_user_get          = URL_user + "get/";
         public const string URL_user_update       = URL_user + "update";
         public const string URL_user_new          = URL_user + "new";
+        public const string URL_user_definition   = URL_user + "definition";
         public const string URL_user_role_list    = URL_base + "Role/userroles";
         public const string URL_role_list         = URL_base + "Role/roles";
         public const string URL_role              = URL_base + "Role/get/";
@@ -54,10 +56,11 @@
         public enum TextFieldWidth
         {
             Ignore = 0,
-            TextShort = 1,
-            TextMedium = 2,
-            TextLong = 3,
-            Int = 4,
+            TextVeryShort = 1,
+            TextShort = 2,
+            TextMedium = 3,
+            TextLong = 4,
+            Int = 5,
         }
 
     }

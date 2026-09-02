@@ -1,4 +1,6 @@
 ﻿
+using DocumentFormat.OpenXml.Spreadsheet;
+
 namespace Backend.Core.Middleware
 {
     public class SessionMiddleware
@@ -17,7 +19,9 @@ namespace Backend.Core.Middleware
             HttpContext context,
             Serilog.IDiagnosticContext _diagnosticContext,
             TokenServiceI _tokenService,
-            SessionServiceI _sessionService)
+            SessionServiceI _sessionService,
+            OrgServiceI _orgService,
+        LabelServiceI _labelService)
         {
             var authorizationHeader = context.Request.Headers.Authorization.ToString();
 
@@ -32,7 +36,16 @@ namespace Backend.Core.Middleware
                     _diagnosticContext.Set("SessionKey", tv.SessionKey);
                     var session = _sessionService.GetSession(tv.SessionKey);
                     if (session != null)
+                    {
+                        //Loaded here to aviod caching the labels in the session object
+                        session.Org = await _orgService.GetOrg(session.OrgNr);
+
+                        session.Labels = await _labelService.GetLangCodeDic(
+                            session.UserConfig.LangCodeCurrent, 
+                            session.Org.LangLabelVariant);
+
                         context.Items["session"] = session;
+                    }
                 }
             }
             await _next(context);

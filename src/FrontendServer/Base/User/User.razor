@@ -12,7 +12,7 @@
     <HeaderThin @key=pageStatus.pageCode
             TitleKey="UserAdm"
             PageCode=@pageStatus.pageCode
-                PageStatus="@pageStatus"
+            PageStatus="@pageStatus"
             ToolBarButtonsLeft="toolBarButtonsLeft"
             ToolBarButtonsRight="toolBarButtonsRight" />
 
@@ -47,7 +47,8 @@
                 <MudPaper Elevation="0" Outlined="false" Style="flex:1; min-height:0; overflow:auto; padding-right:20px;">
                     <UserDetailsPanel Selections="listUtil.Selections"
                                       Refresh="@Refresh"
-                                      pageStatus="@pageStatus" />
+                                      PageStatus="@pageStatus" 
+                                      FieldDefinitionUtil="@fieldDefinitionUtil" />
                 </MudPaper>
             </MudItem>
 
@@ -67,7 +68,14 @@
     private List<ListModel<UserDto>> list = new List<ListModel<UserDto>>();
     private ListUtil<UserDto> listUtil = new ListUtil<UserDto>();
     private MudTable<ListModel<UserDto>> _listTable;
+    private FieldDefinitionUtil fieldDefinitionUtil;
 
+
+    protected override async Task OnInitializedAsync()
+    {
+        var defs = await GetDefinition(GC.URL_user_definition);
+        fieldDefinitionUtil = new FieldDefinitionUtil(defs);
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -76,7 +84,7 @@
             InitialiseBasePage();
 
             //Always make edit mode
-            pageStatus.IsEditMode = true;
+            pageStatus.IsEditMode = pageStatus.orCrudCUD();
 
             //Add standard toolbar
             AddToolbarSearch(Search);
@@ -95,12 +103,48 @@
 
     private async Task Search()
     {
-        var result = await Search<UserSearchDialog>();
-        if (!result.Canceled)
+        bool confirmed = true;
+        var ok = await ConfirmNavigationIsOk();
+        if (!ok)
         {
-            var data = (UserSearch)result.Data;
-            await Load(data);
+
+            var parameters = new DialogParameters
+                {
+                    { nameof(ConfirmDialog.Message), GetLabel("UnsavedS") }
+                };
+
+            var options = new DialogOptions
+            {
+                CloseOnEscapeKey = true,
+                MaxWidth = MaxWidth.Small
+            };
+
+            var dialog = await DialogService.ShowAsync<ConfirmDialog>(
+                "Confirm",
+                parameters,
+                options);
+
+            var resultX = await dialog.Result;
+
+            confirmed = !resultX.Canceled;
         }
+
+        if (confirmed)
+        {
+            // User clicked Yes
+            var result = await Search<UserSearchDialog>();
+            if (!result.Canceled)
+            {
+                var data = (UserSearch)result.Data;
+                await Load(data);
+
+            }
+        }
+        else
+        {
+            // User clicked No or closed dialog
+        }
+
     }
 
 
@@ -121,15 +165,15 @@
 
         }
 
-
         if (listX == null)
             loadStatus.SetError();
         else
         {
+            listUtil.Clear();
             listUtil.ShowList = true;
             foreach (var u in listX)
             {
-                u.Code = u.Username; //for the list table
+                u.Code = GetCode(u); //for the list table
                 list.Add(new ListModel<UserDto>(u));
             }
         }
@@ -141,13 +185,12 @@
                 Load(list[0]);
         }
 
-        //testing DELETE ME
-        //listUtil.MaxSelections = 20;
-        // if (list.Count > 1) Load(list[1]);
-        // if (list.Count > 2) Load(list[2]);
+    }
 
-
-        // await Search();
+    private string GetCode(UserDto dto)
+    {
+        var message = string.IsNullOrEmpty(dto.AttemptsMessage) ? "" : " (" + dto.AttemptsMessage + ")";
+        return dto.Username + message; //for the list table
     }
 
     private void Refresh() => StateHasChanged();
@@ -162,7 +205,7 @@
         if (!dto.IsLoaded)
         {
             var record = await GetAsync<UserDto>(GC.URL_user_get + dto.Id, false);
-            record.Code = record.Username; //for the list table
+            record.Code = GetCode(record); //for the list table
             dto.Load(record);
         }
 
@@ -172,13 +215,12 @@
 
     private async Task SaveAsync()
     {
-
-
         //Get records to be updated
         var updates = new List<ListModel<UserDto>>();
         for (int i = 0; i < list.Count; i++)
         {
             var rec = list[i];
+            rec.ResetValidation();
             if (rec.IsUpdateable())
                 updates.Add(rec);
         }
@@ -192,13 +234,23 @@
         };
         var response = await PostAsync<List<UserDto>>(GC.URL_user_update, updatesX);
 
+        var r2 = null as _ResponseDto;
 
         if (response.StatusCode == HttpStatusCode.OK)
         {
             var r1 = await response.Content.ReadAsStringAsync();
-            var r2 = JsonConvert.DeserializeObject<_ResponseDto>(r1);
-            //if (!r2.Valid) //ToDo
+            r2 = JsonConvert.DeserializeObject<_ResponseDto>(r1);
+        }
+        else
+        {
+            //ToDo error response
+            return;
+        }
 
+
+
+        if (r2.Valid)
+        {
             List<UserDto> dtos = JsonConvert.DeserializeObject<List<UserDto>>(r2.Result.ToString());
 
             var deletes = new List<ListModel<UserDto>>();
@@ -225,7 +277,7 @@
                 if (dto == null) continue;
 
                 rec.ClearHash();
-                dto.Code = dto.Username; //for the list table
+                dto.Code = GetCode(dto); //for the list table
                 rec.Load(dto);
             }
 
@@ -236,11 +288,38 @@
             }
 
         }
-        //ToDo error response
+        else
+        {
+            List<ValidationDto> vals = r2?.Validations;
+            for (int i = 0; i < updates.Count; i++)
+            {
+                var rec = updates[i];
+                var val = vals.FirstOrDefault(x => x.Id == rec.Id);
+                if (val != null)
+                {
+                    rec.Validation = new ValidationModel
+                    {
+                        Validation = val
+                    };
+                }
+            }
+        }
 
         loadStatus.ResetSaving();
         StateHasChanged();
     }
+
+    public async Task<bool> ConfirmNavigationIsOk()
+    {
+        for (int i = 0; list != null && i < list.Count; i++)
+        {
+            var dto = list[i];
+            if (dto.IsLoaded && dto.HasChanged())
+                return false;
+        }
+        return true;
+    }
+
 
     private async Task EditRecord()
     {
@@ -253,7 +332,7 @@
     private async Task AddRecord()
     {
         var dto = await GetAsync<UserDto>(GC.URL_user_new, false);
-        dto.Code = dto.Username; //for the list table
+        dto.Code = GetCode(dto); //for the list table
         var rec = new ListModel<UserDto>(dto);
         rec.IsLoaded = true;
         list.Insert(0, rec);

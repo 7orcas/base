@@ -13,12 +13,16 @@ Send,Send
 Cancel,Cancel
 Search,Search
 SearchIn,Invalid Search
+Invalid,Invalid
 On,On
 Off,Off
+FilterX,Filter...
 SaveRec,Save
 SaveChg,Save Changes
 Assigned,Assigned
 Verify,Verify
+MaxV,Maximum value exceeded (%%)
+MinV,Minimum value exceeded (%%)
 Default,Default
 Updated,Updated
 Org,Organisation
@@ -67,6 +71,7 @@ EmailVS,Email address verified
 EmailVSX,Email address is already verified
 EmailVM,You are now able to log in
 EmailVX,Email verification has expired|| please contact IT support
+EmailVZ,Email verified 
 Mfa1,Scan with Microsoft Authenticator
 Mfa2,Or enter this key manually
 Mfa3,Enter code from Microsoft Authenticator
@@ -85,6 +90,7 @@ Tooltip,Tooltip
 Config,Configuration
 ConfigG,General Configuration
 UnsavedC,There are unsaved changes. Leave anyway?
+UnsavedS,There are unsaved changes|| do you want to discard them?
 LenMax,Max Length
 LenMin,Min Length
 Nr,Number
@@ -124,6 +130,8 @@ UserNameM,Masquerade Username
 UserNameEx,Username already exists
 UserRs,User Roles
 UserAc,Account
+UserLO,User is locked out
+LO,Locked out
 LDM,Light/Dark Mode
 Logout,Logout
 Login,Login
@@ -139,8 +147,12 @@ LoginAS,You are not setup to access %%
 LoginIA,Your account into %% is inactive
 Audit,Audit
 ValE,Validation Error
+ValM,Validation Message
+ValMs,Validation Messages
 ValT,There are Validation Errors|| Save is unsuccessful.
 ValTs,Please fix the erros and re-save.
+Error,Error
+Warning,Warning
 InvR,Invalid Records
 InvO,Invalid Org Nr
 InvF,Field can't be empty
@@ -164,9 +176,11 @@ SignUp3,Please check your inbox and spam/junk folders.
 CaptchaS,ReCAPTCHA verified successfully
 CaptchaE,Failed to verify reCAPTCHA
 CaptchaR,ReCAPTCHA is required
-Val0,Can''t be empty
-Val1,Can''t contain spaces
+Val0,Can't be empty
+Val1,Can't contain spaces
 Ver,Version
+VerX,This record was changed on %% and is out of date. You must reload it.
+VerC,Version Conflict
 Clas,Classification
 Chat,Chat
 <LAST>,<LAST LINE>

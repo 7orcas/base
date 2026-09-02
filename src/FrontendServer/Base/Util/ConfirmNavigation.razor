@@ -9,21 +9,29 @@
 @code {
     [Parameter] public ListModel<T> Dto { get; set; }
     [Parameter] public IEnumerable<ListModel<T>> List { get; set; }
+    [Parameter] public Func<Task<bool>> ConfirmNavigationIsOk { get; set; }
 
     private async Task HandleNavigation(LocationChangingContext context)
     {
         var changes = false;
 
-        var list = List?.ToList();
-        for (int i = 0; list != null && i < list.Count; i++)
+        if (ConfirmNavigationIsOk != null)
+            changes = !await ConfirmNavigationIsOk();
+
+        else
         {
-            var dto = list[i];
-            if (dto.IsLoaded && dto.HasChanged())
+            var list = List?.ToList();
+            for (int i = 0; list != null && i < list.Count; i++)
+            {
+                var dto = list[i];
+                if (dto.IsLoaded && dto.HasChanged())
+                    changes = true;
+            }
+
+            if (Dto != null && Dto.HasChanged())
                 changes = true;
         }
 
-        if (Dto != null && Dto.HasChanged())
-            changes = true;
 
         if (changes)
         {

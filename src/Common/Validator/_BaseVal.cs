@@ -8,6 +8,9 @@ using GC = Common.GlobalConstants;
 /// Author: John Stewart
 /// </summary>
 
+//DELETE_ME
+
+
 namespace Common.Validator
 {
     public abstract class _BaseVal<T, D> where T : _BaseVal<T,D> where D : _BaseDto
@@ -19,7 +22,7 @@ namespace Common.Validator
             val.Id = dto.Id;
 
             if (orgNr != null && 
-                (dto.OrgNr == null || dto.OrgNr != orgNr))
+                (dto.OrgNr == null ))//|| dto.OrgNr != orgNr))  <<<-----   doesn't work for Roles
                 val.AddError(GetLabel("OrgNr", labels), GetLabel("InvO", labels));
 
             if (dto.Code == null || 

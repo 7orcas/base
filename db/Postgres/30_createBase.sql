@@ -82,7 +82,7 @@ CREATE TABLE base.zzz (
     xxx VARCHAR(40) NOT NULL UNIQUE,
     yyy TEXT NOT NULL,
 	encoded TEXT,
-	email VARCHAR(100) NOT NULL,
+	email VARCHAR(100),
 	isemailverified BOOLEAN DEFAULT FALSE,
 	orgnrdefault INTEGER NOT NULL,
     langcode VARCHAR(4) NOT NULL,

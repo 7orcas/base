@@ -94,6 +94,11 @@ a, .btn-link {
 
 .mud-expand-panel.mud-panel-expanded {
     padding: 2px !important;
+    margin: 2px !important;
+}
+
+.red-border .mud-input-outlined fieldset {
+    border-color: red !important;
 }
 
 .list-even-row-light {
@@ -160,8 +165,8 @@ a, .btn-link {
 }
 
 .selected-row {
-    background-color: var(--mud-palette-primary-hover) !important;
-    color: var(--mud-palette-text-primary) !important;
+    /*background-color: var(--mud-palette-primary-hover) !important;
+    color: var(--mud-palette-text-primary) !important;*/
     font-weight: bold !important;
 }
 
@@ -272,4 +277,20 @@ a, .btn-link {
 
 .delete-checkbox-light {
     color: red;
+}
+
+.error-row-dark {
+    background-color: #8e2f2f !important;
+}
+
+.error-row-light {
+    background-color: #f3c5c9 !important;
+}
+
+.warning-row-dark {
+    background-color: #7b7b00 !important;
+}
+
+.warning-row-light {
+    background-color: #fdfda2 !important;
 }

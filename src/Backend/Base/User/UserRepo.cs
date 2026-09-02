@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Backend.Data;
+using GC = Backend.GlobalConstants;
 
 namespace Backend.Base.User
 {
@@ -13,30 +14,37 @@ namespace Backend.Base.User
     /// <license>**Licence**</license>
     public class UserRepo : BaseRepo, UserRepoI
     {
+        private readonly LoginServiceI _loginService;
         private readonly AppDbContext _context;
 
         public UserRepo(AppDbContext context,
+            LoginServiceI loginService,
             IServiceProvider serviceProvider)
             : base(serviceProvider)
         {
+            _loginService = loginService;
             _context = context;
         }
 
         public async Task<List<UserEnt>> GetList(UserSearch search)
         {
-            var sql = "SELECT id, xxx AS Username, isActive, orgnrdefault AS OrgNrDefault "
+            var sql = "SELECT id, xxx AS Username, isActive, attempts, orgnrdefault AS OrgNrDefault "
                         + "FROM base.zzz "
-                        + "WHERE 1=1";
+                        + "WHERE id != " + GC.ServiceLoginId + " ";
 
+            if (!string.IsNullOrEmpty(search.Username))
+            {
+                sql += " AND xxx LIKE '%" + search.Username + "%'";
+            }
 
-    if (!string.IsNullOrEmpty(search.Username))
-    {
-        sql += " AND xxx LIKE '%" + search.Username + "%'";
-    }
-
-     sql += " ORDER BY xxx";
+             sql += " ORDER BY xxx";
 
             return await GetList<UserEnt>(sql);
+        }
+
+        public async Task<VersionInfo?> GetVersion(long id)
+        {
+            return await GetVersion(id, "base.zzz");
         }
 
 
@@ -69,9 +77,7 @@ namespace Backend.Base.User
             var user = null as UserEnt;
 
             if (userDto.IsNew())
-                user = new UserEnt() { 
-                    Password = "temp" //ToDo
-                };
+                user = new UserEnt();
             else
                 user = await GetById(userDto.Id);
 
@@ -86,9 +92,16 @@ namespace Backend.Base.User
                 return null;
             }
 
+            //Update password
+            if (!string.IsNullOrEmpty(userDto.PasswordNew))
+            {
+                user.Password = _loginService.PasswordHash(userDto.PasswordNew);
+            }
+
             user.Encode();
             user.Username = userDto.Username;
             user.Email = userDto.Email;
+            user.IsEmailVerified = userDto.IsEmailVerified;
             user.LangCode = userDto.LangCode;
             user.OrgNrDefault = userDto.OrgNr;
             user.Attempts = userDto.Attempts;

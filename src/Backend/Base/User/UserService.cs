@@ -1,11 +1,15 @@
-﻿using DocumentFormat.OpenXml.Office2016.Excel;
+﻿using DocumentFormat.OpenXml.Office2010.ExcelAc;
+using DocumentFormat.OpenXml.Office2016.Excel;
 using DocumentFormat.OpenXml.Spreadsheet;
 using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.Extensions.Caching.Memory;
 using Npgsql;
 using Org.BouncyCastle.Asn1.Ocsp;
 using Superpower.Model;
+using System.Net.Mail;
+using System.Reflection.Emit;
 using System.Runtime.ConstrainedExecution;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using GC = Backend.GlobalConstants;
 
 /// <summary>
@@ -20,7 +24,6 @@ namespace Backend.Base.User
 {
     public class UserService: BaseService, UserServiceI
     {
-        private readonly LabelServiceI _labelService;
         private readonly OrgServiceI _orgService;
         private readonly RoleServiceI _roleService;
         private readonly PermissionServiceI _permissionService;
@@ -28,7 +31,6 @@ namespace Backend.Base.User
         private readonly UserRepoI _userRepo;
 
         public UserService(IServiceProvider serviceProvider,
-            LabelServiceI labelService,
             OrgServiceI orgService,
             RoleServiceI roleService,
             PermissionServiceI permissionService,
@@ -36,7 +38,6 @@ namespace Backend.Base.User
             UserRepoI userRepo) 
             : base(serviceProvider) 
         {
-            _labelService = labelService;
             _orgService = orgService;
             _roleService = roleService;
             _permissionService = permissionService;
@@ -49,13 +50,43 @@ namespace Backend.Base.User
             return await _userRepo.GetList(search);
         }
 
-        public async Task<UserEnt?> GetUser(long id)
+        public async Task<UserEnt?> GetUserById(long id)
         {
             return await _userRepo.GetById(id);
         }
 
+        public async Task<DefinitionDto> GetDefinition(SessionEnt session)
+        {
+            var validator = new UserVal(session, _orgService);
+            return validator.GetDefinition();
+        }
+
+        public async Task<List<ValidationDto>> ValidateUser(SessionEnt session, List<UserDto> update)
+        {
+            var validator = new UserVal (session, _orgService);
+            var vals = new List<ValidationDto>();
+
+            foreach (var dto in update)
+            {
+                VersionI? version = null;
+                if (dto.IsValidatable())
+                    version = await _userRepo.GetVersion(dto.Id);
+                else if (dto.IsDelete) continue;
+
+                var val = validator.Validate(dto, version);
+                if (val != null)
+                    vals.Add(val);
+            }
+
+            return vals;
+        }
+
         public async Task<UserEnt?> UpdateUser(UserDto user)
         {
+            //No action required
+            if (user.IsNew() && user.IsDelete)
+                return null;
+
             return await _userRepo.Update(user);
         }
 
@@ -73,12 +104,12 @@ namespace Backend.Base.User
                 Version = GC.NewRecordVersion,
                 Accounts = new List<UserAccountEnt>()
             };
-            user.Accounts.Add(NewAccount(user, session));
+            user.Accounts.Add(NewAccount(session, user));
 
-            return await Populate(user);
+            return await Populate(session, user);
         }
 
-        private UserAccountEnt NewAccount(UserEnt user, SessionEnt session)
+        private UserAccountEnt NewAccount(SessionEnt session, UserEnt user)
         {
             return new UserAccountEnt()
             {
@@ -93,7 +124,7 @@ namespace Backend.Base.User
         }
 
 
-        public async Task<UserDto> PopulateList(UserEnt user)
+        public async Task<UserDto> PopulateList(SessionEnt session, UserEnt user)
         {
             UserDto userDto = new UserDto()
             {
@@ -103,45 +134,43 @@ namespace Backend.Base.User
                 Updated = user.Updated,
                 Version = user.Version,
             };
+
+            var attemptsRule = session.Org.Encoding.LoginAttemptRule;
+            if (attemptsRule.LockoutAttempts > 0
+                && user.Attempts > attemptsRule.LockoutAttempts)
+                userDto.AttemptsMessage = GetLabel("LO", session.Labels);
 
             return userDto;
         }
 
-        public async Task<UserDto> Populate(UserEnt user)
+        public async Task<UserDto> Populate(SessionEnt session, UserEnt user)
         {
-            var org = await _orgService.GetOrg(user.OrgNrDefault);
-            var labels = await _labelService.GetLangCodeDic(user.LangCode, org.LangLabelVariant);
+            var org = session.Org;
+            var labels = session.Labels;
 
+            //Load the DTO
             UserDto userDto = new UserDto()
             {
-                Id = user.Id,
-                Username = user.Username,
-                Email = user.Email,
-                IsEmailVerified = user.IsEmailVerified,
                 OrgNr = user.OrgNrDefault,
-                LangCode = user.LangCode,
-                Attempts = user.Attempts,
-                AttemptsLockout = user.AttemptsLockout,
-                LastLogin = user.LastLogin,
-                IsActive = user.IsActive,
-                IsAdminUser = user.IsAdminUser,
-                IsMfaRequired = user.IsMfaRequired,
-                IsMfaEnabled = user.IsMfaEnabled,
-                MfaSecret = user.MfaSecret,
-                Updated = user.Updated,
-                Version = user.Version,
                 Accounts = new List<UserDto.UserAccountDto>()
             };
+            CopyProperties(user, userDto);
 
+            //Is the user locked out?
+            var attemptsRule = org.Encoding.LoginAttemptRule;
+            if (attemptsRule.LockoutAttempts > 0 
+                && user.Attempts > attemptsRule.LockoutAttempts)
+                userDto.AttemptsMessage = GetLabel("LO", labels);
+            
             if (user.Accounts == null) return userDto;
 
             foreach (var a in user.Accounts)
-                userDto.Accounts.Add(await Populate(a, labels));
+                userDto.Accounts.Add(await Populate(session, a));
 
             return userDto;
         }
 
-        private async Task<UserDto.UserAccountDto> Populate(UserAccountEnt account, Dictionary<string, string> labels)
+        private async Task<UserDto.UserAccountDto> Populate(SessionEnt session, UserAccountEnt account)
         {
             var org = await _orgService.GetOrg(account.OrgNr);
             var roles = await _roleService.GetRoles(org.Nr);
@@ -151,19 +180,11 @@ namespace Backend.Base.User
 
             UserDto.UserAccountDto accountDto = new UserDto.UserAccountDto()
             {
-                Id = account.Id,
-                UserId = account.UserId,
-                OrgNr = account.OrgNr,
                 OrgCode = org.Code,
-                IsActive = account.IsActive,
-                IsAdminLang = account.IsAdminLang,
-                Classification = account.Classification,
-                LastLogin = account.LastLogin,
-                Updated = account.Updated,
-                Version = account.Version,
                 Roles = new List<UserDto.UserAccountRoleDto>(),
                 Permissions = new List<UserDto.UserAccountPermissionDto>()
             };
+            CopyProperties(account, accountDto);
 
             foreach (var a in account.Roles)
                 accountDto.Roles.Add(await Populate(a));
@@ -201,7 +222,7 @@ namespace Backend.Base.User
                 if (permDic.ContainsKey(perm.Nr))
                 {
                     lk = (permDic[perm.Nr]).LangKey;
-                    lk = GetLabel(lk, labels);
+                    lk = GetLabel(lk, session.Labels);
                 }
 
                 accountDto.Permissions.Add(new UserDto.UserAccountPermissionDto
@@ -217,17 +238,8 @@ namespace Backend.Base.User
 
         private async Task<UserDto.UserAccountRoleDto> Populate(UserAccountRoleEnt role)
         {
-            UserDto.UserAccountRoleDto roleDto = new UserDto.UserAccountRoleDto()
-            {
-                Id = role.Id,
-                RoleId = role.RoleId,
-                FromDate = role.FromDate,
-                ToDate = role.ToDate,
-                IsActive = role.IsActive,
-                Updated = role.Updated,
-                Version = role.Version
-            };
-
+            UserDto.UserAccountRoleDto roleDto = new UserDto.UserAccountRoleDto();
+            CopyProperties(role, roleDto);
             return roleDto;
         }
 

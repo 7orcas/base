@@ -1,5 +1,6 @@
 ﻿using Npgsql;
 using System.ComponentModel.DataAnnotations;
+using System.Reflection;
 using GC = Backend.GlobalConstants;
 
 namespace Backend.Base;
@@ -115,5 +116,36 @@ public abstract class BaseService : SqlUtils
     {
         return _tempIdService.GetTempId();
     }
+
+    public void CopyProperties<TSource, TDestination>(TSource source, TDestination destination)
+    {
+        if (source == null) throw new ArgumentNullException(nameof(source));
+        if (destination == null) throw new ArgumentNullException(nameof(destination));
+
+        var sourceProperties = typeof(TSource)
+            .GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+        var destinationProperties = typeof(TDestination)
+            .GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+        foreach (var sourceProperty in sourceProperties)
+        {
+            if (!sourceProperty.CanRead)
+                continue;
+
+            var destinationProperty = destinationProperties
+                .FirstOrDefault(p =>
+                    p.Name == sourceProperty.Name &&
+                    p.CanWrite &&
+                    p.PropertyType.IsAssignableFrom(sourceProperty.PropertyType));
+
+            if (destinationProperty == null)
+                continue;
+
+            var value = sourceProperty.GetValue(source);
+            destinationProperty.SetValue(destination, value);
+        }
+    }
+
 
 }

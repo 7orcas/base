@@ -51,3 +51,7 @@
         draggingRight = false;
     });
 };
+
+window.getElementHeight = function (id) {
+    return document.getElementById(id)?.clientHeight ?? 0;
+};

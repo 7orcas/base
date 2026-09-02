@@ -14,9 +14,19 @@
                 {
                 var dto = record.dto;
 
-                <td @key="record.Id" style="vertical-align: top; padding: 1px;">
+                <td @key="record.Id" style="vertical-align: top; padding: 1px; background-color:white">
 
                     <MudExpansionPanels MultiExpansion="true">
+
+                        @if (record.IsValidation())
+                        {
+                            <MudExpansionPanel @key="record" Text=@GetValidationLabel(record) Expanded=true Style="padding:1px;" Class="@GetValidationClass(record)">
+                                <ChildContent>
+                                    <ErrorPanel List="record.Validation.Messages" />
+                                </ChildContent>
+                            </MudExpansionPanel>
+                        }
+
                         <MudExpansionPanel Text=@GetLabel("ConfigG") Expanded="true">
                             <TitleContent>
                                 <div class="expansion-title">
@@ -32,37 +42,76 @@
                                 </div>
                             </TitleContent>
                             <ChildContent>
-                                <div style="display: flex; flex-wrap: wrap; gap: 20px;">
+                                <div style="display: flex; flex-wrap: wrap; gap: 10px;">
 
-                                    <TextField Width=GC.TextFieldWidth.TextMedium
-                                                LangCode="UserName"
-                                                ReadOnly="!dto.IsNew()"
-                                                MaxLength="@GC.LenCode"
-                                                Immediate="true"
-                                                Value="@dto.Username"
-                                                ValueChanged="@(v => UsernameChanged(v, record))" />
+                                    <div style="display:flex; align-items:flex-end; gap:5px;">
+                                        <TextField Width=GC.TextFieldWidth.TextMedium
+                                                    LangCode="UserName"
+                                                    ReadOnly="!dto.IsNew()"
+                                                    PageStatus=@PageStatus
+                                                    MaxLength="@GetMaxLength(nameof(dto.Username))"
+                                                    Required="@IsRquired(nameof(dto.Username))"
+                                                    Immediate="true"
+                                                    Value="@dto.Username"
+                                                    ValueChanged="@(v => UsernameChanged(v, record))" />
 
-                                    <TextField Width=GC.TextFieldWidth.TextMedium
-                                                LangCode="Email"
-                                                PageStatus=@pageStatus
-                                                MaxLength="@GC.LenEmail"
-                                                @bind-Value="dto.Email" />
-
-                                    <NumericField LangCode="OrgD"
-                                                PageStatus=@pageStatus
-                                                @bind-Value="dto.OrgNr" />
-
-                                    <NumericField LangCode="LoginA"
-                                                PageStatus=@pageStatus
-                                                @bind-Value="dto.Attempts" />
-
-                                    <CheckboxField LangCode="AdminU"
-                                                PageStatus=@pageStatus
-                                                @bind-Value="@dto.IsAdminUser" />
-
-                                    <CheckboxField Width=GC.TextFieldWidth.TextShort
+                                        <CheckboxField Width=GC.TextFieldWidth.TextShort
                                                 LangCode="Active"
                                                 @bind-Value="dto.IsActive" />
+                                    </div>
+
+                                    <div class="password-field-container">
+                                        <TextField Width=GC.TextFieldWidth.TextMedium
+                                                    LangCode="PWn"
+                                                    PageStatus=@PageStatus
+                                                    MaxLength="@GetMaxLength(nameof(dto.PasswordNew))"
+                                                    Required="@IsRquiredNew(nameof(dto.PasswordNew),dto.IsNew())"
+                                                    InputType="@(showPassword ? InputType.Text : InputType.Password)"
+                                                    @bind-Value="dto.PasswordNew" />
+
+                                        <button type="button"
+                                                class="password-toggle-btn"
+                                                @onclick="TogglePassword">
+                                            <i class="bi @(showPassword ? "bi-eye-slash-fill" : "bi-eye-fill")"></i>
+                                        </button>
+                                    </div>
+
+                                    <div style="display:flex; align-items:flex-end; gap:5px;">
+                                        <TextField Width=GC.TextFieldWidth.TextMedium
+                                                    LangCode="Email"
+                                                    PageStatus=@PageStatus
+                                                    MaxLength="@GetMaxLength(nameof(dto.Email))"
+                                                    Required="@IsRquired(nameof(dto.Email))"
+                                                    @bind-Value="dto.Email" />
+
+                                        <CheckboxField Width=GC.TextFieldWidth.TextShort
+                                                       LangCode="EmailVZ"
+                                                       @bind-Value="dto.IsEmailVerified" />
+                                    </div>
+
+                                    <TextField Width=GC.TextFieldWidth.TextVeryShort
+                                                LangCode="LangCode"
+                                                PageStatus=@PageStatus
+                                                MaxLength="@GetMaxLength(nameof(dto.LangCode))"
+                                                Required="@IsRquired(nameof(dto.LangCode))"
+                                                @bind-Value="dto.LangCode" />
+
+                                    <NumericField LangCode="OrgD"
+                                                PageStatus=@PageStatus
+                                                @bind-Value="dto.OrgNr" />
+
+                                    <div style="display:flex; align-items:flex-end; gap:5px;">
+                                        <NumericField LangCode="LoginA"
+                                                    PageStatus=@PageStatus
+                                                    @bind-Value="dto.Attempts" />
+                                        <div class="@GetAttemptsClass()">
+                                            @dto.AttemptsMessage
+                                        </div>
+                                    </div>
+
+                                    <CheckboxField LangCode="AdminU"
+                                                PageStatus=@PageStatus
+                                                @bind-Value="@dto.IsAdminUser" />
 
                                     <Version version=dto />
 
@@ -82,7 +131,7 @@
                                     <ChildContent>
                                         <MudPaper Class="pa-4 mb-4" Elevation="0">
                                             <UserAccount accountDto="account"
-                                                         PageStatus="@pageStatus" />
+                                                         PageStatus="@PageStatus" />
                                         </MudPaper>
                                     </ChildContent>
                                 </MudExpansionPanel>
@@ -101,7 +150,8 @@
 @code {
     [Parameter] public List<ListModel<UserDto>> Selections { get; set; } = new List<ListModel<UserDto>>();
     [Parameter] public EventCallback Refresh { get; set; }
-    [Parameter] public PageStatus? pageStatus { get; set; }
+    
+    private bool showPassword = false;
 
     private bool Expand(UserDto.UserAccountDto account, UserDto user)
     {
@@ -128,5 +178,26 @@
         await Refresh.InvokeAsync();
     }
 
-    private bool IsDeleteActive => pageStatus == null ? false : pageStatus.isCrudD;
+    private string GetValidationLabel(ListModel<UserDto> record)
+    {
+        if (record.Validation.MessageCount > 1)
+            return GetLabel("ValMs");
+        return GetLabel("ValM");
+    }
+
+    private string GetValidationClass(ListModel<UserDto> record)
+    {
+        if (record.IsValidationError())
+            return "error-row" + DarkModeSuffix();
+
+        if (record.IsValidationWarning())
+            return "warning-row" + DarkModeSuffix();
+
+        return string.Empty;
+    }
+
+    private string GetAttemptsClass() => "error-row" + DarkModeSuffix();
+    private bool IsDeleteActive => PageStatus == null ? false : PageStatus.isCrudD;
+    private void TogglePassword() => showPassword = !showPassword;
+    
 }

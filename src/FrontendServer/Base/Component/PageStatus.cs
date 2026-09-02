@@ -11,6 +11,12 @@
         public string? pageCode;
 
 
+        public bool orCrudCUD()
+        {
+            return isCrudC || isCrudU || isCrudD;
+        }
+
+
         public bool IsEditMode { get; set; } = false;
         
         public PageStatus ToggleEdit()

@@ -2,6 +2,7 @@
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using static MudBlazor.CategoryTypes;
 using static MudBlazor.Colors;
 
 /// <summary>
@@ -94,6 +95,13 @@ namespace FrontendServer.Base.Util
             var hash = Convert.ToHexString(hashBytes);
             return hash;
         }
+
+        public ValidationModel? Validation { get; set; }
+        public void ResetValidation() => Validation = null;
+        public bool IsValidation() => Validation != null;
+        public bool IsValidationError() => Validation?.IsValidationError() ?? false;
+        public bool IsValidationWarning() => Validation?.IsValidationWarning() ?? false;
+        
 
         //Convenience methods to get the underlying dto
         public long Id { get { return dto.Id; } set { dto.Id = value; } }

@@ -114,6 +114,7 @@ else
             // Get stuff
             await LS.Initialise(lps);
             await PermS.Initialise(lps);
+            await GetVersion();
 
             _isLoading = false;
             StateHasChanged();
@@ -151,6 +152,17 @@ else
         var client = HttpClientFactory.CreateClient(GC.AuthorizedClientKey);
         client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue(GC.BearerKey, token);
         return client;
+    }
+
+    private async Task<string> GetVersion()
+    {
+        var clientU = HttpClientFactory.CreateClient(GC.UnAuthorizedClientKey);
+        var response = await clientU.GetAsync(GC.URL_version_number);
+        var r = await response.Content.ReadAsStringAsync();
+        var versionDto = JsonConvert.DeserializeObject<VersionDto>(r);
+        var v = versionDto?.Version ?? "0";
+        await PS.SetAsync(GC.VersionKey, v);
+        return v;
     }
 
     protected override async Task OnInitializedAsync() => _isLoading = true;

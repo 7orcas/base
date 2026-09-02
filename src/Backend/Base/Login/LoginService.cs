@@ -386,7 +386,7 @@ namespace Backend.Base.Login
         }
 
 
-        private string PasswordHash(string password) 
+        public string PasswordHash(string password) 
         {
             byte[] salt = RandomNumberGenerator.GetBytes(PasswordConfig.SaltSize);
 
@@ -451,6 +451,7 @@ namespace Backend.Base.Login
             }
 
             account.Username = login.Username;
+            account.IsAdminUser = login.IsAdminUser;
             account.Permissions = await _permissionService.LoadEffectivePermissionsInt(account.Id, org.Nr);
         }
 

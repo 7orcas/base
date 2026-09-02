@@ -15,11 +15,10 @@ namespace Backend.Base.Login.Ent
         public long Id { get; set; }
         public long LoginId { get; set; }
         public int OrgNr { get; set; }
-        //DELETE ME public string LangCode { get; set; }
         public int? Classification {  get; set; }
         public DateTimeOffset? Lastlogin { get; set; }
         public bool IsActive { get; set; }
-        public bool IsAdminUser { get; set; }
+        public bool IsAdminUser {  get; set; }
         public bool IsAdminLang { get; set; }
 
         public string Username { get; set; }
@@ -27,7 +26,8 @@ namespace Backend.Base.Login.Ent
         public override void Encode() { }
 
         public List<PermissionCrudEnt> Permissions { get; set; }
-   
+
+
         public bool IsService() => LoginId == GC.ServiceLoginId;
 
         /*

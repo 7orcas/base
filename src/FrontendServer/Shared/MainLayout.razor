@@ -87,14 +87,14 @@
                       Class="bottom-bar d-flex justify-space-between align-center" 
                       Elevation="0" 
                       Square="true">
-                <div style="display: flex; align-items: center;">
-                    111
+                <div style="display: flex; align-items: center; margin-right:5px;">
+                    &nbsp;@_username&nbsp;&nbsp;
+                    @_versionNumber
                 </div>
                 <div style="display: flex; gap: 16px;">
                     2222222222222222222222222222222222222222222222222222222222
                 </div>
                 <div style="display: flex; align-items: center; gap: 12px;">
-                    333x
                 </div>
             </MudPaper>
 
@@ -104,7 +104,9 @@
 
 @using GC = FrontendServer.GlobalConstants;
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using Newtonsoft.Json;
 @implements IAsyncDisposable
+@inject IHttpClientFactory HttpClientFactory
 @inject NavigationManager Navigation
 @inject ConfigService ConfS
 @inject LabelService LS
@@ -117,15 +119,22 @@
     private DotNetObjectReference<MainLayout>? _objRef;
     private bool _chatOpen = false;
     private bool _isDarkModeBacking = false;
+    private bool _isInitialized = false;
     private int _leftPanelWidth = 150;
     private int _rightPanelWidth = 400;
+    private string _versionNumber = "";
+    private string _username = "";
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (ConfS.IsInitialized)
+        if (ConfS.IsInitialized && !_isInitialized)
         {
+            _isInitialized = true;
             _objRef = DotNetObjectReference.Create(this);
             await JS.InvokeVoidAsync("initSplitters", _objRef);
+            await GetVersion();
+            _username = ConfS?.Config.User.Username;
+            StateHasChanged();
         }
     }
 
@@ -171,7 +180,7 @@
     private void ToggleChat() => _chatOpen = !_chatOpen;
     private string GetLabel(string key) => LS.GetLabel(key);
     private async Task Logout() => await LgS.LogoutAsync();
-    
+
     public void Dispose() 
     {
         LS.OnLabelsChanged -= RefreshLayout;
@@ -203,6 +212,15 @@
     {
         if (ConfS == null) return string.Empty;
         return ConfS.IsDebugBorder ? " border:5px solid " + color + ";" : string.Empty;
+    }
+
+    private async Task GetVersion()
+    {
+        var clientU = HttpClientFactory.CreateClient(GC.UnAuthorizedClientKey);
+        var response = await clientU.GetAsync(GC.URL_version_number);
+        var r = await response.Content.ReadAsStringAsync();
+        var versionDto = JsonConvert.DeserializeObject<VersionDto>(r);
+        _versionNumber = LS.GetLabel("Ver") + ": " + versionDto?.Version ?? "0";
     }
 
 }

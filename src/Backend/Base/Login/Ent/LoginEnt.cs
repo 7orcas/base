@@ -22,6 +22,7 @@ namespace Backend.Base.Login.Ent
         public bool IsEmailVerified { get; set; }
         public string Password { get; set; }
         public int OrgNrDefault { get; set; }
+        public bool IsAdminUser { get; set; }
         public string LangCode { get; set; }
         public int? Attempts { get; set; }
         public DateTimeOffset? AttemptsLockout { get; set; }

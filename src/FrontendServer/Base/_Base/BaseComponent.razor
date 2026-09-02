@@ -5,6 +5,9 @@
 @using GC = FrontendServer.GlobalConstants;
 
 @code {
+    [Parameter] public PageStatus? PageStatus { get; set; }
+    [Parameter] public FieldDefinitionUtil? FieldDefinitionUtil { get; set; } = new FieldDefinitionUtil(null);
+
     public static string loading = "..loading";
     public MudBlazor.Variant MudVariant = MudBlazor.Variant.Outlined;
 
@@ -13,6 +16,7 @@
         string s = width switch
         {
             GC.TextFieldWidth.Ignore => "",
+            GC.TextFieldWidth.TextVeryShort => "width: 100px;",
             GC.TextFieldWidth.TextShort => "width: 200px;",
             GC.TextFieldWidth.TextMedium => "width: 400px; max-width: 400px;",
             GC.TextFieldWidth.TextLong => "width: 600px;",
@@ -46,7 +50,6 @@
         if (isReadOnly)
             s += "ro-";
         else s += "ed-";
-
         if (TS.IsDarkMode)
             s += "dark";
         else s += "light";
@@ -62,12 +65,19 @@
 
     public LabelService GetLabelService() => LS;
 
+    //Field Config methods
+    public int GetMaxLength(string name) => FieldDefinitionUtil.MaxLength(name);
+    public bool IsRquired(string name) => FieldDefinitionUtil.IsRquired(name);
+    public bool IsRquiredNew(string name, bool isNew) => isNew && FieldDefinitionUtil.IsRquiredNew(name);
+
     //Convenience methods
     public AppConfigDto GetConfig() => CS.Config;
     public bool IsLabel(string labelCode) => LS.IsLabel(labelCode);
     public bool IsTooltip(string labelCode) => LS.IsTooltip(labelCode);
+    public bool IsEditMode() => PageStatus?.IsEditMode ?? true;
     public string GetLabel(string labelCode) => LS.GetLabel(labelCode);
     public string GetLabelHighlightNoKey(string labelCode) => LS.GetLabelHighlightNoKey(labelCode);
     public string? GetTooltip(string labelCode) => LS.GetTooltip(labelCode);
     public string DarkModeSuffix() => TS.IsDarkMode? "-dark" : "-light";
+    
 }
