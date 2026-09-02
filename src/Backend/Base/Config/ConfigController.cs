@@ -79,6 +79,7 @@ namespace Backend.Base.Config
 
                     User = new UserConfigDto 
                     {
+                        Username = userAccount.Username,
                         IsService = userAccount.IsService(),
                         IsAdminUser = userAccount.IsAdminUser,
                         IsAdminLang = userAccount.IsAdminLang

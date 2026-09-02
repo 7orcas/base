@@ -24,7 +24,6 @@ namespace Backend.Base.User
 {
     public class UserService: BaseService, UserServiceI
     {
-        private readonly LabelServiceI _labelService;
         private readonly OrgServiceI _orgService;
         private readonly RoleServiceI _roleService;
         private readonly PermissionServiceI _permissionService;
@@ -32,7 +31,6 @@ namespace Backend.Base.User
         private readonly UserRepoI _userRepo;
 
         public UserService(IServiceProvider serviceProvider,
-            LabelServiceI labelService,
             OrgServiceI orgService,
             RoleServiceI roleService,
             PermissionServiceI permissionService,
@@ -40,7 +38,6 @@ namespace Backend.Base.User
             UserRepoI userRepo) 
             : base(serviceProvider) 
         {
-            _labelService = labelService;
             _orgService = orgService;
             _roleService = roleService;
             _permissionService = permissionService;
@@ -60,16 +57,13 @@ namespace Backend.Base.User
 
         public async Task<DefinitionDto> GetDefinition(SessionEnt session)
         {
-            var labels = await _labelService.GetLangCodeDic(session.UserConfig.LangCodeCurrent, session.Org.LangLabelVariant);
-            var validator = new UserVal(session, labels, _orgService);
+            var validator = new UserVal(session, _orgService);
             return validator.GetDefinition();
         }
 
         public async Task<List<ValidationDto>> ValidateUser(SessionEnt session, List<UserDto> update)
         {
-            var labels = await _labelService.GetLangCodeDic(session.UserConfig.LangCodeCurrent, session.Org.LangLabelVariant);
-
-            var validator = new UserVal (session, labels, _orgService);
+            var validator = new UserVal (session, _orgService);
             var vals = new List<ValidationDto>();
 
             foreach (var dto in update)
@@ -110,12 +104,12 @@ namespace Backend.Base.User
                 Version = GC.NewRecordVersion,
                 Accounts = new List<UserAccountEnt>()
             };
-            user.Accounts.Add(NewAccount(user, session));
+            user.Accounts.Add(NewAccount(session, user));
 
             return await Populate(session, user);
         }
 
-        private UserAccountEnt NewAccount(UserEnt user, SessionEnt session)
+        private UserAccountEnt NewAccount(SessionEnt session, UserEnt user)
         {
             return new UserAccountEnt()
             {
@@ -171,12 +165,12 @@ namespace Backend.Base.User
             if (user.Accounts == null) return userDto;
 
             foreach (var a in user.Accounts)
-                userDto.Accounts.Add(await Populate(a, labels));
+                userDto.Accounts.Add(await Populate(session, a));
 
             return userDto;
         }
 
-        private async Task<UserDto.UserAccountDto> Populate(UserAccountEnt account, Dictionary<string, string> labels)
+        private async Task<UserDto.UserAccountDto> Populate(SessionEnt session, UserAccountEnt account)
         {
             var org = await _orgService.GetOrg(account.OrgNr);
             var roles = await _roleService.GetRoles(org.Nr);
@@ -228,7 +222,7 @@ namespace Backend.Base.User
                 if (permDic.ContainsKey(perm.Nr))
                 {
                     lk = (permDic[perm.Nr]).LangKey;
-                    lk = GetLabel(lk, labels);
+                    lk = GetLabel(lk, session.Labels);
                 }
 
                 accountDto.Permissions.Add(new UserDto.UserAccountPermissionDto

@@ -31,7 +31,7 @@ namespace Backend.Base.Session
                 Key = key,
                 UserAccount = userAccount,
                 MasqueradeId = masqueradeId,
-                Org = org,
+                OrgNr = org.Nr,
                 UserConfig = userConfig,
                 SourceApp = sourceApp,
                 IpAddress = ipAddress

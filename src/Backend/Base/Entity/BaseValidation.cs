@@ -20,11 +20,11 @@ namespace Backend.Base.Entity
         protected string verX;
         protected string verC;
 
-        public BaseValidation (SessionEnt session, Dictionary<string, string>? labels)
+        public BaseValidation (SessionEnt session)
         {
             this.session = session;
             this.org = session.Org;
-            this.labels = labels;
+            this.labels = session.Labels;
 
             mandatory = GetLabel("InvF", "Field can't be empty");
             maxLengthEx = GetLabel("InvL", "Field exceeds maximum length"); //has (%%) appended
@@ -54,17 +54,33 @@ namespace Backend.Base.Entity
 
         public ValidationDto? Validate(T dto, VersionI? version)
         {
-            messages = null;
-
             if (validations == null)
                 throw new Exception("Validations are null");
 
+            messages = null;
+            ValidateInternal(dto, version);
+
+            if (messages != null)
+            {
+                return new ValidationDto
+                {
+                    Id = dto.Id,
+                    Messages = messages,
+                };
+            }
+
+            return null;
+        }
+
+        private void ValidateInternal(T dto, VersionI? version)
+        {
             //Version has changed
             if (version != null && dto.Version != null && version.Version != dto.Version)
             {
                 var zone = TimeZoneInfo.ConvertTime(version.Updated, session.TimeZone);
                 var ex = verX.Replace(GC.LabelParameterPrefix, zone.ToString(GC.Date_TS_Format));
                 AddMessage(verC, ex);
+                return;
             }
 
             foreach (var info in validations)
@@ -126,20 +142,9 @@ namespace Backend.Base.Entity
                     AddMessage(info.Label, m);
                 }
 
-
                 //Call back
                 info.Callback?.Invoke(dto);
             }
-
-            if (messages != null)
-            {
-                return new ValidationDto { 
-                    Id = dto.Id,
-                    Messages = messages,
-                };
-            }
-
-            return null;
         }
 
         public DefinitionDto GetDefinition()

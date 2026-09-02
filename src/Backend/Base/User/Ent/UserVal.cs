@@ -9,9 +9,8 @@ namespace Backend.Base.User.Ent
         private OrgServiceI _orgService;
 
         public UserVal(SessionEnt session,
-            Dictionary<string, string>? labels,
             OrgServiceI orgService)
-            : base(session, labels) 
+            : base(session) 
         {
             _orgService = orgService;
         }

@@ -20,7 +20,8 @@ namespace Backend.Core.Middleware
             Serilog.IDiagnosticContext _diagnosticContext,
             TokenServiceI _tokenService,
             SessionServiceI _sessionService,
-            LabelServiceI _labelService)
+            OrgServiceI _orgService,
+        LabelServiceI _labelService)
         {
             var authorizationHeader = context.Request.Headers.Authorization.ToString();
 
@@ -37,10 +38,11 @@ namespace Backend.Core.Middleware
                     if (session != null)
                     {
                         //Loaded here to aviod caching the labels in the session object
-                        var labels = await _labelService.GetLangCodeDic(
+                        session.Org = await _orgService.GetOrg(session.OrgNr);
+
+                        session.Labels = await _labelService.GetLangCodeDic(
                             session.UserConfig.LangCodeCurrent, 
                             session.Org.LangLabelVariant);
-                        session.Labels = labels;
 
                         context.Items["session"] = session;
                     }

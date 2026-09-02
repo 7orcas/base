@@ -6,6 +6,7 @@
                 
         public const string Date_Format            = "dd MMM yy";
 
+        public const string VersionKey            = "kV";
         public const string LabelCacheKey         = "kLabel";
         public const string TokenCacheKey         = "kToken";
         public const string RefreshTokenCacheKey  = "kRefreshToken";
