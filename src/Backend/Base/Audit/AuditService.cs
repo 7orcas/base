@@ -39,7 +39,7 @@ namespace Backend.Base.Audit
                             orgNr = SqlUtils.GetOrgNr(r),
                             Source = SqlUtils.GetInt(r, "source"),
                             EntityTypeId = SqlUtils.GetInt(r, "entityTypeId"),
-                            EntityId = SqlUtils.GetIntNull(r, "entityId"),
+                            EntityId = SqlUtils.GetIdNull(r, "entityId"),
                             UserId = SqlUtils.GetId(r, "userAccId"),
                             User = SqlUtils.GetStringNull(r, "xxx"),
                             MasqueradeId = SqlUtils.GetIdNull(r, "masqueradeId"),
@@ -88,29 +88,13 @@ namespace Backend.Base.Audit
             return dto;
         }
 
-
-        public void ReadEntity(SessionEnt session, int entityTypeId, long entityId)
+        public void LogAction(SessionEnt session, int entityTypeId, long? entityId, string crudAction, string details)
         {
             Task.Run(async () =>
             {
                 try
                 {
-                    LogAuditRecord(session, entityTypeId, entityId, GC.CrudRead, null);
-                }
-                catch (Exception ex) 
-                { 
-                    _log.Error("Audit Read:" + ex.Message);
-                }
-            });
-        }
-
-        public void ReadList(SessionEnt session, int entityTypeId, string query)
-        {
-            Task.Run(async () =>
-            {
-                try
-                {
-                    LogAuditRecord(session, entityTypeId, null, GC.CrudReadList, query);
+                    LogAuditRecord(session, entityTypeId, entityId, crudAction, details);
                 }
                 catch (Exception ex)
                 {

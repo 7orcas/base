@@ -51,7 +51,7 @@ namespace Common
         public const int ValStatusOk      = 0;
         public const int ValStatusError   = 1;
         
-        //Permissions
+        //Permissions and Audit actions
         public const string CrudCreate   = "c";
         public const string CrudRead     = "r";
         public const string CrudUpdate   = "u";

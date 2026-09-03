@@ -24,25 +24,38 @@ namespace Backend.Base.Database
             Action<NpgsqlDataReader> action,
             params NpgsqlParameter[] parameters)
         {
-            ArgumentNullException.ThrowIfNull(action);
-
-            await using var connection =
-                new NpgsqlConnection(AppSettings.DBMainConnection);
-
-            await connection.OpenAsync();
-
-            await using var command =
-                new NpgsqlCommand(sqlString, connection);
-
-            if (parameters?.Length > 0)
-                command.Parameters.AddRange(parameters);
-
-            await using var reader =
-                await command.ExecuteReaderAsync();
-
-            while (await reader.ReadAsync())
+            try
             {
-                action(reader);
+
+                ArgumentNullException.ThrowIfNull(action);
+
+                await using var connection =
+                    new NpgsqlConnection(AppSettings.DBMainConnection);
+
+                await connection.OpenAsync();
+
+                await using var command =
+                    new NpgsqlCommand(sqlString, connection);
+
+                if (parameters?.Length > 0)
+                    command.Parameters.AddRange(parameters);
+
+                await using var reader =
+                    await command.ExecuteReaderAsync();
+
+                while (await reader.ReadAsync())
+                {
+                    action(reader);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Logger.Error(
+                    ex,
+                    "Database ExecuteAsync failed. SQL: {Sql}",
+                    sqlString);
+
+                throw;
             }
         }
 

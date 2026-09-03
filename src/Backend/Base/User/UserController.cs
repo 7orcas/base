@@ -15,6 +15,7 @@ namespace Backend.Base.User
     [Authorize]
     [PermissionAtt(GC.PerUser)] //Hard coded permission - user must be flagged as User Admin
     [ApiController]
+    [AuditListAtt(GC.EntityTypeUser)]
     [Route("api/[controller]")]
     public class UserController : BaseController
     {
@@ -36,7 +37,7 @@ namespace Backend.Base.User
         /// </summary>
         /// <returns></returns>
         [CrudAtt(GC.CrudRead)]
-        [AuditListAtt(GC.EntityTypeUser)]
+        [AuditIgnoreAtt]
         [HttpGet("definition")]
         public async Task<IActionResult> GetDefinition()
         {
@@ -56,8 +57,8 @@ namespace Backend.Base.User
         /// </summary>
         /// <param name="search"></param>
         /// <returns></returns>
-        [CrudAtt(GC.CrudRead)]
-        [AuditListAtt(GC.EntityTypeUser)]
+        [CrudAtt(GC.CrudReadList)]
+        [AuditListAtt(GC.EntityTypeUser, GC.CrudReadList)]
         [HttpPost("list")]
         public async Task<IActionResult> Get([FromBody] UserSearch search)
         {
@@ -82,7 +83,7 @@ namespace Backend.Base.User
         /// <param name="id"></param>
         /// <returns></returns>
         [CrudAtt(GC.CrudRead)] 
-        [AuditListAtt(GC.EntityTypeUser)]
+        [AuditListAtt(GC.EntityTypeUser, GC.CrudRead)]
         [HttpGet("get/{id}")]
         public async Task<IActionResult> GetUserById(long id)
         {
@@ -108,7 +109,7 @@ namespace Backend.Base.User
         /// <param name="update"></param>
         /// <returns></returns>
         [CrudAtt(GC.CrudUpdate)] 
-        [AuditListAtt(GC.EntityTypeUser)]
+        [AuditListAtt(GC.EntityTypeUser, GC.CrudUpdate)]
         [HttpPost("update")]
         public async Task<IActionResult> UpdateUser([FromBody] UpdateRequest<List<UserDto>> update)
         {
@@ -150,7 +151,7 @@ namespace Backend.Base.User
         /// </summary>
         /// <returns></returns>
         [CrudAtt(GC.CrudCreate)] 
-        [AuditListAtt(GC.EntityTypeUser)]
+        [AuditListAtt(GC.EntityTypeUser, GC.CrudCreate)]
         [HttpGet("new")]
         public async Task<IActionResult> New()
         {
