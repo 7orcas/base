@@ -1,4 +1,6 @@
-﻿<MudDialog>
+﻿@inherits BaseComponent
+
+<MudDialog>
     <DialogContent>
         <MudText Typo="Typo.body1">
             @Message
@@ -9,13 +11,13 @@
         <MudButton Color="Color.Default"
                    Variant="Variant.Outlined"
                    OnClick="No">
-            No
+            @GetLabel("No")
         </MudButton>
 
         <MudButton Color="Color.Primary"
                    Variant="Variant.Filled"
                    OnClick="Yes">
-            Yes
+            @GetLabel("Yes")
         </MudButton>
     </DialogActions>
 </MudDialog>

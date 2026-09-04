@@ -107,44 +107,19 @@
         var ok = await ConfirmNavigationIsOk();
         if (!ok)
         {
-
-            var parameters = new DialogParameters
-                {
-                    { nameof(ConfirmDialog.Message), GetLabel("UnsavedS") }
-                };
-
-            var options = new DialogOptions
-            {
-                CloseOnEscapeKey = true,
-                MaxWidth = MaxWidth.Small
-            };
-
-            var dialog = await DialogService.ShowAsync<ConfirmDialog>(
-                "Confirm",
-                parameters,
-                options);
-
-            var resultX = await dialog.Result;
-
-            confirmed = !resultX.Canceled;
+            var result = await OpenConfirmYesNoDialog();
+            confirmed = !result.Canceled;
         }
 
         if (confirmed)
         {
-            // User clicked Yes
-            var result = await Search<UserSearchDialog>();
+            var result = await OpenSearchDialog<UserSearchDialog>();
             if (!result.Canceled)
             {
                 var data = (UserSearch)result.Data;
                 await Load(data);
-
             }
         }
-        else
-        {
-            // User clicked No or closed dialog
-        }
-
     }
 
 

@@ -36,8 +36,10 @@ namespace Backend.Base.User
             {
                 sql += " AND xxx LIKE '%" + search.Username + "%'";
             }
-
-             sql += " ORDER BY xxx";
+            
+            sql += GetSqlWhereClauseForSearchActive(search)
+                + " ORDER BY xxx"
+                + GetSqlLimitClauseForSearch(search);
 
             return await GetList<UserEnt>(sql);
         }

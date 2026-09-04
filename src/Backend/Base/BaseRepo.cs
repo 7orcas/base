@@ -10,7 +10,6 @@
         }
 
 
-
         protected void VersionIncrement(VersionI entity)
         {
             if (entity.Version == null)
@@ -58,6 +57,30 @@
 
                 throw;
             }
+        }
+
+        public string GetSqlWhereClauseForSearchActive(_BaseSearch search)
+        {
+            var sql = "";
+            if (search.IncludeActive && !search.IncludeInActive)
+            {
+                sql += " AND isActive = TRUE ";
+            }
+            if (!search.IncludeActive && search.IncludeInActive)
+            {
+                sql += " AND isActive = FALSE ";
+            }
+            return sql;
+        }
+
+        public string GetSqlLimitClauseForSearch(_BaseSearch search)
+        {
+            var sql = "";
+            if (search.MaxRecordsReturned > 0)
+            {
+                sql += " LIMIT " + search.MaxRecordsReturned;
+            }
+            return sql;
         }
 
     }

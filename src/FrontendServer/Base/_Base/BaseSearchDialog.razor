@@ -19,22 +19,66 @@
         <div @onkeydown="HandleKeyDown">
             <MudForm >
                 @ChildContent
+
+                @if (!ShowActiveChoice)
+                {
+                    <div class="d-flex align-center">
+                        <CheckboxField Width=GC.TextFieldWidth.TextVeryShort
+                                       LangCode="Active"
+                                       @bind-Value="BaseSearch.IncludeActive"/>
+
+                        <CheckboxField Width=GC.TextFieldWidth.TextVeryShort
+                                       LangCode="InActive"
+                                       @bind-Value="BaseSearch.IncludeInActive" />
+                    </div>
+                }
             </MudForm>
         </div>
     </DialogContent>
 
     <DialogActions>
-        <MudButton Variant="Variant.Filled"
-                   Color="Color.Primary"
-                   Disabled="!IsValid"
-                   Class="ml-auto"
-                   OnClick="SubmitAction">
-            @GetLabel("Search")
-        </MudButton>
+        <div class="d-flex align-center w-100">
 
+            @if (@BaseSearch.MaxRecordsReturned > 0)
+            {
+
+                <MudText Class="mr-2">
+                    @GetLabel("MaxSR"):&nbsp;
+                </MudText>
+
+                @if (!@IsReadOnly)
+                {
+                    <MudNumericField T="int"
+                    Class="maxsr-field"
+                    HideSpinButtons="true"
+                    ReadOnly="@IsReadOnly"
+                    Dense="true"
+                    Style="width:70px"
+                    @bind-Value="BaseSearch.MaxRecordsReturned" />
+                }
+                else
+                {
+                    <MudText Class="mr-2">
+                        @BaseSearch.MaxRecordsReturned
+                    </MudText>
+                }
+            }
+
+            <MudSpacer />
+
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Disabled="!IsValid"
+                       Class="ml-auto"
+                       OnClick="SubmitAction">
+                @GetLabel("Search")
+            </MudButton>
+
+        </div>
     </DialogActions>
 </MudDialog>
 
+@using GC = FrontendServer.GlobalConstants;
 
 @code {
     [CascadingParameter] private IMudDialogInstance? MudDialog { get; set; }
@@ -43,10 +87,15 @@
     [Parameter] public string TitleKey { get; set; } = "Search";
     [Parameter] public RenderFragment? ChildContent { get; set; }
     [Parameter] public EventCallback SubmitAction { get; set; } = new();
+    [Parameter] public int MaxRecordsReturned { get; set; } = 500;
+    [Parameter] public bool IsService { get; set; } = false;
+    [Parameter] public bool ShowActiveChoice { get; set; } = false;
+    [Parameter] public _BaseSearch BaseSearch { get; set; } = new _BaseSearch();
     [Parameter] public bool IsValid { get; set; } = true;
 
     private void CloseDialog() => MudDialog.Cancel();
-        
+    private bool IsReadOnly => IsService ? false : true;
+
     private void OnBlu(){}
 
     private async Task HandleKeyDown(KeyboardEventArgs e)

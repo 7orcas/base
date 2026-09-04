@@ -1,11 +1,13 @@
 ﻿@inherits BasePage
-
  
 <BaseSearchDialog Width="700px"
                   Height="400px"
                   TitleKey="UserSr"
                   SubmitAction="Submit"
-                  IsValid="data.IsValid()">
+                  IsValid="data.IsValid()"
+                  BaseSearch="data"
+                  MaxRecordsReturned="MaxRecordsReturned"
+                  IsService="IsService">
 
     <TextField Width=GC.TextFieldWidth.TextMedium
                 LangCode="UserName"
@@ -28,13 +30,18 @@
 @code {
     [CascadingParameter] private IMudDialogInstance? MudDialog { get; set; }
 
+    [Parameter] public int MaxRecordsReturned { get; set; }
+    [Parameter] public bool IsService { get; set; }
+
     private UserSearch data = new UserSearch ();
     private TextField usernameField;
+
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
+            data.MaxRecordsReturned = MaxRecordsReturned;
 
             await InvokeAsync(async () =>
             {
@@ -45,12 +52,13 @@
             });
         }
     }
-        
 
     private async Task Submit()
     {
         if (data.IsValid())
+        {
             MudDialog.Close(DialogResult.Ok(data));
+        }
     }
 
 }
