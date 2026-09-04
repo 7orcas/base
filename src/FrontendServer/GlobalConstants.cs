@@ -18,6 +18,7 @@
 
         private const string URL_base             = "api/";
         private const string URL_user             = URL_base + "User/";
+        private const string URL_org              = URL_base + "Org/";
 
         public const string URL_logout            = URL_base + "Logout/logout";
         public const string URL_perm_user         = URL_base + "Permission/userlist";
@@ -31,13 +32,16 @@
         public const string URL_user_new          = URL_user + "new";
         public const string URL_user_definition   = URL_user + "definition";
         public const string URL_user_role_list    = URL_base + "Role/userroles";
+
+        public const string URL_org_list          = URL_org + "list";
+        public const string URL_org_get           = URL_org + "get/";
+        public const string URL_org_update        = URL_org + "update";
+        public const string URL_org_definition    = URL_org + "definition";
+
         public const string URL_role_list         = URL_base + "Role/roles";
         public const string URL_role              = URL_base + "Role/get/";
         public const string URL_role_update       = URL_base + "Role/update/";
         public const string URL_config            = URL_base + "Config/clientConfig";
-        public const string URL_org_list          = URL_base + "Org/list";
-        public const string URL_org               = URL_base + "Org/get/";
-        public const string URL_org_update        = URL_base + "Org/update";
         public const string URL_label_clientlist  = URL_base + "Label/clientlist/";
         public const string URL_label_relatedlist = URL_base + "Label/relatedlist/";
 

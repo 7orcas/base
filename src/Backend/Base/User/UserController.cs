@@ -60,7 +60,7 @@ namespace Backend.Base.User
         [CrudAtt(GC.CrudReadList)]
         [AuditListAtt(GC.EntityTypeUser, GC.CrudReadList)]
         [HttpPost("list")]
-        public async Task<IActionResult> Get([FromBody] UserSearch search)
+        public async Task<IActionResult> GetList([FromBody] UserSearch search)
         {
             var session = HttpContext.Items["session"] as SessionEnt;
             var users = await _userService.GetUserList(search);

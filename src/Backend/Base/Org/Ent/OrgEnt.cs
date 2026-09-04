@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 /// <summary>
 /// Organisation entity
@@ -10,8 +11,9 @@
 
 namespace Backend.Base.Org.Ent
 {
-    public class OrgEnt : BaseEncode
+    public class OrgEnt : BaseEncode, VersionI
     {
+        [Key]
         public int Nr { get; set; }
         public string Code { get; set; }
         public string? Description { get; set; }
@@ -35,6 +37,7 @@ namespace Backend.Base.Org.Ent
         /// </summary>
         public bool IsEmailHtml { get; set; }
 
+        [NotMapped]
         public OrgEnc Encoding { get; set; }
 
         public override void Decode()

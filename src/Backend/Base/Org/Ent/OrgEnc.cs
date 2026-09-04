@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations.Schema;
 
 /// <summary>
 /// Encoded class of Organisation entity
@@ -9,6 +10,7 @@
 
 namespace Backend.Base.Org.Ent
 {
+    [Keyless]
     public class OrgEnc
     {
         /// <summary>

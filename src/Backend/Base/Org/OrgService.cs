@@ -1,4 +1,6 @@
-﻿using DocumentFormat.OpenXml.Wordprocessing;
+﻿using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml.Wordprocessing;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.Extensions.Caching.Memory;
 using Npgsql;
 using Superpower.Model;
@@ -16,35 +18,122 @@ namespace Backend.Base.Org
 {
     public class OrgService: BaseService, OrgServiceI
     {
+        private readonly OrgRepoI _orgRepo;
         private readonly LabelServiceI _labelService;
         private readonly IMemoryCache _memoryCache;
 
         public OrgService(IServiceProvider serviceProvider,
+            OrgRepoI orgRepo,
             LabelServiceI labelService,
             IMemoryCache memoryCache) 
             : base(serviceProvider) 
         {
+            _orgRepo = orgRepo;
             _labelService = labelService;
             _memoryCache = memoryCache;
         }
 
+        public async Task<DefinitionDto> GetDefinition(SessionEnt session)
+        {
+            var validator = new OrgVal(session, this);
+            return validator.GetDefinition();
+        }
+
         public async Task<List<OrgEnt>> GetOrgList()
         {
-            var list = new List<OrgEnt>();
-            await Sql.Run(
-                    "SELECT * FROM base.org ",
-                    r => {
-                        var org = new OrgEnt();
-                        org.Nr = GetInt(r, "nr");
-                        org.Code = GetCode(r);
-                        org.Description = GetDescription(r);
-                        org.Updated = GetUpdated(r);
-                        org.IsActive = IsActive(r);
-                        list.Add(org);
-                    }
-                );
-            return list;
+            return await _orgRepo.GetList();
         }
+
+        public OrgDto PopulateList(SessionEnt session, OrgEnt org)
+        {
+            OrgDto orgDto = new OrgDto()
+            {
+                Nr = org.Nr,
+                Code = org.Code,
+                Description = org.Description,
+                IsActive = org.IsActive,
+            };
+
+            return orgDto;
+        }
+
+        public OrgDto Populate(SessionEnt session, OrgEnt org)
+        {
+            var enc = org.Encoding;
+            var langDtos = new List<OrgLangDto>();
+            foreach (var lang in enc.Languages)
+            {
+                langDtos.Add(new OrgLangDto
+                {
+                    LangCode = lang.LangCode,
+                    IsReadonly = lang.IsVisible,
+                    IsEditable = lang.IsEditable,
+                });
+            }
+
+            var orgDto = new OrgDto
+            {
+                Nr = org.Nr,
+                Code = org.Code,
+                Description = org.Description,
+                Icon = org.Icon,
+                Updated = org.Updated,
+                Version = org.Version,
+                IsActive = org.IsActive,
+                LangCode = org.LangCode,
+                LangLabelVariant = org.LangLabelVariant,
+                Mfa = org.Mfa,
+                IsRememberMeEnabled = org.IsRememberMeEnabled,
+                IsMasqueradeEnabled = org.IsMasqueradeEnabled,
+                IsPasswordResetEnabled = org.IsPasswordResetEnabled,
+                IsSignupEnabled = org.IsSignupEnabled,
+                IsEmailRequired = org.IsEmailRequired,
+                IsEmailHtml = org.IsEmailHtml,
+
+                Languages = langDtos,
+
+                PasswordRule = new PasswordRuleDto
+                {
+                    MinLength = enc.PasswordRule.MinLength,
+                    MaxLength = enc.PasswordRule.MaxLength,
+                    IsMixedCase = enc.PasswordRule.IsMixedCase,
+                    IsNonLetter = enc.PasswordRule.IsSpecial,
+                    IsNumber = enc.PasswordRule.IsNumber,
+                },
+
+                LoginAttemptRule = new LoginAttemptRuleDto
+                {
+                    WarningAttempts = enc.LoginAttemptRule.WarningAttempts,
+                    LockoutAttempts = enc.LoginAttemptRule.LockoutAttempts,
+                    WarningLockoutMinutes = enc.LoginAttemptRule.WarningLockoutMinutes,
+                    LockoutPasswordResetLink = enc.LoginAttemptRule.LockoutPasswordResetLink,
+                    WarningPasswordResetLink = enc.LoginAttemptRule.WarningPasswordResetLink,
+                }
+            };
+
+            return orgDto;
+        }
+
+        public async Task<List<ValidationDto>> ValidateOrg(SessionEnt session, List<OrgDto> update)
+        {
+            var validator = new OrgVal(session, this);
+            var vals = new List<ValidationDto>();
+
+            foreach (var dto in update)
+            {
+                VersionI? version = null;
+                if (dto.IsValidatable())
+                    version = await _orgRepo.GetVersion(dto.Nr);
+                else if (dto.IsDelete) continue;
+
+                var val = validator.Validate(dto, version);
+                if (val != null)
+                    vals.Add(val);
+            }
+
+            return vals;
+        }
+
 
         public async Task<OrgEnt> GetOrg(int nr)
         {
@@ -71,48 +160,16 @@ namespace Backend.Base.Org
             }
         }
 
-        public async Task UpdateOrg(OrgEnt org)
+        public async Task<OrgEnt?> UpdateOrg(SessionEnt session, OrgDto orgDto)
         {
-            org.Encode();
-            await Sql.ExecuteAsync(
-                    "UPDATE base.org " +
-                    "SET " +
-                        Update("code", org.Code) +
-                        Update("descr", org.Description) +
-                        Update("encoded", org.Encoded) +
-                        Update("updated", org.Updated) +
-                        Update("version", org.Version + 1) +
-                        Update("isActive", org.IsActive) +
-                        Update("mfa", org.Mfa) +
-                        Update("isRememberMeEnabled", org.IsRememberMeEnabled) +
-                        Update("isMasqueradeEnabled", org.IsMasqueradeEnabled) +
-                        Update("isForgotenabled", org.IsPasswordResetEnabled) +
-                        Update("isSignupenabled", org.IsSignupEnabled) +
-                        Update("isEmailRequired", org.IsEmailRequired) +
-                        Update("isEmailHtml", org.IsEmailHtml) +
-                        Update("langCode", org.LangCode) +
-                        NoComma(Update("langLabelVariant", org.LangLabelVariant)) +
-                    " WHERE nr = " + org.Nr
-            );
-            _memoryCache.Set(GC.CacheKeyOrgPrefix + org.Nr, org);
+            //No action required
+            if (orgDto.IsNew() && orgDto.IsDelete)
+                return null;
+
+            return await _orgRepo.Update(orgDto);
         }
 
-        public OrgDto Populate (OrgEnt org)
-        {
-            OrgDto orgDto = new OrgDto()
-            {
-                Nr = org.Nr,
-                Code = org.Code,
-                Description = org.Description,
-                Updated = org.Updated,
-                Version = org.Version,
-                IsActive = org.IsActive,
-                LangCode = org.LangCode,
-                LangLabelVariant = org.LangLabelVariant,
-            };
-
-            return orgDto;
-        }
+        
 
         public async Task<string> GetPasswordRules(string langCode, int orgNr)
         {

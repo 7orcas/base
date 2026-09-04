@@ -81,7 +81,7 @@
     {
         if (firstRender)
         {
-            InitialiseBasePage();
+            await InitialiseBasePage();
 
             //Always make edit mode
             pageStatus.IsEditMode = pageStatus.orCrudCUD();
@@ -116,6 +116,7 @@
             var result = await OpenSearchDialog<UserSearchDialog>();
             if (!result.Canceled)
             {
+                listUtil.Clear();
                 var data = (UserSearch)result.Data;
                 await Load(data);
             }
@@ -144,7 +145,6 @@
             loadStatus.SetError();
         else
         {
-            listUtil.Clear();
             listUtil.ShowList = true;
             foreach (var u in listX)
             {
@@ -265,11 +265,12 @@
         }
         else
         {
+            loadStatus.SetError();
             List<ValidationDto> vals = r2?.Validations;
             for (int i = 0; i < updates.Count; i++)
             {
                 var rec = updates[i];
-                var val = vals.FirstOrDefault(x => x.Id == rec.Id);
+                var val = vals != null ? vals.FirstOrDefault(x => x.Id == rec.Id) : null;
                 if (val != null)
                 {
                     rec.Validation = new ValidationModel
@@ -293,15 +294,6 @@
                 return false;
         }
         return true;
-    }
-
-
-    private async Task EditRecord()
-    {
-        if (!pageStatus.isCrudU) return;
-        pageStatus.ToggleEdit();
-        StateHasChanged();
-        await Task.CompletedTask;
     }
 
     private async Task AddRecord()

@@ -5,9 +5,10 @@
 @using GC = FrontendServer.GlobalConstants;
 
 <MudNumericField Style="@GetStyle(Width)"
-                 Class="@GetClass(@IsReadOnly)"
+                 Class="@GetClassLocal()"
                  Label="@label"
                  ReadOnly="@IsReadOnly"
+                 Immediate="@Immediate"
                  Value="@Value"
                  ValueChanged="@ValueChanged"
                  ValueExpression="@ValueExpression"
@@ -17,7 +18,8 @@
     [Parameter] public string LangCode { get; set; }
     [Parameter] public GC.TextFieldWidth Width { get; set; } = GC.TextFieldWidth.Int;
     [Parameter] public bool ReadOnly { get; set; } = false;
-    //[Parameter] public PageStatus? PageStatus { get; set; }  DELETE_ME
+    [Parameter] public bool Immediate { get; set; } = false;
+    [Parameter] public bool Required { get; set; } = false;
     [Parameter] public int Value { get; set; }
     [Parameter] public EventCallback<int> ValueChanged { get; set; }
     [Parameter] public Expression<Func<int>> ValueExpression { get; set; }
@@ -26,4 +28,14 @@
 
     private string label = loading;
     protected override void OnInitialized() => label = GetLabel(LangCode);
+
+    private string GetClassLocal()
+    {
+        var clazz = GetClass(IsReadOnly);
+
+        if (!ReadOnly && IsEditMode() && Required)
+            clazz += " red-border";
+
+        return clazz;
+    }
 }

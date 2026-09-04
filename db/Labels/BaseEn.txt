@@ -187,4 +187,5 @@ VerX,This record was changed on %% and is out of date. You must reload it.
 VerC,Version Conflict
 Clas,Classification
 Chat,Chat
+ApiKey,Api Key
 <LAST>,<LAST LINE>

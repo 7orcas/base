@@ -64,6 +64,7 @@ namespace BackendTest.Setup
         public class AuditTest : AuditServiceI
         {
             public Task<List<AuditList>> GetEvents(SessionEnt session) => throw new NotImplementedException();
+            public void LogAction(SessionEnt session, int entityTypeId, long? entityId, string crudAction, string details) { }
             public void LogInOut(SessionEnt session, int entity) { }
             //public void LogInOut(SessionEnt session, int entityTypeId) => throw new NotImplementedException();
             public void ReadEntity(SessionEnt session, int entityTypeId, int entityId) { }

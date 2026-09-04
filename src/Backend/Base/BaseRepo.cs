@@ -40,6 +40,27 @@
             }
         }
 
+        public async Task<VersionInfo> GetVersion(int nr, string table)
+        {
+            var sql = "SELECT Version, Updated "
+                    + "FROM " + table + " "
+                    + "WHERE nr = @Nr";
+            try
+            {
+                using var conn = Sql.GetConnection();
+                var result = await conn.QuerySingleAsync<VersionInfo>(sql, new { Nr = nr });
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Log.Logger.Error(
+                    ex,
+                    "Sql failed: {Sql}",
+                    sql);
+                throw;
+            }
+        }
+
         public async Task<List<T>> GetList<T>(string sql) 
         {
             try

@@ -1,4 +1,5 @@
 ﻿using Common.DTO.Base;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using GC = Backend.GlobalConstants;
@@ -15,6 +16,7 @@ namespace Backend.Base.Org
     [Authorize]
     [PermissionAtt(GC.PerOrg)]
     [ApiController]
+    [AuditListAtt(GC.EntityTypeOrg)]
     [Route("api/[controller]")]
     public class OrgController : BaseController
     {
@@ -31,17 +33,41 @@ namespace Backend.Base.Org
             _orgService = orgService;
         }
 
-        [CrudAtt(GC.CrudIgnore)]  //ToDo
-        [AuditListAtt(GC.EntityTypeOrg)]
+        /// <summary>
+        /// Get Org entity field definitions
+        /// </summary>
+        /// <returns></returns>
+        [CrudAtt(GC.CrudRead)]
+        [AuditIgnoreAtt]
+        [HttpGet("definition")]
+        public async Task<IActionResult> GetDefinition()
+        {
+            var session = HttpContext.Items["session"] as SessionEnt;
+            var def = await _orgService.GetDefinition(session);
+
+            var r = new _ResponseDto
+            {
+                SuccessMessage = "Ok",
+                Result = def
+            };
+            return Ok(r);
+        }
+
+        /// <summary>
+        /// Get Org list
+        /// </summary>
+        /// <returns></returns>
+        [CrudAtt(GC.CrudReadList)]  
+        [AuditListAtt(GC.CrudReadList)]
         [HttpGet("list")]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> GetList()
         {
             var session = HttpContext.Items["session"] as SessionEnt;
             var orgs = await _orgService.GetOrgList();
             var list = new List<OrgDto>();
 
             foreach (var org in orgs)
-                list.Add(_orgService.Populate(org));
+                list.Add(_orgService.PopulateList(session, org));
             
             var r = new _ResponseDto
             {
@@ -56,29 +82,24 @@ namespace Backend.Base.Org
         /// </summary>
         /// <param name="nr"></param>
         /// <returns></returns>
-        [CrudAtt(GC.CrudIgnore)] //ToDo
-        [AuditListAtt(GC.EntityTypeOrg)]
+        [CrudAtt(GC.CrudRead)] 
+        [AuditListAtt(GC.CrudRead)]
         [HttpGet("get/{nr}")]
-        public async Task<IActionResult> GetOrg(int nr)
+        public async Task<IActionResult> GetOrgByNr(int nr)
         {
             var org = await _orgService.GetOrg(nr);
-            var enc = org.Encoding;
-
-            var langDtos = new List<OrgLangDto>();
-            foreach (var lang in enc.Languages)
+            if (org == null)
             {
-                langDtos.Add(new OrgLangDto
-                {
-                    LangCode = lang.LangCode,
-                    IsReadonly = lang.IsVisible,
-                    IsEditable = lang.IsEditable,
-                });
+                return NotFound();
             }
+
+            var session = HttpContext.Items["session"] as SessionEnt;
+            var orgDto = _orgService.Populate(session, org);
 
             var r = new _ResponseDto
             {
                 SuccessMessage = "Config Ok",
-                Result = OrgLoad.Load(org, langDtos)
+                Result = orgDto
             };
             return Ok(r);
         }
@@ -88,62 +109,38 @@ namespace Backend.Base.Org
         /// </summary>
         /// <returns></returns>
         [CrudAtt(GC.CrudUpdate)]
-        [AuditListAtt(GC.EntityTypeOrg)]
+        [AuditListAtt(GC.CrudUpdate)]
         [HttpPost("update")]
-        public async Task<IActionResult> UpdateOrg([FromBody] OrgDto dto)
+        public async Task<IActionResult> UpdateOrg([FromBody] UpdateRequest<List<OrgDto>> update)
         {
             var session = HttpContext.Items["session"] as SessionEnt;
-            var langs = new List<Language>();
-            foreach (var langDto in dto.Languages)
+            var list = update.Updates as List<OrgDto>;
+
+            //Validate 
+            var vals = await _orgService.ValidateOrg(session, list);
+            if (vals.Count > 0)
             {
-                langs.Add(new Language
+                var v = new _ResponseDto
                 {
-                    LangCode = langDto.LangCode,
-                    IsVisible = langDto.IsReadonly,
-                    IsEditable = langDto.IsEditable,
-                });
+                    Valid = false,
+                    Validations = vals
+                };
+                return Ok(v);
             }
 
-            var pw = new PasswordRule() {
-                MinLength = dto.PasswordRule.MinLength,
-                MaxLength = dto.PasswordRule.MaxLength,
-                IsMixedCase = dto.PasswordRule.IsMixedCase,
-                IsSpecial = dto.PasswordRule.IsNonLetter,
-                IsNumber = dto.PasswordRule.IsNumber,
-            };
-
-            var attempts = new LoginAttemptRule()
+            //Do updates
+            var listU = new List<OrgDto>();
+            foreach (var dto in list)
             {
-                WarningAttempts = dto.LoginAttemptRule.WarningAttempts,
-                LockoutAttempts = dto.LoginAttemptRule.LockoutAttempts,
-                WarningLockoutMinutes = dto.LoginAttemptRule.WarningLockoutMinutes,
-                LockoutPasswordResetLink = dto.LoginAttemptRule.LockoutPasswordResetLink,
-                WarningPasswordResetLink = dto.LoginAttemptRule.WarningPasswordResetLink,
-            };
-
-            var org = new OrgEnt
-            {
-                Nr = dto.Nr,
-                Code = dto.Code,
-                Description = dto.Description,
-                Updated = dto.Updated,
-                IsActive = dto.IsActive,
-                LangCode = dto.LangCode,
-                LangLabelVariant = dto.LangLabelVariant,
-            };
-            org.Encoding = new OrgEnc
-            {
-                Languages = langs,
-                PasswordRule = pw,
-                LoginAttemptRule = attempts,
-            };
-
-            await _orgService.UpdateOrg(org);
+                var orgU = await _orgService.UpdateOrg(session, dto);
+                if (orgU != null)
+                    listU.Add(_orgService.Populate(session, orgU));
+            }
 
             var r = new _ResponseDto
             {
                 SuccessMessage = "Save Ok",
-                Result = dto
+                Result = listU
             };
             return Ok(r);
         }
