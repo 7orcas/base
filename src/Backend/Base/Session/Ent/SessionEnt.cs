@@ -41,5 +41,8 @@ namespace Backend.Base.Session.Ent
         }
 
 
+        //Convience methods
+        public bool IsService => UserAccount.IsService();
+
     }
 }

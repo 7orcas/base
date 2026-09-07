@@ -19,11 +19,21 @@
             entity.Updated = DateTimeOffset.UtcNow;
         }
 
+        public async Task<VersionInfo> GetVersion(int nr, string table)
+        {
+            return await GetVersion(Convert.ToInt64(nr), table, "nr");
+        }
+
         public async Task<VersionInfo> GetVersion(long id, string table)
+        {
+            return await GetVersion(id, table, "id");
+        }
+
+        public async Task<VersionInfo> GetVersion(long id, string table, string field)
         {
             var sql = "SELECT Version, Updated "
                     + "FROM " + table + " "
-                    + "WHERE id = @Id";
+                    + "WHERE " + field + " = @Id";
             try
             {
                 using var conn = Sql.GetConnection();
@@ -40,15 +50,15 @@
             }
         }
 
-        public async Task<VersionInfo> GetVersion(int nr, string table)
+        public async Task<string> GetCode(long id, string table)
         {
-            var sql = "SELECT Version, Updated "
-                    + "FROM " + table + " "
-                    + "WHERE nr = @Nr";
+            var sql = "SELECT Code "
+                     + "FROM " + table + " "
+                     + "WHERE id = @Id";
             try
             {
                 using var conn = Sql.GetConnection();
-                var result = await conn.QuerySingleAsync<VersionInfo>(sql, new { Nr = nr });
+                var result = await conn.QuerySingleAsync<string>(sql, new { Id = id });
                 return result;
             }
             catch (Exception ex)
@@ -60,6 +70,7 @@
                 throw;
             }
         }
+
 
         public async Task<List<T>> GetList<T>(string sql) 
         {
@@ -108,6 +119,7 @@
 
     public class VersionInfo : VersionI
     {
+        public string? Code { get; set; }
         public int Version { get; set; }
         public DateTimeOffset Updated { get; set; }
     }

@@ -50,7 +50,7 @@
                                                     ReadOnly="!dto.IsNew()"
                                                     PageStatus=@PageStatus
                                                     MaxLength="@GetMaxLength(nameof(dto.Username))"
-                                                    Required="@IsRquired(nameof(dto.Username))"
+                                                    Required="@IsRequired(nameof(dto.Username))"
                                                     Immediate="true"
                                                     Value="@dto.Username"
                                                     ValueChanged="@(v => UsernameChanged(v, record))" />
@@ -81,7 +81,7 @@
                                                     LangCode="Email"
                                                     PageStatus=@PageStatus
                                                     MaxLength="@GetMaxLength(nameof(dto.Email))"
-                                                    Required="@IsRquired(nameof(dto.Email))"
+                                                    Required="@IsRequired(nameof(dto.Email))"
                                                     @bind-Value="dto.Email" />
 
                                         <CheckboxField Width=GC.TextFieldWidth.TextShort
@@ -93,7 +93,7 @@
                                                 LangCode="LangCode"
                                                 PageStatus=@PageStatus
                                                 MaxLength="@GetMaxLength(nameof(dto.LangCode))"
-                                                Required="@IsRquired(nameof(dto.LangCode))"
+                                                Required="@IsRequired(nameof(dto.LangCode))"
                                                 @bind-Value="dto.LangCode" />
 
                                     <NumericField LangCode="OrgD"
@@ -166,10 +166,10 @@
         return "";
     }
 
-    private void OnDeleteChanged()
-    {
-        StateHasChanged();
-    }
+    // private void OnDeleteChanged()
+    // {
+    //     StateHasChanged();
+    // }
 
     private async Task UsernameChanged(string value, ListModel<UserDto> record)
     {
@@ -178,26 +178,26 @@
         await Refresh.InvokeAsync();
     }
 
-    private string GetValidationLabel(ListModel<UserDto> record)
-    {
-        if (record.Validation.MessageCount > 1)
-            return GetLabel("ValMs");
-        return GetLabel("ValM");
-    }
+    // private string GetValidationLabel(ListModel<UserDto> record)
+    // {
+    //     if (record.Validation.MessageCount > 1)
+    //         return GetLabel("ValMs");
+    //     return GetLabel("ValM");
+    // }
 
-    private string GetValidationClass(ListModel<UserDto> record)
-    {
-        if (record.IsValidationError())
-            return "error-row" + DarkModeSuffix();
+    // private string GetValidationClass(ListModel<UserDto> record)
+    // {
+    //     if (record.IsValidationError())
+    //         return "error-row" + DarkModeSuffix();
 
-        if (record.IsValidationWarning())
-            return "warning-row" + DarkModeSuffix();
+    //     if (record.IsValidationWarning())
+    //         return "warning-row" + DarkModeSuffix();
 
-        return string.Empty;
-    }
+    //     return string.Empty;
+    // }
 
     private string GetAttemptsClass() => "error-row" + DarkModeSuffix();
-    private bool IsDeleteActive => PageStatus == null ? false : PageStatus.isCrudD;
+   // private bool IsDeleteActive => PageStatus == null ? false : PageStatus.isCrudD;
     private void TogglePassword() => showPassword = !showPassword;
     
 }

@@ -39,9 +39,16 @@ namespace Backend.Base.Org
             return validator.GetDefinition();
         }
 
+        //FIX_ME
+        //Needs to have a matrix
         public async Task<List<OrgEnt>> GetOrgList()
         {
-            return await _orgRepo.GetList();
+            return await _orgRepo.GetList(false);
+        }
+
+        public async Task<List<OrgEnt>> GetOrgList(SessionEnt session)
+        {
+            return await _orgRepo.GetList(session.IsService);
         }
 
         public OrgDto PopulateList(SessionEnt session, OrgEnt org)
@@ -66,50 +73,25 @@ namespace Backend.Base.Org
                 langDtos.Add(new OrgLangDto
                 {
                     LangCode = lang.LangCode,
-                    IsReadonly = lang.IsVisible,
+                    IsVisible = lang.IsVisible,
                     IsEditable = lang.IsEditable,
                 });
             }
 
-            var orgDto = new OrgDto
-            {
-                Nr = org.Nr,
-                Code = org.Code,
-                Description = org.Description,
-                Icon = org.Icon,
-                Updated = org.Updated,
-                Version = org.Version,
-                IsActive = org.IsActive,
-                LangCode = org.LangCode,
-                LangLabelVariant = org.LangLabelVariant,
-                Mfa = org.Mfa,
-                IsRememberMeEnabled = org.IsRememberMeEnabled,
-                IsMasqueradeEnabled = org.IsMasqueradeEnabled,
-                IsPasswordResetEnabled = org.IsPasswordResetEnabled,
-                IsSignupEnabled = org.IsSignupEnabled,
-                IsEmailRequired = org.IsEmailRequired,
-                IsEmailHtml = org.IsEmailHtml,
+            var passwordRuleDto = new PasswordRuleDto();
+            CopyProperties(enc.PasswordRule, passwordRuleDto);
 
+            var loginAttemptRuleDto = new LoginAttemptRuleDto();
+            CopyProperties(enc.LoginAttemptRule, loginAttemptRuleDto);
+
+            var orgDto = new OrgDto() {
                 Languages = langDtos,
-
-                PasswordRule = new PasswordRuleDto
-                {
-                    MinLength = enc.PasswordRule.MinLength,
-                    MaxLength = enc.PasswordRule.MaxLength,
-                    IsMixedCase = enc.PasswordRule.IsMixedCase,
-                    IsNonLetter = enc.PasswordRule.IsSpecial,
-                    IsNumber = enc.PasswordRule.IsNumber,
-                },
-
-                LoginAttemptRule = new LoginAttemptRuleDto
-                {
-                    WarningAttempts = enc.LoginAttemptRule.WarningAttempts,
-                    LockoutAttempts = enc.LoginAttemptRule.LockoutAttempts,
-                    WarningLockoutMinutes = enc.LoginAttemptRule.WarningLockoutMinutes,
-                    LockoutPasswordResetLink = enc.LoginAttemptRule.LockoutPasswordResetLink,
-                    WarningPasswordResetLink = enc.LoginAttemptRule.WarningPasswordResetLink,
-                }
+                PasswordRule = passwordRuleDto,
+                LoginAttemptRule = loginAttemptRuleDto
             };
+
+            CopyProperties(org, orgDto);
+
 
             return orgDto;
         }
@@ -122,11 +104,16 @@ namespace Backend.Base.Org
             foreach (var dto in update)
             {
                 VersionI? version = null;
+                OrgDto? currentDto = null;
                 if (dto.IsValidatable())
+                {
                     version = await _orgRepo.GetVersion(dto.Nr);
+                    var ent = await GetOrg(dto.Nr);
+                    currentDto = Populate(session, ent);
+                }
                 else if (dto.IsDelete) continue;
 
-                var val = validator.Validate(dto, version);
+                var val = validator.Validate(dto, currentDto, version);
                 if (val != null)
                     vals.Add(val);
             }
@@ -182,7 +169,7 @@ namespace Backend.Base.Org
             if (val.MaxLength > 0) rules += "<br>" + GetLabel("LenMax", labels) + "=" + val.MaxLength;
             if (val.IsMixedCase) rules += "<br>" + GetLabel("PWmc", labels);
             if (val.IsNumber) rules += "<br>" + GetLabel("PWNum", labels);
-            if (val.IsSpecial) rules += "<br>" + GetLabel("PWSp", labels);
+            if (val.IsNonLetter) rules += "<br>" + GetLabel("PWSp", labels);
 
             if (!string.IsNullOrEmpty(rules))
                 rules = rules.Substring("<br>".Length);
@@ -217,7 +204,7 @@ namespace Backend.Base.Org
             if (val.IsNumber && !pw.Any(char.IsDigit))
                 m.Add("PWNum");
 
-            if (val.IsSpecial && !pw.Replace(" ", "").Any(c => !char.IsLetterOrDigit(c)))
+            if (val.IsNonLetter && !pw.Replace(" ", "").Any(c => !char.IsLetterOrDigit(c)))
                 m.Add("PWSp");
 
             return (m.IsValid(), m.GetMessage());

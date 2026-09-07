@@ -39,5 +39,12 @@ namespace FrontendServer.Base.Util
             return field.IsRequiredNew;
         }
 
+        public bool IsServiceOnly(string fieldName)
+        {
+            var field = FindField(fieldName);
+            if (field == null) return false;
+            return field.IsServiceOnly;
+        }
+
     }
 }

@@ -294,3 +294,21 @@ a, .btn-link {
 .warning-row-light {
     background-color: #fdfda2 !important;
 }
+
+.heading {
+    text-decoration: underline;
+    margin-bottom:5px;
+}
+
+.config-panel {
+    border: 1px solid lightgrey;
+    padding: 5px;
+    margin-left: 10px;
+}
+
+.config-panel-title {
+    padding: 0 5px;
+    float: none;
+    width: auto;
+    font-size: small;
+}

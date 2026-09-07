@@ -59,7 +59,7 @@ namespace Backend.Core.Middleware
                         var classAudit = controllerType.GetCustomAttribute<AuditListAtt>();
                         if (classAudit != null)
                         {
-                            if (entityTypeId == -1)
+                            if (entityTypeId < 1)
                                 entityTypeId = classAudit.EntityTypeId;
                             if (crudAction == null)
                                 crudAction = classAudit.CrudAction;

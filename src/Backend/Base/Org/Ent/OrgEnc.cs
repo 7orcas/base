@@ -117,7 +117,7 @@ namespace Backend.Base.Org.Ent
         /// <summary>
         /// If true, passwords must contain at least one special character. (default is true).
         /// </summary>
-        public bool IsSpecial { get; set; } = true;
+        public bool IsNonLetter { get; set; } = true;
     }
 
     /// <summary>

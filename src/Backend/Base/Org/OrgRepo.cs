@@ -31,11 +31,20 @@ namespace Backend.Base.Org
             return await GetVersion(nr, "base.org");
         }
 
-        public async Task<List<OrgEnt>> GetList()
+        public async Task<string?> GetCode(int nr)
+        {
+            return await GetCode(nr, "base.org");
+        }
+
+        public async Task<List<OrgEnt>> GetList(bool includeBaseOrg)
         {
             var sql = "SELECT nr, code, descr as description, isActive "
-                       + "FROM base.org "
-                       + " ORDER BY code";
+                       + "FROM base.org ";
+
+            if (!includeBaseOrg)
+                sql += " WHERE nr != " + GC.BaseOrgNr + " ";
+
+            sql += " ORDER BY code";
 
             return await GetList<OrgEnt>(sql);
         }
@@ -71,12 +80,14 @@ namespace Backend.Base.Org
             org.Code = orgDto.Code;
             org.Description = orgDto.Description;
             org.IsActive = orgDto.IsActive;
+            org.ApiKey = orgDto.ApiKey;
             org.Mfa = orgDto.Mfa;
             org.IsRememberMeEnabled = orgDto.IsRememberMeEnabled;
             org.IsMasqueradeEnabled = orgDto.IsMasqueradeEnabled;
             org.IsPasswordResetEnabled = orgDto.IsPasswordResetEnabled;
             org.IsSignupEnabled = orgDto.IsSignupEnabled;
             org.IsEmailRequired = orgDto.IsEmailRequired;
+            org.IsEmailVerified = orgDto.IsEmailVerified;
             org.IsEmailHtml = orgDto.IsEmailHtml;
             org.LangCode = orgDto.LangCode;
             org.LangLabelVariant = orgDto.LangLabelVariant;
@@ -89,7 +100,7 @@ namespace Backend.Base.Org
                 langs.Add(new Language
                 {
                     LangCode = langDto.LangCode,
-                    IsVisible = langDto.IsReadonly,
+                    IsVisible = langDto.IsVisible,
                     IsEditable = langDto.IsEditable,
                 });
             }
@@ -99,7 +110,7 @@ namespace Backend.Base.Org
                 MinLength = orgDto.PasswordRule.MinLength,
                 MaxLength = orgDto.PasswordRule.MaxLength,
                 IsMixedCase = orgDto.PasswordRule.IsMixedCase,
-                IsSpecial = orgDto.PasswordRule.IsNonLetter,
+                IsNonLetter = orgDto.PasswordRule.IsNonLetter,
                 IsNumber = orgDto.PasswordRule.IsNumber,
             };
 

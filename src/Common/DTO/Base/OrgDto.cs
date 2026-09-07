@@ -24,7 +24,7 @@
     public class OrgLangDto
     {
         public string? LangCode { get; set; }
-        public bool IsReadonly { get; set; }
+        public bool IsVisible { get; set; }
         public bool IsEditable { get; set; }
     }
 

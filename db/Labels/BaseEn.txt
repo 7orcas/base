@@ -35,6 +35,18 @@ Orgs-s,Orgs
 OrgNr,Org Nr
 OrgSub,Configuration of Organisation
 OrgAc,Active in Org
+OrgRM,Remember Me Enabled
+OrgMas,Masquerade Enabled
+OrgPWR,Password Reset Enabled
+OrgSU,Self Registration Enabled
+OrgER,Email Required Enabled
+OrgEV,Email Verified Enabled
+OrgEH,Email HTML Enabled
+OrgWA,Warning: After #Attempts 
+OrgWP,Warning: Show password reset link
+OrgWLO,Warning: Lockout minutes
+OrgLOA,Lockout: After #Attempts 
+OrgLOP,Lockout: Show password reset link
 Conf,Configuration
 ConfSub,User Configuration
 ChgPw,Change Password
@@ -50,6 +62,7 @@ PWsr,Show Password Rules
 PWhr,Hide Password Rules
 PWmc,Must be mixed case
 PWSp,Must contain a special charcter
+PWNonLet,Must contain a non letter charcter
 PWNum,Must contain a number
 PWAt,Max. number of login attempts
 PWReset0,Please enter your email address to request a password reset. 
@@ -75,6 +88,7 @@ EmailVSX,Email address is already verified
 EmailVM,You are now able to log in
 EmailVX,Email verification has expired|| please contact IT support
 EmailVZ,Email verified 
+MfaC,MFA Config
 Mfa1,Scan with Microsoft Authenticator
 Mfa2,Or enter this key manually
 Mfa3,Enter code from Microsoft Authenticator
@@ -82,8 +96,9 @@ MfaEr,Failed to load MFA setup
 LEx,Login Expired|| please log in again.
 BConf,Base Configuration
 Code,Code
+Desc,Description
 Lang,Language
-LangCode,Lang
+LangCode,Lang Code
 Langs,Languages
 LangCodeV,Language Variant
 Label,Label
@@ -92,6 +107,7 @@ LabelEdit,Edit Label
 Tooltip,Tooltip
 Config,Configuration
 ConfigG,General Configuration
+ConfigD,Detail Configuration
 UnsavedC,There are unsaved changes. Leave anyway?
 UnsavedS,There are unsaved changes|| do you want to discard them?
 Confirm,Confirm
@@ -118,6 +134,7 @@ UserPermSub,User Permissions with respective CRUD (Create|| Read|| Update|| Dele
 Perm,Permission
 Perms,Permissions
 PermNr,Permission Nr
+PermNoC,No Permission to change
 Crud,CRUD
 Crud.C,Create
 Crud.R,Read
@@ -188,4 +205,6 @@ VerC,Version Conflict
 Clas,Classification
 Chat,Chat
 ApiKey,Api Key
+Visable,Visable
+Editable,Editable
 <LAST>,<LAST LINE>

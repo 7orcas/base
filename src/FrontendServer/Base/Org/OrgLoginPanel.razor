@@ -1,0 +1,55 @@
+﻿@inherits BaseComponent
+
+@using MudBlazor
+@using GC = FrontendServer.GlobalConstants;
+@using FrontendServer.Base._Base;
+
+
+<NumericField Width=GC.TextFieldWidth.TextVeryShort
+              LangCode="OrgWA"
+              ReadOnly="@(!IsEditActive)"
+              PageStatus=@PageStatus
+              Required="@IsRequired(nameof(Dto.WarningAttempts))"
+              Value="@Dto.WarningAttempts"
+              ValueChanged="@((int val) => Dto.WarningAttempts = val)"
+              ValueExpression="() => Dto.WarningAttempts" />
+
+<CheckboxField Width="GC.TextFieldWidth.TextLong"
+               ReadOnly="@(!IsEditActive)"
+               LangCode="OrgWP"
+               Value="Dto.WarningPasswordResetLink"
+               ValueChanged="@(v => Dto.WarningPasswordResetLink = v)" />
+
+<NumericField Width=GC.TextFieldWidth.TextVeryShort
+              LangCode="OrgWLO"
+              ReadOnly="@(!IsEditActive)"
+              PageStatus=@PageStatus
+              Required="@IsRequired(nameof(Dto.WarningLockoutMinutes))"
+              Value="@Dto.WarningLockoutMinutes"
+              ValueChanged="@((int val) => Dto.WarningLockoutMinutes = val)"
+              ValueExpression="() => Dto.WarningLockoutMinutes" />
+
+<NumericField Width=GC.TextFieldWidth.TextVeryShort
+              LangCode="OrgLOA"
+              ReadOnly="@(!IsEditActive)"
+              PageStatus=@PageStatus
+              Required="@IsRequired(nameof(Dto.LockoutAttempts))"
+              Value="@Dto.LockoutAttempts"
+              ValueChanged="@((int val) => Dto.LockoutAttempts = val)"
+              ValueExpression="() => Dto.LockoutAttempts" />
+
+<CheckboxField Width="GC.TextFieldWidth.TextLong"
+               ReadOnly="@(!IsEditActive)"
+               LangCode="OrgLOP"
+               Value="Dto.LockoutPasswordResetLink"
+               ValueChanged="@(v => Dto.LockoutPasswordResetLink = v)" />
+
+
+                                
+@code {
+    [Parameter] public LoginAttemptRuleDto Dto { get; set; }
+    [Parameter] public EventCallback Refresh { get; set; }
+    
+ 
+
+}

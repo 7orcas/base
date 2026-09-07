@@ -4,124 +4,105 @@
 @using GC = FrontendServer.GlobalConstants;
 @using FrontendServer.Base._Base;
 
-<div style="height:100%; overflow:auto;">
 
-    <table style="flex:1; min-height:0; table-layout:fixed; width:100%;@GetDebugBorder("pink")">
+    <NumericField Width=GC.TextFieldWidth.TextShort
+                LangCode="Nr"
+                ReadOnly="!Dto.IsNew()"
+                PageStatus=@PageStatus
+                Immediate="true"
+                Required="@IsRequired(nameof(Dto.Nr))"
+                Value="@Dto.Nr"
+                ValueChanged="@((int val) => Dto.Nr = val)"
+                ValueExpression="() => Dto.Nr" />
 
-        <tbody class="mud-table-body">
-            <tr class="XXmud-table-row">
-                @foreach (var record in Selections.Where(x => x.IsSelected))
-                {
-                var dto = record.dto;
+    @{
+        var textFields = new[]
+        {
+            new TextFieldItem(
+                nameof(Dto.Code),
+                "Code",
+                GC.TextFieldWidth.TextShort,
+                () => Dto.Code,
+                v => Dto.Code = v,
+                () => !Dto.IsNew() && !IsServiceOnly(nameof(Dto.Code)),
+                IsRequired(nameof(Dto.Code))
+                ),
 
-                <td @key="record.Id" style="vertical-align: top; padding: 1px; background-color:white">
+            new TextFieldItem(
+                nameof(Dto.Description),
+                "Desc",
+                GC.TextFieldWidth.TextMedium,
+                () => Dto.Description,
+                v => Dto.Description = v,
+                () => !IsEditActive,
+                IsRequired(nameof(Dto.Description))
+                ),
 
-                    <MudExpansionPanels MultiExpansion="true">
+            new TextFieldItem(
+                nameof(Dto.ApiKey),
+                "ApiKey",
+                GC.TextFieldWidth.TextMedium,
+                () => Dto.ApiKey,
+                v => Dto.ApiKey = v,
+                () => !IsEditActive,
+                IsRequired(nameof(Dto.ApiKey))
+                ),
 
-                        @if (record.IsValidation())
-                        {
-                            <MudExpansionPanel @key="record" Text=@GetValidationLabel(record) Expanded=true Style="padding:1px;" Class="@GetValidationClass(record)">
-                                <ChildContent>
-                                    <ErrorPanel List="record.Validation.Messages" />
-                                </ChildContent>
-                            </MudExpansionPanel>
-                        }
+            new TextFieldItem(
+                nameof(Dto.LangCode),
+                "Lang",
+                GC.TextFieldWidth.TextVeryShort,
+                () => Dto.LangCode,
+                v => Dto.LangCode = v,
+                () => !IsEditActive,
+                IsRequired(nameof(Dto.LangCode))
+                )
+        };
+    }
 
-                        <MudExpansionPanel Text=@GetLabel("ConfigG") Expanded="true">
-                            <TitleContent>
-                                <div class="expansion-title">
-                                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                                        <Label Size="GC.TextSize.Normal" Key="ConfigG"></Label>
-                                    </div>
-                                </div>
-                            </TitleContent>
-                            <ChildContent>
-                                <div style="display: flex; flex-wrap: wrap; gap: 20px;">
-                                    <NumericField Width=GC.TextFieldWidth.TextShort
-                                                    LangCode="Nr"
-                                                    ReadOnly="!dto.IsNew()"
-                                                    PageStatus=@PageStatus
-                                                    Immediate="true"
-                                                    Required="@IsRquired(nameof(dto.Nr))"
-                                                    Value="@dto.Nr"
-                                                    ValueChanged="@((int val) => dto.Nr = val)"
-                                                    ValueExpression="() => dto.Nr" />
+    @foreach (var field in textFields)
+    {
+        <TextField Width="@field.Width"
+                    LangCode="@field.Label"
+                    ReadOnly="@field.ReadOnly()"
+                    PageStatus=@PageStatus
+                    Required="@field.Required"
+                    MaxLength="@GetMaxLength(field.PropertyName)"
+                    Value="@field.GetValue()"
+                    ValueChanged="@(v => field.SetValue(v))" />
+    }
 
-                                    <TextField Width=GC.TextFieldWidth.TextShort
-                                                LangCode="Code"
-                                                ReadOnly="!dto.IsNew()"
-                                                PageStatus=@PageStatus
-                                                Immediate="true"
-                                                Required="@IsRquired(nameof(dto.Nr))"
-                                                MaxLength="@GetMaxLength(nameof(dto.Code))"
-                                                Value="@dto.Code"
-                                                ValueChanged="@((string val) => dto.Code = val)"
-                                                ValueExpression="() => dto.Code" />
+    <NumericField Width=GC.TextFieldWidth.TextVeryShort
+                    LangCode="LangCodeV"
+                    ReadOnly="@(!IsEditActive)"
+                    PageStatus=@PageStatus
+                    Required="@IsRequired(nameof(Dto.LangLabelVariant))"
+                    Value="@Dto.LangLabelVariant"
+                    ValueChanged="@((int val) => Dto.LangLabelVariant = val)"
+                    ValueExpression="() => Dto.LangLabelVariant" />
 
-                                    <TextField Width=GC.TextFieldWidth.TextMedium
-                                                LangCode="Desc"
-                                                MaxLength="@GetMaxLength(nameof(dto.Description))"
-                                                Value="@dto.Description"
-                                                ValueChanged="@((string val) => dto.Description = val)"
-                                                ValueExpression="() => dto.Description" />
+    <NumericField Width=GC.TextFieldWidth.TextVeryShort
+                    LangCode="MfaC"
+                    ReadOnly="@(!IsEditActive)"
+                    PageStatus=@PageStatus
+                    Required="@IsRequired(nameof(Dto.Mfa))"
+                    Value="@Dto.Mfa"
+                    ValueChanged="@((int val) => Dto.Mfa = val)"
+                    ValueExpression="() => Dto.Mfa" />
 
-                                    <CheckboxField Width=GC.TextFieldWidth.TextShort
-                                                    LangCode="Active"
-                                                    Value="@dto.IsActive"
-                                                    ValueChanged="@((bool val) => dto.IsActive = val)"
-                                                    ValueExpression="() => dto.IsActive" />
-                                
 
-                                    <Version version=dto />
-
-                                </div>
-                            </ChildContent>
-                        </MudExpansionPanel>
-                        
-
-                    </MudExpansionPanels>
-                </td>
-            }
-            </tr>
-        </tbody>
-
-    </table>
-</div>
 
 @code {
-    [Parameter] public List<ListModel<OrgDto>> Selections { get; set; } = new List<ListModel<OrgDto>>();
+    [Parameter] public OrgDto Dto { get; set; }
     [Parameter] public EventCallback Refresh { get; set; }
     
-    private bool showPassword = false;
-
-   
-
-    private void OnDeleteChanged()
-    {
-        StateHasChanged();
-    }
-
-   
-    private string GetValidationLabel(ListModel<OrgDto> record)
-    {
-        if (record.Validation.MessageCount > 1)
-            return GetLabel("ValMs");
-        return GetLabel("ValM");
-    }
-
-    private string GetValidationClass(ListModel<OrgDto> record)
-    {
-        if (record.IsValidationError())
-            return "error-row" + DarkModeSuffix();
-
-        if (record.IsValidationWarning())
-            return "warning-row" + DarkModeSuffix();
-
-        return string.Empty;
-    }
-
-    private string GetAttemptsClass() => "error-row" + DarkModeSuffix();
-    private bool IsDeleteActive => PageStatus == null ? false : PageStatus.isCrudD;
-    private void TogglePassword() => showPassword = !showPassword;
+    private record TextFieldItem(
+        string PropertyName,
+        string Label,
+        GC.TextFieldWidth Width,
+        Func<string> GetValue,
+        Action<string> SetValue,
+        Func<bool> ReadOnly,
+        bool Required);
     
 }

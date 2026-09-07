@@ -63,7 +63,7 @@ namespace Backend.Base.Org
         public async Task<IActionResult> GetList()
         {
             var session = HttpContext.Items["session"] as SessionEnt;
-            var orgs = await _orgService.GetOrgList();
+            var orgs = await _orgService.GetOrgList(session);
             var list = new List<OrgDto>();
 
             foreach (var org in orgs)

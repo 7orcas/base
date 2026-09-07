@@ -23,6 +23,7 @@ namespace Backend.Base.Org.Ent
 
             Add(nameof(OrgDto.Code), "Code")
                 .setMaxLength(GC.LenCode)
+                .setIsServiceOnly()
                 .setUniqueDb();
 
             Add(nameof(OrgDto.Description), "Description")

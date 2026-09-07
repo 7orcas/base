@@ -6,7 +6,6 @@
 
 <ConfirmNavigation List="list" />
 
-
 <div style="height:100%; display:flex; flex-direction:column; @GetDebugBorder("yellow")">
 
     <HeaderThin @key=pageStatus.pageCode
@@ -265,7 +264,6 @@
         }
         else
         {
-            loadStatus.SetError();
             List<ValidationDto> vals = r2?.Validations;
             for (int i = 0; i < updates.Count; i++)
             {

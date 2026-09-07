@@ -58,7 +58,7 @@ namespace Backend.Base.User
         /// <param name="search"></param>
         /// <returns></returns>
         [CrudAtt(GC.CrudReadList)]
-        [AuditListAtt(GC.EntityTypeUser, GC.CrudReadList)]
+        [AuditListAtt(GC.CrudReadList)]
         [HttpPost("list")]
         public async Task<IActionResult> GetList([FromBody] UserSearch search)
         {
@@ -83,7 +83,7 @@ namespace Backend.Base.User
         /// <param name="id"></param>
         /// <returns></returns>
         [CrudAtt(GC.CrudRead)] 
-        [AuditListAtt(GC.EntityTypeUser, GC.CrudRead)]
+        [AuditListAtt(GC.CrudRead)]
         [HttpGet("get/{id}")]
         public async Task<IActionResult> GetUserById(long id)
         {
@@ -109,7 +109,7 @@ namespace Backend.Base.User
         /// <param name="update"></param>
         /// <returns></returns>
         [CrudAtt(GC.CrudUpdate)] 
-        [AuditListAtt(GC.EntityTypeUser, GC.CrudUpdate)]
+        [AuditListAtt(GC.CrudUpdate)]
         [HttpPost("update")]
         public async Task<IActionResult> UpdateUser([FromBody] UpdateRequest<List<UserDto>> update)
         {
@@ -151,7 +151,7 @@ namespace Backend.Base.User
         /// </summary>
         /// <returns></returns>
         [CrudAtt(GC.CrudCreate)] 
-        [AuditListAtt(GC.EntityTypeUser, GC.CrudCreate)]
+        [AuditListAtt(GC.CrudCreate)]
         [HttpGet("new")]
         public async Task<IActionResult> New()
         {

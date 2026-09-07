@@ -1,0 +1,40 @@
+﻿@inherits BaseComponent
+
+@using MudBlazor
+@using GC = FrontendServer.GlobalConstants;
+@using FrontendServer.Base._Base;
+
+@{
+var checkboxes = new[]
+{
+    new CheckboxItem("Active", () => Dto.IsActive, v => Dto.IsActive = v),
+    new CheckboxItem("OrgRM", () => Dto.IsRememberMeEnabled, v => Dto.IsRememberMeEnabled = v),
+    new CheckboxItem("OrgMas", () => Dto.IsMasqueradeEnabled, v => Dto.IsMasqueradeEnabled = v),
+    new CheckboxItem("OrgPWR", () => Dto.IsPasswordResetEnabled, v => Dto.IsPasswordResetEnabled = v),
+    new CheckboxItem("OrgSU", () => Dto.IsSignupEnabled, v => Dto.IsSignupEnabled = v),
+    new CheckboxItem("OrgER", () => Dto.IsEmailRequired, v => Dto.IsEmailRequired = v),
+    new CheckboxItem("OrgEV", () => Dto.IsEmailVerified, v => Dto.IsEmailVerified = v),
+    new CheckboxItem("OrgEH", () => Dto.IsEmailHtml, v => Dto.IsEmailHtml = v)
+};
+}
+@foreach (var checkbox in checkboxes)
+{
+    <CheckboxField Width="GC.TextFieldWidth.TextLong"
+                    ReadOnly="@(!IsEditActive)"
+                    LangCode="@checkbox.Label"
+                    Value="@checkbox.GetValue()"
+                    ValueChanged="@(v => checkbox.SetValue(v))" />
+}
+                                    
+
+
+@code {
+    [Parameter] public OrgDto Dto { get; set; } 
+    [Parameter] public EventCallback Refresh { get; set; }
+        
+    private record CheckboxItem(
+        string Label,
+        Func<bool> GetValue,
+        Action<bool> SetValue);
+   
+}

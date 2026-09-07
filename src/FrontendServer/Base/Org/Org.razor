@@ -16,7 +16,7 @@
 
     <div style="margin-top:10px; border-bottom: 1px solid #ccc; margin-bottom:2px;"></div>
 
-@if (loadStatus.IsError)
+    @if (loadStatus.IsError)
     {
         <Error LoadStatus=@loadStatus>
             @exception
@@ -42,7 +42,7 @@
             <!-- Right Side Details -->
             <MudItem xs="10" Style="height:100%; display:flex; flex-direction:column; min-height:0;">
                 <MudPaper Elevation="0" Outlined="false" Style="flex:1; min-height:0; overflow:auto; padding-right:20px;">
-                    <OrgDetailsPanel Selections="listUtil.Selections"
+                    <OrgHeaderPanel Selections="listUtil.Selections"
                                       Refresh="@Refresh"
                                       PageStatus="@pageStatus" 
                                       FieldDefinitionUtil="@fieldDefinitionUtil" />
@@ -223,12 +223,12 @@
         }
         else
         {
-            loadStatus.SetError();
+         //   loadStatus.SetError();
             List<ValidationDto> vals = r2?.Validations;
             for (int i = 0; i < updates.Count; i++)
             {
                 var rec = updates[i];
-                var val = vals != null ? vals.FirstOrDefault(x => x.Id == rec.Id) : null;
+                var val = vals != null ? vals.FirstOrDefault(x => x.Id == (long)rec.dto.Nr) : null;
                 if (val != null)
                 {
                     rec.Validation = new ValidationModel
