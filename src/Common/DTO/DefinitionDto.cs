@@ -19,5 +19,6 @@ namespace Common.DTO
         public int? MaxValue { get; set; }
         public bool IsRequired { get; set; } = false;
         public bool IsRequiredNew { get; set; } = false;
+        public bool IsServiceOnly { get; set; } = false;
     }
 }

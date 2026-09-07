@@ -189,7 +189,7 @@ namespace Backend.Base.Permission
             if (crud != null && crud.Action == GC.CrudIgnore)
             {
                 //Hard coded admins
-                if (permAtt.Nr == GC.PerUser) return session.UserAccount.IsAdminUser;
+                //if (permAtt.Nr == GC.PerUser) return session.UserAccount.IsAdminUser; DELETE ME
                 if (permAtt.Nr == GC.PerLang) return session.UserAccount.IsAdminLang;
 
                 return true;
@@ -203,7 +203,11 @@ namespace Backend.Base.Permission
 
             if (crud == null) return true;
 
-            return userCrud.IndexOf(crud.Action) != -1;
+            var c = crud.Action;
+            if (crud.Action == GC.CrudReadList) 
+                c = GC.CrudRead ;
+
+            return userCrud.IndexOf(c) != -1;
         }
     }
 }

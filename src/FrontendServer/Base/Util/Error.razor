@@ -1,12 +1,12 @@
 ﻿@inherits BasePage
 
-if (@LoadStatus.IsError)
+@if (LoadStatus.IsError)
 {
-    if (@LoadStatus.StatusCode == StatusCodes.Status401Unauthorized)
+    @if (LoadStatus.StatusCode == StatusCodes.Status401Unauthorized)
     {
             <h2>@lEx</h2>
     }
-    else if (@LoadStatus.StatusCode == StatusCodes.Status403Forbidden)
+    else @if (LoadStatus.StatusCode == StatusCodes.Status403Forbidden)
     {
         <h2>@nAuthX</h2>
         <div class="error-content">

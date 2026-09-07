@@ -1,0 +1,32 @@
+﻿@inherits BaseComponent
+
+@using MudBlazor
+@using GC = FrontendServer.GlobalConstants;
+@using FrontendServer.Base._Base;
+
+
+<MudTable Editable="true"  Items="@Dto.Languages">
+    <HeaderContent>
+        <MudTh><Label Key="LangCode"/></MudTh>
+        <MudTh><Label Key="Visible" /></MudTh>
+        <MudTh><Label Key="Editable" /></MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd>
+            @context.LangCode
+        </MudTd>
+        <MudTd>
+            <MudCheckBox T="bool" ReadOnly="@(!IsEditActive)" @bind-Value="context.IsVisible" />
+        </MudTd>
+        <MudTd>
+            <MudCheckBox T="bool" ReadOnly="@(!IsEditActive)" @bind-Value="context.IsEditable" />
+        </MudTd>
+    </RowTemplate>
+                                       
+</MudTable>
+                                
+@code {
+    [Parameter] public OrgDto Dto { get; set; }
+    [Parameter] public EventCallback Refresh { get; set; }
+    
+}

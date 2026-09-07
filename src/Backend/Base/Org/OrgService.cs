@@ -1,4 +1,6 @@
-﻿using DocumentFormat.OpenXml.Wordprocessing;
+﻿using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml.Wordprocessing;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.Extensions.Caching.Memory;
 using Npgsql;
 using Superpower.Model;
@@ -16,35 +18,109 @@ namespace Backend.Base.Org
 {
     public class OrgService: BaseService, OrgServiceI
     {
+        private readonly OrgRepoI _orgRepo;
         private readonly LabelServiceI _labelService;
         private readonly IMemoryCache _memoryCache;
 
         public OrgService(IServiceProvider serviceProvider,
+            OrgRepoI orgRepo,
             LabelServiceI labelService,
             IMemoryCache memoryCache) 
             : base(serviceProvider) 
         {
+            _orgRepo = orgRepo;
             _labelService = labelService;
             _memoryCache = memoryCache;
         }
 
+        public async Task<DefinitionDto> GetDefinition(SessionEnt session)
+        {
+            var validator = new OrgVal(session, this);
+            return validator.GetDefinition();
+        }
+
+        //FIX_ME
+        //Needs to have a matrix
         public async Task<List<OrgEnt>> GetOrgList()
         {
-            var list = new List<OrgEnt>();
-            await Sql.Run(
-                    "SELECT * FROM base.org ",
-                    r => {
-                        var org = new OrgEnt();
-                        org.Nr = GetInt(r, "nr");
-                        org.Code = GetCode(r);
-                        org.Description = GetDescription(r);
-                        org.Updated = GetUpdated(r);
-                        org.IsActive = IsActive(r);
-                        list.Add(org);
-                    }
-                );
-            return list;
+            return await _orgRepo.GetList(false);
         }
+
+        public async Task<List<OrgEnt>> GetOrgList(SessionEnt session)
+        {
+            return await _orgRepo.GetList(session.IsService);
+        }
+
+        public OrgDto PopulateList(SessionEnt session, OrgEnt org)
+        {
+            OrgDto orgDto = new OrgDto()
+            {
+                Nr = org.Nr,
+                Code = org.Code,
+                Description = org.Description,
+                IsActive = org.IsActive,
+            };
+
+            return orgDto;
+        }
+
+        public OrgDto Populate(SessionEnt session, OrgEnt org)
+        {
+            var enc = org.Encoding;
+            var langDtos = new List<OrgLangDto>();
+            foreach (var lang in enc.Languages)
+            {
+                langDtos.Add(new OrgLangDto
+                {
+                    LangCode = lang.LangCode,
+                    IsVisible = lang.IsVisible,
+                    IsEditable = lang.IsEditable,
+                });
+            }
+
+            var passwordRuleDto = new PasswordRuleDto();
+            CopyProperties(enc.PasswordRule, passwordRuleDto);
+
+            var loginAttemptRuleDto = new LoginAttemptRuleDto();
+            CopyProperties(enc.LoginAttemptRule, loginAttemptRuleDto);
+
+            var orgDto = new OrgDto() {
+                Languages = langDtos,
+                PasswordRule = passwordRuleDto,
+                LoginAttemptRule = loginAttemptRuleDto
+            };
+
+            CopyProperties(org, orgDto);
+
+
+            return orgDto;
+        }
+
+        public async Task<List<ValidationDto>> ValidateOrg(SessionEnt session, List<OrgDto> update)
+        {
+            var validator = new OrgVal(session, this);
+            var vals = new List<ValidationDto>();
+
+            foreach (var dto in update)
+            {
+                VersionI? version = null;
+                OrgDto? currentDto = null;
+                if (dto.IsValidatable())
+                {
+                    version = await _orgRepo.GetVersion(dto.Nr);
+                    var ent = await GetOrg(dto.Nr);
+                    currentDto = Populate(session, ent);
+                }
+                else if (dto.IsDelete) continue;
+
+                var val = validator.Validate(dto, currentDto, version);
+                if (val != null)
+                    vals.Add(val);
+            }
+
+            return vals;
+        }
+
 
         public async Task<OrgEnt> GetOrg(int nr)
         {
@@ -71,48 +147,16 @@ namespace Backend.Base.Org
             }
         }
 
-        public async Task UpdateOrg(OrgEnt org)
+        public async Task<OrgEnt?> UpdateOrg(SessionEnt session, OrgDto orgDto)
         {
-            org.Encode();
-            await Sql.ExecuteAsync(
-                    "UPDATE base.org " +
-                    "SET " +
-                        Update("code", org.Code) +
-                        Update("descr", org.Description) +
-                        Update("encoded", org.Encoded) +
-                        Update("updated", org.Updated) +
-                        Update("version", org.Version + 1) +
-                        Update("isActive", org.IsActive) +
-                        Update("mfa", org.Mfa) +
-                        Update("isRememberMeEnabled", org.IsRememberMeEnabled) +
-                        Update("isMasqueradeEnabled", org.IsMasqueradeEnabled) +
-                        Update("isForgotenabled", org.IsPasswordResetEnabled) +
-                        Update("isSignupenabled", org.IsSignupEnabled) +
-                        Update("isEmailRequired", org.IsEmailRequired) +
-                        Update("isEmailHtml", org.IsEmailHtml) +
-                        Update("langCode", org.LangCode) +
-                        NoComma(Update("langLabelVariant", org.LangLabelVariant)) +
-                    " WHERE nr = " + org.Nr
-            );
-            _memoryCache.Set(GC.CacheKeyOrgPrefix + org.Nr, org);
+            //No action required
+            if (orgDto.IsNew() && orgDto.IsDelete)
+                return null;
+
+            return await _orgRepo.Update(orgDto);
         }
 
-        public OrgDto Populate (OrgEnt org)
-        {
-            OrgDto orgDto = new OrgDto()
-            {
-                Nr = org.Nr,
-                Code = org.Code,
-                Description = org.Description,
-                Updated = org.Updated,
-                Version = org.Version,
-                IsActive = org.IsActive,
-                LangCode = org.LangCode,
-                LangLabelVariant = org.LangLabelVariant,
-            };
-
-            return orgDto;
-        }
+        
 
         public async Task<string> GetPasswordRules(string langCode, int orgNr)
         {
@@ -125,7 +169,7 @@ namespace Backend.Base.Org
             if (val.MaxLength > 0) rules += "<br>" + GetLabel("LenMax", labels) + "=" + val.MaxLength;
             if (val.IsMixedCase) rules += "<br>" + GetLabel("PWmc", labels);
             if (val.IsNumber) rules += "<br>" + GetLabel("PWNum", labels);
-            if (val.IsSpecial) rules += "<br>" + GetLabel("PWSp", labels);
+            if (val.IsNonLetter) rules += "<br>" + GetLabel("PWSp", labels);
 
             if (!string.IsNullOrEmpty(rules))
                 rules = rules.Substring("<br>".Length);
@@ -160,7 +204,7 @@ namespace Backend.Base.Org
             if (val.IsNumber && !pw.Any(char.IsDigit))
                 m.Add("PWNum");
 
-            if (val.IsSpecial && !pw.Replace(" ", "").Any(c => !char.IsLetterOrDigit(c)))
+            if (val.IsNonLetter && !pw.Replace(" ", "").Any(c => !char.IsLetterOrDigit(c)))
                 m.Add("PWSp");
 
             return (m.IsValid(), m.GetMessage());

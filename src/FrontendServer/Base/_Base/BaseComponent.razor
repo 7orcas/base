@@ -57,6 +57,30 @@
         return s;
     }
 
+    public void OnDeleteChanged()
+    {
+        StateHasChanged();
+    }
+
+    public string GetValidationLabel<T>(ListModel<T> record) where T : Common.DTO._BaseDto
+    {
+        if (record.Validation.MessageCount > 1)
+            return GetLabel("ValMs");
+        return GetLabel("ValM");
+    }
+
+    public string GetValidationClass<T>(ListModel<T> record) where T : Common.DTO._BaseDto
+    {
+        if (record.IsValidationError())
+            return "error-row" + DarkModeSuffix();
+
+        if (record.IsValidationWarning())
+            return "warning-row" + DarkModeSuffix();
+
+        return string.Empty;
+    }
+
+
     public string GetDebugBorder(string color)
     {
         if (CS.Config == null) return string.Empty;
@@ -67,8 +91,9 @@
 
     //Field Config methods
     public int GetMaxLength(string name) => FieldDefinitionUtil.MaxLength(name);
-    public bool IsRquired(string name) => FieldDefinitionUtil.IsRquired(name);
+    public bool IsRequired(string name) => FieldDefinitionUtil.IsRquired(name);
     public bool IsRquiredNew(string name, bool isNew) => isNew && FieldDefinitionUtil.IsRquiredNew(name);
+    public bool IsServiceOnly(string name) => FieldDefinitionUtil.IsServiceOnly(name) && CS.Config.User.IsService;
 
     //Convenience methods
     public AppConfigDto GetConfig() => CS.Config;
@@ -79,5 +104,7 @@
     public string GetLabelHighlightNoKey(string labelCode) => LS.GetLabelHighlightNoKey(labelCode);
     public string? GetTooltip(string labelCode) => LS.GetTooltip(labelCode);
     public string DarkModeSuffix() => TS.IsDarkMode? "-dark" : "-light";
+    public bool IsEditActive => PageStatus == null ? false : PageStatus.IsEditMode;
+    public bool IsDeleteActive => PageStatus == null ? false : PageStatus.isCrudD;
     
 }

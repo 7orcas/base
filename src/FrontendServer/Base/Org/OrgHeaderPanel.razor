@@ -1,0 +1,127 @@
+﻿@inherits BaseComponent
+
+@using MudBlazor
+@using GC = FrontendServer.GlobalConstants;
+@using FrontendServer.Base._Base;
+
+<div style="height:100%; overflow:auto;">
+
+    <table style="flex:1; min-height:0; table-layout:fixed; width:100%;@GetDebugBorder("pink")">
+
+        <tbody class="mud-table-body">
+            <tr class="XXmud-table-row">
+                @foreach (var record in Selections.Where(x => x.IsSelected))
+                {
+                var dto = record.dto;
+
+                <td @key="dto.Nr" style="vertical-align: top; padding: 1px; background-color:white">
+
+                    <MudExpansionPanels MultiExpansion="true">
+
+                        @if (record.IsValidation())
+                        {
+                            <MudExpansionPanel @key="record" Text=@GetValidationLabel(record) Expanded=true Style="padding:1px;" Class="@GetValidationClass(record)">
+                                <ChildContent>
+                                    <ErrorPanel List="record.Validation.Messages" />
+                                </ChildContent>
+                            </MudExpansionPanel>
+                        }
+
+                        <MudExpansionPanel Text=@GetLabel("ConfigG") Expanded="true">
+                            <TitleContent>
+                                <div class="expansion-title">
+                                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                                        <Label Size="GC.TextSize.Normal" Key="ConfigG"></Label>
+                                    </div>
+                                </div>
+                            </TitleContent>
+                            <ChildContent>
+                                <div style="display: flex; gap: 20px;">
+                                    <div class="org-basic" style="flex:1;">
+                                        <OrgDetailsPanel 
+                                            Dto="dto"                 
+                                            Refresh="@Refresh"
+                                            PageStatus="@PageStatus"
+                                            FieldDefinitionUtil="@FieldDefinitionUtil" />
+                                    </div>
+                                    <div class="org-checkboxes" style="flex:2;">
+                                        <OrgCheckboxPanel Dto="dto" 
+                                            Refresh="@Refresh"
+                                            PageStatus="@PageStatus" 
+                                            FieldDefinitionUtil="@FieldDefinitionUtil" />
+                                    </div>
+                                </div>
+                             
+                            <Version version=dto />
+
+                            </ChildContent>
+                        </MudExpansionPanel>
+
+                          <MudExpansionPanel Text=@GetLabel("ConfigD") Expanded="true">
+                                <TitleContent>
+                                    <div class="expansion-title">
+                                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                                            <Label Size="GC.TextSize.Normal" Key="ConfigD"></Label>
+                                        </div>
+                                    </div>
+                                </TitleContent>
+                                <ChildContent>
+                                    <div style="display:flex; justify-content:space-between; flex-wrap:wrap; width:100%; gap:10px;">
+
+                                        <fieldset class="config-panel" style="flex:1 1 30%; max-width:350px;">
+
+                                            <legend class="config-panel-title">
+                                                @GetLabel("Langs")
+                                            </legend>
+
+                                            <OrgLanguagePanel Dto="dto"
+                                                              Refresh="@Refresh"
+                                                              PageStatus="@PageStatus"
+                                                              FieldDefinitionUtil="@FieldDefinitionUtil" />
+                                        </fieldset>
+
+                                        
+                                        <fieldset class="config-panel" style="flex:1 1 30%; max-width:350px;">
+
+                                            <legend class="config-panel-title">
+                                                @GetLabel("PWs")
+                                            </legend>
+
+                                            <OrgPasswordPanel Dto="dto.PasswordRule"
+                                                              Refresh="@Refresh"
+                                                              PageStatus="@PageStatus"
+                                                              FieldDefinitionUtil="@FieldDefinitionUtil" />
+                                        </fieldset>
+
+                                        <fieldset class="config-panel" style="flex:1 1 30%; max-width:350px;">
+
+                                            <legend class="config-panel-title">
+                                                @GetLabel("Login")
+                                            </legend>
+
+                                            <OrgLoginPanel Dto="dto.LoginAttemptRule"
+                                                           Refresh="@Refresh"
+                                                           PageStatus="@PageStatus"
+                                                           FieldDefinitionUtil="@FieldDefinitionUtil" />
+                                        </fieldset>
+                                        
+                                    </div>
+                                </ChildContent>
+                            </MudExpansionPanel>
+
+
+                    </MudExpansionPanels>
+                </td>
+            }
+            </tr>
+        </tbody>
+
+    </table>
+</div>
+
+@code {
+    [Parameter] public List<ListModel<OrgDto>> Selections { get; set; } = new List<ListModel<OrgDto>>();
+    [Parameter] public EventCallback Refresh { get; set; }
+
+    
+}

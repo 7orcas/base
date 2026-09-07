@@ -121,7 +121,6 @@
 
 @code {
     [Parameter] public UserDto.UserAccountDto accountDto { get; set; }
-    //[Parameter] public PageStatus? pageStatus { get; set; } DELETE_ME
     
     public bool IsEditActive => PageStatus == null ? false : PageStatus.IsEditMode;
 }

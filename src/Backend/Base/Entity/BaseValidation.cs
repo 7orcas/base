@@ -19,6 +19,7 @@ namespace Backend.Base.Entity
         protected string minValueEx;
         protected string verX;
         protected string verC;
+        protected string noPerm;
 
         public BaseValidation (SessionEnt session)
         {
@@ -32,6 +33,7 @@ namespace Backend.Base.Entity
             minValueEx = GetLabel("MinV", "Minimum value exceeded"); //has (%%) appended
             verX = GetLabel("VerX", "This record was changed on %% and is out of date. You must reload it."); //has (%%) appended
             verC = GetLabel("VerC", "Version Conflict");
+            noPerm = GetLabel("PermNoC", "No Permission to change");
 
             Configure();
         }
@@ -54,11 +56,16 @@ namespace Backend.Base.Entity
 
         public ValidationDto? Validate(T dto, VersionI? version)
         {
+            return Validate(dto, null, version);
+        }
+
+        public ValidationDto? Validate(T dto, T? currentDto, VersionI? version)
+        {
             if (validations == null)
                 throw new Exception("Validations are null");
 
             messages = null;
-            ValidateInternal(dto, version);
+            ValidateInternal(dto, currentDto, version);
 
             if (messages != null)
             {
@@ -72,7 +79,7 @@ namespace Backend.Base.Entity
             return null;
         }
 
-        private void ValidateInternal(T dto, VersionI? version)
+        private void ValidateInternal(T dto, T? currentDto, VersionI? version)
         {
             //Version has changed
             if (version != null && dto.Version != null && version.Version != dto.Version)
@@ -112,6 +119,18 @@ namespace Backend.Base.Entity
                     && (value == null
                     || (property.PropertyType == typeof(string) && string.IsNullOrEmpty(valueS))))
                     AddMessage(info.Label, mandatory);
+
+                //Is service only
+                if (info.IsServiceOnly
+                    && !session.IsService
+                    && value != null
+                    && currentDto != null)
+                {
+                    var valueX = property.GetValue(currentDto);
+                    if (valueX == null || !value.Equals(valueX))
+                        AddMessage(info.Label, noPerm);
+                }
+                    
 
                 //Max Length Exceeded
                 if (info.MaxLength != null
@@ -166,7 +185,8 @@ namespace Backend.Base.Entity
                     MinValue = info.MinValue,
                     MaxValue = info.MaxValue,
                     IsRequired = info.IsRequired,
-                    IsRequiredNew = info.IsRequiredNew
+                    IsRequiredNew = info.IsRequiredNew,
+                    IsServiceOnly = info.IsServiceOnly
                 });
             }
             return dto;
@@ -233,6 +253,7 @@ namespace Backend.Base.Entity
             public int? MaxValue { get; set; }
             public bool IsRequired { get; set; } = true;
             public bool IsRequiredNew { get; set; } = false;
+            public bool IsServiceOnly { get; set; } = false;
             public bool IsUniqueDb { get; set; } = false;
             public object[]? Values { get; set; }
             public Action<T> Callback { get; set; }
@@ -247,6 +268,12 @@ namespace Backend.Base.Entity
             public Info resetIsRequired()
             {
                 IsRequired = false;
+                return this;
+            }
+
+            public Info setIsServiceOnly()
+            {
+                IsServiceOnly = true;
                 return this;
             }
 

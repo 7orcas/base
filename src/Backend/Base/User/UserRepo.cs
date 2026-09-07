@@ -99,8 +99,7 @@ namespace Backend.Base.User
             {
                 user.Password = _loginService.PasswordHash(userDto.PasswordNew);
             }
-
-            user.Encode();
+                        
             user.Username = userDto.Username;
             user.Email = userDto.Email;
             user.IsEmailVerified = userDto.IsEmailVerified;
@@ -164,6 +163,9 @@ namespace Backend.Base.User
                     }
                 }
             }
+
+            user.Encode();
+
             if (userDto.IsNew())
                 _context.Users.Add(user);
             

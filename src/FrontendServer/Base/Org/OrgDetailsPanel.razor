@@ -1,0 +1,108 @@
+﻿@inherits BaseComponent
+
+@using MudBlazor
+@using GC = FrontendServer.GlobalConstants;
+@using FrontendServer.Base._Base;
+
+
+    <NumericField Width=GC.TextFieldWidth.TextShort
+                LangCode="Nr"
+                ReadOnly="!Dto.IsNew()"
+                PageStatus=@PageStatus
+                Immediate="true"
+                Required="@IsRequired(nameof(Dto.Nr))"
+                Value="@Dto.Nr"
+                ValueChanged="@((int val) => Dto.Nr = val)"
+                ValueExpression="() => Dto.Nr" />
+
+    @{
+        var textFields = new[]
+        {
+            new TextFieldItem(
+                nameof(Dto.Code),
+                "Code",
+                GC.TextFieldWidth.TextShort,
+                () => Dto.Code,
+                v => Dto.Code = v,
+                () => !Dto.IsNew() && !IsServiceOnly(nameof(Dto.Code)),
+                IsRequired(nameof(Dto.Code))
+                ),
+
+            new TextFieldItem(
+                nameof(Dto.Description),
+                "Desc",
+                GC.TextFieldWidth.TextMedium,
+                () => Dto.Description,
+                v => Dto.Description = v,
+                () => !IsEditActive,
+                IsRequired(nameof(Dto.Description))
+                ),
+
+            new TextFieldItem(
+                nameof(Dto.ApiKey),
+                "ApiKey",
+                GC.TextFieldWidth.TextMedium,
+                () => Dto.ApiKey,
+                v => Dto.ApiKey = v,
+                () => !IsEditActive,
+                IsRequired(nameof(Dto.ApiKey))
+                ),
+
+            new TextFieldItem(
+                nameof(Dto.LangCode),
+                "Lang",
+                GC.TextFieldWidth.TextVeryShort,
+                () => Dto.LangCode,
+                v => Dto.LangCode = v,
+                () => !IsEditActive,
+                IsRequired(nameof(Dto.LangCode))
+                )
+        };
+    }
+
+    @foreach (var field in textFields)
+    {
+        <TextField Width="@field.Width"
+                    LangCode="@field.Label"
+                    ReadOnly="@field.ReadOnly()"
+                    PageStatus=@PageStatus
+                    Required="@field.Required"
+                    MaxLength="@GetMaxLength(field.PropertyName)"
+                    Value="@field.GetValue()"
+                    ValueChanged="@(v => field.SetValue(v))" />
+    }
+
+    <NumericField Width=GC.TextFieldWidth.TextVeryShort
+                    LangCode="LangCodeV"
+                    ReadOnly="@(!IsEditActive)"
+                    PageStatus=@PageStatus
+                    Required="@IsRequired(nameof(Dto.LangLabelVariant))"
+                    Value="@Dto.LangLabelVariant"
+                    ValueChanged="@((int val) => Dto.LangLabelVariant = val)"
+                    ValueExpression="() => Dto.LangLabelVariant" />
+
+    <NumericField Width=GC.TextFieldWidth.TextVeryShort
+                    LangCode="MfaC"
+                    ReadOnly="@(!IsEditActive)"
+                    PageStatus=@PageStatus
+                    Required="@IsRequired(nameof(Dto.Mfa))"
+                    Value="@Dto.Mfa"
+                    ValueChanged="@((int val) => Dto.Mfa = val)"
+                    ValueExpression="() => Dto.Mfa" />
+
+
+
+@code {
+    [Parameter] public OrgDto Dto { get; set; }
+    [Parameter] public EventCallback Refresh { get; set; }
+    
+    private record TextFieldItem(
+        string PropertyName,
+        string Label,
+        GC.TextFieldWidth Width,
+        Func<string> GetValue,
+        Action<string> SetValue,
+        Func<bool> ReadOnly,
+        bool Required);
+    
+}

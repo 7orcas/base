@@ -4,10 +4,17 @@
     {
         public int Nr { get; set; }
         public string? Icon { get; set; }
-        public DateTimeOffset Updated { get; set; }
-        public int Version { get; set; }
         public string LangCode { get; set; }
         public int LangLabelVariant { get; set; }
+        public string? ApiKey { get; set; }
+        public int Mfa { get; set; }
+        public bool IsRememberMeEnabled { get; set; }
+        public bool IsMasqueradeEnabled { get; set; }
+        public bool IsPasswordResetEnabled { get; set; }
+        public bool IsSignupEnabled { get; set; }
+        public bool IsEmailRequired { get; set; }
+        public bool IsEmailVerified { get; set; }
+        public bool IsEmailHtml { get; set; }
 
         public List<OrgLangDto> Languages { get; set; }
         public PasswordRuleDto PasswordRule { get; set; }
@@ -17,7 +24,7 @@
     public class OrgLangDto
     {
         public string? LangCode { get; set; }
-        public bool IsReadonly { get; set; }
+        public bool IsVisible { get; set; }
         public bool IsEditable { get; set; }
     }
 
