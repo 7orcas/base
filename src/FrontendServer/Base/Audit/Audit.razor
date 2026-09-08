@@ -1,15 +1,10 @@
-﻿@page "/audit"
+﻿@inherits BasePage
+@attribute [Route(BaseRoutes.AuditRoute)]
+@attribute [PageCode(BaseRoutes.AuditPageCode)]
+@attribute [PagePermission(GC.PerAudit)]
 @attribute [Authorize]
 
-@inject HttpClient HttpClient
-@inject NavigationManager NavigationManager
-@inject IHttpClientFactory HttpClientFactory
-@inject AuditService AuditService
 
-@using GC = FrontendServer.GlobalConstants;
-@using Newtonsoft.Json;
-@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
-@inject ProtectedSessionStorage ProtectedSessionStore
 
 
 <h3>Audit</h3>
@@ -20,7 +15,7 @@
 }
 else if (_isError)
 {
-    <div>@message</div>
+    
 }        
 else
 {
@@ -39,18 +34,18 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var rec in auditList)
+            @foreach (var rec in list)
             {
                 <tr>
-                    <td>@rec.Id</td>
-                    <td>@rec.orgNr</td>
-                    <td>@rec.Source</td>
-                    <td>@rec.EntityType</td>
-                    <td>@rec.EntityId</td>
-                    <td>@rec.User</td>
-                    <td>@rec.Created</td>
-                    <td>@rec.Crud</td>
-                    <td>@rec.Details</td>
+                    <td>@rec.dto.Id</td>
+                    <td>@rec.dto.OrgNr</td>
+                    <td>@rec.dto.Source</td>
+                    <td>@rec.dto.EntityType</td>
+                    <td>@rec.dto.EntityId</td>
+                    <td>@rec.dto.User</td>
+                    <td>@rec.dto.Updated</td>
+                    <td>@rec.dto.Crud</td>
+                    <td>@rec.dto.Details</td>
                 </tr>
             }
         </tbody>
@@ -58,73 +53,88 @@ else
 }
 
 
+@using System.Net
+@using MudBlazor
+@using FrontendServer.Base.Util
+@using GC = FrontendServer.GlobalConstants;
+@using FrontendServer.Base._Base;
+@using Newtonsoft.Json;
+@inject IDialogService DialogService
+
 @code {
+    private List<ListModel<AuditDto>> list = new List<ListModel<AuditDto>>();
+    private ListUtil<AuditDto> listUtil = new ListUtil<AuditDto>();
+    private MudTable<ListModel<AuditDto>> _listTable;
+
+    /*
     private List<AuditDto>? auditList;
     private bool _isLoading = true;
     private bool _isError = false;
     private string message;
     private string token;
+    */
 
-    private void ThrowException()
-    {
-        throw new InvalidOperationException("This is a test exception.");
-    }
-
-    private void Recover()
-    {
-        //        errorBoundary.Recover();
-    }
-
-    protected override async Task OnInitializedAsync()
-    {
-Console.WriteLine("Role OnInitializedAsync called");
-        /*
-        string token = null;
-        var result = await ProtectedSessionStore.GetAsync<string>("token");
-        if (result.Success)
-        token = result.Value;
-        */
-        // Func<Task> lambda = async () => machines = await MachineService.MachinesAsync(token);
-        // await Run(lambda);
-        // machines = await MachineService.MachinesAsync(token);
-        // _isLoading = false;
-
-    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            var store = await ProtectedSessionStore.GetAsync<string>(GC.TokenCacheKey);
-            if (store.Success)
-                token = store.Value;
-            else
-                NavigationManager.NavigateTo("https://localhost:7289", true);
+            await InitialiseBasePage();
 
-            var result = await AuditService.AuditListAsync(token);
-            auditList = result.list;
-            message = result.message;
-
-            _isError = !string.IsNullOrEmpty(message);
-            _isLoading = false;
+            //Add standard toolbar
+            AddToolbarSearch(Search);
+         
+            Search();
             StateHasChanged();
         }
     }
 
-    public async Task Run(Func<Task> action)
+    private async Task Search()
     {
-        try
+        var result = await OpenSearchDialog<AuditSearchDialog>();
+        if (!result.Canceled)
         {
-            await action();
+            listUtil.Clear();
+            var data = (AuditSearch)result.Data;
+            await Load(data);
         }
-        catch (Exception x)
+    }
+
+    private async Task Load(AuditSearch search)
+    {
+        var response = await PostAsync<_ResponseDto, AuditSearch>(GC.URL_audit_list, search);
+
+        list.Clear();
+        List<AuditDto> listX = null;
+
+        if (response.StatusCode == HttpStatusCode.OK)
         {
-            //exception = x;
-            //_isError = true;
+            var r = await response.Content.ReadAsStringAsync();
+            var dto = JsonConvert.DeserializeObject<_ResponseDto>(r);
+            if (dto.Valid)
+                listX = JsonConvert.DeserializeObject<List<AuditDto>>(dto.Result.ToString());
+
         }
-        finally
+
+        if (listX == null)
+            loadStatus.SetError();
+        else
         {
-            _isLoading = false;
+            listUtil.ShowList = true;
+            foreach (var u in listX)
+            {
+                list.Add(new ListModel<AuditDto>(u));
+            }
         }
+
+        StateHasChanged();
+
+        // if (list == null) { } //ToDo probably expired login
+        // else
+        // {
+        //     if (list.Count > 0)
+        //         Load(list[0]);
+        // }
+
     }
 }
