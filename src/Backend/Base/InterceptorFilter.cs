@@ -131,7 +131,7 @@ namespace Backend.Base
 //                //Audit list action
 //                var audit = methodInfo.GetCustomAttribute<AuditListAtt>();
 //                if (audit != null)
-//                    _auditService.ReadList(session, audit.EntityTypeId, null);
+//                    _auditService.ReadList(session, audit.EntityTypeNr, null);
 //            }
 
 //            if (_log.IsEnabled(LogEventLevel.Debug))

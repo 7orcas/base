@@ -11,15 +11,15 @@ namespace Backend.Base.Entity
         }
 
 
-        public string GetEntityTypeName(int entityTypeId)
+        public string GetEntityTypeName(int entityTypeNr)
         {
             if (EntityTypeNames == null)
                 InitialiseEntityNames();
 
-            if (!EntityTypeNames.ContainsKey(entityTypeId))
-                return "Unknown Entity Type: " + entityTypeId;
+            if (!EntityTypeNames.ContainsKey(entityTypeNr))
+                return "Unknown Entity Type: " + entityTypeNr;
 
-            return EntityTypeNames[entityTypeId];
+            return EntityTypeNames[entityTypeNr];
         }
 
         private void InitialiseEntityNames()

@@ -68,6 +68,12 @@ INSERT INTO zz_import_labels_basex (langcode, langkey, label)
 SELECT 'cn', langkey, label FROM zz_import_labels_base;
 TRUNCATE zz_import_labels_base;
 
+\copy zz_import_labels_base FROM 'C:/Source/db/Labels/BaseMa.txt' WITH (FORMAT csv);
+INSERT INTO zz_import_labels_basex (langcode, langkey, label)
+SELECT 'ma', langkey, label FROM zz_import_labels_base;
+TRUNCATE zz_import_labels_base;
+
+
 \copy zz_import_labels_base FROM 'C:/Source/db/Labels/BaseTtEn.txt' WITH (FORMAT csv);
 INSERT INTO zz_import_labels_basex (langcode, langkey, tooltip)
 SELECT 'en', langkey, label FROM zz_import_labels_base;

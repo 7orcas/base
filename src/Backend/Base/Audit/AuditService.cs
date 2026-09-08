@@ -36,11 +36,11 @@ namespace Backend.Base.Audit
                         list.Add(new AuditList()
                         {
                             Id = SqlUtils.GetId(r),
-                            orgNr = SqlUtils.GetOrgNr(r),
+                            OrgNr = SqlUtils.GetOrgNr(r),
                             Source = SqlUtils.GetInt(r, "source"),
-                            EntityTypeId = SqlUtils.GetInt(r, "entityTypeId"),
+                            EntityTypeNr = SqlUtils.GetInt(r, "entityTypeNr"),
                             EntityId = SqlUtils.GetIdNull(r, "entityId"),
-                            UserId = SqlUtils.GetId(r, "userAccId"),
+                            UserAccId = SqlUtils.GetId(r, "userAccId"),
                             User = SqlUtils.GetStringNull(r, "xxx"),
                             MasqueradeId = SqlUtils.GetIdNull(r, "masqueradeId"),
                             Masquerade = SqlUtils.GetStringNull(r, "masquerade"),
@@ -52,8 +52,8 @@ namespace Backend.Base.Audit
 
             foreach (var a in list)
             { 
-                a.EntityType = _entityService.GetEntityTypeName(a.EntityTypeId);
-                if (a.UserId == GC.ServiceLoginId) a.User = GC.ServiceAccountName;
+                a.EntityType = _entityService.GetEntityTypeName(a.EntityTypeNr);
+                if (a.UserAccId == GC.ServiceLoginId) a.User = GC.ServiceAccountName;
                 if (a.MasqueradeId != null && a.MasqueradeId == GC.ServiceLoginId) a.Masquerade = GC.ServiceAccountName;
             }
 
@@ -65,7 +65,7 @@ namespace Backend.Base.Audit
             var dto = new AuditDto
             {
                 Id = e.Id,
-                orgNr = e.orgNr,
+                orgNr = e.OrgNr,
                 Source = e.Source,
                 EntityType = e.EntityType,
                 EntityId = e.EntityId,
@@ -88,13 +88,13 @@ namespace Backend.Base.Audit
             return dto;
         }
 
-        public void LogAction(SessionEnt session, int entityTypeId, long? entityId, string crudAction, string details)
+        public void LogAction(SessionEnt session, int entityTypeNr, long? entityId, string crudAction, string details)
         {
             Task.Run(async () =>
             {
                 try
                 {
-                    LogAuditRecord(session, entityTypeId, entityId, crudAction, details);
+                    LogAuditRecord(session, entityTypeNr, entityId, crudAction, details);
                 }
                 catch (Exception ex)
                 {
@@ -103,13 +103,13 @@ namespace Backend.Base.Audit
             });
         }
 
-        public void LogInOut(SessionEnt session, int entityTypeId)
+        public void LogInOut(SessionEnt session, int entityTypeNr)
         {
             Task.Run(async () =>
             {
                 try
                 {
-                    LogAuditRecord(session, entityTypeId, null, null, null);
+                    LogAuditRecord(session, entityTypeNr, null, null, null);
                 }
                 catch (Exception ex)
                 {
@@ -119,7 +119,7 @@ namespace Backend.Base.Audit
         }
 
         private async void LogAuditRecord(SessionEnt session,
-            int entityTypeId,
+            int entityTypeNr,
             long? entityId,
             string? crud,
             string? details)
@@ -128,7 +128,7 @@ namespace Backend.Base.Audit
                 session.OrgNr,
                 session.UserAccount.Id,
                 session.MasqueradeId,
-                entityTypeId,
+                entityTypeNr,
                 entityId,
                 crud,
                 details);
@@ -139,18 +139,18 @@ namespace Backend.Base.Audit
             long orgNr,
             long userAccId,
             long? masqueradeId,
-            int entityTypeId,
+            int entityTypeNr,
             long? entityId, 
             string crud, 
             string details)
         {
             await Sql.ExecuteAsync(
                     "INSERT INTO base.Audit " +
-                        "(orgNr, source, entityTypeId, entityId, userAccId, masqueradeId, crud, details) " +
+                        "(orgNr, source, entityTypeNr, entityId, userAccId, masqueradeId, crud, details) " +
                     "VALUES (" + 
                         orgNr + "," +
                         sourceApp + "," +
-                        entityTypeId + "," +
+                        entityTypeNr + "," +
                         (entityId == null? "null" : entityId) + "," +
                         userAccId + "," +
                         (masqueradeId == null ? "null" : masqueradeId) + "," +
