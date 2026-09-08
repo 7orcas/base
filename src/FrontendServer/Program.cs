@@ -65,7 +65,6 @@ builder.Services.AddScoped<BaseServiceDELETE_ME>();
 builder.Services.AddScoped<LogoutService>();
 builder.Services.AddScoped<PermissionService>();
 builder.Services.AddScoped<RoleService>();
-builder.Services.AddScoped<AuditService>();
 
 var app = builder.Build();
 
