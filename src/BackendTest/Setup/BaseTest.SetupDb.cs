@@ -153,7 +153,7 @@ namespace BackendTest.Setup
         {
             await Sql.ExecuteAsync(
                 "INSERT INTO " + TAudit + " " +
-                    "(id, orgnr, source, entityTypeId, userAccId, created)" +
+                    "(id, orgnr, source, entityTypeNr, userAccId, created)" +
                 "VALUES (" +
                     idStart +
                     "," + idStart +

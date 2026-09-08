@@ -1,0 +1,210 @@
+SysA,Tēnā koa whakapā atu ki tō kaiwhakahaere pūnaha
+Oops,Aue|| kua puta he hapa! Tēnā koa whakapā atu ki tō kaiwhakahaere pūnaha.
+UnKnError,Kua puta tētahi hapa ohorere.
+PWait,Tēnā koa tatari...
+New,Hou
+AddN,Tāpiri Hou
+Edit,Whakatika
+EditM,Aratau Whakatika
+ViewM,Aratau Tirohanga
+Close,Kati
+Delete,Muku
+Send,Tuku
+Cancel,Whakakore
+Search,Rapu
+SearchIn,Rapu Muhu
+Invalid,Muhu
+Active,Hohe
+InActive,Kāore i te Hohe
+On,Kā
+Off,Weto
+FilterX,Tātari...
+SaveRec,Tiaki
+SaveChg,Tiaki Ngā Panonitanga
+Assigned,Kua Tautapahia
+Verify,Manatoko
+MaxV,Kua hipa te uara mōrahi (%%)
+MinV,Kua hipa te uara mōkito (%%)
+MaxSR,Kua tae ki te mōrahi o ngā pūkete kua whakahokia
+Default,Taunoa
+Updated,Kua Whakahoungia
+Org,Rōpū
+Orgs,Ngā Rōpū
+OrgD,Rōpū Taunoa
+Orgs-s,Rōpū
+OrgNr,Nama Rōpū
+OrgSub,Whirihoranga o te Rōpū
+OrgAc,Hohe i roto i te Rōpū
+OrgRM,Kua Whakahohea te Mahara Mai
+OrgMas,Kua Whakahohea te Whakakākahu (Masquerade)
+OrgPWR,Kua Whakahohea te Tautuhi Anō Kupuhipa
+OrgSU,Kua Whakahohea te Rēhitatanga Whaiaro
+OrgER,Kua Whakahohea te Īmēra Tonoa
+OrgEV,Kua Whakahohea te Manatoko Īmēra
+OrgEH,Kua Whakahohea te Īmēra HTML
+OrgWA,Whakatūpato: Whai muri i ngā whakamātau #Attempts
+OrgWP,Whakatūpato: Whakaatu hononga tautuhi anō kupuhipa
+OrgWLO,Whakatūpato: Ngā meneti aukati
+OrgLOA,Aukati: Whai muri i ngā whakamātau #Attempts
+OrgLOP,Aukati: Whakaatu hononga tautuhi anō kupuhipa
+Conf,Whirihoranga
+ConfSub,Whirihoranga Kaiwhakamahi
+ChgPw,Huri Kupuhipa
+PwChg,Kua Hurihia te Kupuhipa
+PW,Kupuhipa
+PWn,Kupuhipa Hou
+PWc,Whakaū Kupuhipa
+PWsw,Whakaatu Kupuhipa
+PWs,Ngā Kupuhipa
+PWx,Kāore ngā kupuhipa e ōrite
+PWr,Ture Kupuhipa
+PWsr,Whakaatu Ture Kupuhipa
+PWhr,Huna Ture Kupuhipa
+PWmc,Me whakamahi pū iti me pū matua
+PWSp,Me whai pūāhua motuhake
+PWNonLet,Me whai pūāhua ehara i te reta
+PWNum,Me whai tau
+PWAt,Mōrahi o ngā whakamātau takiuru
+PWReset0,Tēnā tāuruhia tō wāhitau īmēra kia tono tautuhi anō kupuhipa.
+PWReset1,Mēnā he pūkete e hono ana ki te wāhitau īmēra kua tukuna|| ka tukuna he hononga tautuhi anō ā tōna wā.
+PWReset2,Tēnā tirohia tō pouakaroto me ngā kōpaki spam/junk.
+PWReset3,Mō ngā take haumaru|| kāore mātou e whakamana mēnā kua rēhitatia tētahi wāhitau īmēra.
+PWReset,Tautuhi Anō Kupuhipa
+PWResetES,Kua tukuna te īmēra tautuhi anō kupuhipa
+PWResetRsp,Kua angitū tō panonitanga kupuhipa.
+PWResetErr1,He tohu muhu|| kua pau rānei te wā|| tēnā whakamātauria anō
+PWResetErr2,Kāore tō pūkete i te hohe
+PWResetErr3,He kupuhipa muhu|| me whai i ngā ture kupuhipa
+PWResetErr4,E hiahiatia ana tō wāhitau īmēra
+NotRobot,Ehara ahau i te karetao
+NotRobotConfirm,Tēnā whakaū ehara koe i te karetao
+Email,Īmēra
+EmailInvalid,Īmēra Muhu
+EmailEx,Kua tīari kē te īmēra
+EmailVL,Me manatoko tō wāhitau īmēra i mua i te takiuru
+EmailV,Manatokohia tō wāhitau īmēra
+EmailVS,Kua manatoko te wāhitau īmēra
+EmailVSX,Kua manatokohia kē te wāhitau īmēra
+EmailVM,Kua āhei koe ki te takiuru ināianei
+EmailVX,Kua pau te wā manatoko īmēra|| tēnā whakapā atu ki te tautoko IT
+EmailVZ,Kua manatokohia te īmēra
+MfaC,Whirihoranga MFA
+Mfa1,Matawaia mā Microsoft Authenticator
+Mfa2,Rānei tāuru ā-ringa tēnei kī
+Mfa3,Tāuruhia te waehere mai i Microsoft Authenticator
+MfaEr,I rahua te uta i te tautuhinga MFA
+LEx,Kua pau te wā takiuru|| tēnā takiuru anō.
+BConf,Whirihoranga Taketake
+Code,Waehere
+Desc,Whakaahuatanga
+Lang,Reo
+LangCode,Waehere Reo
+Langs,Ngā Reo
+LangCodeV,Putanga Reo
+Label,Tapanga
+Variant,Putanga
+LabelEdit,Whakatika Tapanga
+Tooltip,Awhina Tohu
+Config,Whirihoranga
+ConfigG,Whirihoranga Whānui
+ConfigD,Whirihoranga Taipitopito
+UnsavedC,He panonitanga kāore anō kia tiakina. Waiho tonu?
+UnsavedS,He panonitanga kāore anō kia tiakina|| e hiahia ana koe ki te whakakore?
+Confirm,Whakaū
+LenMax,Roa Mōrahi
+LenMin,Roa Mōkito
+Nr,Nama
+AdminM,Kaiwhakahaere
+AdminU,Kaiwhakahaere Kaiwhakamahi
+AdminL,Kaiwhakahaere Reo
+Role,Tūranga
+Roles,Ngā Tūranga
+RoleSub,Kei roto i ngā tūranga ngā whakaaetanga. Ka whakakotahitia ngā whakaaetanga|| arā|| ka whakawhiwhia te taumata mana teitei rawa ki te kaiwhakamahi.
+RoleA,Tāpiri Tūranga Hou
+RoleAc,Tūranga Hohe
+RoleEN,Whakatika Ingoa Tūranga
+EffFrom,Ka mana mai i
+EffTo,Ka mana tae noa ki
+MachSub,Pūkete mīhini
+NAuth,Kāore i Whakamanatia
+NAuthX,Kāore koe e whai mana ki te tiro i tēnei whārangi
+NAuthA,Tēnā whakapā atu ki tō kaiwhakahaere pūnaha kia whakawhiwhia koe ki te urunga
+UserPerm,Whakaaetanga Kaiwhakamahi
+UserPermSub,Whakaaetanga Kaiwhakamahi me ngā tautuhinga CRUD (Hanga|| Pānui|| Whakahou|| Muku)
+Perm,Whakaaetanga
+Perms,Ngā Whakaaetanga
+PermNr,Nama Whakaaetanga
+PermNoC,Kāore he whakaaetanga ki te whakarerekē
+Crud,CRUD
+Crud.C,Hanga
+Crud.R,Pānui
+Crud.U,Whakahou
+Crud.D,Muku
+PermAll,Ngā Whakaaetanga Katoa
+PermEff,Whakaaetanga Whai Mana
+User,Kaiwhakamahi
+Users,Ngā Kaiwhakamahi
+UserAdm,Whakahaere Kaiwhakamahi
+UserSr,Rapu Kaiwhakamahi
+UserName,Ingoa Kaiwhakamahi
+UserNameM,Ingoa Kaiwhakamahi Masquerade
+UserNameEx,Kua tīari kē te ingoa kaiwhakamahi
+UserRs,Tūranga Kaiwhakamahi
+UserAc,Pūkete
+UserLO,Kua aukatihia te kaiwhakamahi
+LO,Kua Aukatihia
+LDM,Aratau Mārama/Pōuri
+Logout,Takiputa
+Login,Takiuru
+LoginUP,He ingoa kaiwhakamahi|| kupuhipa rānei muhu
+LoginXPX,Kua tae ki te mōrahi o ngā whakamātau takiuru|| kua aukatihia tō takiuru.
+LoginWP,Whakatūpato kua tae koe ki ngā whakamātau %%.
+LoginAX,Ko te mōrahi o ngā whakamātau takiuru ko %%.
+LoginA,Ngā whakamātau takiuru.
+LoginWPX,Kua aukatihia tō takiuru mō ngā meneti %%.
+LoginLO,Kua aukatihia tō takiuru tae noa ki %%
+LoginIL,Kāore tō takiuru i te hohe
+LoginAS,Kāore koe i whakaritea kia uru ki %%
+LoginIA,Kāore tō pūkete ki %% i te hohe
+Audit,Arotake
+ValE,Hapa Manatoko
+ValM,Karere Manatoko
+ValMs,Ngā Karere Manatoko
+ValT,He hapa manatoko|| kāore i angitū te tiaki.
+ValTs,Tēnā whakatikahia ngā hapa ka tiaki anō.
+Error,Hapa
+Warning,Whakatūpato
+InvR,Ngā Pūkete Muhu
+InvO,Nama Rōpū Muhu
+InvF,Kāore te āpure e taea te waiho kia pātea
+InvL,Kua hipa te āpure i te roa mōrahi (%%)
+InvS,Kāore te āpure e āhei ki te whai mokowā
+InvSp,Kāore te āpure e āhei ki te whai pūāhua motuhake
+InvCE,Kua tīari kē te waehere
+InvCD,Waehere Tārua
+InvUD,Kua whakarerekētia tēnei pūkete mai i te wā i utaina ai (%%)
+Entity,Hinonga
+Field,Āpure
+Message,Karere
+RemMe,Mahara Mai
+ForgotUP,Kua wareware te kupuhipa?
+SignUp,Hanga Pūkete
+SignUpSuccess,Kua tukuna angitū tō tono pūkete
+SignUpFail,I rahua te rēhitatanga
+SignUp1,Kua angitū! Kua hangaia he pūkete hou.
+SignUp2,Kua tukuna he īmēra hei manatoko i tō rēhitatanga.
+SignUp3,Tēnā tirohia tō pouakaroto me ngā kōpaki spam/junk.
+CaptchaS,Kua manatokohia angitū te ReCAPTCHA
+CaptchaE,I rahua te manatoko ReCAPTCHA
+CaptchaR,E hiahiatia ana te ReCAPTCHA
+Val0,Kāore e taea te waiho kia pātea
+Val1,Kāore e taea te whai mokowā
+Ver,Putanga
+VerX,I whakarerekētia tēnei pūkete i %% ā|| kua tawhito. Me uta anō.
+VerC,Taupatupatu Putanga
+Clas,Whakarōpūtanga
+Chat,Kōrerorero
+ApiKey,Kī API
+Visable,Kitea
+Editable,Ka Taea te Whakatika
+<LAST>,<LAST LINE>

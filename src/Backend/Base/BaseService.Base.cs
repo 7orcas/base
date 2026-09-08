@@ -117,7 +117,7 @@ public abstract class BaseService : SqlUtils
         return _tempIdService.GetTempId();
     }
 
-    public void CopyProperties<TSource, TDestination>(TSource source, TDestination destination)
+    public static void CopyProperties<TSource, TDestination>(TSource source, TDestination destination)
     {
         if (source == null) throw new ArgumentNullException(nameof(source));
         if (destination == null) throw new ArgumentNullException(nameof(destination));

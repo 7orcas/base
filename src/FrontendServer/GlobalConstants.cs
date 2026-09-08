@@ -19,13 +19,16 @@
         private const string URL_base             = "api/";
         private const string URL_user             = URL_base + "User/";
         private const string URL_org              = URL_base + "Org/";
+        private const string URL_audit            = URL_base + "Audit/";
 
         public const string URL_logout            = URL_base + "Logout/logout";
         public const string URL_perm_user         = URL_base + "Permission/userlist";
         public const string URL_perm_user_eff     = URL_base + "Permission/userlisteff";
         public const string URL_perm_list         = URL_base + "Permission/list";
-        public const string URL_audit_list        = URL_base + "Audit/list";
-        
+
+        public const string URL_audit_list        = URL_audit + "list";
+        public const string URL_audit_get         = URL_audit + "get/";
+
         public const string URL_user_list         = URL_user + "list";
         public const string URL_user_get          = URL_user + "get/";
         public const string URL_user_update       = URL_user + "update";

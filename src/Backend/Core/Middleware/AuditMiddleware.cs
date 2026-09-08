@@ -27,7 +27,7 @@ namespace Backend.Core.Middleware
         {
 
             var session = null as SessionEnt;
-            int entityTypeId = -1;
+            int entityTypeNr = -1;
             string crudAction = null;
 
             try
@@ -50,7 +50,7 @@ namespace Backend.Core.Middleware
                         var audit = methodInfo.GetCustomAttribute<AuditListAtt>();
                         if (audit != null)
                         {
-                            entityTypeId = audit.EntityTypeId;
+                            entityTypeNr = audit.EntityTypeNr;
                             crudAction = audit.CrudAction;
                         }
 
@@ -59,8 +59,8 @@ namespace Backend.Core.Middleware
                         var classAudit = controllerType.GetCustomAttribute<AuditListAtt>();
                         if (classAudit != null)
                         {
-                            if (entityTypeId < 1)
-                                entityTypeId = classAudit.EntityTypeId;
+                            if (entityTypeNr < 1)
+                                entityTypeNr = classAudit.EntityTypeNr;
                             if (crudAction == null)
                                 crudAction = classAudit.CrudAction;
                         }
@@ -76,11 +76,11 @@ namespace Backend.Core.Middleware
             //Continue
             await _next(context);
 
-            if (entityTypeId == -1 || crudAction == null) return;
+            if (entityTypeNr == -1 || crudAction == null) return;
 
             if (crudAction == GC.CrudRead || crudAction == GC.CrudReadList)
             {
-                LogReads(context, _auditService, session, entityTypeId, crudAction);
+                LogReads(context, _auditService, session, entityTypeNr, crudAction);
                 return;
             }
 
@@ -89,7 +89,7 @@ namespace Backend.Core.Middleware
 
         }
 
-        private void LogReads(HttpContext context, AuditServiceI _auditService, SessionEnt session, int entityTypeId, string crudAction)
+        private void LogReads(HttpContext context, AuditServiceI _auditService, SessionEnt session, int entityTypeNr, string crudAction)
         {
             long? id = null;
             string? details = null;
@@ -106,10 +106,10 @@ namespace Backend.Core.Middleware
                 }
             }
 
-            _auditService.LogAction(session, entityTypeId, id, crudAction, details);
+            _auditService.LogAction(session, entityTypeNr, id, crudAction, details);
         }
 
-        private void LogUpdates(HttpContext context, AuditServiceI _auditService, SessionEnt session, int entityTypeId, long entityId, string crudAction)
+        private void LogUpdates(HttpContext context, AuditServiceI _auditService, SessionEnt session, int entityTypeNr, long entityId, string crudAction)
         {
 
             var jdp = new JsonDiffPatch();
@@ -119,7 +119,7 @@ namespace Backend.Core.Middleware
 
             //var diff = jdp.Diff(left, right);
 
-            //_auditService.LogAction(session, entityTypeId, entityId, crudAction, diff.ToString());
+            //_auditService.LogAction(session, entityTypeNr, entityId, crudAction, diff.ToString());
         }
 
 

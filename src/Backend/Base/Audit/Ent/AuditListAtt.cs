@@ -3,12 +3,12 @@
     [AttributeUsage (AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = false)]
     public class AuditListAtt : Attribute
     {
-        public int EntityTypeId { get; } = -1;
+        public int EntityTypeNr { get; } = -1;
         public string CrudAction { get; }
 
-        public AuditListAtt(int entityTypeId)
+        public AuditListAtt(int entityTypeNr)
         {
-            EntityTypeId = entityTypeId;
+            EntityTypeNr = entityTypeNr;
         }
 
         public AuditListAtt(string crudAction)
@@ -16,9 +16,9 @@
             CrudAction = crudAction;
         }
 
-        public AuditListAtt(int entityTypeId, string crudAction)
+        public AuditListAtt(int entityTypeNr, string crudAction)
         {
-            EntityTypeId = entityTypeId;
+            EntityTypeNr = entityTypeNr;
             CrudAction = crudAction;
         }
     }

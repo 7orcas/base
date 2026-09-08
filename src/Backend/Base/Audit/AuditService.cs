@@ -16,61 +16,56 @@ namespace Backend.Base.Audit
     {
         protected readonly Serilog.ILogger _log;
         private readonly EntityServiceI _entityService;
+        private readonly AuditRepoI _auditRepo;
 
-        public AuditService(EntityServiceI entityService) 
+        public AuditService(EntityServiceI entityService,
+            AuditRepoI auditRepo)
         {
             _log = Log.Logger;
             _entityService = entityService;
+            _auditRepo = auditRepo;
         }
 
-        public async Task<List<AuditList>> GetEvents(SessionEnt session)
+        public async Task<List<AuditList>> GetEvents(SessionEnt session, AuditSearch search)
         {
-            List<AuditList> list = new List<AuditList>();
-            await Sql.Run(
-                    "SELECT a.*, z.xxx, m.xxx AS masquerade " +
-                    "FROM base.Audit a " +
-                    "LEFT JOIN base.userAcc ua ON ua.id = a.userAccId " +
-                    "LEFT JOIN base.zzz z ON z.id = ua.zzzId " +
-                    "LEFT JOIN base.zzz m ON m.id = a.masqueradeId ",
-                    r => {
-                        list.Add(new AuditList()
-                        {
-                            Id = SqlUtils.GetId(r),
-                            orgNr = SqlUtils.GetOrgNr(r),
-                            Source = SqlUtils.GetInt(r, "source"),
-                            EntityTypeId = SqlUtils.GetInt(r, "entityTypeId"),
-                            EntityId = SqlUtils.GetIdNull(r, "entityId"),
-                            UserId = SqlUtils.GetId(r, "userAccId"),
-                            User = SqlUtils.GetStringNull(r, "xxx"),
-                            MasqueradeId = SqlUtils.GetIdNull(r, "masqueradeId"),
-                            Masquerade = SqlUtils.GetStringNull(r, "masquerade"),
-                            Created = SqlUtils.GetDateTime(r, "created"),
-                            Crud = SqlUtils.GetStringNull(r, "crud"),
-                            Details = SqlUtils.GetStringNull(r, "details")
-                        });
-                    });
+            var list = await _auditRepo.GetList(search);
+            var listX = new List<AuditList>();
+            foreach (var ent in list)
+                listX.Add(Populate(ent));
 
-            foreach (var a in list)
-            { 
-                a.EntityType = _entityService.GetEntityTypeName(a.EntityTypeId);
-                if (a.UserId == GC.ServiceLoginId) a.User = GC.ServiceAccountName;
-                if (a.MasqueradeId != null && a.MasqueradeId == GC.ServiceLoginId) a.Masquerade = GC.ServiceAccountName;
-            }
+            return listX;
+        }
 
+        public async Task<AuditList?> GetById(long id)
+        {
+            var ent = await _auditRepo.GetById(id);
+            if (ent == null) return null;
+            return Populate(ent);
+        }
+
+        private AuditList Populate(AuditEnt ent)
+        {
+            var list = new AuditList();
+            BaseService.CopyProperties(ent, list);
+
+            list.EntityType = _entityService.GetEntityTypeName(list.EntityTypeNr);
+            if (list.UserAccId == GC.ServiceLoginId) list.User = GC.ServiceAccountName;
+            if (list.MasqueradeId != null && list.MasqueradeId == GC.ServiceLoginId) list.Masquerade = GC.ServiceAccountName;
             return list;
         }
 
-        public AuditDto Load(AuditList e)
+
+        public AuditDto Populate(AuditList e)
         {
             var dto = new AuditDto
             {
                 Id = e.Id,
-                orgNr = e.orgNr,
+                OrgNr = e.OrgNr,
                 Source = e.Source,
                 EntityType = e.EntityType,
                 EntityId = e.EntityId,
                 User = e.User + (string.IsNullOrEmpty(e.Masquerade) ? "" : " (" + e.Masquerade + ")"),
-                Created = e.Created,
+                Updated = e.Created,
                 Details = e.Details,
             };
 
@@ -88,13 +83,13 @@ namespace Backend.Base.Audit
             return dto;
         }
 
-        public void LogAction(SessionEnt session, int entityTypeId, long? entityId, string crudAction, string details)
+        public void LogAction(SessionEnt session, int entityTypeNr, long? entityId, string crudAction, string details)
         {
             Task.Run(async () =>
             {
                 try
                 {
-                    LogAuditRecord(session, entityTypeId, entityId, crudAction, details);
+                    LogAuditRecord(session, entityTypeNr, entityId, crudAction, details);
                 }
                 catch (Exception ex)
                 {
@@ -103,13 +98,13 @@ namespace Backend.Base.Audit
             });
         }
 
-        public void LogInOut(SessionEnt session, int entityTypeId)
+        public void LogInOut(SessionEnt session, int entityTypeNr)
         {
             Task.Run(async () =>
             {
                 try
                 {
-                    LogAuditRecord(session, entityTypeId, null, null, null);
+                    LogAuditRecord(session, entityTypeNr, null, null, null);
                 }
                 catch (Exception ex)
                 {
@@ -119,7 +114,7 @@ namespace Backend.Base.Audit
         }
 
         private async void LogAuditRecord(SessionEnt session,
-            int entityTypeId,
+            int entityTypeNr,
             long? entityId,
             string? crud,
             string? details)
@@ -128,7 +123,7 @@ namespace Backend.Base.Audit
                 session.OrgNr,
                 session.UserAccount.Id,
                 session.MasqueradeId,
-                entityTypeId,
+                entityTypeNr,
                 entityId,
                 crud,
                 details);
@@ -139,23 +134,23 @@ namespace Backend.Base.Audit
             long orgNr,
             long userAccId,
             long? masqueradeId,
-            int entityTypeId,
-            long? entityId, 
-            string crud, 
+            int entityTypeNr,
+            long? entityId,
+            string crud,
             string details)
         {
             await Sql.ExecuteAsync(
                     "INSERT INTO base.Audit " +
-                        "(orgNr, source, entityTypeId, entityId, userAccId, masqueradeId, crud, details) " +
-                    "VALUES (" + 
+                        "(orgNr, source, entityTypeNr, entityId, userAccId, masqueradeId, crud, details) " +
+                    "VALUES (" +
                         orgNr + "," +
                         sourceApp + "," +
-                        entityTypeId + "," +
-                        (entityId == null? "null" : entityId) + "," +
+                        entityTypeNr + "," +
+                        (entityId == null ? "null" : entityId) + "," +
                         userAccId + "," +
                         (masqueradeId == null ? "null" : masqueradeId) + "," +
                         (crud == null ? "null" : "'" + crud + "'") + "," +
-                        (details == null ? "null" : "'" + details + "'") + 
+                        (details == null ? "null" : "'" + details + "'") +
                         ")"
             );
         }

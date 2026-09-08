@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 
 namespace Common.DTO.Base
 {
-    public class AuditDto
+    public class AuditDto : _BaseDto
     {
-        public long Id { get; set; }
-        public long orgNr { get; set; }
         public int Source { get; set; }
         public string EntityType { get; set; }
         public long? EntityId { get; set; }
