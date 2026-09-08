@@ -5,53 +5,40 @@
 @attribute [Authorize]
 
 
+<ConfirmNavigation List="list" />
 
+<div style="height:100%; display:flex; flex-direction:column; @GetDebugBorder("yellow")">
 
-<h3>Audit</h3>
+    <HeaderThin @key=pageStatus.pageCode
+            TitleKey="Audit"
+            PageCode=@pageStatus.pageCode
+            PageStatus="@pageStatus"
+            ToolBarButtonsLeft="toolBarButtonsLeft"
+            ToolBarButtonsRight="toolBarButtonsRight" />
 
-@if (_isLoading)
-{
-    <div>loading....</div>
-}
-else if (_isError)
-{
-    
-}        
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>orgNr</th>
-                <th>Source</th>
-                <th>Entity Type</th>
-                <th>Entity Id</th>
-                <th>User</th>
-                <th>Created</th>
-                <th>Crud</th>
-                <th>Details</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var rec in list)
-            {
-                <tr>
-                    <td>@rec.dto.Id</td>
-                    <td>@rec.dto.OrgNr</td>
-                    <td>@rec.dto.Source</td>
-                    <td>@rec.dto.EntityType</td>
-                    <td>@rec.dto.EntityId</td>
-                    <td>@rec.dto.User</td>
-                    <td>@rec.dto.Updated</td>
-                    <td>@rec.dto.Crud</td>
-                    <td>@rec.dto.Details</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+    <div style="margin-top:10px; border-bottom: 1px solid #ccc; margin-bottom:2px;"></div>
 
+    @if (loadStatus.IsError)
+    {
+        <Error LoadStatus=@loadStatus>
+            @exception
+        </Error>
+    }
+    else
+    {
+        <Loading LoadStatus=@loadStatus />
+        
+        <MudGrid Class="no-wrap-grid" Spacing="0" Style="@($"flex:1; min-height:0; height:0;{GetDebugBorder("orange")}")">
+            <MudItem xs="10" Style="height:100%; display:flex; flex-direction:column; min-height:0; max-width:800px;">
+                <MudPaper Elevation="0" Outlined="true" Style="flex:1; min-height:0; display:flex; flex-direction:column;">
+                    <AuditListPanel 
+                               List="@list"
+                               OnItemSelected="@OnItemSelected" />
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    }
+</div>
 
 @using System.Net
 @using MudBlazor
@@ -65,14 +52,6 @@ else
     private List<ListModel<AuditDto>> list = new List<ListModel<AuditDto>>();
     private ListUtil<AuditDto> listUtil = new ListUtil<AuditDto>();
     private MudTable<ListModel<AuditDto>> _listTable;
-
-    /*
-    private List<AuditDto>? auditList;
-    private bool _isLoading = true;
-    private bool _isError = false;
-    private string message;
-    private string token;
-    */
 
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -137,4 +116,10 @@ else
         // }
 
     }
+
+    private async Task OnItemSelected(ListModel<AuditDto> r)
+    {
+        //await Load(r);
+    }
+
 }

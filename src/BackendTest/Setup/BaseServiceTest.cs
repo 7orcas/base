@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+﻿using Common.Search.Base;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using GC = Backend.GlobalConstants;
 using GCT = BackendTest.GlobalConstants;
@@ -72,6 +73,21 @@ namespace BackendTest.Setup
             public void ReadList(SessionEnt session, int entityTypeNr, string query) { }
 
             public AuditDto Load(AuditList e) => throw new NotImplementedException();
+
+            Task<List<AuditList>> AuditServiceI.GetEvents(SessionEnt session, AuditSearch search)
+            {
+                throw new NotImplementedException();
+            }
+
+            Task<AuditList> AuditServiceI.GetById(long id)
+            {
+                throw new NotImplementedException();
+            }
+
+            AuditDto AuditServiceI.Populate(AuditList e)
+            {
+                throw new NotImplementedException();
+            }
         }
 
     }

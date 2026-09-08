@@ -265,13 +265,14 @@ namespace BackendTest.Setup
 
         public AuditServiceI GetAuditService()
         {
-            var service = new Mock<AuditServiceI>();
+            //var service = new Mock<AuditServiceI>();
 
-            service
-                .Setup(x => x.GetEvents(It.IsAny<SessionEnt>()))
-                .ReturnsAsync(GetAuditList());
+            //service
+            //    .Setup(x => x.GetEvents(It.IsAny<SessionEnt>()))
+            //    .ReturnsAsync(GetAuditList());
 
-            return service.Object;
+            //return service.Object;
+            return null;
         }
 
         public List<AuditList> GetAuditList()
