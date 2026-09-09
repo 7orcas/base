@@ -21,6 +21,10 @@
         public const string CacheKeyLabelPrefix     = "LK_";
         public const string CacheKeyPermDic         = "PS_dic";
 
+        //API Testing
+        public const string ApiTestKey              = "Blue-Api-Key";
+        public const string ApiTestKeyValue         = "X123";
+
         public enum TokenType
         {
             JWT = 1,

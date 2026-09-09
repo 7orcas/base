@@ -13,7 +13,7 @@ using GC = Backend.GlobalConstants;
 
 namespace Backend.Base.Registration
 {
-    [Authorize]
+    //[Authorize]
     [PermissionAtt(GC.PerReg)]
     [ApiController]
     [Route("api/[controller]")]

@@ -16,7 +16,7 @@ using GC = Backend.GlobalConstants;
 
 namespace Backend.Base.Config
 {
-    [Authorize]
+    //[Authorize]
     [PermissionAtt(GC.PerConfig)]
     [ApiController]
     [Route("api/[controller]")]

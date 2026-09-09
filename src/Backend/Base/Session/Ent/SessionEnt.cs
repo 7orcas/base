@@ -27,6 +27,9 @@ namespace Backend.Base.Session.Ent
         //Loaded in SessionMiddleware
         public OrgEnt Org { get; set; }
 
+        //Api testing only
+        public string? BearerToken { get; set; }
+
         /// <summary>
         /// Return the user's crud value for the permission
         /// Return null if permission not loaded

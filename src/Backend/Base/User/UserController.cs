@@ -12,7 +12,7 @@ using GC = Backend.GlobalConstants;
 
 namespace Backend.Base.User
 {
-    [Authorize]
+    //[Authorize]
     [PermissionAtt(GC.PerUser)] //Hard coded permission - user must be flagged as User Admin
     [ApiController]
     [AuditListAtt(GC.EntityTypeUser)]

@@ -6,7 +6,7 @@ using Common.DTO.Base;
 
 namespace Backend.Base.Permission
 {
-    [Authorize]
+    //[Authorize]
     [PermissionAtt(GC.PerPerm)]
     [ApiController]
     [Route("api/[controller]")]

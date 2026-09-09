@@ -21,6 +21,8 @@ namespace Common.Request
         public string? ApiKey { get; set; }
         public string? MfaCode { get; set; }
 
+        public string? ApiTestKeyValue { get; set; }
+
         public bool IsPopulated()
         {
             return !string.IsNullOrEmpty(UserName)

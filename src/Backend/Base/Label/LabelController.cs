@@ -6,7 +6,7 @@ using GC = Backend.GlobalConstants;
 
 namespace Backend.Base.Label
 {
-    [Authorize]
+    //[Authorize]
     [PermissionAtt(GC.PerLabel)]
     [ApiController]
     [Route("api/[controller]")]

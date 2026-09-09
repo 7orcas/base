@@ -5,7 +5,7 @@ using GC = Backend.GlobalConstants;
 
 namespace Backend.Base.Audit
 {
-    [Authorize]
+    //[Authorize]
     [PermissionAtt(GC.PerAudit)]
     [ApiController]
     [AuditListAtt(GC.EntityTypeAudit)]

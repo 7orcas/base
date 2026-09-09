@@ -1,6 +1,7 @@
 using Backend.Base.Token.Ent;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using QuestPDF.Infrastructure;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,12 +43,40 @@ ZMiddleware.Configure(app);
 ZLogging.ConfigureRequests(app);
 ZVersionApi.Use(app);
 
-if (app.Environment.IsDevelopment())
+if (!app.Environment.IsProduction())
 {
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
+
+//DELETE ME
+//app.UseAuthentication();
+//app.Use(async (context, next) =>
+//{
+//    // JWT already authenticated?
+//    if (!(context.User.Identity?.IsAuthenticated ?? false))
+//    {
+//        if (context.Request.Headers.TryGetValue("Blue-Api-Key", out var apiKey)
+//            && apiKey == "my-secret-key")
+//        {
+//            var claims = new[]
+//            {
+//                new Claim(ClaimTypes.Name, "BlueApiClient")
+//            };
+
+//            var identity = new ClaimsIdentity(
+//                claims,
+//                "BlueApiKey");
+
+//            context.User = new ClaimsPrincipal(identity);
+//        }
+//    }
+
+//    await next();
+//});
+
+
 app.UseAuthorization();
 
 ZSession.Use(app);

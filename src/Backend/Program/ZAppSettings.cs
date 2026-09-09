@@ -37,7 +37,14 @@
                 email.SenderEmail = builder.Configuration["Email:SenderEmail"];
                 email.Username = builder.Configuration["Email:Username"];
                 email.Password = builder.Configuration["Email:Password"];
-                email.Port = int.Parse(builder.Configuration["Email:Port"]);
+
+                var portValue = builder.Configuration["Email:Port"];
+                if (!int.TryParse(portValue, out var port))
+                {
+                    throw new InvalidOperationException(
+                        "Email:Port configuration is missing or invalid.");
+                }
+                email.Port = port;
                 AppSettings.EmailSettings = email;
             }
             catch (Exception e)

@@ -9,7 +9,7 @@ using GC = Backend.GlobalConstants;
 
 namespace Backend.Base.Role
 {
-    [Authorize]
+    //[Authorize]
     [PermissionAtt(GC.PerRole)]
     [ApiController]
     [Route("api/[controller]")]

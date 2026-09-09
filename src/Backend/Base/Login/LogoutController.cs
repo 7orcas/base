@@ -5,7 +5,7 @@ using GC = Backend.GlobalConstants;
 
 namespace Backend.Base.Login
 {
-    [Authorize]
+    //[Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class LogoutController :  BaseController

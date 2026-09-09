@@ -164,7 +164,10 @@ namespace Backend.Base.Login
                 var langCode = !string.IsNullOrEmpty(request.LangCode) ? request.LangCode : login.LangCode; 
                 await InitialiseLogin(login, account, org);
                 var userConfig = _configService.CreateUserConfig(account, org, langCode);
-                var session = await _sessionService.CreateSession(account, org, userConfig, masqueradeId, request.SourceApplication, ipAddress);
+                
+                var sessionKey = _environment.IsDevelopment() ? request.ApiTestKeyValue : null;
+                var session = await _sessionService.CreateSession(account, org, userConfig, masqueradeId, request.SourceApplication, 
+                    ipAddress, sessionKey);
                 _auditService.LogInOut(session, GC.EntityTypeLogin);
 
                 var tv = new TokenValues

@@ -13,7 +13,7 @@ using GC = Backend.GlobalConstants;
 
 namespace Backend.Base.Org
 {
-    [Authorize]
+    //[Authorize]
     [PermissionAtt(GC.PerOrg)]
     [ApiController]
     [AuditListAtt(GC.EntityTypeOrg)]
