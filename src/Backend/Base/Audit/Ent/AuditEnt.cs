@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Backend.Base.Audit.Ent
 {
@@ -12,8 +13,19 @@ namespace Backend.Base.Audit.Ent
         public long UserAccId { get; set; }
         public long? MasqueradeId { get; set; }
         public DateTimeOffset Created {  get; set; }
-	    public string? Crud {  get; set; }
+        public string? Crud {  get; set; }
         public string? Details { get; set; }
         
+        [NotMapped]
+        public string? UserName { get; set; }
+        [NotMapped]
+        public string? Masquerade { get; set; }
+        [NotMapped]
+        public string EntityType { get; set; }
+        [NotMapped]
+        public string CrudDescr { get; set; }
+        [NotMapped]
+        public string SourceDescr { get; set; }
+
     }
 }

@@ -47,6 +47,11 @@ namespace Common
         public const int LenLangCode    = 4;
         public const int LenEmail       = 50;
 
+        //Searches
+        public const int TextSearchStart    = 1;
+        public const int TextSearchContains = 2;
+        public const int TextSearchExtact   = 3;
+
         //Validation Status
         public const int ValStatusOk      = 0;
         public const int ValStatusError   = 1;

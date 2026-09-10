@@ -249,7 +249,7 @@ CREATE TABLE base.audit (
     userAccId BIGINT NOT NULL,
 	masqueradeId BIGINT,
     created TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    crud VARCHAR(10),
+	crud VARCHAR(10),
     details TEXT
 );
 
@@ -259,6 +259,8 @@ COMMENT ON COLUMN base.audit.entityTypeNr IS 'The entity defined in GC EntityTyp
 COMMENT ON COLUMN base.audit.entityId IS 'The primary key for the entity in question';
 COMMENT ON COLUMN base.audit.userAccId IS 'User account Id';
 COMMENT ON COLUMN base.audit.masqueradeId IS 'User account Id that is using masquerade';
+COMMENT ON COLUMN base.audit.created IS 'Date time the audit record was created';
+COMMENT ON COLUMN base.audit.version IS 'Record version number at the time the audit record was created';
 COMMENT ON COLUMN base.audit.crud IS 'CRUD action';
 
 --Delete me?

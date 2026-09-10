@@ -72,11 +72,11 @@
                    Class="@GetListRowClass(@context)"
                    @onclick="() => OnItemSelected.InvokeAsync(context)">
                 
-                @context.dto.User
+                @context.dto.UserName
                 
             </MudTd>
             <MudTd>
-                @context.dto.Created
+                @context.dto.Updated.ToString(GC.Date_TS_Format)
             </MudTd>
             <MudTd>
                 @context.dto.Crud

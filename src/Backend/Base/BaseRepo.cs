@@ -1,4 +1,6 @@
-﻿namespace Backend.Base
+﻿using GC = Backend.GlobalConstants;
+
+namespace Backend.Base
 {
     public abstract class BaseRepo : SqlUtils
     {
@@ -71,13 +73,32 @@
             }
         }
 
-
+        [Obsolete("Use GetList<T>(string sql, object? parameters = null) instead.", false)]
         public async Task<List<T>> GetList<T>(string sql) 
         {
             try
             {
                 using var conn = Sql.GetConnection();
                 var result = await conn.QueryAsync<T>(sql);
+                return result.ToList();
+            }
+            catch (Exception ex)
+            {
+                Log.Logger.Error(
+                    ex,
+                    "Sql failed: {Sql}",
+                    sql);
+
+                throw;
+            }
+        }
+
+        public async Task<List<T>> GetList<T>(string sql, object? parameters = null)
+        {
+            try
+            {
+                using var conn = Sql.GetConnection();
+                var result = await conn.QueryAsync<T>(sql, parameters);
                 return result.ToList();
             }
             catch (Exception ex)
@@ -113,6 +134,29 @@
                 sql += " LIMIT " + search.MaxRecordsReturned;
             }
             return sql;
+        }
+
+        public string SqlParameter(string value, _BaseSearch search)
+        {
+            switch (search.TextFieldSearchType)
+            {
+                case GC.TextSearchExtact:
+                    return value;
+                case GC.TextSearchStart:
+                    return $"{value}%";
+                case GC.TextSearchContains:
+                    return $"%{value}%";
+                default:
+                    return value;
+            }
+        }
+
+        public string SqlUnaccent(string column, string parameter, _BaseSearch search)
+        {
+            if (search.IsTextFieldSearchUnaccent)
+                return " immutable_unaccent(lower(" + column + ")) LIKE immutable_unaccent(lower(@" + parameter + ")) ";
+            
+            return " " + column + " LIKE @" + parameter + " ";
         }
 
     }

@@ -33,12 +33,7 @@ namespace Backend.Base.Audit
             foreach (var e in events)
                 list.Add(_auditService.Populate(e));
 
-            var r = new _ResponseDto
-            {
-                SuccessMessage = "Ok",
-                Result = list
-            };
-            return Ok(r);
+            return Ok(new _ResponseDto(list));
         }
 
         /// <summary>

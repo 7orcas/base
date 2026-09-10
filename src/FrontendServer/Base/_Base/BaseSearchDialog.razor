@@ -90,7 +90,7 @@
     [Parameter] public int MaxRecordsReturned { get; set; } = 500;
     [Parameter] public bool IsService { get; set; } = false;
     [Parameter] public bool ShowActiveChoice { get; set; } = false;
-    [Parameter] public _BaseSearch BaseSearch { get; set; } = new _BaseSearch();
+    [Parameter] public _BaseSearch BaseSearch { get; set; } 
     [Parameter] public bool IsValid { get; set; } = true;
 
     private void CloseDialog() => MudDialog.Cancel();
