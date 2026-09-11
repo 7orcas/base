@@ -7,78 +7,76 @@
 
     <MudTable Style="@($"flex:1; min-height:0; table-layout:fixed; width:100%; {@GetDebugBorder("blue")}")"
               T="ListModel<AuditDto>"
-              @ref="_tableRef"
               Items="@List"
-              Filter="FilterCode"
+              Filter="Filter"
               Height="100%"
               FixedHeader="true"
               Hover="true"
               Bordered="true"
-              Striped="true"
-              RowClassFunc="GetRowClass">
-
+              Striped="true">
 
         <ColGroup>
-            <col style="width:5%;" />
-            <col style="width:5%;" />
+            <col style="width:10%;" />
+            <col style="width:15%;" />
+            <col style="width:10%;" />
             <col style="width:20%;" />
-            <col style="width:5%;" />
             <col style="width:20%;" />
-            <col style="width:30%;" />
             <col style="width:20%;" />
         </ColGroup>
         <HeaderContent>
-            <MudTh><Label Key="OrgNr" /></MudTh>
             <MudTh><Label Key="Source" /></MudTh>
-            <MudTh><Label Key="Entity" /></MudTh>
+            <MudTh>
+                <div style="display:flex; flex-direction:column;">
+                    <div style="display:flex; align-items:center;">
+                        <Label Key="Entity" />
+                        <TableColumnFilterIcon Filter="filter" FilterName="Entity" />
+                    </div>
+                    <TableColumnFilterInput Filter="filter" FilterName="Entity" />
+                </div>
+            </MudTh>
             <MudTh><Label Key="Id" /></MudTh>
             <MudTh>
                 <div style="display:flex; flex-direction:column;">
                     <div style="display:flex; align-items:center;">
                         <Label Key="UserName" />
-                        <MudIconButton Icon="@Icons.Material.Filled.FilterList"
-                                       Size="Size.Small"
-                                       Color="@(_showCodeFilter ? Color.Primary : Color.Default)"
-                                       OnClick="ToggleCodeFilter" />
+                        <TableColumnFilterIcon Filter="filter" FilterName="Username" />
                     </div>
-                    @if (_showCodeFilter)
-                    {
-                        <MudTextField T="string"
-                                      @bind-Value="_codeFilter"
-                                      Immediate="true"
-                                      Placeholder="@GetLabel("FilterX")"
-                                      Margin="Margin.Dense"
-                                      Variant="Variant.Text" />
-                    }
+                    <TableColumnFilterInput Filter="filter" FilterName="Username" />
                 </div>
             </MudTh>
             <MudTh><Label Key="Created" /></MudTh>
-            <MudTh><Label Key="CRUD" /></MudTh>
+            <MudTh>
+                <div style="display:flex; align-items:center;">
+                    <Label Key="Crud" />
+                    <TableColumnFilterIcon Filter="filter" FilterName="Crud" />
+                </div>
+                <TableColumnFilterInput Filter="filter" FilterName="Crud" />
+            </MudTh>
         </HeaderContent>
         <RowTemplate>
-            <MudTd>
-                @context.dto.OrgNr
-            </MudTd>
-            <MudTd>
+            <MudTd Class="@GetListRowClass(@context)"
+                   @onclick="() => OnItemSelected.InvokeAsync(context)">
                 @context.dto.Source
             </MudTd>
-            <MudTd>
+            <MudTd Class="@GetListRowClass(@context)"
+                   @onclick="() => OnItemSelected.InvokeAsync(context)">
                 @context.dto.EntityType
             </MudTd>
-            <MudTd>
+            <MudTd Class="@GetListRowClass(@context)"
+                   @onclick="() => OnItemSelected.InvokeAsync(context)">
                 @context.dto.EntityId
             </MudTd>
-            <MudTd 
-                   Class="@GetListRowClass(@context)"
+            <MudTd Class="@GetListRowClass(@context)"
                    @onclick="() => OnItemSelected.InvokeAsync(context)">
-                
                 @context.dto.UserName
                 
             </MudTd>
-            <MudTd>
+            <MudTd Class="@GetListRowClass(@context)"
+                   @onclick="() => OnItemSelected.InvokeAsync(context)">
                 @context.dto.Updated.ToString(GC.Date_TS_Format)
             </MudTd>
-            <MudTd>
+            <MudTd Class="@GetListRowClass(@context)"
+                   @onclick="() => OnItemSelected.InvokeAsync(context)">
                 @context.dto.Crud
             </MudTd>
         </RowTemplate>
@@ -88,56 +86,37 @@
 @code {
     [Parameter] public List<ListModel<AuditDto>> List { get; set; } = new List<ListModel<AuditDto>>();
     [Parameter] public EventCallback<ListModel<AuditDto>> OnItemSelected { get; set; }
-    [Parameter] public EventCallback<MudTable<ListModel<AuditDto>>> TableRefChanged { get; set; }
+        
+    private FilterUtil filter = new ();
+        
+    protected override void OnInitialized()
+    {
+        filter.Changed += OnFilterChanged;
+    }
 
-
-    private MudTable<ListModel<AuditDto>> _tableRef;
-    private bool _showCodeFilter;
-    private string _codeFilter = string.Empty;
+    private void OnFilterChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
-            await TableRefChanged.InvokeAsync(_tableRef);
+        {
+            filter.Add("Entity", nameof(AuditDto.EntityType), FilterUtil.CompareStart)
+                  .Add("Username", nameof(AuditDto.UserName))
+                  .Add("Crud", nameof(AuditDto.Crud));
+        }
     }
 
-    private string GetCode(ListModel<AuditDto> item)
+    private bool Filter(ListModel<AuditDto> item)
     {
-        var code = item.Code;
-
-        if (item.IsValidationError())
-            code += " (" + GetLabel("Error") + ")";
-
-        else if (item.IsValidationWarning())
-            code += " (" + GetLabel("Warning") + ")";
-
-        return code;
+        return filter.Filter<AuditDto>(item.dto);
     }
 
-    private string GetRowClass(ListModel<AuditDto> item, int index)
+    public void Dispose()
     {
-        if (item.IsValidationError())
-            return "error-row" + GetLightDarkClassSuffix();
-
-        else if (item.IsValidationWarning())
-            return "warning-row" + GetLightDarkClassSuffix();
-
-        return string.Empty;
-    }
-
-    private void ToggleCodeFilter()
-    {
-        _showCodeFilter = !_showCodeFilter;
-    }
-
-    private bool FilterCode(ListModel<AuditDto> item)
-    {
-        if (string.IsNullOrWhiteSpace(_codeFilter))
-            return true;
-
-        return item.Code?.Contains(
-            _codeFilter,
-            StringComparison.OrdinalIgnoreCase) == true;
+        filter.Changed -= OnFilterChanged;
     }
 
 }

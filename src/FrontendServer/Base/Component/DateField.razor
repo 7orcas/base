@@ -1,0 +1,51 @@
+﻿@inherits BaseComponent
+
+@using System.Linq.Expressions
+@using MudBlazor
+@using GC = FrontendServer.GlobalConstants;
+
+<MudDatePicker Style="width:330px;"
+               Class="@GetClassLocal()"
+               @ref="_dateField"
+               Date="@Date"
+               DateChanged="@OnDateChanged"
+               ReadOnly="@IsReadOnly"
+               DateFormat="@GC.Date_Format"
+               Label="@label" />
+
+@code {
+    [Parameter] public string LangCode { get; set; }
+    [Parameter] public bool ReadOnly { get; set; } = false;
+    [Parameter] public bool Required { get; set; } = false;
+    [Parameter] public DateTime? Date { get; set; }
+    [Parameter] public EventCallback<DateTime?> DateChanged { get; set; }
+
+    private string label = "loading..";
+    protected override void OnInitialized() => label = GetLabel(LangCode);
+
+    private bool IsReadOnly => ReadOnly ? true : !IsEditMode();
+
+    private MudDatePicker _dateField;
+    
+    private async Task OnDateChanged(DateTime? value)
+    {
+        Date = value;
+        await DateChanged.InvokeAsync(value);
+    }
+    
+    public Task FocusAsync()
+    {                   
+        var vt = _dateField?.FocusAsync() ?? default(ValueTask);
+        return vt.AsTask();
+    }
+
+    private string GetClassLocal()
+    {
+        var clazz = GetClass(IsReadOnly);
+
+        if (!ReadOnly && IsEditMode() && Required)
+            clazz += " red-border";
+
+        return clazz;
+    }
+}

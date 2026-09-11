@@ -1,0 +1,50 @@
+﻿@inherits BaseComponent
+
+@using System.Linq.Expressions
+@using MudBlazor
+@using GC = FrontendServer.GlobalConstants;
+
+<MudTimePicker Style="width:300px;"
+               Class="@GetClassLocal()"
+               @ref="_timeField"
+               Time="@Time"
+               TimeChanged="@OnTimeChanged"
+               ReadOnly="@IsReadOnly"
+               Label="@label" />
+
+@code {
+    [Parameter] public string LangCode { get; set; }
+    [Parameter] public bool ReadOnly { get; set; } = false;
+    [Parameter] public bool Required { get; set; } = false;
+    [Parameter] public TimeSpan? Time { get; set; }
+    [Parameter] public EventCallback<TimeSpan?> TimeChanged { get; set; }
+
+    private string label = "loading..";
+    protected override void OnInitialized() => label = GetLabel(LangCode);
+
+    private bool IsReadOnly => ReadOnly ? true : !IsEditMode();
+
+    private MudTimePicker _timeField;
+    
+    private async Task OnTimeChanged(TimeSpan? value)
+    {
+        Time = value;
+        await TimeChanged.InvokeAsync(value);
+    }
+    
+    public Task FocusAsync()
+    {                   
+        var vt = _timeField?.FocusAsync() ?? default(ValueTask);
+        return vt.AsTask();
+    }
+
+    private string GetClassLocal()
+    {
+        var clazz = GetClass(IsReadOnly);
+
+        if (!ReadOnly && IsEditMode() && Required)
+            clazz += " red-border";
+
+        return clazz;
+    }
+}

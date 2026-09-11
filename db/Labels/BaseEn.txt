@@ -168,6 +168,10 @@ LoginAS,You are not setup to access %%
 LoginIA,Your account into %% is inactive
 Audit,Audit
 AuditSr,Audit Search
+AuditND,No Details
+FromD,From Date
+ToD,To Date
+FromT,From Time
 ValE,Validation Error
 ValM,Validation Message
 ValMs,Validation Messages

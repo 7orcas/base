@@ -14,18 +14,18 @@ namespace Backend.Base.Audit
         public AuditRepo(IServiceProvider serviceProvider)
             : base(serviceProvider) { }
 
-        public async Task<List<AuditEnt>> GetList(AuditSearch search)
+        public async Task<List<AuditEnt>> GetList(AuditSearch search, int orgNr)
         {
-            return await GetList(null, search);
+            return await GetList(null, search, orgNr);
         }
 
         public async Task<AuditEnt?> GetById(long id)
         {
-            var result = await GetList(id, null);
+            var result = await GetList(id, null, null);
             return result.FirstOrDefault();
         }
 
-        private async Task<List<AuditEnt>> GetList(long? id, AuditSearch? search)
+        private async Task<List<AuditEnt>> GetList(long? id, AuditSearch? search, int? orgNr)
         {
             var details = search != null ? "" : "a.details,";
             var sql =
@@ -49,6 +49,7 @@ namespace Backend.Base.Audit
 
             var parameters = new DynamicParameters();
 
+
             if (id.HasValue)
             {
                 sql += " AND a.id = @Id";
@@ -57,6 +58,9 @@ namespace Backend.Base.Audit
 
             if (search != null)
             {
+                sql += " AND a.orgNr = @OrgNr";
+                parameters.Add("OrgNr", orgNr.Value);
+                                
                 if (search.OrgNr.HasValue)
                 {
                     sql += " AND a.orgNr = @OrgNr";
@@ -81,11 +85,11 @@ namespace Backend.Base.Audit
                     parameters.Add("Username", SqlParameter(search.Username, search));
                 }
 
-                if (search.EntityTypeNr.HasValue)
-                {
-                    sql += " AND a.entityTypeNr = @EntityTypeNr";
-                    parameters.Add("EntityTypeNr", search.EntityTypeNr.Value);
-                }
+                //if (search.EntityTypeNr.HasValue)
+                //{
+                //    sql += " AND a.entityTypeNr = @EntityTypeNr";
+                //    parameters.Add("EntityTypeNr", search.EntityTypeNr.Value);
+                //}
 
                 if (!string.IsNullOrEmpty(search.CRUD))
                 {

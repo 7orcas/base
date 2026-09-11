@@ -29,13 +29,21 @@
         <Loading LoadStatus=@loadStatus />
         
         <MudGrid Class="no-wrap-grid" Spacing="0" Style="@($"flex:1; min-height:0; height:0;{GetDebugBorder("orange")}")">
-            <MudItem xs="10" Style="height:100%; display:flex; flex-direction:column; min-height:0; max-width:800px;">
+            <MudItem xs="10" Style="height:100%; display:flex; flex-direction:column; min-height:0;">
                 <MudPaper Elevation="0" Outlined="true" Style="flex:1; min-height:0; display:flex; flex-direction:column;">
                     <AuditListPanel 
                                List="@list"
                                OnItemSelected="@OnItemSelected" />
                 </MudPaper>
             </MudItem>
+        
+            <!-- Right Side Details -->
+            <MudItem xs="2" Style="height:100%; display:flex; flex-direction:column; min-height:0;">
+                    <MudPaper Elevation="0" Outlined="false" Style="flex:1; min-height:0; overflow:auto; padding-right:20px;">
+                        <AuditDetailPanel Selections="listUtil.Selections" />
+                </MudPaper>
+            </MudItem>
+
         </MudGrid>
     }
 </div>
@@ -58,6 +66,8 @@
     {
         if (firstRender)
         {
+            listUtil.MaxSelections = 1;
+
             await InitialiseBasePage();
 
             //Add standard toolbar
@@ -75,11 +85,11 @@
         {
             listUtil.Clear();
             var data = (AuditSearch)result.Data;
-            await Load(data);
+            await LoadList(data);
         }
     }
 
-    private async Task Load(AuditSearch search)
+    private async Task LoadList(AuditSearch search)
     {
         var response = await PostAsync<_ResponseDto, AuditSearch>(GC.URL_audit_list, search);
 
@@ -105,21 +115,24 @@
                 list.Add(new ListModel<AuditDto>(u));
             }
         }
-
         StateHasChanged();
-
-        // if (list == null) { } //ToDo probably expired login
-        // else
-        // {
-        //     if (list.Count > 0)
-        //         Load(list[0]);
-        // }
-
     }
 
     private async Task OnItemSelected(ListModel<AuditDto> r)
     {
-        //await Load(r);
+        await LoadRecord(r);
+    }
+
+    private async Task LoadRecord(ListModel<AuditDto> dto)
+    {
+        if (!dto.IsLoaded)
+        {
+            var record = await GetAsync<AuditDto>(GC.URL_audit_get + dto.Id, false);
+            dto.Load(record);
+        }
+
+        listUtil.Select(dto);
+        StateHasChanged();
     }
 
 }

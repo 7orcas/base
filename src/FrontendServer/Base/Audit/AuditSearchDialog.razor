@@ -1,7 +1,7 @@
 ﻿@inherits BasePage
 
-<BaseSearchDialog Width="700px"
-                  Height="400px"
+<BaseSearchDialog Width="800px"
+                  Height="600px"
                   TitleKey="AuditSr"
                   SubmitAction="Submit"
                   IsValid="data.IsValid()"
@@ -9,12 +9,39 @@
                   MaxRecordsReturned="MaxRecordsReturned"
                   IsService="IsService">
 
+    
     <TextField Width=GC.TextFieldWidth.TextMedium
                LangCode="UserName"
                MaxLength="@GC.LenCode"
-               Immediate="true"
                @ref="usernameField"
                @bind-Value="data.Username" />
+
+    <TextField Width=GC.TextFieldWidth.TextMedium
+               LangCode="Entity"
+               MaxLength="@GC.LenCode"
+               @bind-Value="data.EntityType" />
+
+    <TextField Width=GC.TextFieldWidth.TextMedium
+               LangCode="Crud"
+               MaxLength="@GC.LenCode"
+               @bind-Value="data.CRUD" />
+
+    <MudStack Row="true" Spacing="2">
+        <DateField LangCode="FromD"
+                   Required="true"
+                   Date="data.FromDate"
+                   DateChanged="OnFromDateChanged" />
+
+        <TimeField LangCode="FromT"
+                   Required="true"
+                   Time="data.FromTime"
+                   TimeChanged="OnFromTimeChanged" />
+    </MudStack>
+
+    <DateField LangCode="ToD"
+               Required="true"
+               Date="data.ToDate" 
+               DateChanged="OnToDateChanged" />
 
 
 </BaseSearchDialog>
@@ -46,6 +73,24 @@
                 StateHasChanged();
             });
         }
+    }
+
+    private Task OnFromDateChanged(DateTime? date)
+    {
+        data.FromDate = date;
+        return Task.CompletedTask;
+    }
+
+    private Task OnToDateChanged(DateTime? date)
+    {
+        data.ToDate = date;
+        return Task.CompletedTask;
+    }
+
+    private Task OnFromTimeChanged(TimeSpan? time)
+    {
+        data.FromTime = time;
+        return Task.CompletedTask;
     }
 
     private async Task Submit()

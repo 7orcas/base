@@ -28,7 +28,7 @@ namespace Backend.Base.Audit
 
         public async Task<List<AuditEnt>> GetEvents(SessionEnt session, AuditSearch search)
         {
-            var list = await _auditRepo.GetList(search);
+            var list = await _auditRepo.GetList(search, session.OrgNr);
             foreach (var ent in list)
                 PopulateDecriptions(ent);
             return list;
