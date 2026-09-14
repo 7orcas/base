@@ -67,6 +67,18 @@ namespace Backend.Base.Audit
                     parameters.Add("OrgNr", search.OrgNr.Value);
                 }
 
+                if (search.FromDate.HasValue)
+                {
+                    sql += " AND a.created >= @CreatedFrom";
+                    parameters.Add("CreatedFrom", search.FromDate.Value);
+                }
+
+                if (search.ToDate.HasValue)
+                {
+                    sql += " AND a.created <= @CreatedTo";
+                    parameters.Add("CreatedTo", search.ToDate.Value);
+                }
+
                 if (search.Source.HasValue)
                 {
                     sql += " AND a.source = @Source";
@@ -85,11 +97,22 @@ namespace Backend.Base.Audit
                     parameters.Add("Username", SqlParameter(search.Username, search));
                 }
 
-                //if (search.EntityTypeNr.HasValue)
-                //{
-                //    sql += " AND a.entityTypeNr = @EntityTypeNr";
-                //    parameters.Add("EntityTypeNr", search.EntityTypeNr.Value);
-                //}
+                if (search.EntityTypeNrs != null)
+                {
+                    if (search.EntityTypeNrs.Count == 0)
+                        sql += " AND 1 = 0"; // No entity types specified, return no results
+                    else
+                    {
+                        var entityTypeNrParams = new List<string>();
+                        for (var i = 0; i < search.EntityTypeNrs.Count; i++)
+                        {
+                            var paramName = $"EntityTypeNr{i}";
+                            entityTypeNrParams.Add($"@{paramName}");
+                            parameters.Add(paramName, search.EntityTypeNrs[i]);
+                        }
+                        sql += $" AND a.entityTypeNr IN ({string.Join(",", entityTypeNrParams)})";
+                    }
+                }
 
                 if (!string.IsNullOrEmpty(search.CRUD))
                 {

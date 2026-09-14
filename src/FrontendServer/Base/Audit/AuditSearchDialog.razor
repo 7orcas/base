@@ -21,6 +21,13 @@
                MaxLength="@GC.LenCode"
                @bind-Value="data.EntityType" />
 
+    <NumericNullField TValue="long?"
+                      Width=GC.TextFieldWidth.TextMedium
+                      LangCode="EntityId"
+                      Value="@data.EntityId"
+                      ValueChanged="@((long? val) => data.EntityId = val)"
+                      ValueExpression="() => data.EntityId" />
+
     <TextField Width=GC.TextFieldWidth.TextMedium
                LangCode="Crud"
                MaxLength="@GC.LenCode"

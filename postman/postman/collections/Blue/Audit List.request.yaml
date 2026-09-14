@@ -3,24 +3,32 @@ description: Audit listing
 url: https://localhost:6002/v123/api/audit/list
 method: POST
 headers:
-  Blue-Api-Key: X123250910,$,$,1
+  Blue-Api-Key: X123250914,$,$,1
 body:
   type: json
   content: "{\r
 
     \    \"EntityTypeNrX\":40,\r
 
-    \    \"Source\":1,\r
+    \    \"SourceX\":1,\r
 
     \    \"OrgNr\":1,\r
 
-    \    \"Username\":\"user11\",\r
+    \    \"UsernameX\":\"user\",\r
 
     \    \"TextFieldSearchTypeX\":3,\r
 
     \    \"IsTextFieldSearchUnaccent\":true,\r
 
-    \    \"crud\":\"xyzl\"\r
+    \    \"crudX\":\"xyzl\",\r
+
+    \    \"FromDate\":\"2026-09-11\",\r
+
+    \    \"FromTime\":\"14:00\",\r
+
+    \    \"ToDate\":\"2026-09-11\"\r
+
+    \r
 
     }"
 auth:

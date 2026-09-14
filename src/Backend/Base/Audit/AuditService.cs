@@ -1,4 +1,5 @@
-﻿using GC = Backend.GlobalConstants;
+﻿using DocumentFormat.OpenXml.Spreadsheet;
+using GC = Backend.GlobalConstants;
 
 /// <summary>
 /// Audit of:
@@ -26,24 +27,42 @@ namespace Backend.Base.Audit
             _auditRepo = auditRepo;
         }
 
+
+        public void ConfigureSearch(SessionEnt session, AuditSearch search)
+        {
+            if (search.FromDate.HasValue)
+            {
+                search.FromDate = search.FromDate.Value + TimeSpan.Zero;
+                if (search.FromTime.HasValue)
+                    search.FromDate = search.FromDate.Value + search.FromTime.Value;
+            }
+
+            if (search.ToDate.HasValue)
+                search.ToDate = search.ToDate.Value.AddDays(1) + TimeSpan.Zero;
+
+            if (!string.IsNullOrWhiteSpace(search.EntityType))
+                search.EntityTypeNrs = _entityService.GetEntityTypeNrs(session, search.EntityType, search.TextFieldSearchType);
+
+        }
+
         public async Task<List<AuditEnt>> GetEvents(SessionEnt session, AuditSearch search)
         {
             var list = await _auditRepo.GetList(search, session.OrgNr);
             foreach (var ent in list)
-                PopulateDecriptions(ent);
+                PopulateDecriptions(session, ent);
             return list;
         }
 
-        public async Task<AuditEnt?> GetById(long id)
+        public async Task<AuditEnt?> GetById(SessionEnt session, long id)
         {
             var ent = await _auditRepo.GetById(id);
             if (ent == null) return null;
-            return PopulateDecriptions(ent);
+            return PopulateDecriptions(session, ent);
         }
 
-        private AuditEnt PopulateDecriptions(AuditEnt ent)
+        private AuditEnt PopulateDecriptions(SessionEnt session, AuditEnt ent)
         {
-            ent.EntityType = _entityService.GetEntityTypeName(ent.EntityTypeNr);
+            ent.EntityType = _entityService.GetEntityTypeName(session, ent.EntityTypeNr);
             if (ent.UserAccId == GC.ServiceLoginId) ent.UserName = GC.ServiceAccountName;
             if (ent.MasqueradeId != null && ent.MasqueradeId == GC.ServiceLoginId) ent.Masquerade = GC.ServiceAccountName;
             return ent;

@@ -189,6 +189,7 @@ InvCE,Code already exists
 InvCD,Duplicate Code
 InvUD,This record has been changed since it was loaded (%%)
 Entity,Entity
+EntityId,Entity Id
 Field,Field
 Message,Message
 RemMe,Remember Me

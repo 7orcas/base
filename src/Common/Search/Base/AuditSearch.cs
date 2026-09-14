@@ -1,4 +1,6 @@
 ﻿
+using Common.DTO.Base;
+
 namespace Common.Search.Base
 {
     public class AuditSearch : _BaseSearch
@@ -14,5 +16,9 @@ namespace Common.Search.Base
         public DateTime? ToDate { get; set; }
 
         public override bool ShowActive => false;
+
+        public List<int>? EntityTypeNrs { get; set; }
     }
+
+
 }
