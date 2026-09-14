@@ -13,7 +13,7 @@
             app.UseMiddleware<SessionMiddleware>();
             app.UseMiddleware<AuthorizationMiddleware>();
             app.UseMiddleware<AuditMiddleware>();
-
+            app.UseMiddleware<UserCacheMiddleware>();
         }
     }
 }

@@ -13,6 +13,7 @@ namespace Backend.Base
     {
         protected readonly Serilog.ILogger _log;
         protected AuditServiceI _auditService;
+        protected UserCacheServiceI _userCacheService;
         protected LabelServiceI _labelService;
 
         public BaseController(IServiceProvider serviceProvider)
@@ -22,6 +23,7 @@ namespace Backend.Base
             // Create a scoped service provider
             using var scope = serviceProvider.CreateScope();
             _auditService = scope.ServiceProvider.GetRequiredService<AuditServiceI>();
+            _userCacheService = scope.ServiceProvider.GetRequiredService<UserCacheServiceI>();
             _labelService = scope.ServiceProvider.GetRequiredService<LabelServiceI>();
         }
 
@@ -134,6 +136,11 @@ namespace Backend.Base
 
             return ipAddress.ToString();
 
+        }
+
+        public async Task<T?> GetUserCache<T>(SessionEnt session, string cacheKey)
+        {
+            return await _userCacheService.GetCache<T>(session, cacheKey);
         }
 
     }

@@ -10,6 +10,7 @@ drop table if exists base.langKey;
 
 drop table if exists base.rolePermission;
 
+drop table if exists base.userAccCache;
 drop table if exists base.userAccRole;
 drop table if exists base.role;
 drop table if exists base.userAcc;

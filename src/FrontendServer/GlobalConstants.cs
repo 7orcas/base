@@ -26,6 +26,7 @@
         public const string URL_perm_user_eff     = URL_base + "Permission/userlisteff";
         public const string URL_perm_list         = URL_base + "Permission/list";
 
+        public const string URL_audit_search      = URL_audit + "search";
         public const string URL_audit_list        = URL_audit + "list";
         public const string URL_audit_get         = URL_audit + "get/";
 

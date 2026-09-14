@@ -1,11 +1,20 @@
 ﻿@inherits BasePage
 
-<MudDialog Class="search-dialog" Style="@($"width:{Width} !important; min-width:{Width} !important; height:{Height};")">
+<MudDialog Class="search-dialog" Style="@($"width:{Width} !important; min-width:{Width} !important")">
     <TitleContent>
         <div class="d-flex align-center w-100">
-            <MudText Typo="Typo.h6" Class="flex-grow-1">
-                @GetLabel(TitleKey)
-            </MudText>
+            <div class="d-flex align-center">
+                <MudText Typo="Typo.h6" Class="flex-grow-1">
+                    @GetLabel(TitleKey)
+                </MudText>
+
+                <MudIconButton Icon="@Icons.Material.Filled.Settings"
+                               Color="Color.Default"
+                               OnClick="ToggleAdvancedPanel"
+                               Class="mr-2" />
+            </div>
+
+            <MudSpacer />
 
             <MudButton Variant="Variant.Filled"
                        Color="Color.Secondary"
@@ -16,11 +25,42 @@
     </TitleContent>
 
     <DialogContent>
-        <div @onkeydown="HandleKeyDown">
+        <div @onkeydown="HandleKeyDown" style="@($"height:{ComputedHeight}; overflow-y:auto;")">
             <MudForm >
+                @if (ShowAdvancedPanel)
+                {
+                    <div class="d-flex align-center">   
+                        <MudText Typo="Typo.h6" Class="mr-4">
+                            @GetLabel("TextS"):
+                        </MudText>
+
+                        <MudRadioGroup T="int" 
+                                       @bind-Value="BaseSearch.TextFieldSearchType"
+                                       Class="d-flex flex-row">
+
+                            <MudRadio Value="GC.TextSearchContains" Class="mr-4">
+                                @GetLabel("TextSC")
+                            </MudRadio>
+
+                            <MudRadio Value="GC.TextSearchStart" Class="mr-4">
+                                @GetLabel("TextSS")
+                            </MudRadio>
+
+                            <MudRadio Value="GC.TextSearchExtact">
+                                @GetLabel("TextSE")
+                            </MudRadio>
+
+                        </MudRadioGroup>
+                    </div>
+
+                    <CheckboxField Width=GC.TextFieldWidth.TextLong
+                                   LangCode="Unaccent"
+                                   @bind-Value="BaseSearch.IsTextFieldSearchUnaccent"/>
+                }
+
                 @ChildContent
 
-                @if (!ShowActiveChoice)
+                @if (ShowActiveChoiceX())
                 {
                     <div class="d-flex align-center">
                         <CheckboxField Width=GC.TextFieldWidth.TextVeryShort
@@ -104,4 +144,21 @@
             await SubmitAction.InvokeAsync();
     }
 
+    private bool ShowActiveChoiceX() => ShowActiveChoice || BaseSearch.ShowActive;
+
+    private bool ShowAdvancedPanel = false;
+    private void ToggleAdvancedPanel() 
+    {
+        ShowAdvancedPanel = !ShowAdvancedPanel;
+        StateHasChanged();
+    }
+
+    private string ComputedHeight
+    {
+        get
+        {
+            var h = int.Parse(Height.Replace("px", ""));
+            return $"{h + (ShowAdvancedPanel ? 100 : 0)}px";
+        }
+    }
 }

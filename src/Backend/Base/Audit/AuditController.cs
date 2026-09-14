@@ -21,8 +21,22 @@ namespace Backend.Base.Audit
             : base(serviceProvider) { }
 
 
+        [CrudAtt(GC.CrudIgnore)]
+        [AuditIgnoreAtt]
+        [HttpGet("search")]
+        public async Task<IActionResult> GetSearch()
+        {
+            var session = HttpContext.Items["session"] as SessionEnt;
+            var s = await GetUserCache<AuditSearch>(session, "AuditSearch");
+            s = s ?? new AuditSearch();
+            s.ShowActive = false;
+            return Ok(new _ResponseDto(s));
+        }
+
+
         [CrudAtt(GC.CrudReadList)]
         [AuditListAtt(GC.CrudReadList)]
+        [UserCacheAtt("AuditSearch")]
         [HttpPost("list")]
         public async Task<IActionResult> GetList([FromBody] AuditSearch search)
         {

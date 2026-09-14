@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Common.Search;
+using Microsoft.AspNetCore.Http;
 using System.Collections;
 
 
@@ -13,6 +14,12 @@ namespace Common.DTO
             SuccessMessage = "Ok";
             RecordCount = list.Count;
             Result = list;
+        }
+
+        public _ResponseDto(_BaseSearch search)
+        {
+            SuccessMessage = "Ok";
+            Result = search;
         }
 
         public int StatusCode { get; set; } = StatusCodes.Status200OK;

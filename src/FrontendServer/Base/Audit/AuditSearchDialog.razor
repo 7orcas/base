@@ -1,7 +1,7 @@
 ﻿@inherits BasePage
 
 <BaseSearchDialog Width="800px"
-                  Height="600px"
+                  Height="400px"
                   TitleKey="AuditSr"
                   SubmitAction="Submit"
                   IsValid="data.IsValid()"
@@ -70,15 +70,9 @@
     {
         if (firstRender)
         {
-            data.MaxRecordsReturned = MaxRecordsReturned;
-
-            await InvokeAsync(async () =>
-            {
-                await Task.Yield();
-                await Task.Delay(100);
-                await usernameField!.FocusAsync();
-                StateHasChanged();
-            });
+            data = await GetAsync<AuditSearch>(GC.URL_audit_search, false);
+            data.MaxRecordsReturned = MaxRecordsReturned;      
+            StateHasChanged();
         }
     }
 

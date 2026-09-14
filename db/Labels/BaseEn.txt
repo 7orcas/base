@@ -213,4 +213,9 @@ Chat,Chat
 ApiKey,Api Key
 Visable,Visable
 Editable,Editable
+TextS,Text Search
+TextSC,Contains
+TextSS,Starts With
+TextSE,Exact Match
+Unaccent,Accent Insensitive Search
 <LAST>,<LAST LINE>
