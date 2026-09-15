@@ -28,10 +28,7 @@
                       ValueChanged="@((long? val) => data.EntityId = val)"
                       ValueExpression="() => data.EntityId" />
 
-    <TextField Width=GC.TextFieldWidth.TextMedium
-               LangCode="Crud"
-               MaxLength="@GC.LenCode"
-               @bind-Value="data.CRUD" />
+    <CrudSelect @bind-Crud="data.CRUD" />
 
     <MudStack Row="true" Spacing="2">
         <DateField LangCode="FromD"
@@ -61,7 +58,6 @@
 
     private AuditSearch data = new AuditSearch();
     private TextField usernameField;
-
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {

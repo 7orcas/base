@@ -120,10 +120,12 @@ namespace Backend.Base.Audit
 
                     for (var i = 0; i < search.CRUD.Length; i++)
                     {
+                        var value = search.CRUD[i].ToString();
+                        if (value == ",") continue;
                         var paramName = $"Crud{i}";
 
                         crudParams.Add($"@{paramName}");
-                        parameters.Add(paramName, search.CRUD[i].ToString());
+                        parameters.Add(paramName, value.ToLower());
                     }
 
                     sql += $" AND a.crud IN ({string.Join(",", crudParams)})";

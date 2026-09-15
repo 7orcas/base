@@ -137,8 +137,10 @@ Perms,Permissions
 PermNr,Permission Nr
 PermNoC,No Permission to change
 Crud,CRUD
+CrudO,CRUD Operations
 Crud.C,Create
 Crud.R,Read
+Crud.L,Read List
 Crud.U,Update
 Crud.D,Delete
 PermAll,All Permissions

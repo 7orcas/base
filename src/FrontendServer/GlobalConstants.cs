@@ -31,6 +31,7 @@
         public const string URL_audit_list        = URL_audit + "list";
         public const string URL_audit_get         = URL_audit + "get/";
 
+        public const string URL_user_search       = URL_user + "search";
         public const string URL_user_list         = URL_user + "list";
         public const string URL_user_get          = URL_user + "get/";
         public const string URL_user_update       = URL_user + "update";
