@@ -1,6 +1,6 @@
 ﻿namespace Backend.Base.Entity
 {
-    public class Org
+    public class OrgDELETE_ME
     {
         public long Id { get; set; }
         public string Code { get; set; }

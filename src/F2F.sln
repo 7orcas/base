@@ -25,6 +25,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BackendTest", "BackendTest\
 		{1D02068F-DD2D-4CB3-A6AA-FDB150CA886B} = {1D02068F-DD2D-4CB3-A6AA-FDB150CA886B}
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeGenerator", "CodeGenerator\CodeGenerator.csproj", "{EA48A47B-FD1E-4F1C-98F8-4C97D6C6C8E6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{251D5C4B-35A3-4CE0-94A1-C97CB0D46455}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{251D5C4B-35A3-4CE0-94A1-C97CB0D46455}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{251D5C4B-35A3-4CE0-94A1-C97CB0D46455}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA48A47B-FD1E-4F1C-98F8-4C97D6C6C8E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA48A47B-FD1E-4F1C-98F8-4C97D6C6C8E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA48A47B-FD1E-4F1C-98F8-4C97D6C6C8E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA48A47B-FD1E-4F1C-98F8-4C97D6C6C8E6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

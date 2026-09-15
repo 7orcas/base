@@ -40,7 +40,7 @@ namespace FrontendLogin.Pages
                     new RobotRequest
                     {
                         LangCode = options.LangCode,
-                        AppClient = GC.AppClient,
+                        AppClient = GC.WebClient,
                         CaptchaToken = token
                     });
 

@@ -10,7 +10,7 @@ namespace Common
 {
     public class GlobalConstants
     {
-        public const int AppClient = 1;
+        public const int WebClient = 1;
         public const int ApiClient = 2;
 
         public const int NewRecordId = -9000;

@@ -3,7 +3,7 @@
  */
 namespace Backend.Base.Entity
 {
-    public class U
+    public class U_DELETE_ME
     {
         static public bool IsSameOrg(int? org1, int? org2)
         {
