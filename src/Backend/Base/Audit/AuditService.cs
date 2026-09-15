@@ -1,4 +1,5 @@
-﻿using GC = Backend.GlobalConstants;
+﻿using DocumentFormat.OpenXml.Spreadsheet;
+using GC = Backend.GlobalConstants;
 
 /// <summary>
 /// Audit of:
@@ -26,45 +27,60 @@ namespace Backend.Base.Audit
             _auditRepo = auditRepo;
         }
 
-        public async Task<List<AuditList>> GetEvents(SessionEnt session, AuditSearch search)
+
+        public void ConfigureSearch(SessionEnt session, AuditSearch search)
         {
-            var list = await _auditRepo.GetList(search);
-            var listX = new List<AuditList>();
+            if (search.FromDate.HasValue)
+            {
+                search.FromDate = search.FromDate.Value + TimeSpan.Zero;
+                if (search.FromTime.HasValue)
+                    search.FromDate = search.FromDate.Value + search.FromTime.Value;
+            }
+
+            if (search.ToDate.HasValue)
+                search.ToDate = search.ToDate.Value.AddDays(1) + TimeSpan.Zero;
+
+            if (!string.IsNullOrWhiteSpace(search.EntityType))
+                search.EntityTypeNrs = _entityService.GetEntityTypeNrs(session, search.EntityType, search.TextFieldSearchType);
+
+        }
+
+        public async Task<List<AuditEnt>> GetEvents(SessionEnt session, AuditSearch search)
+        {
+            var list = await _auditRepo.GetList(search, session.OrgNr);
             foreach (var ent in list)
-                listX.Add(Populate(ent));
-
-            return listX;
-        }
-
-        public async Task<AuditList?> GetById(long id)
-        {
-            var ent = await _auditRepo.GetById(id);
-            if (ent == null) return null;
-            return Populate(ent);
-        }
-
-        private AuditList Populate(AuditEnt ent)
-        {
-            var list = new AuditList();
-            BaseService.CopyProperties(ent, list);
-
-            list.EntityType = _entityService.GetEntityTypeName(list.EntityTypeNr);
-            if (list.UserAccId == GC.ServiceLoginId) list.User = GC.ServiceAccountName;
-            if (list.MasqueradeId != null && list.MasqueradeId == GC.ServiceLoginId) list.Masquerade = GC.ServiceAccountName;
+                PopulateDecriptions(session, ent);
             return list;
         }
 
+        public async Task<AuditEnt?> GetById(SessionEnt session, long id)
+        {
+            var ent = await _auditRepo.GetById(id);
+            if (ent == null) return null;
+            return PopulateDecriptions(session, ent);
+        }
 
-        public AuditDto Populate(AuditList e)
+        private AuditEnt PopulateDecriptions(SessionEnt session, AuditEnt ent)
+        {
+            ent.EntityType = _entityService.GetEntityTypeName(session, ent.EntityTypeNr);
+            if (ent.UserAccId == GC.ServiceLoginId) ent.UserName = GC.ServiceAccountName;
+            if (ent.MasqueradeId != null && ent.MasqueradeId == GC.ServiceLoginId) ent.Masquerade = GC.ServiceAccountName;
+            return ent;
+        }
+
+
+        public AuditDto Populate(AuditEnt e)
         {
             var dto = new AuditDto
             {
                 Id = e.Id,
                 OrgNr = e.OrgNr,
                 Source = e.Source,
+                EntityTypeNr = e.EntityTypeNr,
                 EntityType = e.EntityType,
                 EntityId = e.EntityId,
-                User = e.User + (string.IsNullOrEmpty(e.Masquerade) ? "" : " (" + e.Masquerade + ")"),
+                UserName = e.UserName,
+                Masquerade = e.Masquerade,
                 Updated = e.Created,
                 Details = e.Details,
             };
@@ -119,7 +135,8 @@ namespace Backend.Base.Audit
             string? crud,
             string? details)
         {
-            LogAuditRecord(session.SourceApp,
+            await _auditRepo.LogAuditRecord(
+                session.SourceApp,
                 session.OrgNr,
                 session.UserAccount.Id,
                 session.MasqueradeId,
@@ -128,32 +145,7 @@ namespace Backend.Base.Audit
                 crud,
                 details);
         }
-
-        private async void LogAuditRecord(
-            int sourceApp,
-            long orgNr,
-            long userAccId,
-            long? masqueradeId,
-            int entityTypeNr,
-            long? entityId,
-            string crud,
-            string details)
-        {
-            await Sql.ExecuteAsync(
-                    "INSERT INTO base.Audit " +
-                        "(orgNr, source, entityTypeNr, entityId, userAccId, masqueradeId, crud, details) " +
-                    "VALUES (" +
-                        orgNr + "," +
-                        sourceApp + "," +
-                        entityTypeNr + "," +
-                        (entityId == null ? "null" : entityId) + "," +
-                        userAccId + "," +
-                        (masqueradeId == null ? "null" : masqueradeId) + "," +
-                        (crud == null ? "null" : "'" + crud + "'") + "," +
-                        (details == null ? "null" : "'" + details + "'") +
-                        ")"
-            );
-        }
+        
 
     }
 

@@ -64,27 +64,30 @@ namespace BackendTest.Setup
 
         public class AuditTest : AuditServiceI
         {
-            public Task<List<AuditList>> GetEvents(SessionEnt session) => throw new NotImplementedException();
             public void LogAction(SessionEnt session, int entityTypeNr, long? entityId, string crudAction, string details) { }
             public void LogInOut(SessionEnt session, int entity) { }
             //public void LogInOut(SessionEnt session, int entityTypeNr) => throw new NotImplementedException();
             public void ReadEntity(SessionEnt session, int entityTypeNr, int entityId) { }
             public void ReadEntity(SessionEnt session, int entityTypeNr, long entityId) => throw new NotImplementedException();
             public void ReadList(SessionEnt session, int entityTypeNr, string query) { }
-
-            public AuditDto Load(AuditList e) => throw new NotImplementedException();
-
-            Task<List<AuditList>> AuditServiceI.GetEvents(SessionEnt session, AuditSearch search)
+                       
+            Task<List<AuditEnt>> AuditServiceI.GetEvents(SessionEnt session, AuditSearch search)
             {
                 throw new NotImplementedException();
             }
 
-            Task<AuditList> AuditServiceI.GetById(long id)
+            Task<AuditEnt> AuditServiceI.GetById(SessionEnt session, long id)
+            {
+                throw new NotImplementedException();
+            }
+                                
+           
+            AuditDto AuditServiceI.Populate(AuditEnt e)
             {
                 throw new NotImplementedException();
             }
 
-            AuditDto AuditServiceI.Populate(AuditList e)
+            void AuditServiceI.ConfigureSearch(SessionEnt session, AuditSearch search)
             {
                 throw new NotImplementedException();
             }

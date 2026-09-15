@@ -17,6 +17,7 @@ namespace Backend.Program
             builder.Services.AddScoped<LoginOptionServiceI, LoginOptionService>();
             builder.Services.AddScoped<LoginServiceI, LoginService>();
             builder.Services.AddScoped<UserServiceI, UserService>();
+            builder.Services.AddScoped<UserCacheServiceI, UserCacheService>();
             builder.Services.AddScoped<SignupServiceI, SignupService>();
             builder.Services.AddScoped<RobotServiceI, RobotService>();
             builder.Services.AddScoped<MfaServiceI, MfaService>();

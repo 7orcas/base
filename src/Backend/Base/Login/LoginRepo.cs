@@ -75,6 +75,68 @@ namespace Backend.Base.Login
             return await GetLoginById(id.Value);
         }
 
+        public async Task CreateServiceAccount(LoginEnt login, int orgNr, string langCode)
+        {
+            long? id = null;
+            try
+            {
+                await Sql.Run(
+                    "SELECT id FROM base.zzz " +
+                        "WHERE id = @Id ",
+                    r =>
+                    {
+                        id = GetId(r);
+                    },
+                    new NpgsqlParameter("@Id", login.Id)
+                );
+            }
+            catch { }
+
+            if (id == null)
+            {
+                await Sql.ExecuteAsync("INSERT INTO base.zzz " +
+                    "(id, xxx, yyy, isEmailVerified, orgnrDefault, langcode) " +
+                    "VALUES (" +
+                        Insert(login.Id) +
+                        Insert("serviceaccount") +
+                        Insert("123") +
+                        Insert(true) +
+                        Insert(orgNr) +
+                        Insert(langCode) +
+                        NoComma(Insert(true)) +
+                        ")"
+                );
+            }
+
+            id = null;
+            try
+            {
+                await Sql.Run(
+                    "SELECT id FROM base.userAcc " +
+                        "WHERE zzzid = @Id ",
+                    r =>
+                    {
+                        id = GetId(r);
+                    },
+                    new NpgsqlParameter("@Id", login.Id)
+                );
+            }
+            catch { }
+
+            if (id == null)
+            {
+                await Sql.ExecuteAsync("INSERT INTO base.userAcc " +
+                    "(id, zzzid, orgnr) " +
+                    "VALUES (" +
+                        Insert(login.Id) +
+                        Insert(login.Id) +
+                        NoComma(Insert(orgNr)) +
+                        ")"
+                );
+            }
+
+        }
+
 
         public async Task<LoginEnt?> GetLoginById(long id)
         {

@@ -1,0 +1,13 @@
+﻿@inherits BaseComponent
+@using MudBlazor
+
+<MudIconButton Icon="@Icons.Material.Filled.FilterList"
+               Size="Size.Small"
+               OnClick="OnToggleClicked" />
+
+@code {
+    [Parameter] public FilterUtil Filter { get; set; } = default!;
+    [Parameter] public string FilterName { get; set; } = "";
+            
+    private async Task OnToggleClicked() => Filter.Toggle(FilterName);
+}

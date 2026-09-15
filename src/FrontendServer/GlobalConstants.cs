@@ -4,7 +4,8 @@
     {
         public const int AppClient                = 1; //defined in FrontendLogin as well
                 
-        public const string Date_Format            = "dd MMM yy";
+        public const string Date_Format_ddMMMyy   = "dd MMM yy";
+        public const string Date_Format_ddMMMyyyy = "dd MMM yyyy";
 
         public const string VersionKey            = "kV";
         public const string LabelCacheKey         = "kLabel";
@@ -26,9 +27,11 @@
         public const string URL_perm_user_eff     = URL_base + "Permission/userlisteff";
         public const string URL_perm_list         = URL_base + "Permission/list";
 
+        public const string URL_audit_search      = URL_audit + "search";
         public const string URL_audit_list        = URL_audit + "list";
         public const string URL_audit_get         = URL_audit + "get/";
 
+        public const string URL_user_search       = URL_user + "search";
         public const string URL_user_list         = URL_user + "list";
         public const string URL_user_get          = URL_user + "get/";
         public const string URL_user_update       = URL_user + "update";

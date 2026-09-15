@@ -32,16 +32,31 @@ namespace Backend.Base.User
                         + "FROM base.zzz "
                         + "WHERE id != " + GC.ServiceLoginId + " ";
 
-            if (!string.IsNullOrEmpty(search.Username))
+            var parameters = new DynamicParameters();
+
+            //if (!string.IsNullOrEmpty(search.Username))
+            //{
+            //    sql += " AND xxx LIKE '%" + search.Username + "%'";
+            //}
+
+            if (!string.IsNullOrWhiteSpace(search.Username))
             {
-                sql += " AND xxx LIKE '%" + search.Username + "%'";
+                sql += " AND " + SqlUnaccent("xxx", "Username", search);
+                parameters.Add("Username", SqlParameter(search.Username, search));
             }
-            
+
+            if (!string.IsNullOrWhiteSpace(search.Email))
+            {
+                sql += " AND " + SqlUnaccent("email", "Email", search);
+                parameters.Add("Email", SqlParameter(search.Email, search));
+            }
+
             sql += GetSqlWhereClauseForSearchActive(search)
                 + " ORDER BY xxx"
                 + GetSqlLimitClauseForSearch(search);
 
-            return await GetList<UserEnt>(sql);
+
+            return await GetList<UserEnt>(sql, parameters);
         }
 
         public async Task<VersionInfo?> GetVersion(long id)

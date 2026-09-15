@@ -1,17 +1,18 @@
 ﻿@inherits BaseComponent
-
+@typeparam TValue
 @using System.Linq.Expressions
 @using MudBlazor
 @using GC = FrontendServer.GlobalConstants;
 
-<MudNumericField Style="@GetStyle(Width)"
+<MudNumericField T="TValue"
+                 Style="@GetStyle(Width)"
                  Class="@GetClassLocal()"
                  Label="@label"
                  ReadOnly="@IsReadOnly"
                  Immediate="@Immediate"
-                 Value="@Value"
-                 ValueChanged="@ValueChanged"
-                 ValueExpression="@ValueExpression"
+                 Value="Value"
+                 ValueChanged="ValueChanged"
+                 ValueExpression="ValueExpression"
                  Variant=@MudVariant />
 
 @code {
@@ -20,9 +21,10 @@
     [Parameter] public bool ReadOnly { get; set; } = false;
     [Parameter] public bool Immediate { get; set; } = false;
     [Parameter] public bool Required { get; set; } = false;
-    [Parameter] public int Value { get; set; }
-    [Parameter] public EventCallback<int> ValueChanged { get; set; }
-    [Parameter] public Expression<Func<int>> ValueExpression { get; set; }
+    [Parameter] public TValue Value { get; set; }
+    [Parameter] public EventCallback<TValue> ValueChanged { get; set; }
+    [Parameter] public Expression<Func<TValue>> ValueExpression { get; set; }
+
 
     private bool IsReadOnly => ReadOnly ? true : (!PageStatus?.IsEditMode ?? false);
 
@@ -38,4 +40,6 @@
 
         return clazz;
     }
+
+
 }

@@ -5,7 +5,8 @@
 @using FrontendServer.Base._Base;
 
 
-    <NumericField Width=GC.TextFieldWidth.TextShort
+    <NumericField TValue="int"
+                Width=GC.TextFieldWidth.TextShort
                 LangCode="Nr"
                 ReadOnly="!Dto.IsNew()"
                 PageStatus=@PageStatus
@@ -72,7 +73,8 @@
                     ValueChanged="@(v => field.SetValue(v))" />
     }
 
-    <NumericField Width=GC.TextFieldWidth.TextVeryShort
+    <NumericField TValue="int" 
+                    Width=GC.TextFieldWidth.TextVeryShort
                     LangCode="LangCodeV"
                     ReadOnly="@(!IsEditActive)"
                     PageStatus=@PageStatus
@@ -81,7 +83,8 @@
                     ValueChanged="@((int val) => Dto.LangLabelVariant = val)"
                     ValueExpression="() => Dto.LangLabelVariant" />
 
-    <NumericField Width=GC.TextFieldWidth.TextVeryShort
+    <NumericField TValue="int" 
+                    Width=GC.TextFieldWidth.TextVeryShort
                     LangCode="MfaC"
                     ReadOnly="@(!IsEditActive)"
                     PageStatus=@PageStatus

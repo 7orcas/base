@@ -1,7 +1,7 @@
 ﻿@inherits BasePage
 
-<BaseSearchDialog Width="700px"
-                  Height="400px"
+<BaseSearchDialog Width="800px"
+                  Height="500px"
                   TitleKey="AuditSr"
                   SubmitAction="Submit"
                   IsValid="data.IsValid()"
@@ -9,12 +9,40 @@
                   MaxRecordsReturned="MaxRecordsReturned"
                   IsService="IsService">
 
+    
     <TextField Width=GC.TextFieldWidth.TextMedium
                LangCode="UserName"
                MaxLength="@GC.LenCode"
-               Immediate="true"
                @ref="usernameField"
                @bind-Value="data.Username" />
+
+    <TextField Width=GC.TextFieldWidth.TextMedium
+               LangCode="Entity"
+               MaxLength="@GC.LenCode"
+               @bind-Value="data.EntityType" />
+
+    <NumericNullField TValue="long?"
+                      Width=GC.TextFieldWidth.TextMedium
+                      LangCode="EntityId"
+                      Value="@data.EntityId"
+                      ValueChanged="@((long? val) => data.EntityId = val)"
+                      ValueExpression="() => data.EntityId" />
+
+    <CrudSelect @bind-Crud="data.CRUD" />
+
+    <MudStack Row="true" Spacing="2">
+        <DateField LangCode="FromD"
+                   Date="data.FromDate"
+                   DateChanged="OnFromDateChanged" />
+
+        <TimeField LangCode="FromT"
+                   Time="data.FromTime"
+                   TimeChanged="OnFromTimeChanged" />
+    </MudStack>
+
+    <DateField LangCode="ToD"
+               Date="data.ToDate" 
+               DateChanged="OnToDateChanged" />
 
 
 </BaseSearchDialog>
@@ -31,21 +59,32 @@
     private AuditSearch data = new AuditSearch();
     private TextField usernameField;
 
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            data.MaxRecordsReturned = MaxRecordsReturned;
-
-            await InvokeAsync(async () =>
-            {
-                await Task.Yield();
-                await Task.Delay(100);
-                await usernameField!.FocusAsync();
-                StateHasChanged();
-            });
+            data = await GetAsync<AuditSearch>(GC.URL_audit_search, false);
+            data.MaxRecordsReturned = MaxRecordsReturned;      
+            StateHasChanged();
         }
+    }
+
+    private Task OnFromDateChanged(DateTime? date)
+    {
+        data.FromDate = date;
+        return Task.CompletedTask;
+    }
+
+    private Task OnToDateChanged(DateTime? date)
+    {
+        data.ToDate = date;
+        return Task.CompletedTask;
+    }
+
+    private Task OnFromTimeChanged(TimeSpan? time)
+    {
+        data.FromTime = time;
+        return Task.CompletedTask;
     }
 
     private async Task Submit()

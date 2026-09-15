@@ -1,0 +1,55 @@
+﻿@inherits BasePage
+@using MudBlazor
+@using System.Text.Json
+@using FrontendServer.Base._Base;
+
+<div style="height:100%; overflow:auto;">
+
+    <table style="flex:1; min-height:0; table-layout:fixed; width:100%;@GetDebugBorder("pink")">
+
+        <tbody class="mud-table-body">
+            <tr class="XXmud-table-row">
+                @foreach (var record in Selections.Where(x => x.IsSelected))
+                {
+                var dto = record.dto;
+
+                <td @key="record.Id" style="vertical-align: top; padding: 1px; background-color:white">
+                    @if (string.IsNullOrWhiteSpace(dto.Details))
+                    {
+                        <MudText Color="Color.Secondary">
+                            @GetLabel("AuditND")
+                        </MudText>
+                    }
+                    else
+                    {
+                        var json = JsonSerializer.Deserialize<Dictionary<string, object>>(dto.Details);
+
+                        @if (json != null)
+                        {
+                            @foreach (var kvp in json)
+                            {
+                                <div>
+                                    <strong>@kvp.Key:</strong> @kvp.Value
+                                </div>
+                            }
+                        }
+                    }
+                </td>
+            }
+            </tr>
+        </tbody>
+
+    </table>
+</div>
+
+
+
+@code {
+    [Parameter] public List<ListModel<AuditDto>> Selections { get; set; } = new List<ListModel<AuditDto>>();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // if (firstRender)
+        //     await TableRefChanged.InvokeAsync(_tableRef);
+    }
+}

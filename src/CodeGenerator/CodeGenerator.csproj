@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BackendTest\BackendTest.csproj" />
+    <ProjectReference Include="..\Backend\Backend.csproj" />
+    <ProjectReference Include="..\Common\Common.csproj" />
+    <ProjectReference Include="..\FrontendLogin\FrontendLogin.csproj" />
+    <ProjectReference Include="..\FrontendServer\FrontendServer.csproj" />
+  </ItemGroup>
+
+</Project>

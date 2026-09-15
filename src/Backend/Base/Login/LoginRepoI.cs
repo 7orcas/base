@@ -16,5 +16,7 @@
         Task<bool> VerifySignup(LoginEnt login);
         Task<bool> SetMfaKey(long id, string key);
         Task<bool> EnableMfa(long id);
+
+        Task CreateServiceAccount(LoginEnt login, int orgNr, string langCode);
     }
 }

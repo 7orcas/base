@@ -94,6 +94,11 @@ namespace Backend.Base.Login
                     return loginErr;
                 }
 
+                //Create service account if required
+                if (login.IsService() && _environment.IsDevelopment())
+                    await _loginRepo.CreateServiceAccount(login, request.Org, request.LangCode);
+                
+
                 //Masquerade user?
                 long? masqueradeId = null;
                 if (!string.IsNullOrEmpty(request.Masquerade))

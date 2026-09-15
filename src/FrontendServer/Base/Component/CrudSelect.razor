@@ -1,0 +1,85 @@
+﻿@inherits BaseComponent
+
+@using System.Linq.Expressions
+@using MudBlazor
+@using GC = FrontendServer.GlobalConstants;
+
+
+<MudSelect T="CrudOption"
+           Label="@GetLabel("CrudO")"
+           Style="@GetStyle(Width)"
+           MultiSelection="true"
+           SelectedValues="_selectedCrud"
+           SelectedValuesChanged="OnSelectedValuesChanged"
+           Variant="@MudVariant">
+
+    @foreach (var option in CrudOptions)
+    {
+        <MudSelectItem Value="@option">
+            @option.Label
+        </MudSelectItem>
+    }
+
+</MudSelect>
+
+@code {
+    [Parameter] public string Crud { get; set; }
+    [Parameter] public EventCallback<string> CrudChanged { get; set; }
+    [Parameter] public GC.TextFieldWidth Width { get; set; } = GC.TextFieldWidth.TextMedium;
+
+    private HashSet<CrudOption> _selectedCrud = new();
+    private List<CrudOption> CrudOptions = new();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            CrudOptions.Add(new() { Value = "C", Label = GetLabel("Crud.C") });
+            CrudOptions.Add(new() { Value = "R", Label = GetLabel("Crud.R") });
+            CrudOptions.Add(new() { Value = "L", Label = GetLabel("Crud.L") });
+            CrudOptions.Add(new() { Value = "U", Label = GetLabel("Crud.U") });
+            CrudOptions.Add(new() { Value = "D", Label = GetLabel("Crud.D") });   
+        }
+    }
+
+    protected override void OnParametersSet()
+    {
+        _selectedCrud.Clear();
+
+        if (string.IsNullOrWhiteSpace(Crud))
+            return;
+
+        foreach (var value in Crud.Split(',', StringSplitOptions.RemoveEmptyEntries))
+        {
+            var option = CrudOptions.FirstOrDefault(x => x.Value == value);
+
+            if (option != null)
+                _selectedCrud.Add(option);
+        }
+        StateHasChanged();
+    }
+
+    private async Task OnSelectedValuesChanged(IEnumerable<CrudOption> values)
+    {
+        _selectedCrud = values.ToHashSet();
+        Crud = string.Join(",", _selectedCrud.Select(x => x.Value));
+        await CrudChanged.InvokeAsync(Crud);
+    }
+
+    public class CrudOption : IEquatable<CrudOption>
+    {
+        public string Value { get; set; }
+        public string Label { get; set; }
+        public override string ToString() => Label;
+
+        public bool Equals(CrudOption? other)
+            => other is not null && Value == other.Value;
+
+        public override bool Equals(object? obj)
+            => Equals(obj as CrudOption);
+
+        public override int GetHashCode()
+            => Value.GetHashCode();
+    }
+
+}

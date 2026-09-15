@@ -13,6 +13,7 @@ Send,Send
 Cancel,Cancel
 Search,Search
 SearchIn,Invalid Search
+SearchRM,Remember Search
 Invalid,Invalid
 Active,Active
 InActive,Inactive
@@ -136,8 +137,10 @@ Perms,Permissions
 PermNr,Permission Nr
 PermNoC,No Permission to change
 Crud,CRUD
+CrudO,CRUD Operations
 Crud.C,Create
 Crud.R,Read
+Crud.L,Read List
 Crud.U,Update
 Crud.D,Delete
 PermAll,All Permissions
@@ -168,6 +171,10 @@ LoginAS,You are not setup to access %%
 LoginIA,Your account into %% is inactive
 Audit,Audit
 AuditSr,Audit Search
+AuditND,No Details
+FromD,From Date
+ToD,To Date
+FromT,From Time
 ValE,Validation Error
 ValM,Validation Message
 ValMs,Validation Messages
@@ -185,6 +192,7 @@ InvCE,Code already exists
 InvCD,Duplicate Code
 InvUD,This record has been changed since it was loaded (%%)
 Entity,Entity
+EntityId,Entity Id
 Field,Field
 Message,Message
 RemMe,Remember Me
@@ -208,4 +216,9 @@ Chat,Chat
 ApiKey,Api Key
 Visable,Visable
 Editable,Editable
+TextS,Text Search
+TextSC,Contains
+TextSS,Starts With
+TextSE,Exact Match
+Unaccent,Accent Insensitive Search
 <LAST>,<LAST LINE>

@@ -1,0 +1,22 @@
+﻿@inherits BaseComponent
+@using System.Linq.Expressions
+@using MudBlazor
+@using GC = FrontendServer.GlobalConstants;
+
+
+@if (Filter.Show(FilterName))
+{
+    <MudTextField T="string"
+                  Value="@Filter[FilterName]"
+                  ValueChanged="@(value => Filter[FilterName] = value)"
+                  Immediate="true"
+                  Placeholder="@GetLabel("FilterX")"
+                  Margin="Margin.Dense"
+                  Variant="Variant.Text" />
+
+}
+
+@code {
+    [Parameter] public FilterUtil Filter { get; set; } = default!;
+    [Parameter] public string FilterName { get; set; } = "";
+}

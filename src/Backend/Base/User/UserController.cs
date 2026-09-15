@@ -52,6 +52,18 @@ namespace Backend.Base.User
             return Ok(r);
         }
 
+        [CrudAtt(GC.CrudIgnore)]
+        [AuditIgnoreAtt]
+        [HttpGet("search")]
+        public async Task<IActionResult> GetSearch()
+        {
+            var session = HttpContext.Items["session"] as SessionEnt;
+            var s = await GetUserCache<UserSearch>(session, "UserSearch");
+            s = s ?? new UserSearch();
+            return Ok(new _ResponseDto(s));
+        }
+
+
         /// <summary>
         /// Get User list
         /// </summary>
@@ -59,6 +71,7 @@ namespace Backend.Base.User
         /// <returns></returns>
         [CrudAtt(GC.CrudReadList)]
         [AuditListAtt(GC.CrudReadList)]
+        [UserCacheAtt("UserSearch")]
         [HttpPost("list")]
         public async Task<IActionResult> GetList([FromBody] UserSearch search)
         {

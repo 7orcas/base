@@ -1,10 +1,11 @@
 ﻿@inherits BaseComponent
-
+@typeparam TValue
 @using System.Linq.Expressions
 @using MudBlazor
 @using GC = FrontendServer.GlobalConstants;
 
-<MudNumericField Style="@GetStyle(Width)"
+<MudNumericField T="TValue"
+                 Style="@GetStyle(Width)"
                  Class="@GetClass(IsReadOnly)"
                  Label="@label"
                  Value="@Value"
@@ -16,10 +17,10 @@
     [Parameter] public string LangCode { get; set; }
     [Parameter] public GC.TextFieldWidth Width { get; set; } = GC.TextFieldWidth.TextMedium;
     [Parameter] public bool ReadOnly { get; set; } = false;
-    //[Parameter] public PageStatus? PageStatus { get; set; } DELETE_ME
-    [Parameter] public int? Value { get; set; }
-    [Parameter] public EventCallback<int?> ValueChanged { get; set; }
-    [Parameter] public Expression<Func<int?>> ValueExpression { get; set; }
+    
+    [Parameter] public TValue? Value { get; set; }
+    [Parameter] public EventCallback<TValue?> ValueChanged { get; set; }
+    [Parameter] public Expression<Func<TValue?>> ValueExpression { get; set; }
 
     private string label = loading;
     protected override void OnInitialized() => label = GetLabel(LangCode);

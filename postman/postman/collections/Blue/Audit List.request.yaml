@@ -1,0 +1,38 @@
+$kind: http-request
+description: Audit listing
+url: https://localhost:6002/v123/api/audit/list
+method: POST
+headers:
+  Blue-Api-Key: X123250914,$,$,1
+body:
+  type: json
+  content: "{\r
+
+    \    \"EntityTypeNrX\":40,\r
+
+    \    \"SourceX\":1,\r
+
+    \    \"OrgNr\":1,\r
+
+    \    \"UsernameX\":\"user\",\r
+
+    \    \"TextFieldSearchTypeX\":3,\r
+
+    \    \"IsTextFieldSearchUnaccent\":true,\r
+
+    \    \"crudX\":\"xyzl\",\r
+
+    \    \"FromDate\":\"2026-09-11\",\r
+
+    \    \"FromTime\":\"14:00\",\r
+
+    \    \"ToDate\":\"2026-09-11\"\r
+
+    \r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: ""
+order: 5000

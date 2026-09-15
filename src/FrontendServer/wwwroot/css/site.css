@@ -232,9 +232,20 @@ a, .btn-link {
     background: #1976d2;
 }
 
-.search-dialog .mud-dialog-title {
-    background-color: red;
+.search-dialog .mud-dialog-title,
+.search-dialog .submit-button {
+    background-color: #3949AB;
     color: white;
+}
+
+.cancel-button {
+    background-color: #E53935 !important;
+    color: white !important;
+}
+
+.cancel-button:hover,
+.submit-button:hover{
+    background-color: #00897B !important;
 }
 
 .no-wrap-grid {

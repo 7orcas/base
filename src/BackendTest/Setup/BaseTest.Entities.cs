@@ -275,11 +275,11 @@ namespace BackendTest.Setup
             return null;
         }
 
-        public List<AuditList> GetAuditList()
+        public List<AuditEnt> GetAuditList()
         {
-            return new List<AuditList>
+            return new List<AuditEnt>
             {
-                new AuditList {EntityId = 1}
+                new AuditEnt {EntityId = 1}
             };
         }
     }

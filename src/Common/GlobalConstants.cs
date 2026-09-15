@@ -10,7 +10,7 @@ namespace Common
 {
     public class GlobalConstants
     {
-        public const int AppClient = 1;
+        public const int WebClient = 1;
         public const int ApiClient = 2;
 
         public const int NewRecordId = -9000;
@@ -46,6 +46,11 @@ namespace Common
         public const int LenDescription = 50;
         public const int LenLangCode    = 4;
         public const int LenEmail       = 50;
+
+        //Searches
+        public const int TextSearchStart    = 1;
+        public const int TextSearchContains = 2;
+        public const int TextSearchExtact   = 3;
 
         //Validation Status
         public const int ValStatusOk      = 0;
