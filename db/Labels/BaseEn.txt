@@ -13,6 +13,7 @@ Send,Send
 Cancel,Cancel
 Search,Search
 SearchIn,Invalid Search
+SearchRM,Remember Search
 Invalid,Invalid
 Active,Active
 InActive,Inactive

@@ -4,7 +4,8 @@
     {
         public const int AppClient                = 1; //defined in FrontendLogin as well
                 
-        public const string Date_Format            = "dd MMM yy";
+        public const string Date_Format_ddMMMyy   = "dd MMM yy";
+        public const string Date_Format_ddMMMyyyy = "dd MMM yyyy";
 
         public const string VersionKey            = "kV";
         public const string LabelCacheKey         = "kLabel";

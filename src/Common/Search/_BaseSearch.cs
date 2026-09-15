@@ -10,6 +10,7 @@ namespace Common.Search
         public int MaxRecordsReturned { get; set; } = 500;
         public int TextFieldSearchType { get; set; } = GC.TextSearchStart;
         public bool IsTextFieldSearchUnaccent { get; set; } = false;
+        public bool RememberSearch { get; set; } = false;
 
         public virtual bool IsValid() => true;
     }

@@ -156,7 +156,7 @@ namespace Backend.Base
             if (search.IsTextFieldSearchUnaccent)
                 return " immutable_unaccent(lower(" + column + ")) LIKE immutable_unaccent(lower(@" + parameter + ")) ";
             
-            return " " + column + " LIKE @" + parameter + " ";
+            return " lower(" + column + ") LIKE lower(@" + parameter + ") ";
         }
 
     }

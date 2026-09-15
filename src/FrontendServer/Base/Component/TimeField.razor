@@ -10,7 +10,9 @@
                Time="@Time"
                TimeChanged="@OnTimeChanged"
                ReadOnly="@IsReadOnly"
-               Label="@label" />
+               Label="@label" 
+               Variant="@MudVariant" 
+               Clearable="@(!IsReadOnly)" />
 
 @code {
     [Parameter] public string LangCode { get; set; }

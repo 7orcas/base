@@ -92,7 +92,7 @@
     private async Task LoadList(AuditSearch search)
     {
         var response = await PostAsync<_ResponseDto, AuditSearch>(GC.URL_audit_list, search);
-
+        
         list.Clear();
         List<AuditDto> listX = null;
 

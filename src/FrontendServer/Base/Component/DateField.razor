@@ -10,8 +10,10 @@
                Date="@Date"
                DateChanged="@OnDateChanged"
                ReadOnly="@IsReadOnly"
-               DateFormat="@GC.Date_Format"
-               Label="@label" />
+               DateFormat="@GC.Date_Format_ddMMMyyyy"
+               Label="@label"
+               Variant="@MudVariant" 
+               Clearable="@(!IsReadOnly)" />
 
 @code {
     [Parameter] public string LangCode { get; set; }

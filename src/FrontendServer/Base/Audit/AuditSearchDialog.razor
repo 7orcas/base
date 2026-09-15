@@ -1,7 +1,7 @@
 ﻿@inherits BasePage
 
 <BaseSearchDialog Width="800px"
-                  Height="400px"
+                  Height="500px"
                   TitleKey="AuditSr"
                   SubmitAction="Submit"
                   IsValid="data.IsValid()"
@@ -35,18 +35,15 @@
 
     <MudStack Row="true" Spacing="2">
         <DateField LangCode="FromD"
-                   Required="true"
                    Date="data.FromDate"
                    DateChanged="OnFromDateChanged" />
 
         <TimeField LangCode="FromT"
-                   Required="true"
                    Time="data.FromTime"
                    TimeChanged="OnFromTimeChanged" />
     </MudStack>
 
     <DateField LangCode="ToD"
-               Required="true"
                Date="data.ToDate" 
                DateChanged="OnToDateChanged" />
 

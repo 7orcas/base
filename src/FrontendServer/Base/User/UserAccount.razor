@@ -68,7 +68,7 @@
                     <MudDatePicker @bind-Date="context.FromDate"
                                    Editable="true"
                                    Disabled="@(!IsEditActive || !context.IsActive)"
-                                   DateFormat=@GC.Date_Format
+                                   DateFormat=@GC.Date_Format_ddMMMyy
                                    Clearable="true" />
                 </MudTd>
 
@@ -76,7 +76,7 @@
                     <MudDatePicker @bind-Date="context.ToDate"
                                    Editable="true"
                                    Disabled="@(!IsEditActive || !context.IsActive)"
-                                   DateFormat=@GC.Date_Format
+                                   DateFormat=@GC.Date_Format_ddMMMyy
                                    Clearable="true" />
                 </MudTd>
             </RowTemplate>

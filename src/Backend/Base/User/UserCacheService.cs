@@ -18,6 +18,11 @@ namespace Backend.Base.User
             await _userCacheRepo.SaveCache(session.UserAccount.Id, cacheKey, json);
         }
 
+        public async Task DeleteCache(SessionEnt session, string cacheKey)
+        {
+            await _userCacheRepo.DeleteCache(session.UserAccount.Id, cacheKey);
+        }
+
         public async Task<T?> GetCache<T>(SessionEnt session, string cacheKey) 
         {
             return await _userCacheRepo.GetCache<T>(session.UserAccount.Id, cacheKey);

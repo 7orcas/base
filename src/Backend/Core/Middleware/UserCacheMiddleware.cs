@@ -72,7 +72,15 @@ namespace Backend.Core.Middleware
                                 DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
                                 });
 
-                            _cacheService.SaveCache(session, cache.CacheKey, auditJson);
+                            var delete = false;
+                            if (searchObject is _BaseSearch baseSearch)
+                                delete = !baseSearch.RememberSearch;
+                            
+
+                            if (delete)
+                                await _cacheService.DeleteCache(session, cache.CacheKey);
+                            else
+                                await _cacheService.SaveCache(session, cache.CacheKey, auditJson);
                         }
 
                     }

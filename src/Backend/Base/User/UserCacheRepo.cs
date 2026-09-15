@@ -12,13 +12,18 @@ namespace Backend.Base.User
 
         public async Task SaveCache(long userAccId, string cacheKey, string json)
         {
-            await RunSql("DELETE FROM base.userAccCache "
-                        + "WHERE userAccId = " + userAccId + " "
-                        + "AND cacheKey = '" + cacheKey + "'");
+            await DeleteCache(userAccId, cacheKey);
 
             await RunSql("INSERT INTO base.userAccCache " +
                 "(userAccId, cacheKey, details) " +
                 "VALUES (" + userAccId + ", '" + cacheKey + "', '" + json + "')");
+        }
+
+        public async Task DeleteCache(long userAccId, string cacheKey)
+        {
+            await RunSql("DELETE FROM base.userAccCache "
+                        + "WHERE userAccId = " + userAccId + " "
+                        + "AND cacheKey = '" + cacheKey + "'");
         }
 
         public async Task<T?> GetCache<T>(long userAccId, string cacheKey) 
