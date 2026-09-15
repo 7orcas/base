@@ -34,11 +34,11 @@
     {
         if (firstRender)
         {
-            CrudOptions.Add(new() { Value = "C", Label = GetLabel("Crud.C") });
-            CrudOptions.Add(new() { Value = "R", Label = GetLabel("Crud.R") });
-            CrudOptions.Add(new() { Value = "L", Label = GetLabel("Crud.L") });
-            CrudOptions.Add(new() { Value = "U", Label = GetLabel("Crud.U") });
-            CrudOptions.Add(new() { Value = "D", Label = GetLabel("Crud.D") });   
+            CrudOptions.Add(new() { Value = GC.CrudCreate, Label = GetLabel("Crud.C") });
+            CrudOptions.Add(new() { Value = GC.CrudRead, Label = GetLabel("Crud.R") });
+            CrudOptions.Add(new() { Value = GC.CrudReadList, Label = GetLabel("Crud.L") });
+            CrudOptions.Add(new() { Value = GC.CrudUpdate, Label = GetLabel("Crud.U") });
+            CrudOptions.Add(new() { Value = GC.CrudDelete, Label = GetLabel("Crud.D") });   
         }
     }
 
