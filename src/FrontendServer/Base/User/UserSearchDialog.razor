@@ -19,8 +19,23 @@
     <TextField Width=GC.TextFieldWidth.TextMedium
                LangCode="Email"
                MaxLength="@GC.LenEmail"
-               Immediate="true"
                @bind-Value="data.Email" />
+
+    <div class="d-flex align-center">
+        <TextField Width=GC.TextFieldWidth.TextMedium
+                   LangCode="Role"
+                   MaxLength="@GC.LenCode"
+                   @bind-Value="data.Role" />
+
+        <CheckboxField Width=GC.TextFieldWidth.TextMedium
+                       LangCode="EffIG"
+                       @bind-Value="data.IgnoreEffectDate" />
+    </div>
+
+    <TextField Width=GC.TextFieldWidth.TextMedium
+               LangCode="Perm"
+               MaxLength="@GC.LenCode"
+               @bind-Value="data.Permission" />
 
 </BaseSearchDialog>
 

@@ -126,6 +126,7 @@ RoleAc,Role Active
 RoleEN,Edit Role Names
 EffFrom,Effective from
 EffTo,Effective to
+EffIG,Ignore Effective Dates
 MachSub,Machine record
 NAuth,Not Authorised
 NAuthX,You are not authorised to view this page
@@ -220,5 +221,8 @@ TextS,Text Search
 TextSC,Contains
 TextSS,Starts With
 TextSE,Exact Match
+TextD,Text Delimiter
+TextDN,None
+TextDO,Comma (OR)
 Unaccent,Accent Insensitive Search
 <LAST>,<LAST LINE>

@@ -8,7 +8,7 @@ body:
   type: json
   content: "{\r
 
-    \    \"EntityTypeNrX\":40,\r
+    \    \"EntityType\":\"o\",\r
 
     \    \"SourceX\":1,\r
 
@@ -16,17 +16,17 @@ body:
 
     \    \"UsernameX\":\"user\",\r
 
-    \    \"TextFieldSearchTypeX\":3,\r
+    \    \"TextFieldSearchType\":1,\r
 
     \    \"IsTextFieldSearchUnaccent\":true,\r
 
     \    \"crudX\":\"xyzl\",\r
 
-    \    \"FromDate\":\"2026-09-11\",\r
+    \    \"FromDateX\":\"2026-09-11\",\r
 
-    \    \"FromTime\":\"14:00\",\r
+    \    \"FromTime\":\"15:00\",\r
 
-    \    \"ToDate\":\"2026-09-11\"\r
+    \    \"ToDateX\":\"2026-09-11\"\r
 
     \r
 
@@ -35,4 +35,4 @@ auth:
   type: bearer
   credentials:
     token: ""
-order: 5000
+order: 4000

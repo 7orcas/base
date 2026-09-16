@@ -50,7 +50,8 @@ namespace Backend.Base.Login.Ent
                 Password = "",
                 Attempts = 0,
                 Lastlogin = null,
-                IsActive = true
+                IsActive = true,
+                OrgNrDefault = 1, //ToDo FixMe
             };
         }
 

@@ -38,7 +38,7 @@
         public async Task CreateUserConfig()
         {
             var config = service.CreateUserConfig(session.UserAccount, session.Org, UserLangCode);
-            Assert.AreEqual(session.Org.Nr, config.orgNr);
+            Assert.AreEqual(session.Org.Nr, session.OrgNr);
             Assert.AreEqual(OrgLangCode, UserLangCode);
 
             // ToDo: Add test for languages when implemented

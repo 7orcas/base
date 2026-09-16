@@ -48,9 +48,18 @@ namespace Common
         public const int LenEmail       = 50;
 
         //Searches
-        public const int TextSearchStart    = 1;
-        public const int TextSearchContains = 2;
-        public const int TextSearchExtact   = 3;
+        public enum TextSearchCompare
+        {
+            Start = 0,
+            Contains = 1,
+            Exact = 2
+        }
+
+        public enum TextSearchDelimiter
+        {
+            None = 0,
+            Or = 1
+        }
 
         //Validation Status
         public const int ValStatusOk      = 0;

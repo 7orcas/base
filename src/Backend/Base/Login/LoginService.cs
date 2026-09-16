@@ -149,6 +149,8 @@ namespace Backend.Base.Login
                     return loginErr;
                 }
 
+                account.Login = login;
+
                 //Is Mfa required?
                 var isMfaRequired = false;
                 var daysSinceLastLogin = login.Lastlogin.HasValue ? (DateTime.Today - login.Lastlogin.Value.Date).TotalDays : 100;

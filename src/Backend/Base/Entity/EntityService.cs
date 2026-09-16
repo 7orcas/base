@@ -1,4 +1,5 @@
-﻿using GC = Backend.GlobalConstants;
+﻿using static Common.GlobalConstants;
+using GC = Backend.GlobalConstants;
 
 namespace Backend.Base.Entity
 {
@@ -24,7 +25,7 @@ namespace Backend.Base.Entity
             return EntityTypeNames[entityTypeNr];
         }
 
-        public List<int> GetEntityTypeNrs(SessionEnt session, string entityType, int searchType)
+        public List<int> GetEntityTypeNrs(SessionEnt session, string entityType, TextSearchCompare searchType)
         {
             //To Do : need to factor in the application type (eg FyH, FMM)
 
@@ -37,20 +38,17 @@ namespace Backend.Base.Entity
                 .ToList();
         }
 
-        private static bool IsMatch(string source, string value, int searchType)
+        private static bool IsMatch(string source, string value, GC.TextSearchCompare searchType)
         {
             if (string.IsNullOrWhiteSpace(source))
                 return false;
 
             switch (searchType)
             {
-                case GC.TextSearchExtact:
-                    return source.Equals(value, StringComparison.OrdinalIgnoreCase);
-
-                case GC.TextSearchStart:
+                case GC.TextSearchCompare.Start:
                     return source.StartsWith(value, StringComparison.OrdinalIgnoreCase);
 
-                case GC.TextSearchContains:
+                case GC.TextSearchCompare.Contains:
                     return source.Contains(value, StringComparison.OrdinalIgnoreCase);
 
                 default:

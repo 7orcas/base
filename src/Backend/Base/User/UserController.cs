@@ -1,4 +1,5 @@
 ﻿using Common.DTO.Base;
+using DocumentFormat.OpenXml.Office2010.ExcelAc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using GC = Backend.GlobalConstants;
@@ -76,18 +77,13 @@ namespace Backend.Base.User
         public async Task<IActionResult> GetList([FromBody] UserSearch search)
         {
             var session = HttpContext.Items["session"] as SessionEnt;
-            var users = await _userService.GetUserList(search);
+            var users = await _userService.GetUserList(session, search);
             var list = new List<UserDto>();
 
             foreach (var user in users)
                 list.Add(await _userService.PopulateList(session, user));
-            
-            var r = new _ResponseDto
-            {
-                SuccessMessage = "Ok",
-                Result = list
-            };
-            return Ok(r);
+
+            return Ok(new _ResponseDto(list));
         }
 
         /// <summary>
@@ -108,12 +104,7 @@ namespace Backend.Base.User
 
             var session = HttpContext.Items["session"] as SessionEnt;
             var userDto = await _userService.Populate(session, user);
-            var r = new _ResponseDto
-            {
-                SuccessMessage = "Ok",
-                Result = userDto
-            };
-            return Ok(r);
+            return Ok(new _ResponseDto(userDto));
         }
 
         /// <summary>

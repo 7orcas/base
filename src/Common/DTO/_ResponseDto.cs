@@ -16,6 +16,13 @@ namespace Common.DTO
             Result = list;
         }
 
+        public _ResponseDto(_BaseDto dto)
+        {
+            SuccessMessage = "Ok";
+            RecordCount = 1;
+            Result = dto;
+        }
+
         public _ResponseDto(_BaseSearch search)
         {
             SuccessMessage = "Ok";

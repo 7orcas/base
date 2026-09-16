@@ -1,7 +1,9 @@
 ﻿
+using Backend.Data;
+using DocumentFormat.OpenXml.Math;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Backend.Data;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using GC = Backend.GlobalConstants;
 
 namespace Backend.Base.User
@@ -26,33 +28,40 @@ namespace Backend.Base.User
             _context = context;
         }
 
-        public async Task<List<UserEnt>> GetList(UserSearch search)
+        public async Task<List<UserEnt>> GetList(UserSearch search, int orgNr)
         {
-            var sql = "SELECT id, xxx AS Username, isActive, attempts, orgnrdefault AS OrgNrDefault "
-                        + "FROM base.zzz "
-                        + "WHERE id != " + GC.ServiceLoginId + " ";
+            var includeRole = !string.IsNullOrWhiteSpace(search.Role);
+
+            var sql = "SELECT DISTINCT z.id, xxx AS Username, z.isActive, z.attempts, z.orgnrdefault AS OrgNrDefault "
+                        + "FROM base.zzz z ";
+
+            if (includeRole)
+            {
+                sql += @"JOIN base.userAcc ua ON ua.zzzid = z.id
+                         JOIN base.userAccRole uar ON uar.userAccId = ua.id AND uar.isActive is TRUE ";
+                
+                if (!search.IgnoreEffectDate)
+                    sql += @"AND (uar.effectiveFrom IS NULL OR uar.effectiveFrom <= CURRENT_DATE)
+                             AND (uar.effectiveTo IS NULL OR uar.effectiveTo >= CURRENT_DATE) ";
+
+                sql += " JOIN base.role r ON r.id = uar.roleId ";
+            }
+
+            sql += "WHERE z.id != " + GC.ServiceLoginId + " ";
 
             var parameters = new DynamicParameters();
 
-            //if (!string.IsNullOrEmpty(search.Username))
-            //{
-            //    sql += " AND xxx LIKE '%" + search.Username + "%'";
-            //}
+            sql += " AND z.orgnrdefault = @OrgNr";
+            parameters.Add("OrgNr", orgNr);
 
-            if (!string.IsNullOrWhiteSpace(search.Username))
-            {
-                sql += " AND " + SqlUnaccent("xxx", "Username", search);
-                parameters.Add("Username", SqlParameter(search.Username, search));
-            }
+            if (includeRole)
+                sql += GetSqlAndClause(search.Role, "Role", parameters, "r.Code", search);
+            
+            sql += GetSqlAndClause(search.Username, "Username", parameters, "z.xxx", search);
+            sql += GetSqlAndClause(search.Email, "Email", parameters, "z.email", search);
 
-            if (!string.IsNullOrWhiteSpace(search.Email))
-            {
-                sql += " AND " + SqlUnaccent("email", "Email", search);
-                parameters.Add("Email", SqlParameter(search.Email, search));
-            }
-
-            sql += GetSqlWhereClauseForSearchActive(search)
-                + " ORDER BY xxx"
+            sql += GetSqlWhereClauseForSearchActive(search, "z")
+                + " ORDER BY z.xxx"
                 + GetSqlLimitClauseForSearch(search);
 
 
