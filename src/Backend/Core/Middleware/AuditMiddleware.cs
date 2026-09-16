@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc.Controllers;
+﻿using DiffMatchPatch;
+using JsonDiffPatchDotNet;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Newtonsoft.Json.Linq;
 using System.Reflection;
 using System.Text.Json;
-using JsonDiffPatchDotNet;
 using System.Text.Json.Serialization;
 using GC = Backend.GlobalConstants;
 
@@ -84,8 +85,17 @@ namespace Backend.Core.Middleware
                 return;
             }
 
+            if (crudAction == GC.CrudUpdate)
+            {
+                LogUpdates(context, _auditService, session, entityTypeNr, 0L, crudAction);
+                return;
+            }
 
-
+            if (crudAction == GC.CrudDelete)
+            {
+                LogDeletes(context, _auditService, session, entityTypeNr,0L, crudAction);
+                return;
+            }
 
         }
 
@@ -119,9 +129,21 @@ namespace Backend.Core.Middleware
 
             //var diff = jdp.Diff(left, right);
 
-            //_auditService.LogAction(session, entityTypeNr, entityId, crudAction, diff.ToString());
+            _auditService.LogAction(session, entityTypeNr, entityId, crudAction, "update diffs");
         }
 
+        private void LogDeletes(HttpContext context, AuditServiceI _auditService, SessionEnt session, int entityTypeNr, long entityId, string crudAction)
+        {
+
+            var jdp = new JsonDiffPatch();
+
+            //JToken left = JToken.Parse(oldJson);
+            //JToken right = JToken.Parse(newJson);
+
+            //var diff = jdp.Diff(left, right);
+
+            _auditService.LogAction(session, entityTypeNr, entityId, crudAction, "delete");
+        }
 
         private long? GetEntityId(KeyValuePair<string, object?> arg)
         {

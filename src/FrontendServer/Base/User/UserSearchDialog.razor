@@ -1,6 +1,6 @@
 ﻿@inherits BasePage
  
-<BaseSearchDialog Width="700px"
+<BaseSearchDialog Width="800px"
                   Height="400px"
                   TitleKey="UserSr"
                   SubmitAction="Submit"
@@ -28,8 +28,8 @@
                    @bind-Value="data.Role" />
 
         <CheckboxField Width=GC.TextFieldWidth.TextMedium
-                       LangCode="EffIG"
-                       @bind-Value="data.IgnoreEffectDate" />
+                       LangCode="EffID"
+                       @bind-Value="data.IncludeEffectDate" />
     </div>
 
     <TextField Width=GC.TextFieldWidth.TextMedium

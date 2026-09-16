@@ -4,7 +4,7 @@
 @using MudBlazor
 @using GC = FrontendServer.GlobalConstants;
 
-<MudCheckBox Style="@GetStyle(@Width)"
+<MudCheckBox Style="@GetStyle()"
              Class="@GetClassLocal()"
              Label="@label"
              ReadOnly="@IsReadOnly"
@@ -29,9 +29,11 @@
     
     private string GetClassLocal()
     {
-        var baseclass = GetClass(IsReadOnly);
-        var additionalClass = !string.IsNullOrEmpty(Class) ? Class + DarkModeSuffix() : "";
+        var clazz = GetClass(IsReadOnly);
+        clazz += " " + (!string.IsNullOrEmpty(Class) ? Class + DarkModeSuffix() : "");
 
-        return baseclass + " " + additionalClass;
+        clazz += " text-field text-field-" + GetWidthPx(Width) + " ";
+
+        return clazz;
     }
 }

@@ -4,7 +4,7 @@
 @using MudBlazor
 @using GC = FrontendServer.GlobalConstants;
 
-<MudTextField Style="@GetStyle(Width)"
+<MudTextField Style="@GetStyle()"
               Class="@GetClassLocal()"
               InputType="@InputType"
               @ref="_textField"
@@ -51,6 +51,8 @@
 
         if (!ReadOnly && IsEditMode() && Required)
             clazz += " red-border";
+
+        clazz += " text-field text-field-" + GetWidthPx(Width) + " ";
 
         return clazz;
     }

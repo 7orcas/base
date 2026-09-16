@@ -5,8 +5,8 @@
 @using GC = FrontendServer.GlobalConstants;
 
 <MudNumericField T="TValue"
-                 Style="@GetStyle(Width)"
-                 Class="@GetClass(IsReadOnly)"
+                 Style="@GetStyle()"
+                 Class="@GetClassLocal()"
                  Label="@label"
                  Value="@Value"
                  ValueChanged="@ValueChanged"
@@ -26,4 +26,11 @@
     protected override void OnInitialized() => label = GetLabel(LangCode);
 
     private bool IsReadOnly => ReadOnly ? true : (!PageStatus?.IsEditMode ?? false);
+
+    private string GetClassLocal()
+    {
+        var clazz = GetClass(IsReadOnly);
+        clazz += " text-field text-field-" + GetWidthPx(Width) + " ";
+        return clazz;
+    }
 }

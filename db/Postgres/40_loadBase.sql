@@ -154,45 +154,41 @@ INSERT INTO base.useracc (id, zzzid, orgnr) VALUES
 -- -------------------------------------------------
 INSERT INTO base.role (id, orgnr, code, descr)
 VALUES
-(1, 0, 'Admin', 'Full Admin Access');
+(1,   1, 'Admin', 'Full Admin Access 1'),
+(101, 2, 'Admin', 'Full Admin Access 2');
 
 INSERT INTO base.role (id, orgnr, code)
 VALUES
-(2, 0, 'Org RO'),
-(3, 0, 'LangEdit'),
-(4, 0, 'Machines0'),
+(2, 1, 'Org RO'),
+(3, 1, 'LangEdit'),
 (5, 1, 'Machines1'),
-(6, 2, 'Machines2');
+(10, 1, 'Role10'),
+(11, 1, 'Role11'),
+(12, 1, 'Role12'),
+(13, 1, 'Role13'),
+(14, 1, 'Role14'),
+(15, 1, 'Role15'),
+(16, 1, 'Role16'),
+(17, 1, 'Role17'),
+(18, 1, 'Role18'),
+(19, 1, 'Role19');
 
-INSERT INTO base.role (id, orgnr, code, isactive)
-VALUES
-(7, 0, 'Role1', FALSE),
-(8, 0, 'Role2', FALSE);
 
 INSERT INTO base.role (id, orgnr, code)
 VALUES
-(9, 0, 'Role3'),
-(10, 0, 'Role4'),
-(11, 0, 'Role5'),
-(12, 0, 'Role6'),
-(13, 0, 'Role7'),
-(14, 0, 'Role8'),
-(15, 0, 'Role9'),
-(16, 1, 'Role10'),
-(17, 1, 'Role11'),
-(18, 1, 'Role12'),
-(19, 1, 'Role13'),
-(20, 1, 'Role14'),
-(21, 1, 'Role15'),
-(22, 1, 'Role16'),
-(23, 1, 'Role17'),
-(24, 1, 'Role18'),
-(25, 1, 'Role19'),
-(26, 1, 'Role20'),
-(27, 1, 'Role21'),
-(28, 1, 'Role22'),
-(29, 1, 'Role23'),
-(30, 1, 'Role24');
+(102, 2, 'Org RO'),
+(103, 2, 'LangEdit'),
+(105, 2, 'Machines2'),
+(120, 2, 'Role20'),
+(121, 2, 'Role21'),
+(122, 2, 'Role22'),
+(123, 2, 'Role23'),
+(124, 2, 'Role24'),
+(125, 2, 'Role25'),
+(126, 2, 'Role26'),
+(127, 2, 'Role27'),
+(128, 2, 'Role28'),
+(129, 2, 'Role29');
 
 -- -------------------------------------------------
 -- base.rolepermission
@@ -200,18 +196,14 @@ VALUES
 INSERT INTO base.rolepermission (id, roleid, permissionnr, crud)
 VALUES
 (1, 1, 3, 'crud'),
-(3, 1, 1, 'r'),
-(4, 1, 2, 'cru'),
-(5, 1, 5, 'crud'),
---(6, 1, 6, 'crud'), --Users
-(8, 1, 101, 'cd'),
-(9, 4, 101, 'd'),
-(10, 5, 101, 'ur'),
-(11, 6, 101, 'rd');
+(2, 1, 1, 'r'),
+(3, 1, 2, 'cru'),
+(5, 1, 5, 'crud');
 
 -- -------------------------------------------------
 -- base.useraccrole
 -- -------------------------------------------------
+/*
 INSERT INTO base.useraccrole (id, useraccid, roleid, fromdate, todate)
 VALUES
 (1, 2, 1, '2026-01-01', '2026-12-31');
@@ -233,7 +225,7 @@ VALUES
 (14, 1, 4),
 (15, 1, 5),
 (16, 1, 6);
-
+*/
 -- -------------------------------------------------
 -- Fix identity sequences
 -- -------------------------------------------------

@@ -4,7 +4,7 @@
 @using MudBlazor
 @using GC = FrontendServer.GlobalConstants;
 
-<MudTimePicker Style="width:300px;"
+<MudTimePicker Style="@GetStyle()"
                Class="@GetClassLocal()"
                @ref="_timeField"
                Time="@Time"
@@ -46,6 +46,8 @@
 
         if (!ReadOnly && IsEditMode() && Required)
             clazz += " red-border";
+
+        clazz += " text-field text-field-330 ";
 
         return clazz;
     }

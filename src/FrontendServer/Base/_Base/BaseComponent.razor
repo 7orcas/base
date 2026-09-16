@@ -11,24 +11,41 @@
     public static string loading = "..loading";
     public MudBlazor.Variant MudVariant = MudBlazor.Variant.Outlined;
 
+
+    public int GetWidthPx(GC.TextFieldWidth width)
+    {
+        int widthPx = width switch
+        {
+            GC.TextFieldWidth.TextVeryShort => 100,
+            GC.TextFieldWidth.TextShort => 200,
+            GC.TextFieldWidth.TextMedium => 400,
+            GC.TextFieldWidth.TextLong => 600,
+            GC.TextFieldWidth.Int => 100,
+            _ => 500
+        };
+        return widthPx;
+    }
+
+    public string GetStyle()
+    {
+        if (CS.IsDebugMode)
+            return " border: 1px dashed lightgray;";
+        return "";
+    }
+
     public string GetStyle(GC.TextFieldWidth width)
     {
-        string s = width switch
-        {
-            GC.TextFieldWidth.Ignore => "",
-            GC.TextFieldWidth.TextVeryShort => "width: 100px;",
-            GC.TextFieldWidth.TextShort => "width: 200px;",
-            GC.TextFieldWidth.TextMedium => "width: 400px; max-width: 400px;",
-            GC.TextFieldWidth.TextLong => "width: 600px;",
-            GC.TextFieldWidth.Int => "width: 100px;",
-            _ => "width: 500px;"
-        };
+        int widthPx = GetWidthPx(width);
+        string s = width == GC.TextFieldWidth.Ignore
+            ? ""
+            : $"width: {widthPx}px !important; max-width: {widthPx}px !important;";
 
         if (CS.IsDebugMode)
             s += " border: 1px dashed lightgray;";
 
         return s;
     }
+
 
     public Typo GetTypo(GC.TextSize size) => size switch
     {

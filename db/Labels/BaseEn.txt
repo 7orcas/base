@@ -126,7 +126,7 @@ RoleAc,Role Active
 RoleEN,Edit Role Names
 EffFrom,Effective from
 EffTo,Effective to
-EffIG,Ignore Effective Dates
+EffID,Apply Effective Dates
 MachSub,Machine record
 NAuth,Not Authorised
 NAuthX,You are not authorised to view this page

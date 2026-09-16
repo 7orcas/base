@@ -323,3 +323,31 @@ a, .btn-link {
     width: auto;
     font-size: small;
 }
+
+.text-field {
+    flex: 0 0 auto;
+}
+
+.text-field-100 {
+    max-width: 100px !important;
+}
+
+.text-field-200 {
+    max-width: 200px !important;
+}
+
+.text-field-330 {
+    max-width: 330px !important;
+}
+
+.text-field-400 {
+    max-width: 400px !important;
+}
+
+.text-field-500 {
+    max-width: 500px !important;
+}
+
+.text-field-600 {
+    max-width: 600px !important;
+}

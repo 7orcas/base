@@ -5,7 +5,7 @@
 @using GC = FrontendServer.GlobalConstants;
 
 <MudNumericField T="TValue"
-                 Style="@GetStyle(Width)"
+                 Style="@GetStyle()"
                  Class="@GetClassLocal()"
                  Label="@label"
                  ReadOnly="@IsReadOnly"
@@ -38,8 +38,8 @@
         if (!ReadOnly && IsEditMode() && Required)
             clazz += " red-border";
 
+        clazz += " text-field text-field-" + GetWidthPx(Width) + " ";
+
         return clazz;
     }
-
-
 }

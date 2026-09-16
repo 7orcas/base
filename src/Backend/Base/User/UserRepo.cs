@@ -40,9 +40,9 @@ namespace Backend.Base.User
                 sql += @"JOIN base.userAcc ua ON ua.zzzid = z.id
                          JOIN base.userAccRole uar ON uar.userAccId = ua.id AND uar.isActive is TRUE ";
                 
-                if (!search.IgnoreEffectDate)
-                    sql += @"AND (uar.effectiveFrom IS NULL OR uar.effectiveFrom <= CURRENT_DATE)
-                             AND (uar.effectiveTo IS NULL OR uar.effectiveTo >= CURRENT_DATE) ";
+                if (search.IncludeEffectDate)
+                    sql += @"AND (uar.fromDate IS NULL OR uar.fromDate <= CURRENT_DATE)
+                             AND (uar.toDate IS NULL OR uar.toDate >= CURRENT_DATE) ";
 
                 sql += " JOIN base.role r ON r.id = uar.roleId ";
             }
