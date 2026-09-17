@@ -1,15 +1,17 @@
 ﻿using DiffMatchPatch;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using JsonDiffPatchDotNet;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Newtonsoft.Json.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using static System.Net.WebRequestMethods;
 using GC = Backend.GlobalConstants;
 
 namespace Backend.Core.Middleware
 {
-    public class AuditMiddleware
+    public class AuditMiddleware : AuditActionConstants
     {
 
         private readonly RequestDelegate _next;
@@ -36,36 +38,12 @@ namespace Backend.Core.Middleware
                 var endpoint = context.GetEndpoint();
                 var controllerActionDescriptor = endpoint?.Metadata.GetMetadata<ControllerActionDescriptor>();
 
-                if (controllerActionDescriptor != null)
+                var audit = GetAuditListAtt(controllerActionDescriptor);
+
+                if (audit != null)
                 {
                     session = context.Items["session"] as SessionEnt;
-
-                    //Method ignore
-                    MethodInfo methodInfo = controllerActionDescriptor.MethodInfo;
-                    var ignore = methodInfo.GetCustomAttribute<AuditIgnoreAtt>();
-
-                    //If not ignore then get entity type
-                    if (ignore == null)
-                    {
-                        //Method assign attibutes (first priority)
-                        var audit = methodInfo.GetCustomAttribute<AuditListAtt>();
-                        if (audit != null)
-                        {
-                            entityTypeNr = audit.EntityTypeNr;
-                            crudAction = audit.CrudAction;
-                        }
-
-                        //Class assigned attibutes (second priority)
-                        var controllerType = controllerActionDescriptor.ControllerTypeInfo;
-                        var classAudit = controllerType.GetCustomAttribute<AuditListAtt>();
-                        if (classAudit != null)
-                        {
-                            if (entityTypeNr < 1)
-                                entityTypeNr = classAudit.EntityTypeNr;
-                            if (crudAction == null)
-                                crudAction = classAudit.CrudAction;
-                        }
-                    }
+                    context.Items[AuditCapture] = "true";
                 }
             }
             catch (Exception ex)
@@ -77,26 +55,38 @@ namespace Backend.Core.Middleware
             //Continue
             await _next(context);
 
-            if (entityTypeNr == -1 || crudAction == null) return;
+            //Invalid response
+            if (context.Items[AuditCapture] != null &&
+                context.Items[AuditCapture] != "true")
+                return;
 
-            if (crudAction == GC.CrudRead || crudAction == GC.CrudReadList)
+            try
             {
-                LogReads(context, _auditService, session, entityTypeNr, crudAction);
+                if (entityTypeNr == -1 || crudAction == null) return;
+
+                if (crudAction == GC.CrudRead || crudAction == GC.CrudReadList)
+                {
+                    LogReads(context, _auditService, session, entityTypeNr, crudAction);
+                    return;
+                }
+
+                if (crudAction == GC.CrudUpdate)
+                {
+                    LogUpdates(context, _auditService, session, entityTypeNr, 0L, crudAction);
+                    return;
+                }
+
+                if (crudAction == GC.CrudDelete)
+                {
+                    LogDeletes(context, _auditService, session, entityTypeNr, 0L, crudAction);
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex, "Error AuditMiddleware (2)");
                 return;
             }
-
-            if (crudAction == GC.CrudUpdate)
-            {
-                LogUpdates(context, _auditService, session, entityTypeNr, 0L, crudAction);
-                return;
-            }
-
-            if (crudAction == GC.CrudDelete)
-            {
-                LogDeletes(context, _auditService, session, entityTypeNr,0L, crudAction);
-                return;
-            }
-
         }
 
         private void LogReads(HttpContext context, AuditServiceI _auditService, SessionEnt session, int entityTypeNr, string crudAction)
@@ -105,7 +95,7 @@ namespace Backend.Core.Middleware
             string? details = null;
 
             //Get passed in parameters (captured in AuditActionFilter)
-            if (context.Items.TryGetValue("ActionArguments", out var value))
+            if (context.Items.TryGetValue(AuditArg, out var value))
             {
                 var args = value as Dictionary<string, object?>;
 
@@ -121,16 +111,42 @@ namespace Backend.Core.Middleware
 
         private void LogUpdates(HttpContext context, AuditServiceI _auditService, SessionEnt session, int entityTypeNr, long entityId, string crudAction)
         {
-
             var jdp = new JsonDiffPatch();
 
-            //JToken left = JToken.Parse(oldJson);
-            //JToken right = JToken.Parse(newJson);
 
-            //var diff = jdp.Diff(left, right);
+            if (context.Items.TryGetValue(AuditBefore + AuditC, out var creates))
+            {
+                var dtos = creates as Dictionary<long, string>;
+                foreach (var kvp in dtos)
+                    _auditService.LogAction(session, entityTypeNr, kvp.Key, GC.CrudCreate, kvp.Value);
+            }
 
-            _auditService.LogAction(session, entityTypeNr, entityId, crudAction, "update diffs");
+            if (context.Items.TryGetValue(AuditBefore + AuditD, out var deletes))
+            {
+                var dtos = deletes as Dictionary<long, string>;
+                foreach (var kvp in dtos)
+                    _auditService.LogAction(session, entityTypeNr, kvp.Key, GC.CrudDelete, kvp.Value);
+            }
+
+            if (context.Items.TryGetValue(AuditBefore + AuditU, out var updates))
+            {
+                var before = updates as Dictionary<long, string>;
+                var after = new Dictionary<long, string>();
+
+                if (context.Items.TryGetValue(AuditAfter + AuditU, out var ss))
+                    after = ss as Dictionary<long, string>;
+                
+                foreach (var kvp in before)
+                {
+                    var diff = "Not configured";
+                    if (after.ContainsKey(kvp.Key))
+                        diff = jdp.Diff(kvp.Value, after[kvp.Key]);
+                    _auditService.LogAction(session, entityTypeNr, kvp.Key, GC.CrudUpdate, diff);
+                }
+            }
         }
+
+
 
         private void LogDeletes(HttpContext context, AuditServiceI _auditService, SessionEnt session, int entityTypeNr, long entityId, string crudAction)
         {

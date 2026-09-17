@@ -1,9 +1,9 @@
 $kind: http-request
 description: Audit listing
-url: https://localhost:6002/v123/api/audit/get/53
+url: https://localhost:6002/v123/api/user/get/11
 method: GET
 headers:
-  Blue-Api-Key: X123250910,$,$,1
+  Blue-Api-Key: X123250917,$,$,1
 body:
   type: json
   content: ""
@@ -11,4 +11,4 @@ auth:
   type: bearer
   credentials:
     token: ""
-order: 4125676196069962
+order: 8000

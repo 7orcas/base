@@ -141,12 +141,7 @@ namespace Backend.Base.User
                     listU.Add(await _userService.Populate(session, user));
             }
 
-            var r = new _ResponseDto
-            {
-                SuccessMessage = "Ok",
-                Result = listU
-            };
-            return Ok(r);
+            return Ok(new _ResponseDto(listU));
         }
 
         /// <summary>

@@ -8,15 +8,17 @@ body:
   type: json
   content: "{\r
 
-    \    \"Username\":\"hone,user15\",\r
+    \    \"UsernameX\":\"hone,user15\",\r
 
     \    \"TextFieldSearchType\":1,\r
 
     \    \"IsTextFieldSearchUnaccent\":true,\r
 
-    \    \"IsTextFieldDelimited\":true,\r
+    \    \"TextFieldDelimiterType\":1,\r
 
-    \    \"RoleX\":\"mach,adm\"\r
+    \    \"EmailX\":\"xx123@3.4,john\",\r
+
+    \    \"Role\":\"admin,label\"\r
 
     }"
 auth:

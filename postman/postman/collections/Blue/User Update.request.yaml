@@ -1,0 +1,476 @@
+$kind: http-request
+description: Audit listing
+url: https://localhost:6002/v123/api/user/update
+method: POST
+headers:
+  Blue-Api-Key: X123250917,$,$,1
+body:
+  type: json
+  content: "{\r
+
+    \    \"OverrideWarning\":true,\r
+
+    \    \"Updates\":[\r
+
+    \        {\r
+
+    \        \"username\": \"user11\",\r
+
+    \        \"version\": 5,\r
+
+    \        \"email\": \"xx123@3.4565\",\r
+
+    \r
+
+    \        \"passwordNew\": null,\r
+
+    \        \"isEmailVerified\": true,\r
+
+    \        \"langCode\": \"en\",\r
+
+    \        \"attempts\": 0,\r
+
+    \        \"attemptsMessage\": null,\r
+
+    \        \"attemptsLockout\": null,\r
+
+    \        \"lastLogin\": null,\r
+
+    \        \"isAdminUser\": false,\r
+
+    \        \"isMfaRequired\": false,\r
+
+    \        \"isMfaEnabled\": false,\r
+
+    \        \"mfaSecret\": null,\r
+
+    \        \"accounts\": [\r
+
+    \            {\r
+
+    \                \"userId\": 11,\r
+
+    \                \"orgCode\": \"Blue\",\r
+
+    \                \"lastLogin\": null,\r
+
+    \                \"classification\": 0,\r
+
+    \                \"isAdminLang\": false,\r
+
+    \                \"roles\": [\r
+
+    \                    {\r
+
+    \                        \"roleId\": 1,\r
+
+    \                        \"isRoleActive\": true,\r
+
+    \                        \"fromDate\": null,\r
+
+    \                        \"toDate\": null,\r
+
+    \                        \"id\": 0,\r
+
+    \                        \"orgNr\": 0,\r
+
+    \                        \"code\": \"Admin\",\r
+
+    \                        \"description\": \"Full Admin Access 1\",\r
+
+    \                        \"isActive\": false,\r
+
+    \                        \"updated\": \"0001-01-01T00:00:00+00:00\",\r
+
+    \                        \"version\": 0,\r
+
+    \                        \"isDelete\": false,\r
+
+    \                        \"isError\": false\r
+
+    \                    },\r
+
+    \                    {\r
+
+    \                        \"roleId\": 3,\r
+
+    \                        \"isRoleActive\": true,\r
+
+    \                        \"fromDate\": null,\r
+
+    \                        \"toDate\": null,\r
+
+    \                        \"id\": 0,\r
+
+    \                        \"orgNr\": 0,\r
+
+    \                        \"code\": \"LangEdit\",\r
+
+    \                        \"description\": null,\r
+
+    \                        \"isActive\": false,\r
+
+    \                        \"updated\": \"0001-01-01T00:00:00+00:00\",\r
+
+    \                        \"version\": 0,\r
+
+    \                        \"isDelete\": false,\r
+
+    \                        \"isError\": false\r
+
+    \                    },\r
+
+    \                    {\r
+
+    \                        \"roleId\": 5,\r
+
+    \                        \"isRoleActive\": true,\r
+
+    \                        \"fromDate\": null,\r
+
+    \                        \"toDate\": null,\r
+
+    \                        \"id\": 0,\r
+
+    \                        \"orgNr\": 0,\r
+
+    \                        \"code\": \"Machines1\",\r
+
+    \                        \"description\": null,\r
+
+    \                        \"isActive\": false,\r
+
+    \                        \"updated\": \"0001-01-01T00:00:00+00:00\",\r
+
+    \                        \"version\": 0,\r
+
+    \                        \"isDelete\": false,\r
+
+    \                        \"isError\": false\r
+
+    \                    },\r
+
+    \                    {\r
+
+    \                        \"roleId\": 2,\r
+
+    \                        \"isRoleActive\": true,\r
+
+    \                        \"fromDate\": null,\r
+
+    \                        \"toDate\": null,\r
+
+    \                        \"id\": 0,\r
+
+    \                        \"orgNr\": 0,\r
+
+    \                        \"code\": \"Org RO\",\r
+
+    \                        \"description\": null,\r
+
+    \                        \"isActive\": false,\r
+
+    \                        \"updated\": \"0001-01-01T00:00:00+00:00\",\r
+
+    \                        \"version\": 0,\r
+
+    \                        \"isDelete\": false,\r
+
+    \                        \"isError\": false\r
+
+    \                    },\r
+
+    \                    {\r
+
+    \                        \"roleId\": 10,\r
+
+    \                        \"isRoleActive\": true,\r
+
+    \                        \"fromDate\": null,\r
+
+    \                        \"toDate\": null,\r
+
+    \                        \"id\": 0,\r
+
+    \                        \"orgNr\": 0,\r
+
+    \                        \"code\": \"Role10\",\r
+
+    \                        \"description\": null,\r
+
+    \                        \"isActive\": false,\r
+
+    \                        \"updated\": \"0001-01-01T00:00:00+00:00\",\r
+
+    \                        \"version\": 0,\r
+
+    \                        \"isDelete\": false,\r
+
+    \                        \"isError\": false\r
+
+    \                    },\r
+
+    \                    {\r
+
+    \                        \"roleId\": 11,\r
+
+    \                        \"isRoleActive\": true,\r
+
+    \                        \"fromDate\": null,\r
+
+    \                        \"toDate\": null,\r
+
+    \                        \"id\": 0,\r
+
+    \                        \"orgNr\": 0,\r
+
+    \                        \"code\": \"Role11\",\r
+
+    \                        \"description\": null,\r
+
+    \                        \"isActive\": false,\r
+
+    \                        \"updated\": \"0001-01-01T00:00:00+00:00\",\r
+
+    \                        \"version\": 0,\r
+
+    \                        \"isDelete\": false,\r
+
+    \                        \"isError\": false\r
+
+    \                    },\r
+
+    \                    {\r
+
+    \                        \"roleId\": 12,\r
+
+    \                        \"isRoleActive\": true,\r
+
+    \                        \"fromDate\": null,\r
+
+    \                        \"toDate\": null,\r
+
+    \                        \"id\": 0,\r
+
+    \                        \"orgNr\": 0,\r
+
+    \                        \"code\": \"Role12\",\r
+
+    \                        \"description\": null,\r
+
+    \                        \"isActive\": false,\r
+
+    \                        \"updated\": \"0001-01-01T00:00:00+00:00\",\r
+
+    \                        \"version\": 0,\r
+
+    \                        \"isDelete\": false,\r
+
+    \                        \"isError\": false\r
+
+    \                    },\r
+
+    \                    {\r
+
+    \                        \"roleId\": 13,\r
+
+    \                        \"isRoleActive\": true,\r
+
+    \                        \"fromDate\": null,\r
+
+    \                        \"toDate\": null,\r
+
+    \                        \"id\": 0,\r
+
+    \                        \"orgNr\": 0,\r
+
+    \                        \"code\": \"Role13\",\r
+
+    \                        \"description\": null,\r
+
+    \                        \"isActive\": false,\r
+
+    \                        \"updated\": \"0001-01-01T00:00:00+00:00\",\r
+
+    \                        \"version\": 0,\r
+
+    \                        \"isDelete\": false,\r
+
+    \                        \"isError\": false\r
+
+    \                    },\r
+
+    \                    {\r
+
+    \                        \"roleId\": 14,\r
+
+    \                        \"isRoleActive\": true,\r
+
+    \                        \"fromDate\": null,\r
+
+    \                        \"toDate\": null,\r
+
+    \                        \"id\": 0,\r
+
+    \                        \"orgNr\": 0,\r
+
+    \                        \"code\": \"Role14\",\r
+
+    \                        \"description\": null,\r
+
+    \                        \"isActive\": false,\r
+
+    \                        \"updated\": \"0001-01-01T00:00:00+00:00\",\r
+
+    \                        \"version\": 0,\r
+
+    \                        \"isDelete\": false,\r
+
+    \                        \"isError\": false\r
+
+    \                    },\r
+
+    \                    {\r
+
+    \                        \"roleId\": 15,\r
+
+    \                        \"isRoleActive\": true,\r
+
+    \                        \"fromDate\": null,\r
+
+    \                        \"toDate\": null,\r
+
+    \                        \"id\": 0,\r
+
+    \                        \"orgNr\": 0,\r
+
+    \                        \"code\": \"Role15\",\r
+
+    \                        \"description\": null,\r
+
+    \                        \"isActive\": false,\r
+
+    \                        \"updated\": \"0001-01-01T00:00:00+00:00\",\r
+
+    \                        \"version\": 0,\r
+
+    \                        \"isDelete\": false,\r
+
+    \                        \"isError\": false\r
+
+    \                    },\r
+
+    \                    {\r
+
+    \                        \"roleId\": 16,\r
+
+    \                        \"isRoleActive\": true,\r
+
+    \                        \"fromDate\": null,\r
+
+    \                        \"toDate\": null,\r
+
+    \                        \"id\": 0,\r
+
+    \                        \"orgNr\": 0,\r
+
+    \                        \"code\": \"Role16\",\r
+
+    \                        \"description\": null,\r
+
+    \                        \"isActive\": false,\r
+
+    \                        \"updated\": \"0001-01-01T00:00:00+00:00\",\r
+
+    \                        \"version\": 0,\r
+
+    \                        \"isDelete\": false,\r
+
+    \                        \"isError\": false\r
+
+    \                    },\r
+
+    \                    {\r
+
+    \                        \"roleId\": 19,\r
+
+    \                        \"isRoleActive\": true,\r
+
+    \                        \"fromDate\": null,\r
+
+    \                        \"toDate\": null,\r
+
+    \                        \"id\": 0,\r
+
+    \                        \"orgNr\": 0,\r
+
+    \                        \"code\": \"Role19\",\r
+
+    \                        \"description\": null,\r
+
+    \                        \"isActive\": false,\r
+
+    \                        \"updated\": \"0001-01-01T00:00:00+00:00\",\r
+
+    \                        \"version\": 0,\r
+
+    \                        \"isDelete\": false,\r
+
+    \                        \"isError\": false\r
+
+    \                    }\r
+
+    \                ],\r
+
+    \                \"permissions\": [],\r
+
+    \                \"id\": 111,\r
+
+    \                \"orgNr\": 1,\r
+
+    \                \"code\": null,\r
+
+    \                \"description\": null,\r
+
+    \                \"isActive\": true,\r
+
+    \                \"updated\": \"2026-09-16T08:26:42.26405+00:00\",\r
+
+    \                \"version\": 1,\r
+
+    \                \"isDelete\": false,\r
+
+    \                \"isError\": false\r
+
+    \            }\r
+
+    \        ],\r
+
+    \        \"id\": 11,\r
+
+    \        \"orgNr\": 1,\r
+
+    \        \"code\": null,\r
+
+    \        \"description\": null,\r
+
+    \        \"isActive\": true,\r
+
+    \        \"updated\": \"2026-09-16T08:26:42.26405+00:00\",\r
+
+    \        \"isDelete\": false,\r
+
+    \        \"isError\": false\r
+
+    \        }\r
+
+    \    ]\r
+
+    \    \r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: ""
+order: 1382115579008424
