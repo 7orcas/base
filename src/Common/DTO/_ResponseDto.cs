@@ -16,6 +16,14 @@ namespace Common.DTO
             Result = list;
         }
 
+        public _ResponseDto(IList listBefore, IList listUpdated)
+        {
+            SuccessMessage = "Ok";
+            RecordCount = listUpdated.Count;
+            Result = listUpdated;
+            AuditObject = listBefore;
+        }
+
         public _ResponseDto(_BaseDto dto)
         {
             SuccessMessage = "Ok";
@@ -35,6 +43,7 @@ namespace Common.DTO
         public string? SuccessMessage { get; set; }
         public int? RecordCount { get; set; }
         public object? Result { get; set; }
+        public object? AuditObject { get; set; }
 
         public List<ValidationDto>? Validations { get; set; } 
     }

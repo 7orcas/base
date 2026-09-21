@@ -34,10 +34,11 @@ namespace Backend.Base.Audit
                         a.source,
                         a.entityTypeNr,
                         a.entityId,
+                        a.entityVersion,
                         a.userAccId,
                         a.masqueradeId,
                         a.created,
-                        a.crud,"
+                        a.activity,"
                         + details +
                       @"z.xxx AS userName, 
                         m.xxx AS masquerade
@@ -128,7 +129,7 @@ namespace Backend.Base.Audit
                         parameters.Add(paramName, value.ToLower());
                     }
 
-                    sql += $" AND a.crud IN ({string.Join(",", crudParams)})";
+                    sql += $" AND a.activity IN ({string.Join(",", crudParams)})";
                 }
     
                 sql += " ORDER BY a.created " + GetSqlLimitClauseForSearch(search);
@@ -144,20 +145,22 @@ namespace Backend.Base.Audit
             long? masqueradeId,
             int entityTypeNr,
             long? entityId,
-            string crud,
+            int? entityVersion,
+            string activity,
             string details)
         {
             await Sql.ExecuteAsync(
                     "INSERT INTO base.Audit " +
-                        "(orgNr, source, entityTypeNr, entityId, userAccId, masqueradeId, crud, details) " +
+                        "(orgNr, source, entityTypeNr, entityId, entityVersion, userAccId, masqueradeId, activity, details) " +
                     "VALUES (" +
                         orgNr + "," +
                         sourceApp + "," +
                         entityTypeNr + "," +
                         (entityId == null ? "null" : entityId) + "," +
+                        (entityVersion == null ? "null" : entityVersion) + "," +
                         userAccId + "," +
                         (masqueradeId == null ? "null" : masqueradeId) + "," +
-                        (crud == null ? "null" : "'" + crud + "'") + "," +
+                        (activity == null ? "null" : "'" + activity + "'") + "," +
                         (details == null ? "null" : "'" + details + "'") +
                         ")"
             );

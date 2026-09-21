@@ -175,7 +175,7 @@ namespace Backend.Base.Login
                 var sessionKey = _environment.IsDevelopment() ? request.ApiTestKeyValue : null;
                 var session = await _sessionService.CreateSession(account, org, userConfig, masqueradeId, request.SourceApplication, 
                     ipAddress, sessionKey);
-                _auditService.LogInOut(session, GC.EntityTypeLogin);
+                _auditService.LogIn(session);
 
                 var tv = new TokenValues
                 {

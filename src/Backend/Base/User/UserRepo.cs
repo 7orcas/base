@@ -98,20 +98,10 @@ namespace Backend.Base.User
             }
         }
 
-        public async Task<UserEnt?> Update(UserDto userDto)
+        public async Task<UserEnt> Update(UserEnt user, UserDto dto)
         {
-            var user = null as UserEnt;
-
-            if (userDto.IsNew())
-                user = new UserEnt();
-            else
-                user = await GetById(userDto.Id);
-
-            if (user == null)
-                return null;
-           
             //Cascade delete
-            if (userDto.IsDelete)
+            if (dto.IsDelete)
             {
                 _context.Users.Remove(user);
                 await _context.SaveChangesAsync();
@@ -119,23 +109,23 @@ namespace Backend.Base.User
             }
 
             //Update password
-            if (!string.IsNullOrEmpty(userDto.PasswordNew))
+            if (!string.IsNullOrEmpty(dto.PasswordNew))
             {
-                user.Password = _loginService.PasswordHash(userDto.PasswordNew);
+                user.Password = _loginService.PasswordHash(dto.PasswordNew);
             }
                         
-            user.Username = userDto.Username;
-            user.Email = userDto.Email;
-            user.IsEmailVerified = userDto.IsEmailVerified;
-            user.LangCode = userDto.LangCode;
-            user.OrgNrDefault = userDto.OrgNr;
-            user.Attempts = userDto.Attempts;
-            user.IsAdminUser = userDto.IsAdminUser;
+            user.Username = dto.Username;
+            user.Email = dto.Email;
+            user.IsEmailVerified = dto.IsEmailVerified;
+            user.LangCode = dto.LangCode;
+            user.OrgNrDefault = dto.OrgNr;
+            user.Attempts = dto.Attempts;
+            user.IsAdminUser = dto.IsAdminUser;
 
-            user.IsActive = userDto.IsActive;
+            user.IsActive = dto.IsActive;
             VersionIncrement(user);
 
-            foreach (var accountDto in userDto.Accounts ?? new List<UserDto.UserAccountDto>())
+            foreach (var accountDto in dto.Accounts ?? new List<UserDto.UserAccountDto>())
             {
                 var account = null as UserAccountEnt;
 
@@ -190,7 +180,7 @@ namespace Backend.Base.User
 
             user.Encode();
 
-            if (userDto.IsNew())
+            if (dto.IsNew())
                 _context.Users.Add(user);
             
             await _context.SaveChangesAsync();

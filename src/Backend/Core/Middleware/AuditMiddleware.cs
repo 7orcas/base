@@ -6,6 +6,7 @@ using Newtonsoft.Json.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using static System.Net.WebRequestMethods;
 using GC = Backend.GlobalConstants;
 
@@ -30,15 +31,14 @@ namespace Backend.Core.Middleware
         {
 
             var session = null as SessionEnt;
-            int entityTypeNr = -1;
-            string crudAction = null;
+            var audit = null as AuditListAtt;
 
             try
             {
                 var endpoint = context.GetEndpoint();
                 var controllerActionDescriptor = endpoint?.Metadata.GetMetadata<ControllerActionDescriptor>();
 
-                var audit = GetAuditListAtt(controllerActionDescriptor);
+                audit = GetAuditListAtt(controllerActionDescriptor);
 
                 if (audit != null)
                 {
@@ -55,43 +55,48 @@ namespace Backend.Core.Middleware
             //Continue
             await _next(context);
 
+            //No action
+            if (audit == null 
+                || audit.EntityTypeNr == -1 
+                || audit.CrudAction == null) 
+                return;
+
             //Invalid response
-            if (context.Items[AuditCapture] != null &&
-                context.Items[AuditCapture] != "true")
+            if (context.Items[AuditCapture] != "true")
                 return;
 
             try
             {
-                if (entityTypeNr == -1 || crudAction == null) return;
 
-                if (crudAction == GC.CrudRead || crudAction == GC.CrudReadList)
+                if (audit.CrudAction == GC.CrudReadList)
                 {
-                    LogReads(context, _auditService, session, entityTypeNr, crudAction);
+                    LogReads(context, _auditService, session, audit.EntityTypeNr, audit.CrudAction);
                     return;
                 }
 
-                if (crudAction == GC.CrudUpdate)
+                if (audit.CrudAction == GC.CrudRead)
                 {
-                    LogUpdates(context, _auditService, session, entityTypeNr, 0L, crudAction);
+                    LogReads(context, _auditService, session, audit.EntityTypeNr, audit.CrudAction);
                     return;
                 }
 
-                if (crudAction == GC.CrudDelete)
+                if (audit.CrudAction == GC.CrudUpdate)
                 {
-                    LogDeletes(context, _auditService, session, entityTypeNr, 0L, crudAction);
+                    LogUpdates(context, _auditService, session, audit.EntityTypeNr);
                     return;
                 }
+                
             }
             catch (Exception ex)
             {
                 _log.Error(ex, "Error AuditMiddleware (2)");
-                return;
             }
         }
 
         private void LogReads(HttpContext context, AuditServiceI _auditService, SessionEnt session, int entityTypeNr, string crudAction)
         {
             long? id = null;
+            int? version = GetEntityVersion(context);
             string? details = null;
 
             //Get passed in parameters (captured in AuditActionFilter)
@@ -106,59 +111,24 @@ namespace Backend.Core.Middleware
                 }
             }
 
-            _auditService.LogAction(session, entityTypeNr, id, crudAction, details);
+            _auditService.LogAction(session, entityTypeNr, id, version, crudAction, details);
         }
 
-        private void LogUpdates(HttpContext context, AuditServiceI _auditService, SessionEnt session, int entityTypeNr, long entityId, string crudAction)
+        private void LogUpdates(HttpContext context, AuditServiceI _auditService, SessionEnt session, int entityTypeNr)
         {
-            var jdp = new JsonDiffPatch();
-
-
-            if (context.Items.TryGetValue(AuditBefore + AuditC, out var creates))
-            {
-                var dtos = creates as Dictionary<long, string>;
-                foreach (var kvp in dtos)
-                    _auditService.LogAction(session, entityTypeNr, kvp.Key, GC.CrudCreate, kvp.Value);
-            }
-
-            if (context.Items.TryGetValue(AuditBefore + AuditD, out var deletes))
-            {
-                var dtos = deletes as Dictionary<long, string>;
-                foreach (var kvp in dtos)
-                    _auditService.LogAction(session, entityTypeNr, kvp.Key, GC.CrudDelete, kvp.Value);
-            }
-
-            if (context.Items.TryGetValue(AuditBefore + AuditU, out var updates))
-            {
-                var before = updates as Dictionary<long, string>;
-                var after = new Dictionary<long, string>();
-
-                if (context.Items.TryGetValue(AuditAfter + AuditU, out var ss))
-                    after = ss as Dictionary<long, string>;
-                
-                foreach (var kvp in before)
-                {
-                    var diff = "Not configured";
-                    if (after.ContainsKey(kvp.Key))
-                        diff = jdp.Diff(kvp.Value, after[kvp.Key]);
-                    _auditService.LogAction(session, entityTypeNr, kvp.Key, GC.CrudUpdate, diff);
-                }
-            }
+            LogUpdate(context, _auditService, session, entityTypeNr, GC.CrudCreate, AuditCreate);
+            LogUpdate(context, _auditService, session, entityTypeNr, GC.CrudDelete, AuditDelete);
+            LogUpdate(context, _auditService, session, entityTypeNr, GC.CrudUpdate, AuditUpdate);
         }
 
-
-
-        private void LogDeletes(HttpContext context, AuditServiceI _auditService, SessionEnt session, int entityTypeNr, long entityId, string crudAction)
+        private void LogUpdate(HttpContext context, AuditServiceI _auditService, SessionEnt session, int entityTypeNr, string crud, string param)
         {
-
-            var jdp = new JsonDiffPatch();
-
-            //JToken left = JToken.Parse(oldJson);
-            //JToken right = JToken.Parse(newJson);
-
-            //var diff = jdp.Diff(left, right);
-
-            _auditService.LogAction(session, entityTypeNr, entityId, crudAction, "delete");
+            if (context.Items.TryGetValue(param, out var records))
+            {
+                var dtos = records as Dictionary<long, AuditInfo>;
+                foreach (var kvp in dtos)
+                    _auditService.LogAction(session, entityTypeNr, kvp.Key, kvp.Value.Version, crud, kvp.Value.Json);
+            }
         }
 
         private long? GetEntityId(KeyValuePair<string, object?> arg)
@@ -169,6 +139,16 @@ namespace Backend.Core.Middleware
                 {
                     return parsedId;
                 }
+            }
+            return null;
+        }
+
+        private int? GetEntityVersion(HttpContext context)
+        {
+            if (context.Items.TryGetValue(AuditInfo, out var record))
+            {
+                var info = record as AuditInfo;
+                return info.Version;
             }
             return null;
         }

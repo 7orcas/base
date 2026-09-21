@@ -29,7 +29,7 @@
         <Loading LoadStatus=@loadStatus />
         
         <MudGrid Class="no-wrap-grid" Spacing="0" Style="@($"flex:1; min-height:0; height:0;{GetDebugBorder("orange")}")">
-            <MudItem xs="10" Style="height:100%; display:flex; flex-direction:column; min-height:0;">
+            <MudItem xs="8" Style="height:100%; display:flex; flex-direction:column; min-height:0;">
                 <MudPaper Elevation="0" Outlined="true" Style="flex:1; min-height:0; display:flex; flex-direction:column;">
                     <AuditListPanel 
                                List="@list"
@@ -38,7 +38,7 @@
             </MudItem>
         
             <!-- Right Side Details -->
-            <MudItem xs="2" Style="height:100%; display:flex; flex-direction:column; min-height:0;">
+            <MudItem xs="4" Style="height:100%; display:flex; flex-direction:column; min-height:0;">
                     <MudPaper Elevation="0" Outlined="false" Style="flex:1; min-height:0; overflow:auto; padding-right:20px;">
                         <AuditDetailPanel Selections="listUtil.Selections" />
                 </MudPaper>

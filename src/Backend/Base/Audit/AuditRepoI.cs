@@ -11,7 +11,8 @@
             long? masqueradeId,
             int entityTypeNr,
             long? entityId,
-            string crud,
+            int? entityVersion,
+            string activity,
             string details);
     }
 }

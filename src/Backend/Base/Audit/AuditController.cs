@@ -21,7 +21,7 @@ namespace Backend.Base.Audit
             : base(serviceProvider) { }
 
 
-        [CrudAtt(GC.CrudIgnore)]
+        [CrudAtt(GC.AuditIgnore)]
         [AuditIgnoreAtt]
         [HttpGet("search")]
         public async Task<IActionResult> GetSearch()
@@ -46,7 +46,7 @@ namespace Backend.Base.Audit
             var list = new List<AuditDto>();
 
             foreach (var e in events)
-                list.Add(_auditService.Populate(e));
+                list.Add(_auditService.Populate(session, e));
 
             return Ok(new _ResponseDto(list));
         }
@@ -68,7 +68,7 @@ namespace Backend.Base.Audit
                 return NotFound();
             }
 
-            var auditDto = _auditService.Populate(audit);
+            var auditDto = _auditService.Populate(session, audit);
             var r = new _ResponseDto
             {
                 SuccessMessage = "Ok",

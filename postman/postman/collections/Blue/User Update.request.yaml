@@ -3,7 +3,7 @@ description: Audit listing
 url: https://localhost:6002/v123/api/user/update
 method: POST
 headers:
-  Blue-Api-Key: X123250917,$,$,1
+  Blue-Api-Key: X123250921,$,$,1
 body:
   type: json
   content: "{\r
@@ -16,9 +16,9 @@ body:
 
     \        \"username\": \"user11\",\r
 
-    \        \"version\": 5,\r
+    \        \"version\": 12,\r
 
-    \        \"email\": \"xx123@3.4565\",\r
+    \        \"email\": \"xx123@12\",\r
 
     \r
 

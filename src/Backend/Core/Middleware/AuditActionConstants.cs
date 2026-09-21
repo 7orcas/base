@@ -8,12 +8,11 @@ namespace Backend.Core.Middleware
     {
         public const string AuditCapture = "AuditCapture";
         public const string AuditArg = "AuditActionArguments";
-        public const string AuditBefore = "B";
-        public const string AuditAfter = "A";
 
-        public const string AuditC = "AuditCreates";
-        public const string AuditU = "AuditUpdates";
-        public const string AuditD = "AuditDeletes";
+        public const string AuditCreate = "AuditCreates";
+        public const string AuditUpdate = "AuditUpdates";
+        public const string AuditDelete = "AuditDeletes";
+        public const string AuditInfo = "AuditInfo";
 
         public AuditListAtt? GetAuditListAtt(ControllerActionDescriptor controllerActionDescriptor)
         {
@@ -23,8 +22,8 @@ namespace Backend.Core.Middleware
                 MethodInfo methodInfo = controllerActionDescriptor.MethodInfo;
                 var ignore = methodInfo.GetCustomAttribute<AuditIgnoreAtt>();
 
-                //If not ignore then get entity type
-                if (ignore == null)
+                //Ignore audits
+                if (ignore != null)
                     return null;
 
                 var attr = new AuditListAtt();
@@ -55,4 +54,11 @@ namespace Backend.Core.Middleware
         }
 
     }
+
+    public class AuditInfo 
+    { 
+        public string Json { get; set; }
+        public int Version { get; set; }
+    }
+
 }

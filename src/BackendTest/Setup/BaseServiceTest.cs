@@ -64,8 +64,9 @@ namespace BackendTest.Setup
 
         public class AuditTest : AuditServiceI
         {
-            public void LogAction(SessionEnt session, int entityTypeNr, long? entityId, string crudAction, string details) { }
-            public void LogInOut(SessionEnt session, int entity) { }
+            public void LogAction(SessionEnt session, int entityTypeNr, long? entityId, int? entityVersion, string crudAction, string details) { }
+            public void LogIn(SessionEnt session) { }
+            public void LogOut(SessionEnt session) { }
             //public void LogInOut(SessionEnt session, int entityTypeNr) => throw new NotImplementedException();
             public void ReadEntity(SessionEnt session, int entityTypeNr, int entityId) { }
             public void ReadEntity(SessionEnt session, int entityTypeNr, long entityId) => throw new NotImplementedException();
@@ -82,7 +83,7 @@ namespace BackendTest.Setup
             }
                                 
            
-            AuditDto AuditServiceI.Populate(AuditEnt e)
+            AuditDto AuditServiceI.Populate(SessionEnt session, AuditEnt e)
             {
                 throw new NotImplementedException();
             }

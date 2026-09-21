@@ -144,6 +144,7 @@ Crud.R,Read
 Crud.L,Read List
 Crud.U,Update
 Crud.D,Delete
+Action,Action
 PermAll,All Permissions
 PermEff,Effective Permissions
 User,User

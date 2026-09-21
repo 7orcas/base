@@ -6,8 +6,9 @@ namespace Backend.Base.User
     public interface UserServiceI
     {
         Task<UserEnt> GetUserById(long id);
+        Task<UserEnt?> GetUserForUpdate(UserDto dto);
         Task<List<UserEnt>> GetUserList(SessionEnt session, UserSearch search);
-        Task<UserEnt?> UpdateUser(UserDto user);
+        Task<UserEnt?> UpdateUser(UserEnt user, UserDto dto);
         Task<UserDto?> NewUser(SessionEnt session);
         Task<UserDto> PopulateList(SessionEnt session, UserEnt user);
         Task<UserDto> Populate(SessionEnt session, UserEnt user);

@@ -53,7 +53,7 @@ namespace Backend.Base.User
             return Ok(r);
         }
 
-        [CrudAtt(GC.CrudIgnore)]
+        [CrudAtt(GC.AuditIgnore)]
         [AuditIgnoreAtt]
         [HttpGet("search")]
         public async Task<IActionResult> GetSearch()
@@ -94,7 +94,7 @@ namespace Backend.Base.User
         [CrudAtt(GC.CrudRead)] 
         [AuditListAtt(GC.CrudRead)]
         [HttpGet("get/{id}")]
-        public async Task<IActionResult> GetUserById(long id)
+        public async Task<IActionResult> GetById(long id)
         {
             var user = await _userService.GetUserById(id);
             if (user == null)
@@ -115,7 +115,7 @@ namespace Backend.Base.User
         [CrudAtt(GC.CrudUpdate)] 
         [AuditListAtt(GC.CrudUpdate)]
         [HttpPost("update")]
-        public async Task<IActionResult> UpdateUser([FromBody] UpdateRequest<List<UserDto>> update)
+        public async Task<IActionResult> Update([FromBody] UpdateRequest<List<UserDto>> update)
         {
             var session = HttpContext.Items["session"] as SessionEnt;
             var list = update.Updates as List<UserDto>;
@@ -123,25 +123,34 @@ namespace Backend.Base.User
             //Validate 
             var vals = await _userService.ValidateUser(session, list);
             if (vals.Count > 0)
-            {
-                var v = new _ResponseDto
+                return Ok(new _ResponseDto
                 {
                     Valid = false,
                     Validations = vals
-                };
-                return Ok(v);
-            }
+                });
+            
 
             //Do updates
-            var listU = new List<UserDto> ();
+            var listBefore = new List<UserDto>();
+            var listUpdated = new List<UserDto> ();
             foreach (var dto in list)
             {
-                var user = await _userService.UpdateUser(dto);
+                var user = await _userService.GetUserForUpdate(dto);
+                if (user == null) continue;
+
+                var before = await _userService.Populate(session, user);
+                before.IsDelete = dto.IsDelete;
+                listBefore.Add(before);
+
+                user = await _userService.UpdateUser(user, dto);
                 if (user != null)
-                    listU.Add(await _userService.Populate(session, user));
+                {
+                    before.Id = user.Id; //link them
+                    listUpdated.Add(await _userService.Populate(session, user));
+                }
             }
 
-            return Ok(new _ResponseDto(listU));
+            return Ok(new _ResponseDto(listBefore, listUpdated));
         }
 
         /// <summary>

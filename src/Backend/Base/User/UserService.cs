@@ -69,7 +69,7 @@ namespace Backend.Base.User
             foreach (var dto in update)
             {
                 VersionI? version = null;
-                if (dto.IsValidatable())
+                if (dto.IsCheckVersion())
                     version = await _userRepo.GetVersion(dto.Id);
                 else if (dto.IsDelete) continue;
 
@@ -81,13 +81,21 @@ namespace Backend.Base.User
             return vals;
         }
 
-        public async Task<UserEnt?> UpdateUser(UserDto user)
+        public async Task<UserEnt?> GetUserForUpdate(UserDto dto)
         {
             //No action required
-            if (user.IsNew() && user.IsDelete)
+            if (dto.IsNew() && dto.IsDelete)
                 return null;
 
-            return await _userRepo.Update(user);
+            if (dto.IsNew())
+                return new UserEnt();
+
+            return await _userRepo.GetById(dto.Id);
+        }
+
+        public async Task<UserEnt> UpdateUser(UserEnt user, UserDto dto)
+        {
+            return await _userRepo.Update(user, dto);
         }
 
         public async Task<UserDto?> NewUser(SessionEnt session)

@@ -105,7 +105,7 @@ namespace Backend.Base.Org
             {
                 VersionI? version = null;
                 OrgDto? currentDto = null;
-                if (dto.IsValidatable())
+                if (dto.IsCheckVersion())
                 {
                     version = await _orgRepo.GetVersion(dto.Nr);
                     var ent = await GetOrg(dto.Nr);
