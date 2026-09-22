@@ -4,7 +4,7 @@
     public class AuditListAtt : Attribute
     {
         public int EntityTypeNr { set;  get; } = -1;
-        public string CrudAction { set; get; }
+        public string Action { set; get; }
 
         public AuditListAtt() {}
 
@@ -13,15 +13,15 @@
             EntityTypeNr = entityTypeNr;
         }
 
-        public AuditListAtt(string crudAction)
+        public AuditListAtt(string action)
         {
-            CrudAction = crudAction;
+            Action = action;
         }
 
-        public AuditListAtt(int entityTypeNr, string crudAction)
+        public AuditListAtt(int entityTypeNr, string action)
         {
             EntityTypeNr = entityTypeNr;
-            CrudAction = crudAction;
+            Action = action;
         }
     }
 }

@@ -103,7 +103,7 @@ namespace Backend.Base.User
             }
 
             var session = HttpContext.Items["session"] as SessionEnt;
-            var userDto = await _userService.Populate(session, user);
+            var userDto = await _userService.PopulateDto(session, user);
             return Ok(new _ResponseDto(userDto));
         }
 
@@ -135,18 +135,18 @@ namespace Backend.Base.User
             var listUpdated = new List<UserDto> ();
             foreach (var dto in list)
             {
-                var user = await _userService.GetUserForUpdate(dto);
+                var user = await _userService.GetUserOrCreate(dto);
                 if (user == null) continue;
 
-                var before = await _userService.Populate(session, user);
-                before.IsDelete = dto.IsDelete;
-                listBefore.Add(before);
+                var beforeDto = await _userService.PopulateDto(session, user);
+                beforeDto.IsDelete = dto.IsDelete;
+                listBefore.Add(beforeDto);
 
                 user = await _userService.UpdateUser(user, dto);
                 if (user != null)
                 {
-                    before.Id = user.Id; //link them
-                    listUpdated.Add(await _userService.Populate(session, user));
+                    beforeDto.Id = user.Id; //link them
+                    listUpdated.Add(await _userService.PopulateDto(session, user));
                 }
             }
 

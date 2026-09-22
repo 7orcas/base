@@ -83,7 +83,7 @@ namespace BackendTest.Setup
             }
                                 
            
-            AuditDto AuditServiceI.Populate(SessionEnt session, AuditEnt e)
+            AuditDto AuditServiceI.PopulateDto(SessionEnt session, AuditEnt e)
             {
                 throw new NotImplementedException();
             }

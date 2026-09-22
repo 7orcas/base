@@ -34,6 +34,7 @@ namespace Backend.Base.Audit
                         a.source,
                         a.entityTypeNr,
                         a.entityId,
+                        a.entityCode,
                         a.entityVersion,
                         a.userAccId,
                         a.masqueradeId,
@@ -115,13 +116,13 @@ namespace Backend.Base.Audit
                     }
                 }
 
-                if (!string.IsNullOrEmpty(search.CRUD))
+                if (!string.IsNullOrEmpty(search.Action))
                 {
                     var crudParams = new List<string>();
 
-                    for (var i = 0; i < search.CRUD.Length; i++)
+                    for (var i = 0; i < search.Action.Length; i++)
                     {
-                        var value = search.CRUD[i].ToString();
+                        var value = search.Action[i].ToString();
                         if (value == ",") continue;
                         var paramName = $"Crud{i}";
 
@@ -145,18 +146,20 @@ namespace Backend.Base.Audit
             long? masqueradeId,
             int entityTypeNr,
             long? entityId,
+            string? entityCode,
             int? entityVersion,
             string activity,
             string details)
         {
             await Sql.ExecuteAsync(
                     "INSERT INTO base.Audit " +
-                        "(orgNr, source, entityTypeNr, entityId, entityVersion, userAccId, masqueradeId, activity, details) " +
+                        "(orgNr, source, entityTypeNr, entityId, entityCode, entityVersion, userAccId, masqueradeId, activity, details) " +
                     "VALUES (" +
                         orgNr + "," +
                         sourceApp + "," +
                         entityTypeNr + "," +
                         (entityId == null ? "null" : entityId) + "," +
+                        (entityCode == null ? "null" : "'" + entityCode + "'") + "," +
                         (entityVersion == null ? "null" : entityVersion) + "," +
                         userAccId + "," +
                         (masqueradeId == null ? "null" : masqueradeId) + "," +

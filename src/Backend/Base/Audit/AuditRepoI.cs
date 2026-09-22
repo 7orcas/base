@@ -11,6 +11,7 @@
             long? masqueradeId,
             int entityTypeNr,
             long? entityId,
+            string? entityCode,
             int? entityVersion,
             string activity,
             string details);

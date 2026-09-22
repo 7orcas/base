@@ -81,7 +81,7 @@ namespace Backend.Base.User
             return vals;
         }
 
-        public async Task<UserEnt?> GetUserForUpdate(UserDto dto)
+        public async Task<UserEnt?> GetUserOrCreate(UserDto dto)
         {
             //No action required
             if (dto.IsNew() && dto.IsDelete)
@@ -114,7 +114,7 @@ namespace Backend.Base.User
             };
             user.Accounts.Add(NewAccount(session, user));
 
-            return await Populate(session, user);
+            return await PopulateDto(session, user);
         }
 
         private UserAccountEnt NewAccount(SessionEnt session, UserEnt user)
@@ -151,7 +151,7 @@ namespace Backend.Base.User
             return userDto;
         }
 
-        public async Task<UserDto> Populate(SessionEnt session, UserEnt user)
+        public async Task<UserDto> PopulateDto(SessionEnt session, UserEnt user)
         {
             var org = session.Org;
             var labels = session.Labels;
@@ -163,6 +163,7 @@ namespace Backend.Base.User
                 Accounts = new List<UserDto.UserAccountDto>()
             };
             CopyProperties(user, userDto);
+            userDto.Code = userDto.Username; //For auditing
 
             //Is the user locked out?
             var attemptsRule = org.Encoding.LoginAttemptRule;

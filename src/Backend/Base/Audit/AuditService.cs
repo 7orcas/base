@@ -69,23 +69,14 @@ namespace Backend.Base.Audit
         }
 
 
-        public AuditDto Populate(SessionEnt session, AuditEnt e)
+        public AuditDto PopulateDto(SessionEnt session, AuditEnt e)
         {
             var dto = new AuditDto
             {
-                Id = e.Id,
-                OrgNr = e.OrgNr,
-                Source = e.Source,
-                EntityTypeNr = e.EntityTypeNr,
-                EntityType = e.EntityType,
-                EntityId = e.EntityId,
-                EntityVersion = e.EntityVersion,
-                UserName = e.UserName,
-                Masquerade = e.Masquerade,
                 Updated = e.Created,
-                Activity = e.Activity,
-                Details = e.Details,
             };
+
+            BaseService.CopyProperties(e, dto);
 
             var l = session.Labels;
 
@@ -104,13 +95,13 @@ namespace Backend.Base.Audit
             return dto;
         }
 
-        public void LogAction(SessionEnt session, int entityTypeNr, long? entityId, int? entityVersion, string activity, string details)
+        public void LogAction(SessionEnt session, int entityTypeNr, string action, AuditInfo info)
         {
             Task.Run(async () =>
             {
                 try
                 {
-                    LogAuditRecord(session, entityTypeNr, entityId, entityVersion, activity, details);
+                    LogAuditRecord(session, entityTypeNr, action, info.Id, info.Code, info.Version, info.Json);
                 }
                 catch (Exception ex)
                 {
@@ -125,7 +116,7 @@ namespace Backend.Base.Audit
             {
                 try
                 {
-                    LogAuditRecord(session, GC.EntityTypeLogin, null, null, GC.AuditLogin, null);
+                    LogAuditRecord(session, GC.EntityTypeLogin, GC.AuditLogin, null, null, null, null);
                 }
                 catch (Exception ex)
                 {
@@ -140,7 +131,7 @@ namespace Backend.Base.Audit
             {
                 try
                 {
-                    LogAuditRecord(session, GC.EntityTypeLogout, null, null, GC.AuditLogin, null);
+                    LogAuditRecord(session, GC.EntityTypeLogout, GC.AuditLogout, null, null, null, null);
                 }
                 catch (Exception ex)
                 {
@@ -151,9 +142,10 @@ namespace Backend.Base.Audit
 
         private async void LogAuditRecord(SessionEnt session,
             int entityTypeNr,
-            long? entityId,
-            int? entityVersion,
             string? activity,
+            long? entityId,
+            string? entityCode,
+            int? entityVersion,
             string? details)
         {
             await _auditRepo.LogAuditRecord(
@@ -163,6 +155,7 @@ namespace Backend.Base.Audit
                 session.MasqueradeId,
                 entityTypeNr,
                 entityId,
+                entityCode,
                 entityVersion,
                 activity,
                 details);

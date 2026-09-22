@@ -28,7 +28,7 @@
                       ValueChanged="@((long? val) => data.EntityId = val)"
                       ValueExpression="() => data.EntityId" />
 
-    <CrudSelect @bind-Crud="data.CRUD" />
+    <ActionSelect @bind-Action="data.Action" />
 
     <MudStack Row="true" Spacing="2">
         <DateField LangCode="FromD"

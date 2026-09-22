@@ -258,6 +258,7 @@ CREATE TABLE base.audit (
     source INTEGER NOT NULL,
     entityTypeNr INTEGER NOT NULL,
     entityId BIGINT,
+	entityCode TEXT,
 	entityVersion INTEGER,
     userAccId BIGINT NOT NULL,
 	masqueradeId BIGINT,
@@ -270,6 +271,7 @@ COMMENT ON TABLE base.audit IS 'Log of all activities and CRUD transations ';
 COMMENT ON COLUMN base.audit.source IS 'Client source, eg web, mobile, api';
 COMMENT ON COLUMN base.audit.entityTypeNr IS 'The entity defined in GC EntityTypes, eg Role, Org';
 COMMENT ON COLUMN base.audit.entityId IS 'The primary key for the entity in question';
+COMMENT ON COLUMN base.audit.entityCode IS 'The code for the entity in question';
 COMMENT ON COLUMN base.audit.entityVersion IS 'The primary version number for the entity in question';
 COMMENT ON COLUMN base.audit.userAccId IS 'User account Id';
 COMMENT ON COLUMN base.audit.masqueradeId IS 'User account Id that is using masquerade';

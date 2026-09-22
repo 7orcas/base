@@ -29,6 +29,7 @@ MinV,Minimum value exceeded (%%)
 MaxSR,Maximum records returned
 Default,Default
 Updated,Updated
+Updates,Updates
 Org,Organisation
 Orgs,Organisations
 OrgD,Default Organisation
@@ -226,4 +227,5 @@ TextD,Text Delimiter
 TextDN,None
 TextDO,Comma (OR)
 Unaccent,Accent Insensitive Search
+Diffs,Differences
 <LAST>,<LAST LINE>

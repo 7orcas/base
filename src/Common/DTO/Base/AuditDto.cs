@@ -13,6 +13,7 @@ namespace Common.DTO.Base
         public string? EntityType { get; set; }
         public long? EntityId { get; set; }
         public int? EntityVersion { get; set; }
+        public string? EntityCode { get; set; }
         public string? UserName { get; set; }
         public string? Masquerade { get; set; }
         public string Activity { get; set; }

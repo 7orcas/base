@@ -10,6 +10,7 @@ namespace Backend.Base.Audit.Ent
         public int Source {  get; set; }
         public int EntityTypeNr {  get; set; }
         public long? EntityId { get; set; }
+        public string? EntityCode { get; set; }
         public int? EntityVersion { get; set; }
         public long UserAccId { get; set; }
         public long? MasqueradeId { get; set; }

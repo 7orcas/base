@@ -33,7 +33,7 @@ namespace Backend.Core.Middleware
                 if (audit != null)
                 {
                     attr.EntityTypeNr = audit.EntityTypeNr;
-                    attr.CrudAction = audit.CrudAction;
+                    attr.Action = audit.Action;
                 }
 
                 //Class assigned attibutes (second priority)
@@ -43,8 +43,8 @@ namespace Backend.Core.Middleware
                 {
                     if (attr.EntityTypeNr < 1)
                         attr.EntityTypeNr = classAudit.EntityTypeNr;
-                    if (attr.CrudAction == null)
-                        attr.CrudAction = classAudit.CrudAction;
+                    if (attr.Action == null)
+                        attr.Action = classAudit.Action;
                 }
 
                 return attr;
@@ -57,8 +57,10 @@ namespace Backend.Core.Middleware
 
     public class AuditInfo 
     { 
-        public string Json { get; set; }
-        public int Version { get; set; }
+        public long? Id { get; set; }
+        public string? Code { get; set; }
+        public int? Version { get; set; }
+        public string? Json { get; set; }
     }
 
 }

@@ -58,7 +58,7 @@ namespace Backend.Core.Middleware
             //No action
             if (audit == null 
                 || audit.EntityTypeNr == -1 
-                || audit.CrudAction == null) 
+                || audit.Action == null) 
                 return;
 
             //Invalid response
@@ -68,21 +68,17 @@ namespace Backend.Core.Middleware
             try
             {
 
-                if (audit.CrudAction == GC.CrudReadList)
+                if (audit.Action == GC.CrudReadList 
+                    || audit.Action == GC.CrudRead)
                 {
-                    LogReads(context, _auditService, session, audit.EntityTypeNr, audit.CrudAction);
+                    LogReads(session, context, _auditService, audit);
                     return;
                 }
 
-                if (audit.CrudAction == GC.CrudRead)
-                {
-                    LogReads(context, _auditService, session, audit.EntityTypeNr, audit.CrudAction);
-                    return;
-                }
 
-                if (audit.CrudAction == GC.CrudUpdate)
+                if (audit.Action == GC.CrudUpdate)
                 {
-                    LogUpdates(context, _auditService, session, audit.EntityTypeNr);
+                    LogUpdates(session, context, _auditService, audit);
                     return;
                 }
                 
@@ -93,80 +89,42 @@ namespace Backend.Core.Middleware
             }
         }
 
-        private void LogReads(HttpContext context, AuditServiceI _auditService, SessionEnt session, int entityTypeNr, string crudAction)
+        private void LogReads(SessionEnt session, HttpContext context, AuditServiceI _auditService, AuditListAtt attr)
         {
-            long? id = null;
-            int? version = GetEntityVersion(context);
-            string? details = null;
-
-            //Get passed in parameters (captured in AuditActionFilter)
-            if (context.Items.TryGetValue(AuditArg, out var value))
-            {
-                var args = value as Dictionary<string, object?>;
-
-                foreach (var arg in args)
-                {
-                    if (id == null) id = GetEntityId(arg);
-                    if (details == null) details = GetSearch(arg);
-                }
-            }
-
-            _auditService.LogAction(session, entityTypeNr, id, version, crudAction, details);
+            AuditInfo info = GetAuditInfo(context);
+            _auditService.LogAction(session, attr.EntityTypeNr, attr.Action, info);
         }
 
-        private void LogUpdates(HttpContext context, AuditServiceI _auditService, SessionEnt session, int entityTypeNr)
+        private void LogUpdates(SessionEnt session, HttpContext context, AuditServiceI _auditService, AuditListAtt attr)
         {
-            LogUpdate(context, _auditService, session, entityTypeNr, GC.CrudCreate, AuditCreate);
-            LogUpdate(context, _auditService, session, entityTypeNr, GC.CrudDelete, AuditDelete);
-            LogUpdate(context, _auditService, session, entityTypeNr, GC.CrudUpdate, AuditUpdate);
+            LogUpdate(session, context, _auditService,attr.EntityTypeNr, GC.CrudCreate, AuditCreate);
+            LogUpdate(session, context, _auditService,attr.EntityTypeNr, GC.CrudDelete, AuditDelete);
+            LogUpdate(session, context, _auditService,attr.EntityTypeNr, GC.CrudUpdate, AuditUpdate);
         }
 
-        private void LogUpdate(HttpContext context, AuditServiceI _auditService, SessionEnt session, int entityTypeNr, string crud, string param)
+        private void LogUpdate(SessionEnt session, HttpContext context, AuditServiceI _auditService, int entityTypeNr, string crud, string param)
         {
             if (context.Items.TryGetValue(param, out var records))
             {
                 var dtos = records as Dictionary<long, AuditInfo>;
                 foreach (var kvp in dtos)
-                    _auditService.LogAction(session, entityTypeNr, kvp.Key, kvp.Value.Version, crud, kvp.Value.Json);
+                    _auditService.LogAction(session, entityTypeNr, crud, kvp.Value);
             }
         }
 
-        private long? GetEntityId(KeyValuePair<string, object?> arg)
-        {
-            if (arg.Key.ToLower() == "id" && arg.Value != null)
-            {
-                if (long.TryParse(arg.Value.ToString(), out long parsedId))
-                {
-                    return parsedId;
-                }
-            }
-            return null;
-        }
+        
 
-        private int? GetEntityVersion(HttpContext context)
+        private AuditInfo GetAuditInfo(HttpContext context)
         {
             if (context.Items.TryGetValue(AuditInfo, out var record))
             {
                 var info = record as AuditInfo;
-                return info.Version;
+                return info;
             }
-            return null;
+            return new AuditInfo();
         }
 
-        private string? GetSearch(KeyValuePair<string, object?> arg)
-        {
-            if (arg.Value is _BaseSearch search)
-            {
-                return JsonSerializer.Serialize(search,
-                    search.GetType(),
-                    new JsonSerializerOptions
-                    {
-                        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-                    }
-                    );
-            }
-            return null;
-        }
+        
 
 
     }

@@ -16,13 +16,14 @@
               Striped="true">
 
         <ColGroup>
-            <col style="width:10%;" />
+            <col style="width:5%;" />
             <col style="width:15%;" />
             <col style="width:10%;" />
             <col style="width:10%;" />
+            <col style="width:10%;" />
             <col style="width:15%;" />
             <col style="width:15%;" />
-            <col style="width:20%;" />
+            <col style="width:15%;" />
         </ColGroup>
         <HeaderContent>
             <MudTh><Label Key="Source" /></MudTh>
@@ -36,6 +37,15 @@
                 </div>
             </MudTh>
             <MudTh><Label Key="Id" /></MudTh>
+            <MudTh>
+                <div style="display:flex; flex-direction:column;">
+                    <div style="display:flex; align-items:center;">
+                        <Label Key="Code" />
+                        <TableColumnFilterIcon Filter="filter" FilterName="Code" />
+                    </div>
+                    <TableColumnFilterInput Filter="filter" FilterName="Code" />
+                </div>
+            </MudTh>
             <MudTh><Label Key="Version" /></MudTh>
             <MudTh>
                 <div style="display:flex; flex-direction:column;">
@@ -67,6 +77,10 @@
             <MudTd Class="@GetListRowClass(@context)"
                    @onclick="() => OnItemSelected.InvokeAsync(context)">
                 @context.dto.EntityId
+            </MudTd>
+            <MudTd Class="@GetListRowClass(@context)"
+                   @onclick="() => OnItemSelected.InvokeAsync(context)">
+                @context.dto.EntityCode
             </MudTd>
             <MudTd Class="@GetListRowClass(@context)"
                    @onclick="() => OnItemSelected.InvokeAsync(context)">
@@ -111,6 +125,7 @@
         {
             filter.Add("Entity", nameof(AuditDto.EntityType), FilterUtil.CompareStart)
                   .Add("Username", nameof(AuditDto.UserName))
+                  .Add("Code", nameof(AuditDto.EntityCode))
                   .Add("Crud", nameof(AuditDto.Activity));
         }
     }

@@ -1,4 +1,5 @@
 ﻿using DiffMatchPatch;
+using DocumentFormat.OpenXml.EMMA;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using DocumentFormat.OpenXml.Spreadsheet;
 using DocumentFormat.OpenXml.Wordprocessing;
@@ -9,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Org.BouncyCastle.Asn1.Ocsp;
 using System.Runtime.Intrinsics.Arm;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 
 namespace Backend.Core.Middleware
@@ -39,12 +41,28 @@ namespace Backend.Core.Middleware
                     http.Items[AuditCapture] = "false";
                     return;
                 }
-                
+
+                var info = new AuditInfo();
+                http.Items[AuditInfo] = info;
+
+                //Get call parameters (if exist)
+                if (http.Items.TryGetValue(AuditArg, out var value))
+                {
+                    var args = value as Dictionary<string, object?>;
+
+                    foreach (var arg in args)
+                    {
+                        if (info.Id == null) info.Id = GetEntityId(arg);
+                        if (info.Json == null) info.Json = GetSearch(arg);
+                    }
+                }
+
                 //Individual objects (ie getById)
                 var dto = response.Result as _BaseDto;
                 if (dto != null)
                 {
-                    CaptureGetById(http, dto);
+                    info.Code = dto.Code;
+                    info.Version = dto.Version;
                     return;
                 }
 
@@ -58,12 +76,25 @@ namespace Backend.Core.Middleware
             }
         }
 
-        private void CaptureGetById(HttpContext context, _BaseDto dto)
+        private long? GetEntityId(KeyValuePair<string, object?> arg)
         {
-            context.Items[AuditInfo] = new AuditInfo
+            if (arg.Key.ToLower() == "id" && arg.Value != null)
             {
-                Version = dto.Version
-            };
+                if (long.TryParse(arg.Value.ToString(), out long parsedId))
+                {
+                    return parsedId;
+                }
+            }
+            return null;
+        }
+
+        private string? GetSearch(KeyValuePair<string, object?> arg)
+        {
+            if (arg.Value is _BaseSearch search)
+            {
+                return JsonSerializer.Serialize(search, search.GetType(), options);
+            }
+            return null;
         }
 
 
@@ -81,33 +112,46 @@ namespace Backend.Core.Middleware
                 if (dto.IsDelete && dto.IsNew())
                     continue; //Ignore
 
-                var before = JsonSerializer.Serialize(dto, dto.GetType());
 
                 if (dto.IsDelete)
                 {
                     deletes[dto.Id] = new AuditInfo{
-                        Json = before,
-                        Version = dto.Version
+                        Id = dto.Id,
+                        Code = dto.Code,
+                        Version = dto.Version,
+                        Json = JsonSerializer.Serialize(dto, dto.GetType(), options)
                     };
                     continue;
                 }
 
+                var before = JsonSerializer.Serialize(dto, dto.GetType());
                 var update = listUpdate.FirstOrDefault(x => x.Id == dto.Id);
-                var after = JsonSerializer.Serialize(update, update.GetType());
+                if (update == null)
+                    continue;
+
 
                 if (dto.Version <= 0)
+                {
+                    var j = JsonSerializer.Serialize(update, update.GetType(), options);
+                    RemoveObjectsWithZeroId(j);
                     creates[dto.Id] = new AuditInfo
                     {
-                        Json = after,
-                        Version = dto.Version
+                        Id = update.Id,
+                        Code = update.Code,
+                        Version = update.Version,
+                        Json = j
                     };
+                }
                 else
                 {
+                    var after = JsonSerializer.Serialize(update, update.GetType());
                     var diff = jdp.Diff(before, after);
                     updates[dto.Id] = new AuditInfo
                     {
-                        Json = diff,
-                        Version = dto.Version
+                        Id = update.Id,
+                        Code = update.Code,
+                        Version = dto.Version,
+                        Json = diff
                     };
                 }
             }
@@ -116,6 +160,42 @@ namespace Backend.Core.Middleware
             context.Items[AuditUpdate] = updates;
             context.Items[AuditDelete] = deletes;
         }
+
+        private static void RemoveObjectsWithZeroId(JsonNode? node)
+        {
+            if (node is JsonArray array)
+            {
+                for (int i = array.Count - 1; i >= 0; i--)
+                {
+                    var item = array[i];
+
+                    if (item is JsonObject obj &&
+                        obj.TryGetPropertyValue("Id", out var idNode) &&
+                        idNode is not null &&
+                        int.TryParse(idNode.ToJsonString(), out var id) &&
+                        id == 0)
+                    {
+                        array.RemoveAt(i);
+                        continue;
+                    }
+
+                    RemoveObjectsWithZeroId(item);
+                }
+            }
+            else if (node is JsonObject obj)
+            {
+                foreach (var property in obj.ToList())
+                {
+                    RemoveObjectsWithZeroId(property.Value);
+                }
+            }
+        }
+
+
+        private JsonSerializerOptions options = new JsonSerializerOptions
+        {
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+        };
 
     }
 }

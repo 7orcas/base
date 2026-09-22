@@ -23,6 +23,9 @@
                     }
                     else if (dto.Activity == GC.CrudUpdate)
                     {
+                        <MudText>
+                            @GetLabel("Updates"):
+                        </MudText>
                         <pre>@dto.Details</pre>
                     }
                     else
