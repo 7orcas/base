@@ -202,23 +202,31 @@ namespace Backend.Base.User
             foreach (var role in roles)
             {
                 var r = accountDto.Roles.Find(r => r.RoleId == role.Id);
+                var codeAudit = role.Code;
 
                 if (r != null)
                 {
                     r.Code = role.Code;
                     r.Description = role.Description;
                     r.IsRoleActive = role.IsActive;
+                    codeAudit += r.IsActive ? " a" : " n";
                 }
                 else
                 {
-                    accountDto.Roles.Add(new UserDto.UserAccountRoleDto
+                    r = new UserDto.UserAccountRoleDto
                     {
                         RoleId = role.Id,
                         Code = role.Code,
                         Description = role.Description,
                         IsRoleActive = role.IsActive
-                    });
+                    };
+                    codeAudit += " x";
+                    accountDto.Roles.Add(r);
                 }
+
+                //force code in audit
+                r.CodeAudit = codeAudit; 
+
             }
 
             //Remove any roles that are not in the org or the base org

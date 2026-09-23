@@ -7,6 +7,7 @@ using JsonDiffPatchDotNet;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Newtonsoft.Json.Linq;
 using Org.BouncyCastle.Asn1.Ocsp;
 using System.Runtime.Intrinsics.Arm;
 using System.Text.Json;
@@ -17,6 +18,7 @@ namespace Backend.Core.Middleware
 {
     public class AuditActionFilter : AuditActionConstants, IActionFilter
     {
+
         public void OnActionExecuting(ActionExecutingContext context) 
         {
             //Get request arguments
@@ -53,7 +55,7 @@ namespace Backend.Core.Middleware
                     foreach (var arg in args)
                     {
                         if (info.Id == null) info.Id = GetEntityId(arg);
-                        if (info.Json == null) info.Json = GetSearch(arg);
+                        if (info.Json == null) info.Json = GetSearch(arg, response.RecordCount);
                     }
                 }
 
@@ -88,11 +90,18 @@ namespace Backend.Core.Middleware
             return null;
         }
 
-        private string? GetSearch(KeyValuePair<string, object?> arg)
+        private string? GetSearch(KeyValuePair<string, object?> arg, int? recordCount)
         {
+            var rc = recordCount.HasValue ? recordCount.ToString() : "";
             if (arg.Value is _BaseSearch search)
             {
-                return JsonSerializer.Serialize(search, search.GetType(), options);
+                var json = JsonSerializer.Serialize(search, search.GetType(), options);
+                var obj = JsonNode.Parse(json)?.AsObject();
+                if (obj != null)
+                {
+                    obj["RecordsReturned"] = rc;
+                    return obj.ToJsonString(options);
+                }
             }
             return null;
         }
@@ -115,16 +124,20 @@ namespace Backend.Core.Middleware
 
                 if (dto.IsDelete)
                 {
+                    var node = JsonNode.Parse(
+                        JsonSerializer.Serialize(dto, dto.GetType(), options)
+                    );
+                    RemoveObjectsWithZeroId(node);
+
                     deletes[dto.Id] = new AuditInfo{
                         Id = dto.Id,
                         Code = dto.Code,
                         Version = dto.Version,
-                        Json = JsonSerializer.Serialize(dto, dto.GetType(), options)
+                        Json = node.ToString()
                     };
                     continue;
                 }
 
-                var before = JsonSerializer.Serialize(dto, dto.GetType());
                 var update = listUpdate.FirstOrDefault(x => x.Id == dto.Id);
                 if (update == null)
                     continue;
@@ -147,14 +160,22 @@ namespace Backend.Core.Middleware
                 }
                 else
                 {
+                    var before = JsonSerializer.Serialize(dto, dto.GetType());
                     var after = JsonSerializer.Serialize(update, update.GetType());
-                    var diff = jdp.Diff(before, after);
+                    var diffJson = jdp.Diff(before, after);
+                    var diffFormat = "";
+                    if (!string.IsNullOrWhiteSpace(diffJson))
+                    {
+                        var diff = JToken.Parse(diffJson);
+                        diffFormat = AuditJsonDiff.ToAuditEntries(diff);
+                    }
+
                     updates[dto.Id] = new AuditInfo
                     {
                         Id = update.Id,
                         Code = update.Code,
                         Version = dto.Version,
-                        Json = diff
+                        Json = diffFormat
                     };
                 }
             }
@@ -200,4 +221,6 @@ namespace Backend.Core.Middleware
         };
 
     }
+
+
 }

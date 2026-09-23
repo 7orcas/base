@@ -99,6 +99,12 @@ namespace Backend.Base.Audit
                     parameters.Add("Username", SqlParameter(search.Username, search));
                 }
 
+                if (!string.IsNullOrWhiteSpace(search.EntityCode))
+                {
+                    sql += " AND " + SqlUnaccent("a.entityCode", "EntityCode", search);
+                    parameters.Add("EntityCode", SqlParameter(search.EntityCode, search));
+                }
+
                 if (search.EntityTypeNrs != null)
                 {
                     if (search.EntityTypeNrs.Count == 0)

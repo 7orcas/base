@@ -112,8 +112,6 @@ namespace Backend.Core.Middleware
             }
         }
 
-        
-
         private AuditInfo GetAuditInfo(HttpContext context)
         {
             if (context.Items.TryGetValue(AuditInfo, out var record))
@@ -123,9 +121,6 @@ namespace Backend.Core.Middleware
             }
             return new AuditInfo();
         }
-
-        
-
 
     }
 }
