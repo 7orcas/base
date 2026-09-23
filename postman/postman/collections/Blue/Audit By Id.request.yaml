@@ -1,9 +1,9 @@
 $kind: http-request
 description: Audit listing
-url: https://localhost:6002/v123/api/audit/get/53
+url: https://localhost:6002/v123/api/audit/get/96
 method: GET
 headers:
-  Blue-Api-Key: X123250910,$,$,1
+  Blue-Api-Key: X123250923,$,$,1
 body:
   type: json
   content: ""

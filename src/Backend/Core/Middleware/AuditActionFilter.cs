@@ -132,14 +132,17 @@ namespace Backend.Core.Middleware
 
                 if (dto.Version <= 0)
                 {
-                    var j = JsonSerializer.Serialize(update, update.GetType(), options);
-                    RemoveObjectsWithZeroId(j);
+                    var node = JsonNode.Parse(
+                        JsonSerializer.Serialize(update, update.GetType(), options)
+                    );
+                    RemoveObjectsWithZeroId(node);
+
                     creates[dto.Id] = new AuditInfo
                     {
                         Id = update.Id,
                         Code = update.Code,
                         Version = update.Version,
-                        Json = j
+                        Json = node.ToString()
                     };
                 }
                 else
@@ -173,7 +176,7 @@ namespace Backend.Core.Middleware
                         obj.TryGetPropertyValue("Id", out var idNode) &&
                         idNode is not null &&
                         int.TryParse(idNode.ToJsonString(), out var id) &&
-                        id == 0)
+                        id <= 0)
                     {
                         array.RemoveAt(i);
                         continue;
@@ -190,7 +193,6 @@ namespace Backend.Core.Middleware
                 }
             }
         }
-
 
         private JsonSerializerOptions options = new JsonSerializerOptions
         {

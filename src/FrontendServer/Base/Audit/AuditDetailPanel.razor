@@ -26,7 +26,9 @@
                         <MudText>
                             @GetLabel("Updates"):
                         </MudText>
-                        <pre>@dto.Details</pre>
+                        <pre style="font-family: inherit; font-size: inherit; margin: 0;">
+                            @dto.Details
+                        </pre>
                     }
                     else
                     {
@@ -36,7 +38,21 @@
                             @foreach (var kvp in json)
                             {
                                 <div>
-                                    <strong>@kvp.Key:</strong> @kvp.Value
+                                    <strong>@kvp.Key:</strong>
+
+                                    @if (kvp.Value.ValueKind == JsonValueKind.Array ||
+                                            kvp.Value.ValueKind == JsonValueKind.Object)
+                                    {
+                                        <pre style="font-family: inherit; font-size: inherit; margin: 0;">
+                                            @JsonSerializer.Serialize(
+                                            JsonSerializer.Deserialize<object>(kvp.Value.GetRawText()),
+                                            new JsonSerializerOptions { WriteIndented = true })
+                                        </pre>
+                                    }
+                                    else
+                                    {
+                                        @kvp.Value.ToString()
+                                    }
                                 </div>
                             }
                         }

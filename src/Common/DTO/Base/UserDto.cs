@@ -44,6 +44,7 @@ namespace Common.DTO.Base
 
         public class UserAccountPermissionDto 
         {
+            public long Id { get; private set; } = -1; //prevents audit logging this object
             public int PermissionNr { get; set; }
             public string Code { get; set; }
             public string Crud { get; set; }

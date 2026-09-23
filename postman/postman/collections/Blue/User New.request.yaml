@@ -3,7 +3,7 @@ description: Audit listing
 url: https://localhost:6002/v123/api/user/update
 method: POST
 headers:
-  Blue-Api-Key: X123250921,$,$,1
+  Blue-Api-Key: X123250923,$,$,1
 body:
   type: json
   content: "{\r
@@ -14,15 +14,15 @@ body:
 
     \        {\r
 
-    \        \"username\": \"user11\",\r
+    \        \"username\": \"ZZZ\",\r
 
-    \        \"version\": 16,\r
+    \        \"version\": 0,\r
 
-    \        \"email\": \"xx123@16\",\r
+    \        \"email\": \"xx123@12\",\r
 
     \r
 
-    \        \"passwordNew\": null,\r
+    \        \"passwordNew\": \"GenericPa$$w0rd\",\r
 
     \        \"isEmailVerified\": true,\r
 
@@ -48,7 +48,7 @@ body:
 
     \            {\r
 
-    \                \"userId\": 11,\r
+    \                \"userId\": -1,\r
 
     \                \"orgCode\": \"Blue\",\r
 
@@ -424,7 +424,7 @@ body:
 
     \                \"permissions\": [],\r
 
-    \                \"id\": 111,\r
+    \                \"id\": -1,\r
 
     \                \"orgNr\": 1,\r
 
@@ -446,7 +446,7 @@ body:
 
     \        ],\r
 
-    \        \"id\": 11,\r
+    \        \"id\": -1,\r
 
     \        \"orgNr\": 1,\r
 
@@ -473,4 +473,4 @@ auth:
   type: bearer
   credentials:
     token: ""
-order: 9000
+order: 8418

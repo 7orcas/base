@@ -25,4 +25,4 @@ auth:
   type: bearer
   credentials:
     token: ""
-order: 7000
+order: 6000
