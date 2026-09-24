@@ -162,9 +162,6 @@ namespace Backend.Core.Middleware
                 else
                 {
                     var before = JsonSerializer.Serialize(dto, dto.GetType());
-                    //PopulateAuditCodeDELETE_ME(update);
-                    //AuditCodeDELETE_ME.ProcessChangedObjects(before, update, PopulateAuditCode);
-
                     var after = JsonSerializer.Serialize(update, update.GetType());
                     var diffJson = jdp.Diff(before, after);
                     var diffFormat = "";
@@ -218,101 +215,6 @@ namespace Backend.Core.Middleware
                 }
             }
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        public static void PopulateAuditCodeDELETE_ME(object? obj)
-        {
-            if (obj == null)
-                return;
-
-            PopulateAuditCodeInternalDELETE_ME(obj, new HashSet<object>(ReferenceEqualityComparer.Instance));
-        }
-
-        private static void PopulateAuditCodeInternalDELETE_ME(
-            object obj,
-            HashSet<object> visited)
-        {
-            if (!visited.Add(obj))
-                return;
-
-            var type = obj.GetType();
-
-            // If both properties exist, copy Code -> AuditCode when AuditCode is null
-            var codeProp = type.GetProperty("Code");
-            var auditCodeProp = type.GetProperty("Audit_Code");
-
-            if (codeProp != null &&
-                auditCodeProp != null &&
-                auditCodeProp.CanWrite)
-            {
-                var auditCode = auditCodeProp.GetValue(obj);
-                var code = codeProp.GetValue(obj);
-
-                if (auditCode == null && code != null)
-                {
-                    auditCodeProp.SetValue(obj, code);
-                }
-            }
-
-            // Recurse into child properties
-            foreach (var prop in type.GetProperties())
-            {
-                if (!prop.CanRead)
-                    continue;
-
-                var value = prop.GetValue(obj);
-
-                if (value == null)
-                    continue;
-
-                // Ignore primitives and strings
-                if (prop.PropertyType.IsPrimitive ||
-                    prop.PropertyType.IsEnum ||
-                    prop.PropertyType == typeof(string) ||
-                    prop.PropertyType == typeof(DateTime) ||
-                    prop.PropertyType == typeof(DateTimeOffset) ||
-                    prop.PropertyType == typeof(Guid) ||
-                    prop.PropertyType == typeof(decimal))
-                {
-                    continue;
-                }
-
-                // Collections
-                if (value is System.Collections.IEnumerable collection &&
-                    value is not string)
-                {
-                    foreach (var item in collection)
-                    {
-                        if (item != null)
-                        {
-                            PopulateAuditCodeInternalDELETE_ME(item, visited);
-                        }
-                    }
-                }
-                else
-                {
-                    PopulateAuditCodeInternalDELETE_ME(value, visited);
-                }
-            }
-        }
-
 
         private JsonSerializerOptions options = new JsonSerializerOptions
         {
