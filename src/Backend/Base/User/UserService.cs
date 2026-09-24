@@ -209,7 +209,7 @@ namespace Backend.Base.User
                     r.Code = role.Code;
                     r.Description = role.Description;
                     r.IsRoleActive = role.IsActive;
-                    codeAudit += r.IsActive ? " a" : " n";
+                    codeAudit += AppendAuditCode(r);
                 }
                 else
                 {
@@ -220,13 +220,12 @@ namespace Backend.Base.User
                         Description = role.Description,
                         IsRoleActive = role.IsActive
                     };
-                    codeAudit += " x";
+                    codeAudit += AppendAuditCode(r); 
                     accountDto.Roles.Add(r);
                 }
 
                 //force code in audit
-                r.CodeAudit = codeAudit; 
-
+                r.Audit_Code = codeAudit; 
             }
 
             //Remove any roles that are not in the org or the base org

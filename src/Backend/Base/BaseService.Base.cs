@@ -117,6 +117,13 @@ public abstract class BaseService : SqlUtils
         return _tempIdService.GetTempId();
     }
 
+    public string AppendAuditCode (_BaseDto dto)
+    {
+        if (dto.IsNew())
+            return " " + GC.Audit_New;
+        return " " + (dto.IsActive ? GC.Audit_Active : GC.Audit_InActive);
+    }
+
     public static void CopyProperties<TSource, TDestination>(TSource source, TDestination destination)
     {
         if (source == null) throw new ArgumentNullException(nameof(source));

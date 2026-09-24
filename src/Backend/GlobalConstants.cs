@@ -25,6 +25,10 @@
         public const string ApiTestKey              = "Blue-Api-Key";
         public const string ApiTestKeyValue         = "X123";
 
+        public const string Audit_Active            = "A";
+        public const string Audit_InActive          = "I";
+        public const string Audit_New               = "N";
+
         public enum TokenType
         {
             JWT = 1,

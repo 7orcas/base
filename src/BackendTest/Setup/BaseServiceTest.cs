@@ -1,4 +1,5 @@
-﻿using Common.Search.Base;
+﻿using Backend.Core.Middleware;
+using Common.Search.Base;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using GC = Backend.GlobalConstants;
@@ -89,6 +90,11 @@ namespace BackendTest.Setup
             }
 
             void AuditServiceI.ConfigureSearch(SessionEnt session, AuditSearch search)
+            {
+                throw new NotImplementedException();
+            }
+
+            void AuditServiceI.LogAction(SessionEnt session, int entityTypeNr, string action, AuditInfo info)
             {
                 throw new NotImplementedException();
             }

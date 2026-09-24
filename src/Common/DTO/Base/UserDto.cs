@@ -36,7 +36,7 @@ namespace Common.DTO.Base
 
         public class UserAccountRoleDto : _BaseDto
         {
-            public string CodeAudit { get; set; } //provide the code to audit log
+            public string? Audit_Code { get; set; } //provide the code to audit log
             public long RoleId { get; set; }
             public bool IsRoleActive { get; set; }
             public DateTime? FromDate { get; set; }
