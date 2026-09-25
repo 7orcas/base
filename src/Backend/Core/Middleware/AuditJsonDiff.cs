@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using System.Text;
-using static Backend.Core.Middleware.AuditActionFilter;
+using GC = Backend.GlobalConstants;
 
 namespace Backend.Core.Middleware
 {
@@ -27,9 +27,21 @@ namespace Backend.Core.Middleware
             foreach (var entry in auditEntries)
             {
                 var propertyName = entry.Path.Split('.').Last();
+                var index = propertyName.IndexOf("[");
+                if (index > 0) propertyName = propertyName.Substring(0, index - 1);
+
                 if (IgnoreFields.Contains(propertyName))
                     continue;
-                sb.Append($"{entry.Path}: {entry.Before} -> {entry.After}{Environment.NewLine}");
+
+                if (entry.Path.Contains(GC.Audit_Code))
+                {
+                    var x = entry.After;
+                    index = x.IndexOf(GC.Audit_Code_prefix);
+                    if (index > 0) x = x.Substring(0, index - 1);
+                    sb.Append($"{entry.Path}: {x}{Environment.NewLine}");
+                }
+                else
+                    sb.Append($"{entry.Path}: {entry.Before} -> {entry.After}{Environment.NewLine}");
             }
             return sb.ToString();
         }

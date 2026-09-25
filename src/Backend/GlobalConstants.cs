@@ -25,9 +25,11 @@
         public const string ApiTestKey              = "Blue-Api-Key";
         public const string ApiTestKeyValue         = "X123";
 
-        public const string Audit_Active            = "A";
-        public const string Audit_InActive          = "I";
-        public const string Audit_New               = "N";
+        public const string Audit_Code              = "Audit_Code";
+        public const string Audit_Code_prefix       = " >>";
+        public const string Audit_Active            = Audit_Code_prefix + "A";
+        public const string Audit_InActive          = Audit_Code_prefix + "I";
+        public const string Audit_New               = Audit_Code_prefix + "N";
 
         public enum TokenType
         {

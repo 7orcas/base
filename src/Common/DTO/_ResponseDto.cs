@@ -1,6 +1,7 @@
 ﻿using Common.Search;
 using Microsoft.AspNetCore.Http;
 using System.Collections;
+using System.Text.Json.Serialization;
 
 
 namespace Common.DTO
@@ -43,8 +44,9 @@ namespace Common.DTO
         public string? SuccessMessage { get; set; }
         public int? RecordCount { get; set; }
         public object? Result { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public object? AuditObject { get; set; }
-
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public List<ValidationDto>? Validations { get; set; } 
     }
 

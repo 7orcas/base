@@ -94,7 +94,7 @@ namespace Backend.Base.Org
             }
 
             var session = HttpContext.Items["session"] as SessionEnt;
-            var orgDto = _orgService.Populate(session, org);
+            var orgDto = _orgService.PopulateDto(session, org);
 
             var r = new _ResponseDto
             {
@@ -111,7 +111,7 @@ namespace Backend.Base.Org
         [CrudAtt(GC.CrudUpdate)]
         [AuditListAtt(GC.CrudUpdate)]
         [HttpPost("update")]
-        public async Task<IActionResult> UpdateOrg([FromBody] UpdateRequest<List<OrgDto>> update)
+        public async Task<IActionResult> Update([FromBody] UpdateRequest<List<OrgDto>> update)
         {
             var session = HttpContext.Items["session"] as SessionEnt;
             var list = update.Updates as List<OrgDto>;
@@ -129,20 +129,28 @@ namespace Backend.Base.Org
             }
 
             //Do updates
-            var listU = new List<OrgDto>();
+            var listBefore = new List<OrgDto>();
+            var listUpdated = new List<OrgDto>();
             foreach (var dto in list)
             {
-                var orgU = await _orgService.UpdateOrg(session, dto);
-                if (orgU != null)
-                    listU.Add(_orgService.Populate(session, orgU));
-            }
+                var org = await _orgService.GetOrgOrCreate(session, dto);
+                if (org == null) continue;
 
-            var r = new _ResponseDto
-            {
-                SuccessMessage = "Save Ok",
-                Result = listU
-            };
-            return Ok(r);
+                var beforeDto = _orgService.PopulateDto(session, org);
+                beforeDto.IsDelete = dto.IsDelete;
+                listBefore.Add(beforeDto);
+
+                org = await _orgService.UpdateOrg(session, dto);
+                if (org != null)
+                {
+                    var afterDto = _orgService.PopulateDto(session, org);
+                    afterDto.Id = afterDto.Nr;
+                    beforeDto.Nr = org.Nr; //link them
+                    beforeDto.Id = org.Nr; //link them
+                    listUpdated.Add(afterDto);
+                }
+            }
+            return Ok(new _ResponseDto(listBefore, listUpdated));
         }
 
     }

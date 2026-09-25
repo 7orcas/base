@@ -1,16 +1,7 @@
-﻿using DiffMatchPatch;
-using DocumentFormat.OpenXml.EMMA;
-using DocumentFormat.OpenXml.Office2010.Excel;
-using DocumentFormat.OpenXml.Spreadsheet;
-using DocumentFormat.OpenXml.Wordprocessing;
-using JsonDiffPatchDotNet;
-using Microsoft.AspNetCore.Http.HttpResults;
+﻿using JsonDiffPatchDotNet;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Newtonsoft.Json.Linq;
-using Org.BouncyCastle.Asn1.Ocsp;
-using System.Collections;
-using System.Runtime.Intrinsics.Arm;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
@@ -29,55 +20,66 @@ namespace Backend.Core.Middleware
 
         public void OnActionExecuted(ActionExecutedContext context)
         {
+            var response = null as _ResponseDto;
+
+            if (context.Result is OkObjectResult okResult &&
+                okResult.Value is _ResponseDto res)
+                response = res;
+
+            if (response == null) return;
+
+            if (!response.Valid || context.HttpContext.Items[AuditCapture] == null)
+                context.HttpContext.Items[AuditCapture] = "false";
+
+            if (response.Valid)
+            {
+                try
+                {
+                    if (context.HttpContext.Items[AuditCapture] == "true")
+                        Action(response, context);
+                    AuditCodeCleaner.NullAuditCode(response.Result);
+                }
+                catch { }
+            }
+            
+            response.AuditObject = null;
+        }
+
+        private void Action(_ResponseDto response, ActionExecutedContext context)
+        {
             var http = context.HttpContext;
 
-            if (http.Items[AuditCapture] == null ||
-                http.Items[AuditCapture] != "true")
-                return;
-            
-            if (context.Result is OkObjectResult okResult &&
-                okResult.Value is _ResponseDto response)
+            var info = new AuditInfo();
+            http.Items[AuditInfo] = info;
+
+            //Get call parameters (if exist)
+            if (http.Items.TryGetValue(AuditArg, out var value))
             {
-                if (!response.Valid)
+                var args = value as Dictionary<string, object?>;
+
+                foreach (var arg in args)
                 {
-                    response.AuditObject = null;
-                    http.Items[AuditCapture] = "false";
-                    return;
+                    if (info.Id == null) info.Id = GetEntityId(arg);
+                    if (info.Json == null) info.Json = GetSearch(arg, response.RecordCount);
                 }
-
-                var info = new AuditInfo();
-                http.Items[AuditInfo] = info;
-
-                //Get call parameters (if exist)
-                if (http.Items.TryGetValue(AuditArg, out var value))
-                {
-                    var args = value as Dictionary<string, object?>;
-
-                    foreach (var arg in args)
-                    {
-                        if (info.Id == null) info.Id = GetEntityId(arg);
-                        if (info.Json == null) info.Json = GetSearch(arg, response.RecordCount);
-                    }
-                }
-
-                //Individual objects (ie getById)
-                var dto = response.Result as _BaseDto;
-                if (dto != null)
-                {
-                    info.Code = dto.Code;
-                    info.Version = dto.Version;
-                    return;
-                }
-
-
-                //Updates
-                var listBefore = response.AuditObject as IEnumerable<_BaseDto>;
-                response.AuditObject = null;
-                var listUpdate = response.Result as IEnumerable<_BaseDto>;
-                if (listBefore != null && listUpdate != null)
-                    CaptureUpdates(http, listBefore, listUpdate);
             }
+
+            //Individual objects (ie getById)
+            var dto = response.Result as _BaseDto;
+            if (dto != null)
+            {
+                info.Code = dto.Code;
+                return;
+            }
+
+
+            //Updates
+            var listBefore = response.AuditObject as IEnumerable<_BaseDto>;
+            var listUpdate = response.Result as IEnumerable<_BaseDto>;
+            if (listBefore != null && listUpdate != null)
+                CaptureUpdates(http, listBefore, listUpdate);
         }
+
 
         private long? GetEntityId(KeyValuePair<string, object?> arg)
         {

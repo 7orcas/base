@@ -473,4 +473,4 @@ auth:
   type: bearer
   credentials:
     token: ""
-order: 8418
+order: 8000

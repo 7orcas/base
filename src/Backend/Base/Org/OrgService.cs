@@ -64,7 +64,7 @@ namespace Backend.Base.Org
             return orgDto;
         }
 
-        public OrgDto Populate(SessionEnt session, OrgEnt org)
+        public OrgDto PopulateDto(SessionEnt session, OrgEnt org)
         {
             var enc = org.Encoding;
             var langDtos = new List<OrgLangDto>();
@@ -75,6 +75,9 @@ namespace Backend.Base.Org
                     LangCode = lang.LangCode,
                     IsVisible = lang.IsVisible,
                     IsEditable = lang.IsEditable,
+                    Audit_Code = lang.LangCode 
+                               + AppendAuditCodeActive(lang.IsVisible)
+                               + AppendAuditCodeActive(lang.IsEditable)
                 });
             }
 
@@ -109,7 +112,7 @@ namespace Backend.Base.Org
                 {
                     version = await _orgRepo.GetVersion(dto.Nr);
                     var ent = await GetOrg(dto.Nr);
-                    currentDto = Populate(session, ent);
+                    currentDto = PopulateDto(session, ent);
                 }
                 else if (dto.IsDelete) continue;
 
@@ -147,12 +150,23 @@ namespace Backend.Base.Org
             }
         }
 
-        public async Task<OrgEnt?> UpdateOrg(SessionEnt session, OrgDto orgDto)
+        public async Task<OrgEnt?> GetOrgOrCreate(SessionEnt session, OrgDto dto)
         {
             //No action required
-            if (orgDto.IsNew() && orgDto.IsDelete)
+            if (dto.IsNew() && dto.IsDelete)
                 return null;
 
+            if (dto.IsNew() && session.IsService)
+                return new OrgEnt();
+            else if (dto.IsNew())
+                return null; //Not allowed
+
+            return await _orgRepo.GetByNr(dto.Nr);
+        }
+
+
+        public async Task<OrgEnt?> UpdateOrg(SessionEnt session, OrgDto orgDto)
+        {
             return await _orgRepo.Update(orgDto);
         }
 

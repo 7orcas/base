@@ -1,0 +1,150 @@
+$kind: http-request
+description: Audit listing
+url: https://localhost:6002/v123/api/org/update
+method: POST
+headers:
+  Blue-Api-Key: X123250925,$,$,1
+body:
+  type: json
+  content: "{\r
+
+    \    \"OverrideWarning\":true,\r
+
+    \    \"Updates\":[\r
+
+    \        {\r
+
+    \        \"nr\": 1,\r
+
+    \        \"version\": 11,\r
+
+    \        \"icon\": \"/images/Icons/BlueTransparentBlack512.png\",\r
+
+    \        \"langCode\": \"en\",\r
+
+    \        \"langLabelVariant\": 1,\r
+
+    \        \"apiKey\": \"X1231\",\r
+
+    \        \"mfa\": 0,\r
+
+    \        \"isRememberMeEnabled\": true,\r
+
+    \        \"isMasqueradeEnabled\": true,\r
+
+    \        \"isPasswordResetEnabled\": true,\r
+
+    \        \"isSignupEnabled\": true,\r
+
+    \        \"isEmailRequired\": true,\r
+
+    \        \"isEmailVerified\": true,\r
+
+    \        \"isEmailHtml\": true,\r
+
+    \        \"languages\": [\r
+
+    \            {\r
+
+    \                \"audit_Code\": null,\r
+
+    \                \"langCode\": \"en\",\r
+
+    \                \"isVisible\": true,\r
+
+    \                \"isEditable\": false\r
+
+    \            },\r
+
+    \            {\r
+
+    \                \"audit_Code\": null,\r
+
+    \                \"langCode\": \"de\",\r
+
+    \                \"isVisible\": true,\r
+
+    \                \"isEditable\": true\r
+
+    \            },\r
+
+    \            {\r
+
+    \                \"audit_Code\": null,\r
+
+    \                \"langCode\": \"c1\",\r
+
+    \                \"isVisible\": false,\r
+
+    \                \"isEditable\": false\r
+
+    \            },\r
+
+    \            {\r
+
+    \                \"audit_Code\": null,\r
+
+    \                \"langCode\": \"c2\",\r
+
+    \                \"isVisible\": true,\r
+
+    \                \"isEditable\": false\r
+
+    \            }\r
+
+    \        ],\r
+
+    \        \"passwordRule\": {\r
+
+    \            \"minLength\": 6,\r
+
+    \            \"maxLength\": 30,\r
+
+    \            \"isMixedCase\": true,\r
+
+    \            \"isNumber\": true,\r
+
+    \            \"isNonLetter\": true\r
+
+    \        },\r
+
+    \        \"loginAttemptRule\": {\r
+
+    \            \"warningAttempts\": 3,\r
+
+    \            \"warningPasswordResetLink\": true,\r
+
+    \            \"warningLockoutMinutes\": 1,\r
+
+    \            \"lockoutAttempts\": 5,\r
+
+    \            \"lockoutPasswordResetLink\": false\r
+
+    \        },\r
+
+    \        \"id\": 0,\r
+
+    \        \"updated\": \"2026-09-25T02:35:34.951614+00:00\",\r
+
+    \        \"orgNr\": 0,\r
+
+    \        \"code\": \"Blue\",\r
+
+    \        \"description\": \"Focus your heart\",\r
+
+    \        \"isActive\": true,\r
+
+    \        \"isDelete\": false,\r
+
+    \        \"isError\": false\r
+
+    \        }\r
+
+    \    ]\r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: ""
+order: 114611866053088

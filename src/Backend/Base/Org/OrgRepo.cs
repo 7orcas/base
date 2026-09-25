@@ -52,30 +52,27 @@ namespace Backend.Base.Org
 
         public async Task<OrgEnt?> GetByNr(int nr)
         {
+            var org = null as OrgEnt;
             try
             {
-                return await _context.Orgs
-                    .FirstOrDefaultAsync(x => x.Nr == nr);
-
+                org = await _context.Orgs.FirstOrDefaultAsync(x => x.Nr == nr);
+                org.Decode();
             }
             catch (Exception ex)
             {
                 _log.Error($"Error retrieving user with Nr {nr}", ex);
-                return null;
             }
+            return org;
         }
 
         public async Task<OrgEnt?> Update(OrgDto orgDto)
         {
-            var org = null as OrgEnt;
-
-            if (orgDto.IsNew())
-                org = new OrgEnt();
-            else
-                org = await GetByNr(orgDto.Nr);
+            var org = await GetByNr(orgDto.Nr);
 
             if (org == null)
                 return null;
+
+            org.Decode();
 
             org.Code = orgDto.Code;
             org.Description = orgDto.Description;

@@ -121,7 +121,12 @@ public abstract class BaseService : SqlUtils
     {
         if (dto.IsNew())
             return " " + GC.Audit_New;
-        return " " + (dto.IsActive ? GC.Audit_Active : GC.Audit_InActive);
+        return AppendAuditCodeActive(dto.IsActive);
+    }
+
+    public string AppendAuditCodeActive(bool active)
+    {
+        return " " + (active ? GC.Audit_Active : GC.Audit_InActive);
     }
 
     public static void CopyProperties<TSource, TDestination>(TSource source, TDestination destination)

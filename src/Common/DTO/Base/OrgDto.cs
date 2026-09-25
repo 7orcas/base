@@ -23,6 +23,7 @@
 
     public class OrgLangDto
     {
+        public string? Audit_Code { get; set; } //provide the code to audit log
         public string? LangCode { get; set; }
         public bool IsVisible { get; set; }
         public bool IsEditable { get; set; }

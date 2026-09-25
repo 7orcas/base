@@ -1,16 +1,4 @@
-﻿using DocumentFormat.OpenXml.Office2010.ExcelAc;
-using DocumentFormat.OpenXml.Office2016.Excel;
-using DocumentFormat.OpenXml.Spreadsheet;
-using DocumentFormat.OpenXml.Wordprocessing;
-using Microsoft.Extensions.Caching.Memory;
-using Npgsql;
-using Org.BouncyCastle.Asn1.Ocsp;
-using Superpower.Model;
-using System.Net.Mail;
-using System.Reflection.Emit;
-using System.Runtime.ConstrainedExecution;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using GC = Backend.GlobalConstants;
+﻿using GC = Backend.GlobalConstants;
 
 /// <summary>
 /// User methods
