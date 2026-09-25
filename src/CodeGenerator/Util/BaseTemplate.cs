@@ -26,9 +26,7 @@ namespace CodeGenerator.Util
         public bool CopyControllers { get; set; } = false;
         public bool CopyServices { get; set; } = false;
         public bool CopyRepos { get; set; } = false;
-        public string PermissionAtt = GC.PerMach
-
-
+       // public string PermissionAtt = GC.PermissionAttribute;
 
 
         public bool IsValid()

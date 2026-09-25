@@ -29,12 +29,12 @@ namespace CodeGenerator.Util
                 Directory.CreateDirectory(path);
             }
 
-            var entPath = Path.Combine(path, "Ent");
-            if (template.IsBackendEnt && !Directory.Exists(entPath))
-            {
-                Log("Creating directory: " + entPath);
-                Directory.CreateDirectory(entPath);
-            }
+            //var entPath = Path.Combine(path, "Ent");
+            //if (template.IsBackendEnt && !Directory.Exists(entPath))
+            //{
+            //    Log("Creating directory: " + entPath);
+            //    Directory.CreateDirectory(entPath);
+            //}
 
         }
 

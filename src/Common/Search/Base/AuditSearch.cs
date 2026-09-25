@@ -9,8 +9,9 @@ namespace Common.Search.Base
         public int? Source { get; set; }
         public string? EntityType { get; set; }
         public long? EntityId { get; set; }
+        public string? EntityCode { get; set; }
         public string? Username { get; set; }
-        public string? CRUD { get; set; }
+        public string? Action { get; set; }
         public DateTime? FromDate { get; set; }
         public TimeSpan? FromTime { get; set; }
         public DateTime? ToDate { get; set; }

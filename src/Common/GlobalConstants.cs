@@ -48,21 +48,33 @@ namespace Common
         public const int LenEmail       = 50;
 
         //Searches
-        public const int TextSearchStart    = 1;
-        public const int TextSearchContains = 2;
-        public const int TextSearchExtact   = 3;
+        public enum TextSearchCompare
+        {
+            Start = 0,
+            Contains = 1,
+            Exact = 2
+        }
+
+        public enum TextSearchDelimiter
+        {
+            None = 0,
+            Or = 1
+        }
 
         //Validation Status
         public const int ValStatusOk      = 0;
         public const int ValStatusError   = 1;
         
-        //Permissions and Audit actions
+        //Permissions and Audit Activities
         public const string CrudCreate   = "c";
         public const string CrudRead     = "r";
         public const string CrudUpdate   = "u";
         public const string CrudDelete   = "d";
         public const string CrudReadList = "l";
-        public const string CrudIgnore   = "x"; //Don't need a permission crud setting
+        public const string AuditLogin = "i";
+        public const string AuditLogout = "o";
+        public const string AuditIgnore   = "x"; //Don't need a permission crud setting
+
 
         public const int PerIgnore    = 0;
         public const int PerOrg       = 1;

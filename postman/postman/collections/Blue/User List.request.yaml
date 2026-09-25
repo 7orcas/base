@@ -1,0 +1,28 @@
+$kind: http-request
+description: Audit listing
+url: https://localhost:6002/v123/api/user/list
+method: POST
+headers:
+  Blue-Api-Key: X123250916,$,$,1
+body:
+  type: json
+  content: "{\r
+
+    \    \"UsernameX\":\"hone,user15\",\r
+
+    \    \"TextFieldSearchType\":1,\r
+
+    \    \"IsTextFieldSearchUnaccent\":true,\r
+
+    \    \"TextFieldDelimiterType\":1,\r
+
+    \    \"EmailX\":\"xx123@3.4,john\",\r
+
+    \    \"Role\":\"admin,label\"\r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: ""
+order: 6000

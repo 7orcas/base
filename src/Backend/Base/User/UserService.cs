@@ -1,16 +1,4 @@
-﻿using DocumentFormat.OpenXml.Office2010.ExcelAc;
-using DocumentFormat.OpenXml.Office2016.Excel;
-using DocumentFormat.OpenXml.Spreadsheet;
-using DocumentFormat.OpenXml.Wordprocessing;
-using Microsoft.Extensions.Caching.Memory;
-using Npgsql;
-using Org.BouncyCastle.Asn1.Ocsp;
-using Superpower.Model;
-using System.Net.Mail;
-using System.Reflection.Emit;
-using System.Runtime.ConstrainedExecution;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using GC = Backend.GlobalConstants;
+﻿using GC = Backend.GlobalConstants;
 
 /// <summary>
 /// User methods
@@ -45,9 +33,9 @@ namespace Backend.Base.User
             _userRepo = userRepo;
         }
 
-        public async Task<List<UserEnt>> GetUserList(UserSearch search)
+        public async Task<List<UserEnt>> GetUserList(SessionEnt session, UserSearch search)
         {
-            return await _userRepo.GetList(search);
+            return await _userRepo.GetList(search, session.UserAccount.Login.OrgNrDefault);
         }
 
         public async Task<UserEnt?> GetUserById(long id)
@@ -69,7 +57,7 @@ namespace Backend.Base.User
             foreach (var dto in update)
             {
                 VersionI? version = null;
-                if (dto.IsValidatable())
+                if (dto.IsCheckVersion())
                     version = await _userRepo.GetVersion(dto.Id);
                 else if (dto.IsDelete) continue;
 
@@ -81,13 +69,21 @@ namespace Backend.Base.User
             return vals;
         }
 
-        public async Task<UserEnt?> UpdateUser(UserDto user)
+        public async Task<UserEnt?> GetUserOrCreate(UserDto dto)
         {
             //No action required
-            if (user.IsNew() && user.IsDelete)
+            if (dto.IsNew() && dto.IsDelete)
                 return null;
 
-            return await _userRepo.Update(user);
+            if (dto.IsNew())
+                return new UserEnt();
+
+            return await _userRepo.GetById(dto.Id);
+        }
+
+        public async Task<UserEnt> UpdateUser(UserEnt user, UserDto dto)
+        {
+            return await _userRepo.Update(user, dto);
         }
 
         public async Task<UserDto?> NewUser(SessionEnt session)
@@ -106,7 +102,7 @@ namespace Backend.Base.User
             };
             user.Accounts.Add(NewAccount(session, user));
 
-            return await Populate(session, user);
+            return await PopulateDto(session, user);
         }
 
         private UserAccountEnt NewAccount(SessionEnt session, UserEnt user)
@@ -143,7 +139,7 @@ namespace Backend.Base.User
             return userDto;
         }
 
-        public async Task<UserDto> Populate(SessionEnt session, UserEnt user)
+        public async Task<UserDto> PopulateDto(SessionEnt session, UserEnt user)
         {
             var org = session.Org;
             var labels = session.Labels;
@@ -155,6 +151,7 @@ namespace Backend.Base.User
                 Accounts = new List<UserDto.UserAccountDto>()
             };
             CopyProperties(user, userDto);
+            userDto.Code = userDto.Username; //For auditing
 
             //Is the user locked out?
             var attemptsRule = org.Encoding.LoginAttemptRule;
@@ -193,23 +190,30 @@ namespace Backend.Base.User
             foreach (var role in roles)
             {
                 var r = accountDto.Roles.Find(r => r.RoleId == role.Id);
+                var codeAudit = role.Code;
 
                 if (r != null)
                 {
                     r.Code = role.Code;
                     r.Description = role.Description;
                     r.IsRoleActive = role.IsActive;
+                    codeAudit += AppendAuditCode(r);
                 }
                 else
                 {
-                    accountDto.Roles.Add(new UserDto.UserAccountRoleDto
+                    r = new UserDto.UserAccountRoleDto
                     {
                         RoleId = role.Id,
                         Code = role.Code,
                         Description = role.Description,
                         IsRoleActive = role.IsActive
-                    });
+                    };
+                    codeAudit += AppendAuditCode(r); 
+                    accountDto.Roles.Add(r);
                 }
+
+                //force code in audit
+                r.Audit_Code = codeAudit; 
             }
 
             //Remove any roles that are not in the org or the base org

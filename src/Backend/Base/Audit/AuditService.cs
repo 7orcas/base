@@ -69,43 +69,39 @@ namespace Backend.Base.Audit
         }
 
 
-        public AuditDto Populate(AuditEnt e)
+        public AuditDto PopulateDto(SessionEnt session, AuditEnt e)
         {
             var dto = new AuditDto
             {
-                Id = e.Id,
-                OrgNr = e.OrgNr,
-                Source = e.Source,
-                EntityTypeNr = e.EntityTypeNr,
-                EntityType = e.EntityType,
-                EntityId = e.EntityId,
-                UserName = e.UserName,
-                Masquerade = e.Masquerade,
                 Updated = e.Created,
-                Details = e.Details,
             };
 
-            switch (e.Crud)
+            BaseService.CopyProperties(e, dto);
+
+            var l = session.Labels;
+
+            switch (e.Activity)
             {
-                case GC.CrudCreate: dto.Crud = "Create"; break;
-                case GC.CrudRead: dto.Crud = "Read"; break;
-                case GC.CrudUpdate: dto.Crud = "Update"; break;
-                case GC.CrudDelete: dto.Crud = "Delete"; break;
-                case GC.CrudReadList: dto.Crud = "Read List"; break;
-                case GC.CrudIgnore: dto.Crud = ""; break;
-                default: dto.Crud = ""; break;
+                case GC.CrudCreate: dto.ActivityDescr = GetLabel("Crud.C", "Create", l); break;
+                case GC.CrudRead: dto.ActivityDescr = GetLabel("Crud.R", "Read", l); break;
+                case GC.CrudUpdate: dto.ActivityDescr = GetLabel("Crud.U", "Update", l); break;
+                case GC.CrudDelete: dto.ActivityDescr = GetLabel("Crud.D", "Delete", l); break;
+                case GC.CrudReadList: dto.ActivityDescr = GetLabel("Crud.L", "Read List", l); break;
+                case GC.AuditLogin: dto.ActivityDescr = GetLabel("Login", "Login", l); break;
+                case GC.AuditLogout: dto.ActivityDescr = GetLabel("Logout", "Logout", l); break;
+                default: dto.ActivityDescr = ""; break;
             }
 
             return dto;
         }
 
-        public void LogAction(SessionEnt session, int entityTypeNr, long? entityId, string crudAction, string details)
+        public void LogAction(SessionEnt session, int entityTypeNr, string action, AuditInfo info)
         {
             Task.Run(async () =>
             {
                 try
                 {
-                    LogAuditRecord(session, entityTypeNr, entityId, crudAction, details);
+                    LogAuditRecord(session, entityTypeNr, action, info.Id, info.Code, info.Version, info.Json);
                 }
                 catch (Exception ex)
                 {
@@ -114,13 +110,28 @@ namespace Backend.Base.Audit
             });
         }
 
-        public void LogInOut(SessionEnt session, int entityTypeNr)
+        public void LogIn(SessionEnt session)
         {
             Task.Run(async () =>
             {
                 try
                 {
-                    LogAuditRecord(session, entityTypeNr, null, null, null);
+                    LogAuditRecord(session, GC.EntityTypeLogin, GC.AuditLogin, null, null, null, null);
+                }
+                catch (Exception ex)
+                {
+                    _log.Error("Audit Read:" + ex.Message);
+                }
+            });
+        }
+
+        public void LogOut(SessionEnt session)
+        {
+            Task.Run(async () =>
+            {
+                try
+                {
+                    LogAuditRecord(session, GC.EntityTypeLogout, GC.AuditLogout, null, null, null, null);
                 }
                 catch (Exception ex)
                 {
@@ -131,8 +142,10 @@ namespace Backend.Base.Audit
 
         private async void LogAuditRecord(SessionEnt session,
             int entityTypeNr,
+            string? activity,
             long? entityId,
-            string? crud,
+            string? entityCode,
+            int? entityVersion,
             string? details)
         {
             await _auditRepo.LogAuditRecord(
@@ -142,11 +155,18 @@ namespace Backend.Base.Audit
                 session.MasqueradeId,
                 entityTypeNr,
                 entityId,
-                crud,
+                entityCode,
+                entityVersion,
+                activity,
                 details);
         }
-        
 
+        private string GetLabel(string langKey, string nullDefault, Dictionary<string, string> labels)
+        {
+            if (labels.ContainsKey(langKey))
+                return labels[langKey];
+            return nullDefault;
+        }
     }
 
 

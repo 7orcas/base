@@ -12,6 +12,7 @@ namespace Backend.Base.Role
     //[Authorize]
     [PermissionAtt(GC.PerRole)]
     [ApiController]
+    [AuditListAtt(GC.EntityTypeRole)]
     [Route("api/[controller]")]
     public class RoleController : BaseController
     {
@@ -33,7 +34,7 @@ namespace Backend.Base.Role
         }
 
         [CrudAtt(GC.CrudRead)]
-        [AuditListAtt(GC.EntityTypeRole)]
+        [AuditListAtt(GC.CrudRead)]
         [HttpGet("userroles")]
         public async Task<IActionResult> GetUserRoles()
         {
@@ -63,7 +64,7 @@ namespace Backend.Base.Role
         }
 
         [CrudAtt(GC.CrudRead)]
-        [AuditListAtt(GC.EntityTypeRole)]
+        [AuditListAtt(GC.CrudReadList)]
         [HttpGet("roles")]
         public async Task<IActionResult> GetRoles()
         {
@@ -92,7 +93,7 @@ Debug.WriteLine(m.Code + " " + m.Id);
         /// <param name="roleId"></param>
         /// <returns></returns>
         [CrudAtt(GC.CrudRead)] //ToDo
-        [AuditListAtt(GC.EntityTypeRole)]
+        [AuditListAtt(GC.CrudRead)]
         [HttpGet("get/{roleId}")]
         public async Task<IActionResult> GetRole(long roleId)
         {
@@ -146,7 +147,7 @@ Debug.WriteLine(m.Code + " " + m.Id);
         /// </summary>
         /// <returns></returns>
         [CrudAtt(GC.CrudUpdate)]
-        [AuditListAtt(GC.EntityTypeOrg)]
+        [AuditListAtt(GC.CrudUpdate)]
         [HttpPost("update")]
         public async Task<IActionResult> UpdateRoles([FromBody] List<RoleDto> dtos)
         {

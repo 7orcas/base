@@ -1,0 +1,87 @@
+﻿@inherits BaseComponent
+
+@using System.Linq.Expressions
+@using MudBlazor
+@using GC = FrontendServer.GlobalConstants;
+
+
+<MudSelect T="ActionOption"
+           Label="@GetLabel("Action")"
+           Style="@GetStyle(Width)"
+           MultiSelection="true"
+           SelectedValues="_selectedAction"
+           SelectedValuesChanged="OnSelectedValuesChanged"
+           Variant="@MudVariant">
+
+    @foreach (var option in ActionOptions)
+    {
+        <MudSelectItem Value="@option">
+            @option.Label
+        </MudSelectItem>
+    }
+
+</MudSelect>
+
+@code {
+    [Parameter] public string Action { get; set; }
+    [Parameter] public EventCallback<string> ActionChanged { get; set; }
+    [Parameter] public GC.TextFieldWidth Width { get; set; } = GC.TextFieldWidth.TextMedium;
+
+    private HashSet<ActionOption> _selectedAction = new();
+    private List<ActionOption> ActionOptions = new();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            ActionOptions.Add(new() { Value = GC.CrudCreate, Label = GetLabel("Crud.C") });
+            ActionOptions.Add(new() { Value = GC.CrudRead, Label = GetLabel("Crud.R") });
+            ActionOptions.Add(new() { Value = GC.CrudReadList, Label = GetLabel("Crud.L") });
+            ActionOptions.Add(new() { Value = GC.CrudUpdate, Label = GetLabel("Crud.U") });
+            ActionOptions.Add(new() { Value = GC.CrudDelete, Label = GetLabel("Crud.D") });   
+            ActionOptions.Add(new() { Value = GC.AuditLogin, Label = GetLabel("Login") });
+            ActionOptions.Add(new() { Value = GC.AuditLogout, Label = GetLabel("Logout") });
+        }
+    }
+
+    protected override void OnParametersSet()
+    {
+        _selectedAction.Clear();
+
+        if (string.IsNullOrWhiteSpace(Action))
+            return;
+
+        foreach (var value in Action.Split(',', StringSplitOptions.RemoveEmptyEntries))
+        {
+            var option = ActionOptions.FirstOrDefault(x => x.Value == value);
+
+            if (option != null)
+                _selectedAction.Add(option);
+        }
+        StateHasChanged();
+    }
+
+    private async Task OnSelectedValuesChanged(IEnumerable<ActionOption> values)
+    {
+        _selectedAction = values.ToHashSet();
+        Action = string.Join(",", _selectedAction.Select(x => x.Value));
+        await ActionChanged.InvokeAsync(Action);
+    }
+
+    public class ActionOption : IEquatable<ActionOption>
+    {
+        public string Value { get; set; }
+        public string Label { get; set; }
+        public override string ToString() => Label;
+
+        public bool Equals(ActionOption? other)
+            => other is not null && Value == other.Value;
+
+        public override bool Equals(object? obj)
+            => Equals(obj as ActionOption);
+
+        public override int GetHashCode()
+            => Value.GetHashCode();
+    }
+
+}

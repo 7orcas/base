@@ -40,7 +40,7 @@ namespace Backend.Base.Config
         /// This is a mix of organisation and user account config
         /// </summary>
         /// <returns></returns>
-        [CrudAtt(GC.CrudIgnore)]
+        [CrudAtt(GC.AuditIgnore)]
         [HttpGet("clientConfig")]
         public async Task<IActionResult> GetClientConfig()
         {

@@ -4,7 +4,7 @@
 @using MudBlazor
 @using GC = FrontendServer.GlobalConstants;
 
-<MudDatePicker Style="width:330px;"
+<MudDatePicker Style="@GetStyle()"
                Class="@GetClassLocal()"
                @ref="_dateField"
                Date="@Date"
@@ -47,6 +47,8 @@
 
         if (!ReadOnly && IsEditMode() && Required)
             clazz += " red-border";
+
+        clazz += " text-field text-field-330 ";
 
         return clazz;
     }

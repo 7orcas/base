@@ -149,6 +149,8 @@ namespace Backend.Base.Login
                     return loginErr;
                 }
 
+                account.Login = login;
+
                 //Is Mfa required?
                 var isMfaRequired = false;
                 var daysSinceLastLogin = login.Lastlogin.HasValue ? (DateTime.Today - login.Lastlogin.Value.Date).TotalDays : 100;
@@ -173,7 +175,7 @@ namespace Backend.Base.Login
                 var sessionKey = _environment.IsDevelopment() ? request.ApiTestKeyValue : null;
                 var session = await _sessionService.CreateSession(account, org, userConfig, masqueradeId, request.SourceApplication, 
                     ipAddress, sessionKey);
-                _auditService.LogInOut(session, GC.EntityTypeLogin);
+                _auditService.LogIn(session);
 
                 var tv = new TokenValues
                 {

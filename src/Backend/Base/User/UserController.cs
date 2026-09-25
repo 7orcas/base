@@ -1,4 +1,5 @@
 ﻿using Common.DTO.Base;
+using DocumentFormat.OpenXml.Office2010.ExcelAc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using GC = Backend.GlobalConstants;
@@ -52,7 +53,7 @@ namespace Backend.Base.User
             return Ok(r);
         }
 
-        [CrudAtt(GC.CrudIgnore)]
+        [CrudAtt(GC.AuditIgnore)]
         [AuditIgnoreAtt]
         [HttpGet("search")]
         public async Task<IActionResult> GetSearch()
@@ -76,18 +77,13 @@ namespace Backend.Base.User
         public async Task<IActionResult> GetList([FromBody] UserSearch search)
         {
             var session = HttpContext.Items["session"] as SessionEnt;
-            var users = await _userService.GetUserList(search);
+            var users = await _userService.GetUserList(session, search);
             var list = new List<UserDto>();
 
             foreach (var user in users)
                 list.Add(await _userService.PopulateList(session, user));
-            
-            var r = new _ResponseDto
-            {
-                SuccessMessage = "Ok",
-                Result = list
-            };
-            return Ok(r);
+
+            return Ok(new _ResponseDto(list));
         }
 
         /// <summary>
@@ -98,7 +94,7 @@ namespace Backend.Base.User
         [CrudAtt(GC.CrudRead)] 
         [AuditListAtt(GC.CrudRead)]
         [HttpGet("get/{id}")]
-        public async Task<IActionResult> GetUserById(long id)
+        public async Task<IActionResult> GetById(long id)
         {
             var user = await _userService.GetUserById(id);
             if (user == null)
@@ -107,13 +103,8 @@ namespace Backend.Base.User
             }
 
             var session = HttpContext.Items["session"] as SessionEnt;
-            var userDto = await _userService.Populate(session, user);
-            var r = new _ResponseDto
-            {
-                SuccessMessage = "Ok",
-                Result = userDto
-            };
-            return Ok(r);
+            var userDto = await _userService.PopulateDto(session, user);
+            return Ok(new _ResponseDto(userDto));
         }
 
         /// <summary>
@@ -124,7 +115,7 @@ namespace Backend.Base.User
         [CrudAtt(GC.CrudUpdate)] 
         [AuditListAtt(GC.CrudUpdate)]
         [HttpPost("update")]
-        public async Task<IActionResult> UpdateUser([FromBody] UpdateRequest<List<UserDto>> update)
+        public async Task<IActionResult> Update([FromBody] UpdateRequest<List<UserDto>> update)
         {
             var session = HttpContext.Items["session"] as SessionEnt;
             var list = update.Updates as List<UserDto>;
@@ -132,30 +123,34 @@ namespace Backend.Base.User
             //Validate 
             var vals = await _userService.ValidateUser(session, list);
             if (vals.Count > 0)
-            {
-                var v = new _ResponseDto
+                return Ok(new _ResponseDto
                 {
                     Valid = false,
                     Validations = vals
-                };
-                return Ok(v);
-            }
+                });
+            
 
             //Do updates
-            var listU = new List<UserDto> ();
+            var listBefore = new List<UserDto>();
+            var listUpdated = new List<UserDto> ();
             foreach (var dto in list)
             {
-                var user = await _userService.UpdateUser(dto);
+                var user = await _userService.GetUserOrCreate(dto);
+                if (user == null) continue;
+
+                var beforeDto = await _userService.PopulateDto(session, user);
+                beforeDto.IsDelete = dto.IsDelete;
+                listBefore.Add(beforeDto);
+
+                user = await _userService.UpdateUser(user, dto);
                 if (user != null)
-                    listU.Add(await _userService.Populate(session, user));
+                {
+                    beforeDto.Id = user.Id; //link them
+                    listUpdated.Add(await _userService.PopulateDto(session, user));
+                }
             }
 
-            var r = new _ResponseDto
-            {
-                SuccessMessage = "Ok",
-                Result = listU
-            };
-            return Ok(r);
+            return Ok(new _ResponseDto(listBefore, listUpdated));
         }
 
         /// <summary>

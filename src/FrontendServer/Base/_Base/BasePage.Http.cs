@@ -161,7 +161,7 @@ namespace FrontendServer.Base._Base
             return response;
         }
 
-        protected async Task<HttpResponseMessage> PostAsync<T>(string url, UpdateRequest<T> updates) 
+        protected async Task<HttpResponseMessage> PostAsync<T>(string url, UpdateRequest<T> updates) where T : IEnumerable<_BaseDto>
         {
             _isSaving = true;
             loadStatus.SetSaving();

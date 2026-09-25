@@ -10,10 +10,12 @@ namespace Backend.Base.Audit.Ent
         public int Source {  get; set; }
         public int EntityTypeNr {  get; set; }
         public long? EntityId { get; set; }
+        public string? EntityCode { get; set; }
+        public int? EntityVersion { get; set; }
         public long UserAccId { get; set; }
         public long? MasqueradeId { get; set; }
         public DateTimeOffset Created {  get; set; }
-        public string? Crud {  get; set; }
+        public string? Activity {  get; set; }
         public string? Details { get; set; }
         
         [NotMapped]
@@ -22,8 +24,6 @@ namespace Backend.Base.Audit.Ent
         public string? Masquerade { get; set; }
         [NotMapped]
         public string EntityType { get; set; }
-        [NotMapped]
-        public string CrudDescr { get; set; }
         [NotMapped]
         public string SourceDescr { get; set; }
 

@@ -1,4 +1,6 @@
-﻿namespace Common.DTO.Base
+﻿using System.Text.Json.Serialization;
+
+namespace Common.DTO.Base
 {
     public class OrgDto : _BaseDto
     {
@@ -23,6 +25,8 @@
 
     public class OrgLangDto
     {
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? Audit_Code { get; set; } //provide the code to audit log
         public string? LangCode { get; set; }
         public bool IsVisible { get; set; }
         public bool IsEditable { get; set; }

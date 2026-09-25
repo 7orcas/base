@@ -37,24 +37,45 @@
                                 @GetLabel("TextS"):
                             </MudText>
 
-                            <MudRadioGroup T="int" 
+                            <MudRadioGroup T="GC.TextSearchCompare"
                                            @bind-Value="BaseSearch.TextFieldSearchType"
                                            Class="d-flex flex-row">
 
-                                <MudRadio Value="GC.TextSearchContains" Class="mr-4">
+                                <MudRadio Value="GC.TextSearchCompare.Contains" Class="mr-4">
                                     @GetLabel("TextSC")
                                 </MudRadio>
 
-                                <MudRadio Value="GC.TextSearchStart" Class="mr-4">
+                                <MudRadio Value="GC.TextSearchCompare.Start" Class="mr-4">
                                     @GetLabel("TextSS")
                                 </MudRadio>
 
-                                <MudRadio Value="GC.TextSearchExtact">
+                                <MudRadio Value="GC.TextSearchCompare.Exact">
                                     @GetLabel("TextSE")
                                 </MudRadio>
 
                             </MudRadioGroup>
                         </div>
+
+                        <div class="d-flex align-center">
+                            <MudText Class="mr-4">
+                                @GetLabel("TextD"):
+                            </MudText>
+
+                            <MudRadioGroup T="GC.TextSearchDelimiter"
+                                           @bind-Value="BaseSearch.TextFieldDelimiterType"
+                                           Class="d-flex flex-row">
+
+                                <MudRadio Value="GC.TextSearchDelimiter.None" Class="mr-4">
+                                    @GetLabel("TextDN")
+                                </MudRadio>
+
+                                <MudRadio Value="GC.TextSearchDelimiter.Or" Class="mr-4">
+                                    @GetLabel("TextDO")
+                                </MudRadio>
+
+                            </MudRadioGroup>
+                        </div>
+
 
                         <div class="d-flex align-center">
                             <CheckboxField Width=GC.TextFieldWidth.TextMedium
@@ -170,4 +191,5 @@
             return $"{h + (ShowAdvancedPanel ? 100 : 0)}px";
         }
     }
+
 }

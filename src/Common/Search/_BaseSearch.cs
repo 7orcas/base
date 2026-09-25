@@ -1,4 +1,5 @@
-﻿using GC = Common.GlobalConstants;
+﻿using static Common.GlobalConstants;
+using GC = Common.GlobalConstants;
 
 namespace Common.Search
 {
@@ -8,7 +9,8 @@ namespace Common.Search
         public bool IncludeInActive { get; set; } = false;
         public virtual bool ShowActive { get; set; } = true;
         public int MaxRecordsReturned { get; set; } = 500;
-        public int TextFieldSearchType { get; set; } = GC.TextSearchStart;
+        public TextSearchCompare TextFieldSearchType { get; set; } = TextSearchCompare.Start;
+        public TextSearchDelimiter TextFieldDelimiterType { get; set; } = TextSearchDelimiter.None;
         public bool IsTextFieldSearchUnaccent { get; set; } = false;
         public bool RememberSearch { get; set; } = false;
 

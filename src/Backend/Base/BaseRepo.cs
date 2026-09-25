@@ -1,4 +1,6 @@
-﻿using GC = Backend.GlobalConstants;
+﻿using DocumentFormat.OpenXml.Spreadsheet;
+using static Common.GlobalConstants;
+using GC = Backend.GlobalConstants;
 
 namespace Backend.Base
 {
@@ -112,16 +114,47 @@ namespace Backend.Base
             }
         }
 
-        public string GetSqlWhereClauseForSearchActive(_BaseSearch search)
+        public string GetSqlAndClause(string? parameter, string parameterName, DynamicParameters parameters, 
+            string columnName, _BaseSearch search)
         {
+            if (string.IsNullOrWhiteSpace(parameter))
+                return string.Empty;
+
+            if (search.TextFieldDelimiterType == TextSearchDelimiter.None)
+            {
+                parameters.Add(parameterName, SqlParameter(parameter, search));
+                return " AND " + SqlUnaccent(columnName, parameterName, search);
+            }
+
+            var parameterNames = new List<string>();
+            var values = parameter.Split(',');
+            var sql = " AND (";
+            var op = search.TextFieldDelimiterType == TextSearchDelimiter.Or ? " OR " : " ? ";
+
+            for (var i = 0; i < values.Length; i++)
+            {
+                var value = values[i];
+                var parameterNameX = parameterName + i;
+
+                parameters.Add(parameterNameX, SqlParameter(value, search));
+                sql += (i>0? op : "") + SqlUnaccent(columnName, parameterNameX, search);
+            }
+            sql += ")";
+
+            return sql;
+        }
+
+        public string GetSqlWhereClauseForSearchActive(_BaseSearch search, string tableAlias = "")
+        {
+            tableAlias = string.IsNullOrWhiteSpace(tableAlias) ? "" : tableAlias + ".";
             var sql = "";
             if (search.IncludeActive && !search.IncludeInActive)
             {
-                sql += " AND isActive = TRUE ";
+                sql += " AND " + tableAlias + "isActive = TRUE ";
             }
             if (!search.IncludeActive && search.IncludeInActive)
             {
-                sql += " AND isActive = FALSE ";
+                sql += " AND " + tableAlias + "isActive = FALSE ";
             }
             return sql;
         }
@@ -140,11 +173,9 @@ namespace Backend.Base
         {
             switch (search.TextFieldSearchType)
             {
-                case GC.TextSearchExtact:
-                    return value;
-                case GC.TextSearchStart:
+                case TextSearchCompare.Start:
                     return $"{value}%";
-                case GC.TextSearchContains:
+                case TextSearchCompare.Contains:
                     return $"%{value}%";
                 default:
                     return value;

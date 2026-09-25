@@ -186,7 +186,7 @@ namespace Backend.Base.Permission
             if (session.UserAccount.IsService()) return true;
 
             //ie role - permission not required for this endpoint
-            if (crud != null && crud.Action == GC.CrudIgnore)
+            if (crud != null && crud.Action == GC.AuditIgnore)
             {
                 //Hard coded admins
                 //if (permAtt.Nr == GC.PerUser) return session.UserAccount.IsAdminUser; DELETE ME

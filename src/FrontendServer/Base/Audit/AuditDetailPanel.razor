@@ -2,6 +2,7 @@
 @using MudBlazor
 @using System.Text.Json
 @using FrontendServer.Base._Base;
+@using GC = FrontendServer.GlobalConstants;
 
 <div style="height:100%; overflow:auto;">
 
@@ -20,16 +21,38 @@
                             @GetLabel("AuditND")
                         </MudText>
                     }
+                    else if (dto.Activity == GC.CrudUpdate)
+                    {
+                        <MudText>
+                            @GetLabel("Updates"):
+                        </MudText>
+                        <pre style="font-family: inherit; font-size: inherit; margin: 0;">
+                            @dto.Details
+                        </pre>
+                    }
                     else
                     {
-                        var json = JsonSerializer.Deserialize<Dictionary<string, object>>(dto.Details);
-
+                        var json = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(dto.Details);
                         @if (json != null)
                         {
                             @foreach (var kvp in json)
                             {
                                 <div>
-                                    <strong>@kvp.Key:</strong> @kvp.Value
+                                    <strong>@kvp.Key:</strong>
+
+                                    @if (kvp.Value.ValueKind == JsonValueKind.Array ||
+                                            kvp.Value.ValueKind == JsonValueKind.Object)
+                                    {
+                                        <pre style="font-family: inherit; font-size: inherit; margin: 0;">
+                                            @JsonSerializer.Serialize(
+                                            JsonSerializer.Deserialize<object>(kvp.Value.GetRawText()),
+                                            new JsonSerializerOptions { WriteIndented = true })
+                                        </pre>
+                                    }
+                                    else
+                                    {
+                                        @kvp.Value.ToString()
+                                    }
                                 </div>
                             }
                         }
@@ -46,10 +69,4 @@
 
 @code {
     [Parameter] public List<ListModel<AuditDto>> Selections { get; set; } = new List<ListModel<AuditDto>>();
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        // if (firstRender)
-        //     await TableRefChanged.InvokeAsync(_tableRef);
-    }
 }

@@ -29,6 +29,7 @@ MinV,Minimum value exceeded (%%)
 MaxSR,Maximum records returned
 Default,Default
 Updated,Updated
+Updates,Updates
 Org,Organisation
 Orgs,Organisations
 OrgD,Default Organisation
@@ -126,6 +127,7 @@ RoleAc,Role Active
 RoleEN,Edit Role Names
 EffFrom,Effective from
 EffTo,Effective to
+EffID,Apply Effective Dates
 MachSub,Machine record
 NAuth,Not Authorised
 NAuthX,You are not authorised to view this page
@@ -143,6 +145,7 @@ Crud.R,Read
 Crud.L,Read List
 Crud.U,Update
 Crud.D,Delete
+Action,Action
 PermAll,All Permissions
 PermEff,Effective Permissions
 User,User
@@ -220,5 +223,9 @@ TextS,Text Search
 TextSC,Contains
 TextSS,Starts With
 TextSE,Exact Match
+TextD,Text Delimiter
+TextDN,None
+TextDO,Comma (OR)
 Unaccent,Accent Insensitive Search
+Diffs,Differences
 <LAST>,<LAST LINE>

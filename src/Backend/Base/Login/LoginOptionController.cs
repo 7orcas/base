@@ -36,7 +36,7 @@ namespace Backend.Base.Login
         /// <param name="urlSuffix"></param>
         /// <returns></returns>
         [AllowAnonymous]
-        [CrudAtt(GC.CrudIgnore)] 
+        [CrudAtt(GC.AuditIgnore)] 
         [HttpGet("get/{urlSuffix}")]
         public async Task<IActionResult> LoginOptions([FromRoute] string urlSuffix, [FromQuery] string? encryptedCookie)
         {

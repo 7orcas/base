@@ -27,6 +27,7 @@ namespace Backend.Base.Login.Ent
 
         public List<PermissionCrudEnt> Permissions { get; set; }
 
+        public LoginEnt Login { get; set; }
 
         public bool IsService() => LoginId == GC.ServiceLoginId;
 

@@ -1,6 +1,7 @@
 ﻿using Common.Search;
 using Microsoft.AspNetCore.Http;
 using System.Collections;
+using System.Text.Json.Serialization;
 
 
 namespace Common.DTO
@@ -16,6 +17,21 @@ namespace Common.DTO
             Result = list;
         }
 
+        public _ResponseDto(IList listBefore, IList listUpdated)
+        {
+            SuccessMessage = "Ok";
+            RecordCount = listUpdated.Count;
+            Result = listUpdated;
+            AuditObject = listBefore;
+        }
+
+        public _ResponseDto(_BaseDto dto)
+        {
+            SuccessMessage = "Ok";
+            RecordCount = 1;
+            Result = dto;
+        }
+
         public _ResponseDto(_BaseSearch search)
         {
             SuccessMessage = "Ok";
@@ -28,7 +44,9 @@ namespace Common.DTO
         public string? SuccessMessage { get; set; }
         public int? RecordCount { get; set; }
         public object? Result { get; set; }
-
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public object? AuditObject { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public List<ValidationDto>? Validations { get; set; } 
     }
 

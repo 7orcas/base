@@ -12,12 +12,12 @@ namespace Common.DTO
     public abstract class _BaseDto
     {
         public long Id { get; set; }
+        public int Version { get; set; }
+        public DateTimeOffset Updated { get; set; }
         public int OrgNr { get; set; }
         public string? Code { get; set; }
         public string? Description { get; set; }
         public bool IsActive { get; set; }
-        public DateTimeOffset Updated { get; set; }
-        public int Version { get; set; }
 
         public bool IsDelete { get; set; } = false;
         public bool IsError { get; set; } = false;
@@ -25,7 +25,7 @@ namespace Common.DTO
 
         public bool IsNewable() => IsNew() && !IsDelete;
         public bool IsDeleteable() => IsDelete && !IsNew();
-        public bool IsValidatable() => !IsNew();
+        public bool IsCheckVersion() => !IsNew();
 
     }
 }
