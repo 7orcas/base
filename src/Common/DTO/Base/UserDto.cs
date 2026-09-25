@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Common.DTO.Base
@@ -36,6 +37,7 @@ namespace Common.DTO.Base
 
         public class UserAccountRoleDto : _BaseDto
         {
+            [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
             public string? Audit_Code { get; set; } //provide the code to audit log
             public long RoleId { get; set; }
             public bool IsRoleActive { get; set; }
