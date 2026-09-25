@@ -7,7 +7,6 @@ namespace Backend.Core.Middleware
     public abstract class AuditActionConstants
     {
         public const string AuditCapture = "AuditCapture";
-        public const string AuditArg = "AuditActionArguments";
 
         public const string AuditCreate = "AuditCreates";
         public const string AuditUpdate = "AuditUpdates";

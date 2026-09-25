@@ -9,6 +9,9 @@ using GC = Backend.GlobalConstants;
 
 namespace Backend.Core.Middleware
 {
+    /**
+     * Store user selections
+     */
     public class UserCacheMiddleware
     {
 

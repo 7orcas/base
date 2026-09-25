@@ -5,18 +5,13 @@ using Newtonsoft.Json.Linq;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
+using GC = Backend.GlobalConstants;
 
 namespace Backend.Core.Middleware
 {
     public class AuditActionFilter : AuditActionConstants, IActionFilter
     {
-
-        public void OnActionExecuting(ActionExecutingContext context) 
-        {
-            //Get request arguments
-            var http = context.HttpContext;
-            http.Items[AuditArg] = new Dictionary<string, object?>(context.ActionArguments);
-        }
+        public void OnActionExecuting(ActionExecutingContext context) {  }
 
         public void OnActionExecuted(ActionExecutedContext context)
         {
@@ -53,7 +48,7 @@ namespace Backend.Core.Middleware
             http.Items[AuditInfo] = info;
 
             //Get call parameters (if exist)
-            if (http.Items.TryGetValue(AuditArg, out var value))
+            if (http.Items.TryGetValue(GC.RestActionArg, out var value))
             {
                 var args = value as Dictionary<string, object?>;
 

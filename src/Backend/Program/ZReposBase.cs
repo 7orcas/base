@@ -11,6 +11,7 @@
             builder.Services.AddScoped<RoleRepoI, RoleRepo>();
             builder.Services.AddScoped<TokenRepoI, TokenRepo>();
             builder.Services.AddScoped<AuditRepoI, AuditRepo>();
+            builder.Services.AddScoped<VersionRepoI, VersionRepo>();
         }
     }
 }

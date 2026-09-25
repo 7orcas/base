@@ -33,6 +33,8 @@ global using Backend.Base.Session.Ent;
 global using Backend.Base.Template;
 global using Backend.Base.Template.Ent;
 global using Backend.Base.Template.Emails;
+global using Backend.Base.Version;
+global using Backend.Base.Version.Ent;
 global using Backend.Core.Middleware;
 global using Backend.Program;
 global using System.Diagnostics;
