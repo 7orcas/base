@@ -33,7 +33,7 @@ namespace Backend.Base
             return await GetVersion(id, table, "id");
         }
 
-        public async Task<VersionInfo> GetVersion(long id, string table, string field)
+        public static async Task<VersionInfo> GetVersion(long id, string table, string field)
         {
             var sql = "SELECT Version, Updated "
                     + "FROM " + table + " "

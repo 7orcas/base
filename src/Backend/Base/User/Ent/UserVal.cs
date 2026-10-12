@@ -35,6 +35,9 @@ namespace Backend.Base.User.Ent
             Add(nameof(UserDto.LangCode), "LangCode")
                 .setMaxLength(4);
 
+            Add(nameof(UserDto.OrgNr), "OrgD")
+                .setMinValue(1);
+
         }
 
         public void ValidateEmail (UserDto dto)

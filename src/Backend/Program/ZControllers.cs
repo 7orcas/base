@@ -6,11 +6,10 @@
         {
             builder.Services.AddControllers(options =>
             {
+                options.Filters.Add<CallActionFilter>();
+                options.Filters.Add<VersionActionFilter>();
                 options.Filters.Add<AuditActionFilter>();
-                // options.Filters.Add<InterceptorFilter>();
             });
-            //builder.Services.AddScoped<InterceptorFilter>();
-
         }
     }
 }

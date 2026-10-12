@@ -68,12 +68,6 @@ namespace Backend.Base.User
             return await GetList<UserEnt>(sql, parameters);
         }
 
-        public async Task<VersionInfo?> GetVersion(long id)
-        {
-            return await GetVersion(id, "base.zzz");
-        }
-
-
         public async Task<UserEnt> Create(UserEnt User)
         {
             _context.Users.Add(User);

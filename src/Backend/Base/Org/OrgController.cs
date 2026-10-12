@@ -110,6 +110,7 @@ namespace Backend.Base.Org
         /// <returns></returns>
         [CrudAtt(GC.CrudUpdate)]
         [AuditListAtt(GC.CrudUpdate)]
+        [VersionAtt("base.org", "Nr")]
         [HttpPost("update")]
         public async Task<IActionResult> Update([FromBody] UpdateRequest<List<OrgDto>> update)
         {

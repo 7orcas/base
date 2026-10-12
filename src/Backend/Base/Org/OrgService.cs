@@ -106,17 +106,12 @@ namespace Backend.Base.Org
 
             foreach (var dto in update)
             {
-                VersionI? version = null;
-                OrgDto? currentDto = null;
-                if (dto.IsCheckVersion())
-                {
-                    version = await _orgRepo.GetVersion(dto.Nr);
-                    var ent = await GetOrg(dto.Nr);
-                    currentDto = PopulateDto(session, ent);
-                }
-                else if (dto.IsDelete) continue;
+                if (dto.IsDelete) continue;
 
-                var val = validator.Validate(dto, currentDto, version);
+                var ent = await GetOrg(dto.Nr);
+                OrgDto? currentDto = PopulateDto(session, ent);
+
+                var val = validator.Validate(dto, currentDto);
                 if (val != null)
                     vals.Add(val);
             }

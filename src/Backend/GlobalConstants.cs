@@ -8,6 +8,7 @@
 
         public const string DateTimeFormat = "yyyy-MM-dd HH:mm:sszzz";
         public const int LangLabelVariantDefault = 0;
+        public const string RestActionArg = "RestActionArguments";
 
         //Login Reset Password
         public const string URL_login_reset         = "reset-password";

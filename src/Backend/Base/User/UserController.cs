@@ -114,6 +114,7 @@ namespace Backend.Base.User
         /// <returns></returns>
         [CrudAtt(GC.CrudUpdate)] 
         [AuditListAtt(GC.CrudUpdate)]
+        [VersionAtt("base.zzz")]
         [HttpPost("update")]
         public async Task<IActionResult> Update([FromBody] UpdateRequest<List<UserDto>> update)
         {
