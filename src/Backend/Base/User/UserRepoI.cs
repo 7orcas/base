@@ -6,6 +6,5 @@
         Task<UserEnt> Create(UserEnt User);
         Task<UserEnt?> GetById(long id);
         Task<UserEnt?> Update(UserEnt User, UserDto dto);
-        Task<VersionInfo?> GetVersion(long id);
     }
 }

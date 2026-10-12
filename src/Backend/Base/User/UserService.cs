@@ -56,12 +56,9 @@ namespace Backend.Base.User
 
             foreach (var dto in update)
             {
-                VersionI? version = null;
-                if (dto.IsCheckVersion())
-                    version = await _userRepo.GetVersion(dto.Id);
-                else if (dto.IsDelete) continue;
+                if (dto.IsDelete) continue;
 
-                var val = validator.Validate(dto, version);
+                var val = validator.Validate(dto);
                 if (val != null)
                     vals.Add(val);
             }

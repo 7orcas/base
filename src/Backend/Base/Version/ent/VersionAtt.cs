@@ -5,6 +5,9 @@
     {
         public string TableName { get; }
         public string KeyField { get; } = "Id";
+        public bool IsIdKey { get; } = true;
+        public bool IsLongKey { get; } = true;
+        public bool IsIntegerKey { get; } = false;
 
         public VersionAtt(string tableName)
         {
@@ -13,7 +16,14 @@
         public VersionAtt(string tableName, string keyField)
         {
             TableName = tableName;
-            KeyField = KeyField;
+            KeyField = keyField;
+
+            if (keyField == "Nr")
+            {
+                IsIdKey = false;
+                IsLongKey = false;
+                IsIntegerKey = true;
+            }
         }
     }
 }

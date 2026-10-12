@@ -13,13 +13,13 @@ namespace Backend.Core.Middleware
     /**
      * Version check
      */
-    public class VersionMiddleware
+    public class VersionMiddlewareDELETE_ME
     {
 
         private readonly RequestDelegate _next;
         private readonly Serilog.ILogger _log;
 
-        public VersionMiddleware(
+        public VersionMiddlewareDELETE_ME(
             RequestDelegate next)
         {
             _next = next;

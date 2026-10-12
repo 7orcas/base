@@ -26,11 +26,6 @@ namespace Backend.Base.Org
             _memoryCache = memoryCache;
         }
 
-        public async Task<VersionInfo?> GetVersion(int nr)
-        {
-            return await GetVersion(nr, "base.org");
-        }
-
         public async Task<string?> GetCode(int nr)
         {
             return await GetCode(nr, "base.org");

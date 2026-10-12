@@ -17,8 +17,6 @@ namespace Backend.Base.Entity
         protected string maxLengthEx;
         protected string maxValueEx;
         protected string minValueEx;
-        protected string verX;
-        protected string verC;
         protected string noPerm;
 
         public BaseValidation (SessionEnt session)
@@ -31,8 +29,6 @@ namespace Backend.Base.Entity
             maxLengthEx = GetLabel("InvL", "Field exceeds maximum length"); //has (%%) appended
             maxValueEx = GetLabel("MaxV", "Maximum value exceeded"); //has (%%) appended
             minValueEx = GetLabel("MinV", "Minimum value exceeded"); //has (%%) appended
-            verX = GetLabel("VerX", "This record was changed on %% and is out of date. You must reload it."); //has (%%) appended
-            verC = GetLabel("VerC", "Version Conflict");
             noPerm = GetLabel("PermNoC", "No Permission to change");
 
             Configure();
@@ -54,18 +50,18 @@ namespace Backend.Base.Entity
             return info;
         }
 
-        public ValidationDto? Validate(T dto, VersionI? version)
+        public ValidationDto? Validate(T dto)
         {
-            return Validate(dto, null, version);
+            return Validate(dto, null);
         }
 
-        public ValidationDto? Validate(T dto, T? currentDto, VersionI? version)
+        public ValidationDto? Validate(T dto, T? currentDto)
         {
             if (validations == null)
                 throw new Exception("Validations are null");
 
             messages = null;
-            ValidateInternal(dto, currentDto, version);
+            ValidateInternal(dto, currentDto);
 
             if (messages != null)
             {
@@ -79,17 +75,8 @@ namespace Backend.Base.Entity
             return null;
         }
 
-        private void ValidateInternal(T dto, T? currentDto, VersionI? version)
+        private void ValidateInternal(T dto, T? currentDto)
         {
-            //Version has changed
-            if (version != null && dto.Version != null && version.Version != dto.Version)
-            {
-                var zone = TimeZoneInfo.ConvertTime(version.Updated, session.TimeZone);
-                var ex = verX.Replace(GC.LabelParameterPrefix, zone.ToString(GC.Date_TS_Format));
-                AddMessage(verC, ex);
-                return;
-            }
-
             foreach (var info in validations)
             {
                 var property = typeof(T).GetProperty(info.Name);
