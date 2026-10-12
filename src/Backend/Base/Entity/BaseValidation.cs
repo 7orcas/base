@@ -252,6 +252,18 @@ namespace Backend.Base.Entity
                 return this;
             }
 
+            public Info setMinValue(int v)
+            {
+                MinValue = v;
+                return this;
+            }
+
+            public Info setMaxValue(int v)
+            {
+                MaxValue = v;
+                return this;
+            }
+
             public Info resetIsRequired()
             {
                 IsRequired = false;

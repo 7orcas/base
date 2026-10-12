@@ -3,7 +3,7 @@ description: Audit listing
 url: https://localhost:6002/v123/api/org/update
 method: POST
 headers:
-  Blue-Api-Key: X123250925,$,$,1
+  Blue-Api-Key: X123251012,$,$,1
 body:
   type: json
   content: "{\r
@@ -16,25 +16,23 @@ body:
 
     \        \"nr\": 1,\r
 
-    \        \"version\": 11,\r
-
     \        \"icon\": \"/images/Icons/BlueTransparentBlack512.png\",\r
 
     \        \"langCode\": \"en\",\r
 
     \        \"langLabelVariant\": 1,\r
 
-    \        \"apiKey\": \"X1231\",\r
+    \        \"apiKey\": \"X123 12\",\r
 
     \        \"mfa\": 0,\r
 
     \        \"isRememberMeEnabled\": true,\r
 
-    \        \"isMasqueradeEnabled\": true,\r
+    \        \"isMasqueradeEnabled\": false,\r
 
-    \        \"isPasswordResetEnabled\": true,\r
+    \        \"isPasswordResetEnabled\": false,\r
 
-    \        \"isSignupEnabled\": true,\r
+    \        \"isSignupEnabled\": false,\r
 
     \        \"isEmailRequired\": true,\r
 
@@ -46,8 +44,6 @@ body:
 
     \            {\r
 
-    \                \"audit_Code\": null,\r
-
     \                \"langCode\": \"en\",\r
 
     \                \"isVisible\": true,\r
@@ -58,9 +54,17 @@ body:
 
     \            {\r
 
-    \                \"audit_Code\": null,\r
-
     \                \"langCode\": \"de\",\r
+
+    \                \"isVisible\": false,\r
+
+    \                \"isEditable\": true\r
+
+    \            },\r
+
+    \            {\r
+
+    \                \"langCode\": \"c1\",\r
 
     \                \"isVisible\": true,\r
 
@@ -69,20 +73,6 @@ body:
     \            },\r
 
     \            {\r
-
-    \                \"audit_Code\": null,\r
-
-    \                \"langCode\": \"c1\",\r
-
-    \                \"isVisible\": false,\r
-
-    \                \"isEditable\": false\r
-
-    \            },\r
-
-    \            {\r
-
-    \                \"audit_Code\": null,\r
 
     \                \"langCode\": \"c2\",\r
 
@@ -124,7 +114,9 @@ body:
 
     \        \"id\": 0,\r
 
-    \        \"updated\": \"2026-09-25T02:35:34.951614+00:00\",\r
+    \        \"version\": 28,\r
+
+    \        \"updated\": \"2026-10-12T04:00:04.573266+00:00\",\r
 
     \        \"orgNr\": 0,\r
 

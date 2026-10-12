@@ -7,13 +7,11 @@ namespace Backend.Core.Middleware
     public class VersionActionFilter : IAsyncActionFilter
     {
         private readonly Serilog.ILogger _log;
-        protected string verX;
 
         public VersionActionFilter()
         {
             _log = Log.Logger;
         }
-
 
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
@@ -37,10 +35,10 @@ namespace Backend.Core.Middleware
                         switch (arg.Value)
                         {
                             case UpdateRequestI req:
-                                if (req.OverrideWarning) break; //Skip version check 
-                                foreach (var v in req.Updates)
+                                if (session.IsService && req.OverrideWarning) break; //Skip version check 
+                                foreach (var dto in req.Updates)
                                 {
-                                    m = await ValidateVersion(session, v, versionAtt);
+                                    m = await ValidateVersion(session, dto, versionAtt);
                                     if (m != null) vals.Add(m);
                                 }
                                 break;
@@ -51,9 +49,9 @@ namespace Backend.Core.Middleware
                                 break;
 
                             case IEnumerable<_BaseDto> dtos:
-                                foreach (var v in dtos)
+                                foreach (var dto in dtos)
                                 {
-                                    m = await ValidateVersion(session, v, versionAtt);
+                                    m = await ValidateVersion(session, dto, versionAtt);
                                     if (m != null) vals.Add(m);
                                 }
                                 break;
