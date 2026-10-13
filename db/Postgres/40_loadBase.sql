@@ -5,23 +5,23 @@ BEGIN;
 -- -------------------------------------------------
 -- cntrl.loginoption
 -- -------------------------------------------------
-INSERT INTO cntrl.loginoption (urlsuffix, orgnr, orgnrs, langcode, langlabelvariant, langcodes, isdefault)
-VALUES ('blue', 1, '1', 'en', 0, 'en', true);
+INSERT INTO cntrl.loginoption (urlsuffix, appLoginUrl, orgnr, orgnrs, langcode, langlabelvariant, langcodes, isdefault)
+VALUES ('blue', 'ds-login', 1, '1', 'en', 0, 'en', true);
 
-INSERT INTO cntrl.loginoption (urlsuffix, orgnr, orgnrs, langcode, langlabelvariant, langcodes, ismasqueradeenabled)
-VALUES ('service', 1, '1', 'en', 0, 'en', true);
+INSERT INTO cntrl.loginoption (urlsuffix, appLoginUrl, orgnr, orgnrs, langcode, langlabelvariant, langcodes, ismasqueradeenabled)
+VALUES ('service', 'ds-login',  1, '1', 'en', 0, 'en', true);
 
-INSERT INTO cntrl.loginoption (urlsuffix, orgnr, orgnrs, langcode, langlabelvariant, langcodes, isdefault)
-VALUES ('admin', 1, '1,2', 'en', 0, 'en,de,it,es,ma,cn', false);
+INSERT INTO cntrl.loginoption (urlsuffix, appLoginUrl, orgnr, orgnrs, langcode, langlabelvariant, langcodes, isdefault)
+VALUES ('admin', 'ds-login',  1, '1,2', 'en', 0, 'en,de,it,es,ma,cn', false);
 
-INSERT INTO cntrl.loginoption (urlsuffix, orgnr, orgnrs, langcode, langlabelvariant, langcodes, ismasqueradeenabled)
-VALUES ('all', 2, '1,2,3', 'de', 1, 'en,de,es,xx', true);
+INSERT INTO cntrl.loginoption (urlsuffix, appLoginUrl, orgnr, orgnrs, langcode, langlabelvariant, langcodes, ismasqueradeenabled)
+VALUES ('all', 'hf-login',  2, '1,2,3', 'de', 1, 'en,de,es,xx', true);
 
-INSERT INTO cntrl.loginoption (urlsuffix, orgnr, orgnrs, langcode, langlabelvariant, langcodes, successaction)
-VALUES ('api', 1, '1', 'en', 0, 'en', 1);
+INSERT INTO cntrl.loginoption (urlsuffix, appLoginUrl, orgnr, orgnrs, langcode, langlabelvariant, langcodes, successaction)
+VALUES ('api', 'ds-login',  1, '1', 'en', 0, 'en', 1);
 
-INSERT INTO cntrl.loginoption (urlsuffix, orgnr, orgnrs, langcode, langlabelvariant, langcodes, successaction)
-VALUES ('3', 3, '3', 'en', 0, 'en', 1);
+INSERT INTO cntrl.loginoption (urlsuffix, appLoginUrl, orgnr, orgnrs, langcode, langlabelvariant, langcodes, successaction)
+VALUES ('3', 'ds-login',  3, '3', 'en', 0, 'en', 1);
 
 -- -------------------------------------------------
 -- base.org

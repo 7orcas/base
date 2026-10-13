@@ -1,4 +1,4 @@
-﻿using Backend.App.Machines;
+﻿using Backend.App.DS.Machines;
 
 namespace Backend.Program
 {

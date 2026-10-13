@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using GC = Backend.GlobalConstants;
 
-namespace Backend.App.Machines
+namespace Backend.App.DS.Machines
 {
     //[Authorize]
     [PermissionAtt(GC.PerMach)]

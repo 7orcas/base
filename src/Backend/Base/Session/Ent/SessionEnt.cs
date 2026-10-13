@@ -13,22 +13,44 @@ namespace Backend.Base.Session.Ent
     public class SessionEnt
     {
         public string Key { get; set; }
-        public int OrgNr { get; set; }
-        public LoginAccountEnt UserAccount { get; set; }
-        public long? MasqueradeId { get; set; }
-        public ConfigUser UserConfig { get; set; }
+
+
         public int SourceApp {  get; set; }
         public string IpAddress { get; set; } = string.Empty;
         public TimeZoneInfo TimeZone = TimeZoneInfo.FindSystemTimeZoneById("New Zealand Standard Time");
 
-        //Loaded in SessionMiddleware
-        public Dictionary<string, string> Labels { get; set; }
-        
-        //Loaded in SessionMiddleware
-        public OrgEnt Org { get; set; }
+
+        /****************************************************
+         * Session attributes
+         ****************************************************/
+        public int OrgNr { get; set; }
+
+
+
+        public LoginAccountEnt UserAccount { get; set; }
+        public long? MasqueradeId { get; set; }
+        public ConfigUser UserConfig { get; set; }
+
+
+
+
 
         //Api testing only
         public string? BearerToken { get; set; }
+
+        /****************************************************
+         * Convienence objects loaded in SessionMiddleware
+         ****************************************************/
+        public OrgEnt Org { get; set; }
+        public Dictionary<string, string> Labels { get; set; }
+
+
+        /****************************************************
+         * Convienence methods
+         ****************************************************/
+        public bool IsService => UserAccount.IsService();
+
+
 
         /// <summary>
         /// Return the user's crud value for the permission
@@ -44,8 +66,6 @@ namespace Backend.Base.Session.Ent
         }
 
 
-        //Convience methods
-        public bool IsService => UserAccount.IsService();
 
     }
 }

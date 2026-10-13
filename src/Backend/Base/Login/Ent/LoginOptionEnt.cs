@@ -11,6 +11,7 @@ namespace Backend.Base.Login.Ent
     public class LoginOptionEnt
     {
         public string UrlSuffix { get; set; }
+        public string AppLoginUrl { get; set; }
         public bool IsActive { get; set; }
         public int OrgNr { get; set; }
         public string OrgNrs { get; set; }

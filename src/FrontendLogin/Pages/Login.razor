@@ -488,7 +488,7 @@
             errorMessage = string.Empty;
             successMessage = string.Empty;
 
-            var login = await LoginToBlue(GC.URL_login);
+            var login = await LoginToBlue(GC.URL_login + options.AppLoginUrl);
 
             if (login == null)
                 return;

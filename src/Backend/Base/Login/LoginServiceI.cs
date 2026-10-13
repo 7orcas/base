@@ -4,6 +4,7 @@ namespace Backend.Base.Login
     public interface LoginServiceI
     {
         Task<LoginEnt> LoginUser(string ipaddress, LoginRequest request, bool mfaValid);
+        LoginResponseDto ConfigureLoginResponse(LoginRequest request, LoginEnt login);
         Task<LoginEnt?> GetLoginById(long id);
         Task<LoginEnt?> GetLoginByEmail(string email);
         string PasswordHash(string password);

@@ -1,7 +1,4 @@
-﻿using Backend.App.Machines;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using GC = Backend.GlobalConstants;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace Backend.Base.Login
 {
@@ -17,7 +14,6 @@ namespace Backend.Base.Login
         /// Constructor
         /// </summary>
         /// <param name="ServiceProvider"></param>
-        /// <param name="MachineService"></param>
         public LogoutController(IServiceProvider serviceProvider,
             LoginServiceI loginService,
             SessionServiceI sessionService) : base(serviceProvider)

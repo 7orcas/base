@@ -1,5 +1,4 @@
-﻿
-namespace Backend.App.Machines.Ent
+﻿namespace Backend.App.DS.Machines.Ent
 {
     public class Machine : BaseEntity<Machine>
     {

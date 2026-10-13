@@ -1,5 +1,7 @@
-﻿using Backend.Base.Email;
+﻿using Backend.Base.DataProtection;
+using Backend.Base.Email;
 using Backend.Base.Token.Ent;
+using Org.BouncyCastle.Asn1.Ocsp;
 using Org.BouncyCastle.Utilities;
 using System.Reflection.Metadata.Ecma335;
 using System.Security.Cryptography;
@@ -27,6 +29,7 @@ namespace Backend.Base.Login
         private readonly LabelServiceI _labelService;
         private readonly TemplateServiceI _templateService;
         private readonly EmailServiceI _emailService;
+        private readonly CookieProtector _cookieProtector;
 
         private AppServiceAccount ServiceAccount = AppSettings.ServiceAccount;
 
@@ -41,7 +44,8 @@ namespace Backend.Base.Login
             SessionServiceI sessionService,
             LabelServiceI labelService,
             TemplateServiceI templateService,
-            EmailServiceI emailService) 
+            EmailServiceI emailService,
+            CookieProtector cookieProtector) 
             : base (serviceProvider)
         {
             _environment = environment;
@@ -54,7 +58,75 @@ namespace Backend.Base.Login
             _labelService = labelService;
             _templateService = templateService;
             _emailService = emailService;
+            _cookieProtector = cookieProtector;
         }
+
+        //Configure the return objects to the client
+        public LoginResponseDto ConfigureLoginResponse(LoginRequest request, LoginEnt login)
+        {
+            var res = login.Response;
+
+            if (!login.Response.IsValid) 
+                return new LoginResponseDto
+                {
+                    ResponseDto = new _ResponseDto
+                    {
+                        StatusCode = StatusCodes.Status403Forbidden,
+                        Valid = false,
+                        ErrorMessage = res.ErrorMessage,
+                    }
+                };
+            
+
+
+            //Remember me cookie - only if requested and login is successful.
+            //This is used to pre-populate the login form for the user, it is not a security risk as it does not contain any token or similar, just the username and org for pre-population
+            var cookie = "";
+            if (request.RememberMe)
+            {
+                cookie = "V=1" +
+                    ",x=" + request.UrlSuffix +
+                    ",u=" + request.UserName +
+                    ",p=" + request.Password +
+                    ",o=" + request.Org +
+                    ",l=" + request.LangCode;
+            }
+
+            var encryptedCookie = _cookieProtector.Encrypt(cookie);
+
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.None,
+                Expires = DateTime.UtcNow.AddDays(30),
+                Path = "/"
+            };
+
+            //Don't send the next step if MFA is active as that needs to happen first
+            var r = new _ResponseDto
+            {
+                SuccessMessage = "Login Ok",
+                Valid = true,
+                Result = new LoginSuccessDto
+                {
+                    Id = login.Id,
+                    TokenKey = res.IsMfaRequired ? null : res.TokenKey,
+                    MainUrl = res.IsMfaRequired ? null : res.MainUrl,
+                    LangCode = res.LangCode,
+                    IsMfaRequired = res.IsMfaRequired,
+                    IsMfaEnabled = res.IsMfaEnabled
+                }
+            };
+
+            return new LoginResponseDto
+            {
+                EncryptedCookie = encryptedCookie,
+                CookieOptions = cookieOptions,
+                ResponseDto = r
+            };
+        }
+
 
         // Get the user login and account details, validate the password
         // Return a tokenkey if valid and MFA is not required or MFA is enabled and validated 

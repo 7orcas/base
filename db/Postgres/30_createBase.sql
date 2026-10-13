@@ -21,9 +21,10 @@ CREATE OR REPLACE FUNCTION immutable_unaccent(text)
 
 CREATE TABLE cntrl.loginOption (
     urlSuffix TEXT PRIMARY KEY NOT NULL,
+	appLoginUrl TEXT NOT NULL,
 	isDefault BOOLEAN NOT NULL DEFAULT FALSE,
     orgNr INTEGER NOT NULL,
-	orgNrs TEXT NOT NULL, --DELETE ME
+	orgNrs TEXT NOT NULL, 
     isActive BOOLEAN NOT NULL DEFAULT TRUE,
     langCode VARCHAR(4) NOT NULL,
     langLabelVariant INTEGER NOT NULL,
@@ -32,11 +33,13 @@ CREATE TABLE cntrl.loginOption (
 	successAction INTEGER NOT NULL DEFAULT 0
 );
 
-COMMENT ON TABLE cntrl.loginOption IS 'Used by the FrontendLogin screen to configure options and workflows (will be validated in the Backend';
+COMMENT ON TABLE cntrl.loginOption IS 'Used by the FrontendLogin screen to configure options and workflows (will be validated in the Backend)';
+COMMENT ON COLUMN cntrl.loginOption.urlsuffix IS 'End part of the login URL - returns the options to the browser';
+COMMENT ON COLUMN cntrl.loginOption.appLoginUrl IS 'Application Login Controller url';
 COMMENT ON COLUMN cntrl.loginOption.orgNr IS 'Default org nr for this option';
+COMMENT ON COLUMN cntrl.loginOption.orgNrs IS 'Org nrs that are available for this option';
 COMMENT ON COLUMN cntrl.loginOption.langCode IS 'Default language code for this option';
 COMMENT ON COLUMN cntrl.loginOption.langLabelVariant IS 'Default language code variant for this option';
-COMMENT ON COLUMN cntrl.loginOption.urlsuffix IS 'End part of the login URL - returns the options to the browser';
 COMMENT ON COLUMN cntrl.loginOption.successAction IS '0 == navigate to FrontendServer, 1 == stop and display tokens (for api)';
 
 CREATE TABLE cntrl.tokenRefresh (

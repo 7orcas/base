@@ -36,6 +36,8 @@ namespace Backend.Base.Login
             _cookieProtector = cookieProtector;
         }
 
+
+        /* DELETE ME
         [AllowAnonymous]
         [HttpPost("login")]
         [EnableRateLimiting("login")]
@@ -96,6 +98,8 @@ namespace Backend.Base.Login
             };
             return Ok(r);
         }
+        */
+
 
         /// <summary>
         /// Gets the passed in langCode's labels

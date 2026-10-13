@@ -124,13 +124,14 @@ namespace Backend.Base.Login
         {
             return new LoginOptionEnt
             {
-                UrlSuffix = GetString(r, "urlsuffix"),
+                UrlSuffix = GetString(r, "urlSuffix"),
+                AppLoginUrl = GetString(r, "appLoginUrl"),
                 OrgNr = GetOrgNr(r),
-                OrgNrs = GetString(r, "orgnrs"),
-                LangCode = GetString(r, "langcode"),
-                LangLabelVariant = GetInt(r, "langlabelvariant"),
-                LangCodes = GetString(r, "langcodes"),
-                SuccessAction = GetInt(r, "successaction"),
+                OrgNrs = GetString(r, "orgNrs"),
+                LangCode = GetString(r, "langCode"),
+                LangLabelVariant = GetInt(r, "langLabelVariant"),
+                LangCodes = GetString(r, "langCodes"),
+                SuccessAction = GetInt(r, "successAction"),
                 IsMasqueradeEnabled = GetBoolean(r, "isMasqueradeEnabled"),
                 IsActive = GetBoolean(r, "isActive")
             };
@@ -179,6 +180,7 @@ namespace Backend.Base.Login
             var dto = new LoginOptionDto
             {
                 UrlSuffix = ent.UrlSuffix,
+                AppLoginUrl = ent.AppLoginUrl,
                 Code = org.Code,
                 Icon = icon,
                 OrgNr = ent.OrgNr,
