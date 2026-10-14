@@ -127,10 +127,24 @@ namespace Backend.Base.Login
             };
         }
 
+        public LoginSuccessDto ConfigureLoginResponseMfa(LoginEnt login)
+        {
+            var res = login.Response;
+            return new LoginSuccessDto
+            {
+                Id = login.Id,
+                TokenKey = res.TokenKey,
+                MainUrl = res.MainUrl,
+                LangCode = res.LangCode,
+                IsMfaRequired = res.IsMfaRequired,
+                IsMfaEnabled = res.IsMfaEnabled
+            };
+        }
 
-        // Get the user login and account details, validate the password
+
+        // Get the user login, account details and session, validate the password
         // Return a tokenkey if valid and MFA is not required or MFA is enabled and validated 
-        public async Task<LoginEnt> LoginUser(string ipAddress, LoginRequest request, bool isMfaValid)
+        public async Task<(LoginEnt Login, SessionEnt Session)> LoginUser(string ipAddress, LoginRequest request, bool isMfaValid)
         {
             try
             {
@@ -146,7 +160,7 @@ namespace Backend.Base.Login
                 {
                     _log.Error("Login and/or org null. Username {Username} Org {Org}",
                         request.UserName, request.Org);
-                    return loginErr;
+                    return (loginErr, null);
                 }
 
                 //Test API client 
@@ -155,7 +169,7 @@ namespace Backend.Base.Login
                 {
                     _log.Error("Login API invalid api key. LoginKey {Username} OrgKey {Org}",
                         request.ApiKey, org.ApiKey);
-                    return loginErr;
+                    return (loginErr, null);
                 }
 
                 //Validate user
@@ -163,7 +177,7 @@ namespace Backend.Base.Login
                 if (!await ValidateLogin(login, loginErr, request.Password, org, labels))
                 {
                     _log.Warning("Login not Validated. Error {Error}", loginErr.Response.ErrorMessage);
-                    return loginErr;
+                    return (loginErr, null);
                 }
 
                 //Create service account if required
@@ -186,7 +200,7 @@ namespace Backend.Base.Login
                         _log.Error("Masquerade login invalid. " +
                             "Masquerade {MasqueradeUsername}, LoginUsername {Username} OrgNr {Org}",
                             request.Masquerade, login.Username, org.Nr);
-                        return loginErr;
+                        return (loginErr, null);
                     }
 
                     _log.Warning("Masquerade login valid. " +
@@ -210,7 +224,7 @@ namespace Backend.Base.Login
                     label = ReplaceLabelParameter(label, org.Code);
                     loginErr.Response.ErrorMessage = label;
                     _log.Warning("Login no account. Error {Error}", loginErr.Response.ErrorMessage);
-                    return loginErr;
+                    return (loginErr, null);
                 }
                 else if (!account.IsActive)
                 {
@@ -218,7 +232,7 @@ namespace Backend.Base.Login
                     label = ReplaceLabelParameter(label, org.Code);
                     loginErr.Response.ErrorMessage = label;
                     _log.Warning("Login not active. Error {Error}", loginErr.Response.ErrorMessage);
-                    return loginErr;
+                    return (loginErr, null);
                 }
 
                 account.Login = login;
@@ -236,7 +250,7 @@ namespace Backend.Base.Login
                     login.Response.IsValid = true;
                     login.Response.IsMfaRequired = true;
                     login.Response.IsMfaEnabled = login.IsMfaEnabled;
-                    return login;
+                    return (login, null);
                 }
 
                 //Continue with login process and return tokenkey
@@ -275,21 +289,15 @@ namespace Backend.Base.Login
                 login.Response.IsMfaRequired = isMfaRequired;
                 login.Response.IsMfaEnabled = login.IsMfaEnabled;
 
-                return login;
+                return (login, session);
             }
             catch 
             {
                 var login = new LoginEnt();
                 login.Response.IsValid = false;
                 login.Response.ErrorMessage = "Unknown Error";
-                return login;
+                return (login, null);
             }
-        }
-
-        // Create a user session 
-        public async Task<LoginEnt> LoginUserSession(string ipAddress, LoginRequest request, bool isMfaValid)
-        {
-
         }
 
 

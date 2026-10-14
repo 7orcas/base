@@ -83,6 +83,15 @@ namespace Backend.Base.Mfa
             return $"otpauth://totp/{name}:{email}?secret={unformattedKey}&issuer={name}&digits=6";
         }
 
+        public _ResponseDto ConfigureInvalidResponse()
+        {
+            return new _ResponseDto
+            {
+                Valid = false,
+                ErrorMessage = "Invalid Mfa code"
+            };
+        }
+
     }
 
 }

@@ -39,19 +39,16 @@ namespace Backend.App.HF.Base.Login
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
             var ipAddress = GetClientIp();
-            var login = await _loginService.LoginUser(ipAddress, request, false);
-            var res = _loginService.ConfigureLoginResponse(request, login);
 
+            var (login, session) = await _loginService.LoginUser(ipAddress, request, false);
+            ConfigureSession(session);
+
+            var res = _loginService.ConfigureLoginResponse(request, login);
 
             if (!login.Response.IsValid)
                 return Ok(res.ResponseDto);
 
             HttpContext.Response.Cookies.Append(GC.Cookie_RememberMe + request.UrlSuffix, res.EncryptedCookie, res.CookieOptions);
-            if (login.Response.IsMfaRequired)
-                return Ok(res.ResponseDto);
-
-            
-
             return Ok(res.ResponseDto);
         }
 
@@ -63,38 +60,25 @@ namespace Backend.App.HF.Base.Login
             var result = await _mfaService.VerifyMfaCode(request.Id.Value, request.MfaCode);
 
             if (!result)
-                return Ok(new _ResponseDto
-                {
-                    Valid = false,
-                    ErrorMessage = "Invalid Mfa code"
-                });
+                return Ok(_mfaService.ConfigureInvalidResponse());
 
 
             var ipAddress = GetClientIp();
-            var login = await _loginService.LoginUser(ipAddress, request, true);
-            var res = login.Response;
-
-            LoginSuccessDto dto = null;
-
-            if (result)
-                dto = new LoginSuccessDto
-                {
-                    Id = login.Id,
-                    TokenKey = res.TokenKey,
-                    MainUrl = res.MainUrl,
-                    LangCode = res.LangCode,
-                    IsMfaRequired = res.IsMfaRequired,
-                    IsMfaEnabled = res.IsMfaEnabled
-                };
+            var (login, session) = await _loginService.LoginUser(ipAddress, request, true);
+            ConfigureSession(session);
 
             var r = new _ResponseDto
             {
                 Valid = result,
-                Result = dto
+                Result = _loginService.ConfigureLoginResponseMfa(login)
             };
             return Ok(r);
         }
 
+        private void ConfigureSession (SessionEnt session)
+        {
+            if (session == null) return;
+        }
 
     }
 

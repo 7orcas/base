@@ -6,5 +6,6 @@ namespace Backend.Base.Mfa
     {
         Task<MfaSetup?> SetupMfa(long id, string username);
         Task<bool> VerifyMfaCode(long id, string mfaCode);
+        _ResponseDto ConfigureInvalidResponse();
     }
 }
