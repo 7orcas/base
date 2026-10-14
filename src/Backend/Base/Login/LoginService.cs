@@ -2,6 +2,7 @@
 using Backend.Base.Email;
 using Backend.Base.Token.Ent;
 using Org.BouncyCastle.Asn1.Ocsp;
+using Org.BouncyCastle.Tls;
 using Org.BouncyCastle.Utilities;
 using System.Reflection.Metadata.Ecma335;
 using System.Security.Cryptography;
@@ -144,7 +145,8 @@ namespace Backend.Base.Login
 
         // Get the user login, account details and session, validate the password
         // Return a tokenkey if valid and MFA is not required or MFA is enabled and validated 
-        public async Task<(LoginEnt Login, SessionEnt Session)> LoginUser(string ipAddress, LoginRequest request, bool isMfaValid)
+        public async Task<(LoginEnt Login, TSession Session)> LoginUser<TSession>(string ipAddress, LoginRequest request, bool isMfaValid)
+            where TSession : SessionEnt, new()
         {
             try
             {
@@ -259,7 +261,7 @@ namespace Backend.Base.Login
                 
                 var userConfig = _configService.CreateUserConfig(account, org, langCode);
                 var sessionKey = _environment.IsDevelopment() ? request.ApiTestKeyValue : null;
-                var session = await _sessionService.CreateSession(account, org, userConfig, masqueradeId, request.SourceApplication, 
+                var session = await _sessionService.CreateSession<TSession>(account, org, userConfig, masqueradeId, request.SourceApplication, 
                     ipAddress, sessionKey);
                 _auditService.LogIn(session);
 

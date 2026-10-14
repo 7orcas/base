@@ -40,7 +40,7 @@ namespace Backend.App.HF.Base.Login
         {
             var ipAddress = GetClientIp();
 
-            var (login, session) = await _loginService.LoginUser(ipAddress, request, false);
+            var (login, session) = await _loginService.LoginUser<SessionHF>(ipAddress, request, false);
             ConfigureSession(session);
 
             var res = _loginService.ConfigureLoginResponse(request, login);
@@ -64,7 +64,7 @@ namespace Backend.App.HF.Base.Login
 
 
             var ipAddress = GetClientIp();
-            var (login, session) = await _loginService.LoginUser(ipAddress, request, true);
+            var (login, session) = await _loginService.LoginUser<SessionHF>(ipAddress, request, true);
             ConfigureSession(session);
 
             var r = new _ResponseDto
@@ -75,9 +75,10 @@ namespace Backend.App.HF.Base.Login
             return Ok(r);
         }
 
-        private void ConfigureSession (SessionEnt session)
+        private void ConfigureSession (SessionHF session)
         {
             if (session == null) return;
+            session.Trails = "TRAILS";
         }
 
     }

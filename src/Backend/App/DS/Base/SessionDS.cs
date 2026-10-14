@@ -2,6 +2,6 @@
 {
     public class SessionDS : SessionEnt
     {
-        public int Stations { get; set; }
+        public string Stations { get; set; }
     }
 }

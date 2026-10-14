@@ -22,11 +22,18 @@ namespace Backend.Base.Session
             _memoryCache = memoryCache;
         }
 
-        public async Task<SessionEnt> CreateSession(LoginAccountEnt userAccount, OrgEnt org, ConfigUser userConfig, long? masqueradeId,
-            int sourceApp, string ipAddress, string? sessionKey)
+        public async Task<TSession> CreateSession<TSession>(
+            LoginAccountEnt userAccount, 
+            OrgEnt org, 
+            ConfigUser userConfig, 
+            long? masqueradeId,
+            int sourceApp, 
+            string ipAddress, 
+            string? sessionKey)
+            where TSession : SessionEnt, new()
         {
             var key = sessionKey ?? userAccount.Username + "-" + Guid.NewGuid().ToString();
-            var ses = new SessionEnt
+            var ses = new TSession
             {
                 Key = key,
                 UserAccount = userAccount,

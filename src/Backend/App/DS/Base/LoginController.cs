@@ -1,4 +1,5 @@
-﻿using Backend.Base.DataProtection;
+﻿using Backend.App.HF.Base;
+using Backend.Base.DataProtection;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
@@ -39,7 +40,9 @@ namespace Backend.App.DS.Base.Login
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
             var ipAddress = GetClientIp();
-            var (login, session) = await _loginService.LoginUser(ipAddress, request, false);
+            var (login, session) = await _loginService.LoginUser<SessionDS>(ipAddress, request, false);
+            ConfigureSession(session);
+
             var res = _loginService.ConfigureLoginResponse(request, login);
 
             if (!login.Response.IsValid)
@@ -60,14 +63,21 @@ namespace Backend.App.DS.Base.Login
 
 
             var ipAddress = GetClientIp();
-            var (login, session) = await _loginService.LoginUser(ipAddress, request, true);
-            
+            var (login, session) = await _loginService.LoginUser<SessionDS>(ipAddress, request, true);
+            ConfigureSession(session);
+
             var r = new _ResponseDto
             {
                 Valid = result,
                 Result = _loginService.ConfigureLoginResponseMfa(login)
             };
             return Ok(r);
+        }
+
+        private void ConfigureSession(SessionDS session)
+        {
+            if (session == null) return;
+            session.Stations = "STATIONS";
         }
 
     }

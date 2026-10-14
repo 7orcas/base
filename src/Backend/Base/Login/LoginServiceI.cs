@@ -3,7 +3,8 @@ namespace Backend.Base.Login
 {
     public interface LoginServiceI
     {
-        Task<(LoginEnt Login, SessionEnt Session)> LoginUser(string ipaddress, LoginRequest request, bool mfaValid);
+        Task<(LoginEnt Login, TSession Session)> LoginUser<TSession>(string ipaddress, LoginRequest request, bool mfaValid)
+            where TSession : SessionEnt, new();
         LoginResponseDto ConfigureLoginResponse(LoginRequest request, LoginEnt login);
         LoginSuccessDto ConfigureLoginResponseMfa(LoginEnt login);
         Task<LoginEnt?> GetLoginById(long id);
