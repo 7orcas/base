@@ -126,6 +126,7 @@ namespace Backend.Base.Login
             {
                 UrlSuffix = GetString(r, "urlSuffix"),
                 AppLoginUrl = GetString(r, "appLoginUrl"),
+                AppMfaUrl = GetString(r, "appMfaUrl"),
                 OrgNr = GetOrgNr(r),
                 OrgNrs = GetString(r, "orgNrs"),
                 LangCode = GetString(r, "langCode"),
@@ -181,6 +182,7 @@ namespace Backend.Base.Login
             {
                 UrlSuffix = ent.UrlSuffix,
                 AppLoginUrl = ent.AppLoginUrl,
+                AppMfaUrl = ent.AppMfaUrl,
                 Code = org.Code,
                 Icon = icon,
                 OrgNr = ent.OrgNr,
@@ -208,8 +210,12 @@ namespace Backend.Base.Login
                     Code = o.Code,
                     Description = o.Description
                 });
-
             }
+
+            dto.Orgs = dto.Orgs
+                .OrderBy(o => o.Nr == dto.OrgNr ? 0 : 1)
+                .ThenBy(o => o.Nr)
+                .ToList();
 
             await ReconcileOptionsWithOrgs(dto);
 

@@ -229,7 +229,7 @@ namespace Backend.Base.Login
                 if (org.Mfa == GC.MfaRequiredEachLogin) isMfaRequired = true;
                 if (org.Mfa == GC.MfaRequiredEachDay && daysSinceLastLogin > 0) isMfaRequired = true;
                 if (org.Mfa == GC.MfaOptionalEachDay && daysSinceLastLogin > 0 && login.IsMfaRequired) isMfaRequired = true;
-                if (!isMfaRequired && login.IsService()) isMfaRequired = !_environment.IsDevelopment(); //Service account always requires MFA
+               // if (!isMfaRequired && login.IsService()) isMfaRequired = !_environment.IsDevelopment(); //Service account always requires MFA
 
                 if (!isMfaValid && isMfaRequired)
                 {
@@ -242,8 +242,8 @@ namespace Backend.Base.Login
                 //Continue with login process and return tokenkey
                 var langCode = !string.IsNullOrEmpty(request.LangCode) ? request.LangCode : login.LangCode; 
                 await InitialiseLogin(login, account, org);
-                var userConfig = _configService.CreateUserConfig(account, org, langCode);
                 
+                var userConfig = _configService.CreateUserConfig(account, org, langCode);
                 var sessionKey = _environment.IsDevelopment() ? request.ApiTestKeyValue : null;
                 var session = await _sessionService.CreateSession(account, org, userConfig, masqueradeId, request.SourceApplication, 
                     ipAddress, sessionKey);
@@ -285,6 +285,13 @@ namespace Backend.Base.Login
                 return login;
             }
         }
+
+        // Create a user session 
+        public async Task<LoginEnt> LoginUserSession(string ipAddress, LoginRequest request, bool isMfaValid)
+        {
+
+        }
+
 
         //Authenicate the user
         private async Task<LoginEnt?> GetLoginByUsername(string username)

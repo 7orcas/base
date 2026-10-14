@@ -12,6 +12,7 @@ namespace Backend.Base.Login.Ent
     {
         public string UrlSuffix { get; set; }
         public string AppLoginUrl { get; set; }
+        public string AppMfaUrl { get; set; }
         public bool IsActive { get; set; }
         public int OrgNr { get; set; }
         public string OrgNrs { get; set; }

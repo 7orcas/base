@@ -5,23 +5,23 @@ BEGIN;
 -- -------------------------------------------------
 -- cntrl.loginoption
 -- -------------------------------------------------
-INSERT INTO cntrl.loginoption (urlsuffix, appLoginUrl, orgnr, orgnrs, langcode, langlabelvariant, langcodes, isdefault)
-VALUES ('blue', 'ds-login', 1, '1', 'en', 0, 'en', true);
+INSERT INTO cntrl.loginoption (urlsuffix, appLoginUrl, appMfaUrl, orgnr, orgnrs, langcode, langlabelvariant, langcodes, isdefault)
+VALUES ('blue', 'ds-login', 'ds-verifyMfa', 1, '1', 'en', 0, 'en', true);
 
-INSERT INTO cntrl.loginoption (urlsuffix, appLoginUrl, orgnr, orgnrs, langcode, langlabelvariant, langcodes, ismasqueradeenabled)
-VALUES ('service', 'ds-login',  1, '1', 'en', 0, 'en', true);
+INSERT INTO cntrl.loginoption (urlsuffix, appLoginUrl, appMfaUrl, orgnr, orgnrs, langcode, langlabelvariant, langcodes, ismasqueradeenabled)
+VALUES ('service', 'ds-login', 'ds-verifyMfa',  1, '1', 'en', 0, 'en', true);
 
-INSERT INTO cntrl.loginoption (urlsuffix, appLoginUrl, orgnr, orgnrs, langcode, langlabelvariant, langcodes, isdefault)
-VALUES ('admin', 'ds-login',  1, '1,2', 'en', 0, 'en,de,it,es,ma,cn', false);
+INSERT INTO cntrl.loginoption (urlsuffix, appLoginUrl, appMfaUrl, orgnr, orgnrs, langcode, langlabelvariant, langcodes, isdefault)
+VALUES ('admin', 'ds-login', 'ds-verifyMfa',  1, '1,2', 'en', 0, 'en,de,it,es,ma,cn', false);
 
-INSERT INTO cntrl.loginoption (urlsuffix, appLoginUrl, orgnr, orgnrs, langcode, langlabelvariant, langcodes, ismasqueradeenabled)
-VALUES ('all', 'hf-login',  2, '1,2,3', 'de', 1, 'en,de,es,xx', true);
+INSERT INTO cntrl.loginoption (urlsuffix, appLoginUrl, appMfaUrl, orgnr, orgnrs, langcode, langlabelvariant, langcodes, ismasqueradeenabled)
+VALUES ('all', 'hf-login', 'hf-verifyMfa',  2, '1,2,3', 'de', 1, 'en,de,es,xx', true);
 
-INSERT INTO cntrl.loginoption (urlsuffix, appLoginUrl, orgnr, orgnrs, langcode, langlabelvariant, langcodes, successaction)
-VALUES ('api', 'ds-login',  1, '1', 'en', 0, 'en', 1);
+INSERT INTO cntrl.loginoption (urlsuffix, appLoginUrl, appMfaUrl, orgnr, orgnrs, langcode, langlabelvariant, langcodes, successaction)
+VALUES ('api', 'ds-login', 'ds-verifyMfa',  1, '1', 'en', 0, 'en', 1);
 
-INSERT INTO cntrl.loginoption (urlsuffix, appLoginUrl, orgnr, orgnrs, langcode, langlabelvariant, langcodes, successaction)
-VALUES ('3', 'ds-login',  3, '3', 'en', 0, 'en', 1);
+INSERT INTO cntrl.loginoption (urlsuffix, appLoginUrl, appMfaUrl, orgnr, orgnrs, langcode, langlabelvariant, langcodes, successaction)
+VALUES ('3', 'ds-login', 'ds-verifyMfa',  3, '3', 'en', 0, 'en', 1);
 
 -- -------------------------------------------------
 -- base.org
@@ -41,9 +41,9 @@ VALUES
   '/images/Icons/BlueTransparentBlack512.png',
  '{Languages:[{LangCode:"en",IsEditable:true},{LangCode:"de",IsEditable:true},{LangCode:"c1",IsEditable:false},{LangCode:"c2",IsEditable:false}]}');
 
-INSERT INTO base.org (nr, code, descr, langcode, langlabelvariant, icon, encoded)
+INSERT INTO base.org (nr, code, descr, langcode, langlabelvariant, mfa, icon, encoded)
 VALUES
-(2, 'Org 2', 'Org 2 Description', 'en', 2, 
+(2, 'Org 2', 'Org 2 Description', 'en', 2, 2,
  '/images/Icons/BlueBlack512.png',
  '{Languages:[{LangCode:"de",IsEditable:true}]}');
 

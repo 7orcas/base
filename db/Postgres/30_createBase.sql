@@ -22,6 +22,7 @@ CREATE OR REPLACE FUNCTION immutable_unaccent(text)
 CREATE TABLE cntrl.loginOption (
     urlSuffix TEXT PRIMARY KEY NOT NULL,
 	appLoginUrl TEXT NOT NULL,
+	appMfaUrl TEXT NOT NULL,
 	isDefault BOOLEAN NOT NULL DEFAULT FALSE,
     orgNr INTEGER NOT NULL,
 	orgNrs TEXT NOT NULL, 

@@ -4,6 +4,7 @@
     {
         public string UrlSuffix { get; set; }
         public string AppLoginUrl { get; set; }
+        public string AppMfaUrl { get; set; }
         public string Code { get; set; }
         public string Icon { get; set; }
         public int OrgNr { get; set; }

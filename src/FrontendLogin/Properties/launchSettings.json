@@ -21,7 +21,7 @@
       "commandName": "Project",
       "dotnetRunMessages": false,
       "launchBrowser": true,
-      "launchUrl": "admin",
+      "launchUrl": "all",
       "applicationUrl": "https://localhost:7289;http://localhost:5217",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
@@ -31,7 +31,7 @@
         "zPASSWORD": "",
         "xUSER": "user",
         "xPASSWORD": "xx123",
-        "ORG": "1",
+        "xORG": "1",
         "LANGCODE": "en",
         "AUTO": "false",
         "OPEN": "aud001"

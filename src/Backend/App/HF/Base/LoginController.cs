@@ -19,15 +19,18 @@ namespace Backend.App.HF.Base.Login
     public class LoginController : BaseController
     {
         private readonly LoginServiceI _loginService;
+        private readonly MfaServiceI _mfaService;
 
         /// <summary>
         /// Constructor
         /// </summary>
         public LoginController(
             IServiceProvider serviceProvider,
-            LoginServiceI loginService) : base(serviceProvider)
+            LoginServiceI loginService,
+            MfaServiceI mfaService) : base(serviceProvider)
         {
             _loginService = loginService;
+            _mfaService = mfaService;
         }
 
         [AllowAnonymous]
@@ -47,17 +50,17 @@ namespace Backend.App.HF.Base.Login
             if (login.Response.IsMfaRequired)
                 return Ok(res.ResponseDto);
 
-            Created session
+            
 
             return Ok(res.ResponseDto);
         }
 
 
         [AllowAnonymous]
-        [HttpPost("hf-VerifyMfa")]
+        [HttpPost("hf-verifyMfa")]
         public async Task<IActionResult> VerifyMfa([FromBody] Common.Request.LoginRequest request)
         {
-            var result = await _MfaService.VerifyMfaCode(request.Id.Value, request.MfaCode);
+            var result = await _mfaService.VerifyMfaCode(request.Id.Value, request.MfaCode);
 
             if (!result)
                 return Ok(new _ResponseDto

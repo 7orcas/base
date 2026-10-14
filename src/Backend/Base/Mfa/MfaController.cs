@@ -61,6 +61,7 @@ namespace Backend.Base.Mfa
 
         }
 
+        /* DELETE ME
         [AllowAnonymous]
         [HttpPost("VerifyMfa")]
         public async Task<IActionResult> VerifyMfa([FromBody] Common.Request.LoginRequest request) 
@@ -99,6 +100,6 @@ namespace Backend.Base.Mfa
             };
             return Ok(r);
         }
-
+        */
     }
 }

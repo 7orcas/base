@@ -19,15 +19,18 @@ namespace Backend.App.DS.Base.Login
     public class LoginController : BaseController
     {
         private readonly LoginServiceI _loginService;
+        private readonly MfaServiceI _mfaService;
 
         /// <summary>
         /// Constructor
         /// </summary>
         public LoginController(
             IServiceProvider serviceProvider,
-            LoginServiceI loginService) : base(serviceProvider)
+            LoginServiceI loginService,
+            MfaServiceI mfaService) : base(serviceProvider)
         {
             _loginService = loginService;
+            _mfaService = mfaService;
         }
 
         [AllowAnonymous]
@@ -46,7 +49,44 @@ namespace Backend.App.DS.Base.Login
             return Ok(res.ResponseDto);
         }
 
-       
+        [AllowAnonymous]
+        [HttpPost("ds-verifyMfa")]
+        public async Task<IActionResult> VerifyMfa([FromBody] Common.Request.LoginRequest request)
+        {
+            var result = await _mfaService.VerifyMfaCode(request.Id.Value, request.MfaCode);
+
+            if (!result)
+                return Ok(new _ResponseDto
+                {
+                    Valid = false,
+                    ErrorMessage = "Invalid Mfa code"
+                });
+
+
+            var ipAddress = GetClientIp();
+            var login = await _loginService.LoginUser(ipAddress, request, true);
+            var res = login.Response;
+
+            LoginSuccessDto dto = null;
+
+            if (result)
+                dto = new LoginSuccessDto
+                {
+                    Id = login.Id,
+                    TokenKey = res.TokenKey,
+                    MainUrl = res.MainUrl,
+                    LangCode = res.LangCode,
+                    IsMfaRequired = res.IsMfaRequired,
+                    IsMfaEnabled = res.IsMfaEnabled
+                };
+
+            var r = new _ResponseDto
+            {
+                Valid = result,
+                Result = dto
+            };
+            return Ok(r);
+        }
 
     }
 
