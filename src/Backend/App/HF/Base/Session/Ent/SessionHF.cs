@@ -1,4 +1,4 @@
-﻿namespace Backend.App.HF.Base
+﻿namespace Backend.App.HF.Base.Session.Ent
 {
     public class SessionHF : SessionEnt
     {

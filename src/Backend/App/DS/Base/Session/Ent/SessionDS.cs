@@ -1,4 +1,4 @@
-﻿namespace Backend.App.DS.Base
+﻿namespace Backend.App.DS.Base.Session.Ent
 {
     public class SessionDS : SessionEnt
     {

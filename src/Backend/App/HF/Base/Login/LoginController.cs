@@ -1,8 +1,9 @@
-﻿using Backend.App.HF.Base;
+﻿using Backend.App.HF.Base.Session.Ent;
 using Backend.Base.DataProtection;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using AppS = Backend.App.HF.Base.Session;
 using GC = Backend.GlobalConstants;
 
 /// <summary>
@@ -13,7 +14,7 @@ using GC = Backend.GlobalConstants;
 /// Author: John Stewart
 /// </summary>
 
-namespace Backend.App.DS.Base.Login
+namespace Backend.App.HF.Base.Login
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -21,6 +22,7 @@ namespace Backend.App.DS.Base.Login
     {
         private readonly LoginServiceI _loginService;
         private readonly MfaServiceI _mfaService;
+        private readonly AppS.SessionServiceI _sessionService;
 
         /// <summary>
         /// Constructor
@@ -28,20 +30,23 @@ namespace Backend.App.DS.Base.Login
         public LoginController(
             IServiceProvider serviceProvider,
             LoginServiceI loginService,
-            MfaServiceI mfaService) : base(serviceProvider)
+            MfaServiceI mfaService,
+            AppS.SessionServiceI sessionService) : base(serviceProvider)
         {
             _loginService = loginService;
+            _sessionService = sessionService;
             _mfaService = mfaService;
         }
 
         [AllowAnonymous]
-        [HttpPost("ds-login")]
+        [HttpPost("hf-login")]
         [EnableRateLimiting("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
             var ipAddress = GetClientIp();
-            var (login, session) = await _loginService.LoginUser<SessionDS>(ipAddress, request, false);
-            ConfigureSession(session);
+
+            var (login, session) = await _loginService.LoginUser<SessionHF>(ipAddress, request, false);
+            _sessionService.ConfigureSession(session);
 
             var res = _loginService.ConfigureLoginResponse(request, login);
 
@@ -52,8 +57,9 @@ namespace Backend.App.DS.Base.Login
             return Ok(res.ResponseDto);
         }
 
+
         [AllowAnonymous]
-        [HttpPost("ds-verifyMfa")]
+        [HttpPost("hf-verifyMfa")]
         public async Task<IActionResult> VerifyMfa([FromBody] Common.Request.LoginRequest request)
         {
             var result = await _mfaService.VerifyMfaCode(request.Id.Value, request.MfaCode);
@@ -63,8 +69,8 @@ namespace Backend.App.DS.Base.Login
 
 
             var ipAddress = GetClientIp();
-            var (login, session) = await _loginService.LoginUser<SessionDS>(ipAddress, request, true);
-            ConfigureSession(session);
+            var (login, session) = await _loginService.LoginUser<SessionHF>(ipAddress, request, true);
+            _sessionService.ConfigureSession(session);
 
             var r = new _ResponseDto
             {
@@ -72,12 +78,6 @@ namespace Backend.App.DS.Base.Login
                 Result = _loginService.ConfigureLoginResponseMfa(login)
             };
             return Ok(r);
-        }
-
-        private void ConfigureSession(SessionDS session)
-        {
-            if (session == null) return;
-            session.Stations = "STATIONS";
         }
 
     }
