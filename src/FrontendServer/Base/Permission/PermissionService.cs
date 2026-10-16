@@ -32,7 +32,6 @@ namespace FrontendServer.Base.Permission
             return Permissions.Find(p => p.PermissionNr == permissionNr);
         }
 
-
         public async Task Initialise(LoginParameters lps)
         {
             try

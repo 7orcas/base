@@ -26,29 +26,29 @@ VALUES ('3', 'ds-login', 'ds-verifyMfa',  3, '3', 'en', 0, 'en', 1);
 -- -------------------------------------------------
 -- base.org
 -- -------------------------------------------------
-INSERT INTO base.org (nr, code, descr, langcode, langlabelvariant)
-VALUES (0, 'Org Base', 'Base Organisation', 'en', 0);
+INSERT INTO base.org (nr, code, typeOf, descr, langcode, langlabelvariant)
+VALUES (0, 'Org Base', 'OrgEnt', 'Base Organisation', 'en', 0);
 
-INSERT INTO base.org (nr, code, descr, langcode, langlabelvariant, mfa, 
+INSERT INTO base.org (nr, code, typeOf, descr, langcode, langlabelvariant, mfa, 
 	apikey,
     ispasswordresetenabled, issignupenabled, isemailrequired, isemailverified, ismasqueradeenabled,
 	icon, 
 	encoded)
 VALUES
-(1, 'Blue', 'Focus your heart', 'en', 1, 0, 
+(1, 'Blue', 'OrgEntDS', 'Focus your heart', 'en', 1, 0, 
   'X123',	
   true, true, true, true, true, 
   '/images/Icons/BlueTransparentBlack512.png',
  '{Languages:[{LangCode:"en",IsEditable:true},{LangCode:"de",IsEditable:true},{LangCode:"c1",IsEditable:false},{LangCode:"c2",IsEditable:false}]}');
 
-INSERT INTO base.org (nr, code, descr, langcode, langlabelvariant, mfa, icon, encoded)
+INSERT INTO base.org (nr, code, typeOf, descr, langcode, langlabelvariant, mfa, icon, encoded)
 VALUES
-(2, 'Org 2', 'Org 2 Description', 'en', 2, 2,
+(2, 'Org 2', 'OrgEntHF', 'Org 2 Description', 'en', 2, 0,
  '/images/Icons/BlueBlack512.png',
  '{Languages:[{LangCode:"de",IsEditable:true}]}');
 
-INSERT INTO base.org (nr, code, descr, langcode, langlabelvariant, encoded)
-VALUES (3, 'Org 3', 'Org 3 Description', 'de', 1,
+INSERT INTO base.org (nr, code, typeOf, descr, langcode, langlabelvariant, encoded)
+VALUES (3, 'Org 3', 'OrgEntDS', 'Org 3 Description', 'de', 1,
 '{Languages:[{LangCode:"de",IsEditable:true}]}');
 
 

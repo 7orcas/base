@@ -15,7 +15,17 @@ namespace Backend.Base.Org
     {
         static public OrgEnt Load(NpgsqlDataReader r)
         {
-            var org = new OrgEnt();
+            string className = GetString(r, "typeOf");
+
+            Type? type = typeof(OrgEnt).Assembly
+                                    .GetTypes()
+                                    .FirstOrDefault(t => t.Name == className);
+
+            if (type == null)
+                throw new Exception($"Type {className} not found");
+
+            var org = (OrgEnt)Activator.CreateInstance(type);
+
             org.Nr = GetInt(r, "nr");
             org.Code = GetCode(r);
             org.Description = GetDescription(r);

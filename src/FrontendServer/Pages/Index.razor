@@ -51,6 +51,7 @@ else
 @inject ConfigService ConfS
 @inject PermissionService PermS
 @inject LabelService LS
+@inject UrlService UrlS
 @inject IJSRuntime JS
 @inject IHttpContextAccessor HttpContextAccessor
 
@@ -114,6 +115,7 @@ else
             // Get stuff
             await LS.Initialise(lps);
             await PermS.Initialise(lps);
+            await UrlS.ForceInitialise();
             await GetVersion();
 
             _isLoading = false;

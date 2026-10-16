@@ -11,6 +11,7 @@ namespace Backend.Program
         {
             builder.Services.AddSingleton<TempIdServiceI, TempIdService>();
 
+            builder.Services.AddScoped<UrlsServiceI, UrlsService>();
             builder.Services.AddScoped<AuditServiceI, AuditService>();
             builder.Services.AddScoped<LabelServiceI, LabelService>();
             builder.Services.AddScoped<ConfigServiceI, ConfigService>();

@@ -13,9 +13,16 @@ namespace Backend.Base.Org.Ent
 {
     public class OrgEnt : BaseEncode, VersionI
     {
+        public OrgEnt()
+        {
+            Encoding = new OrgEnc();
+        }
+
+
         [Key]
         public int Nr { get; set; }
         public string Code { get; set; }
+        public string TypeOf { get; set; }
         public string? Description { get; set; }
         public DateTimeOffset Updated { get; set; }
         public int Version { get; set; }

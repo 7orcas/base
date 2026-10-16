@@ -64,7 +64,14 @@ namespace Common
         //Validation Status
         public const int ValStatusOk      = 0;
         public const int ValStatusError   = 1;
-        
+
+        //Urls
+        public const string UrlOrgList   = "OrgList";
+        public const string UrlOrgGet    = "OrgGet";
+        public const string UrlOrgUpdate = "OrgUpdate";
+        public const string UrlOrgDef    = "OrgDef";
+
+
         //Permissions and Audit Activities
         public const string CrudCreate   = "c";
         public const string CrudRead     = "r";
@@ -86,6 +93,7 @@ namespace Common
         public const int PerAudit     = 7;
         public const int PerConfig    = 8;
         public const int PerReg       = 9;
+        
 
         public const int PerMach      = 101;
         public const int PerPerm1     = 102;
