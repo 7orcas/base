@@ -186,6 +186,7 @@
     }
 
     public string GetUrl(string urlKey) => UrlS.GetUrl(urlKey);
+    public string GetUrlSlash(string urlKey) => UrlS.GetUrlSlash(urlKey);
 
     public void PutCacheString(string key, string s) => CS.PutString(key + "-" + _config.UniqueSessionId, s);
     public string? GetCacheString(string key) => CS.GetString(key + "-" + _config.UniqueSessionId);

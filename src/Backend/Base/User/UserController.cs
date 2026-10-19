@@ -39,7 +39,7 @@ namespace Backend.Base.User
         /// <returns></returns>
         [CrudAtt(GC.CrudRead)]
         [AuditIgnoreAtt]
-        [HttpGet("definition")]
+        [HttpGet("def")]
         public async Task<IActionResult> GetDefinition()
         {
             var session = HttpContext.Items["session"] as SessionEnt;

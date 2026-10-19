@@ -3,6 +3,6 @@
     public interface UrlsServiceI
     {
         string GetAppUrl();
-        List<UrlDto> GetList(SessionEnt session);
+        Dictionary<string, UrlDto> GetList(SessionEnt session);
     }
 }

@@ -15,20 +15,19 @@ namespace Backend.App.DS.Base.Urls
         public UrlsService(IServiceProvider serviceProvider)
            : base(serviceProvider)  { }
 
-
-        
-        private readonly string UrlMachine = PrefixUrl("Machine/");
-        
-
         public string GetAppUrl() => PrefixUrl("Urls/" + GC.DS + GC.UrlList);
 
-        public List<UrlDto> GetList(SessionEnt session)
+        public Dictionary<string, UrlDto> GetList(SessionEnt session)
         {
-            var list = base.GetList(session);
+            var urls = base.GetList(session);
 
-            list.Add(new UrlDto { Key = "MachList", Url = UrlMachine + "list" });
+            if (session.IsUserPermission(GC.PerMach))
+            {
+                Add(urls, "MachineList", "Machine/list");
+            }
 
-            return list;
+
+            return urls;
         }
 
 

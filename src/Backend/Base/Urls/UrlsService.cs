@@ -15,29 +15,95 @@ namespace Backend.Base.Urls
         public UrlsService(IServiceProvider serviceProvider)
            : base(serviceProvider)  { }
 
-        private const string UrlBase = "api/";
-        private readonly string URL_user = UrlBase + "User/";
-        private readonly string UrlOrg = UrlBase + "Org/";
-        private readonly string URL_audit = UrlBase + "Audit/";
 
-        public string GetAppUrl() => PrefixUrl("Urls/" + GC.UrlList);
-
-        public List<UrlDto> GetList(SessionEnt session)
+        public Dictionary<string, UrlDto> GetList(SessionEnt session)
         {
+            var urls = new Dictionary<string, UrlDto>();
 
-            var list = new List<UrlDto>
+            Add(urls, "Logout", "Logout/logout");
+
+
+            if (session.IsUserPermission(GC.PerOrg))
             {
-                new UrlDto { Key = GC.UrlOrgList,   Url = UrlOrg + "list" },
-                new UrlDto { Key = GC.UrlOrgGet,    Url = UrlOrg + "get" },
-                new UrlDto { Key = GC.UrlOrgUpdate, Url = UrlOrg + "update" },
-                new UrlDto { Key = GC.UrlOrgDef,    Url = UrlOrg + "definition" },
+                Add(urls, "OrgList",    "Org/list");
+                Add(urls, "OrgGet",     "Org/get");
+            }
+            if (session.IsUserPermissionUpdate(GC.PerOrg))
+            {
+                Add(urls, "OrgUpdate",  "Org/update");
+                Add(urls, "OrgDef",     "Org/def");
+            }
 
-            };
+            if (session.IsUserPermission(GC.PerUser))
+            {
+                Add(urls, "UserSearch", "User/search");
+                Add(urls, "UserList",   "User/list");
+                Add(urls, "UserGet",    "User/get");
+            }
+            if (session.IsUserPermissionUpdate(GC.PerUser))
+            {
+                Add(urls, "UserDef",    "User/def");
+                Add(urls, "UserUpdate", "User/update");
+            }
+            if (session.IsUserPermissionCreate(GC.PerUser))
+            {
+                Add(urls, "UserDef", "User/def");
+                Add(urls, "UserNew", "User/new");
+            }
 
-            return list;
+            if (session.IsUserPermission(GC.PerRole))
+            {
+                Add(urls, "RoleList",  "Role/list");
+                Add(urls, "RoleGet",   "Role/get");
+                Add(urls, "UserRoles", "Role/userroles");
+            }
+            if (session.IsUserPermissionUpdate(GC.PerRole))
+            {
+                Add(urls, "RoleUpdate", "Role/update");
+            }
+
+            if (session.IsUserPermission(GC.PerLabel))
+            {
+                Add(urls, "LabelClientList", "Label/clientlist");
+                Add(urls, "LabelRelatedList", "Label/relatedlist");
+            }
+
+            if (session.IsUserPermission(GC.PerConfig))
+            {
+                Add(urls, "ClientConfig", "Config/clientConfig");
+            }
+
+            if (session.IsUserPermission(GC.PerPerm))
+            {
+                Add(urls, "PermissionList", "Permission/list");
+                Add(urls, "PermissionUserList", "Permission/userlist");
+                Add(urls, "PermissionUserListEff", "Permission/userlisteff");
+            }
+
+            if (session.IsUserPermission(GC.PerAudit))
+            {
+                Add(urls, "AuditSearch", "Audit/search");
+                Add(urls, "AuditList", "Audit/list");
+                Add(urls, "AuditGet", "Audit/get");
+            }
+
+            return urls;
         }
 
-        public static string PrefixUrl(string url) => UrlBase + url;
+        public void Add(Dictionary<string, UrlDto> urls, string key, string url)
+        {
+            if (!urls.ContainsKey(key))
+                urls.Add(key, new UrlDto { Key = key, Url = PrefixUrl(url) });
+        }
+        public void AddOrReplace(Dictionary<string, UrlDto> urls, string key, string url)
+        {
+            if (urls.ContainsKey(key))
+                urls.Remove(key);
+            urls.Add(key, new UrlDto { Key = key, Url = PrefixUrl(url) });
+        }
+
+        public string GetAppUrl() => PrefixUrl("Urls/" + GC.UrlList);
+        public static string PrefixUrl(string url) => "api/" + url;
         
 
     }

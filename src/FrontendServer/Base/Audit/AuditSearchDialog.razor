@@ -68,7 +68,7 @@
     {
         if (firstRender)
         {
-            data = await GetAsync<AuditSearch>(GC.URL_audit_search, false);
+            data = await GetAsync<AuditSearch>(GetUrl("AuditSearch"), false);
             data.MaxRecordsReturned = MaxRecordsReturned;      
             StateHasChanged();
         }

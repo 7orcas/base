@@ -15,14 +15,17 @@ namespace FrontendServer.Base.Config
     {
         public event Action? OnInitialized;
 
+        private readonly UrlService _urlService;
         private AppConfigDto? config;
         public LoginParameters loginParameters {  get; private set; }
 
         public ConfigService(ProtectedSessionStorage session,
-            IHttpClientFactory httpClientFactory)            
+            IHttpClientFactory httpClientFactory,
+            UrlService urlService)            
         {
             _session = session;
             _httpClientFactory = httpClientFactory;
+            _urlService = urlService;
         }
 
         public bool IsInitialized => config != null;
@@ -37,7 +40,7 @@ namespace FrontendServer.Base.Config
             try
             {
                 var client = await GetClient();
-                var cl = await client.GetAsync(GC.URL_config);
+                var cl = await client.GetAsync(_urlService.GetUrl("ClientConfig")); 
                 var cls = await cl.Content.ReadAsStringAsync();
                 var cdto = JsonConvert.DeserializeObject<_ResponseDto>(cls);
                 var cjson = cdto.Result.ToString();

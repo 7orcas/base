@@ -10,16 +10,19 @@ namespace FrontendServer.Base.Logout
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly NavigationManager _navigation;
         private readonly ConfigService _configService;
+        private readonly UrlService _urlService;
 
         public LogoutService(ProtectedSessionStorage session,
             ConfigService configService,
             NavigationManager navigationManager,
-            IHttpClientFactory httpClientFactory)
+            IHttpClientFactory httpClientFactory,
+            UrlService urlService)
         {
             _session = session;
             _navigation = navigationManager;
             _configService = configService;
             _httpClientFactory = httpClientFactory;
+            _urlService = urlService;
         }
 
 
@@ -33,7 +36,7 @@ namespace FrontendServer.Base.Logout
                 new System.Net.Http.Headers.AuthenticationHeaderValue(GC.BearerKey, token.Value);
 
             await _session.DeleteAsync(GC.TokenCacheKey);
-            var response = await client.PostAsync(GC.URL_logout, null);
+            var response = await client.PostAsync(_urlService.GetUrl("Logout"), null);
             var config = _configService.Config;
 
             _navigation.NavigateTo(config.UrlLogin, forceLoad: true);

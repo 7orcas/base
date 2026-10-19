@@ -65,7 +65,7 @@ namespace Backend.Base.Role
 
         [CrudAtt(GC.CrudRead)]
         [AuditListAtt(GC.CrudReadList)]
-        [HttpGet("roles")]
+        [HttpGet("list")]
         public async Task<IActionResult> GetRoles()
         {
             var session = HttpContext.Items["session"] as SessionEnt;

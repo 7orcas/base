@@ -65,7 +65,29 @@ namespace Backend.Base.Session.Ent
             return p.Crud;
         }
 
-
-
+        public bool IsUserPermission(int permNr)
+        {
+            if (IsService) return true;
+            var p = UserAccount.Permissions.FirstOrDefault(p => p.Nr == permNr);
+            return p != null;
+        }
+        public bool IsUserPermissionUpdate(int permNr)
+        {
+            if (IsService) return true;
+            var p = UserAccount.Permissions.FirstOrDefault(p => p.Nr == permNr);
+            return p != null && p.Crud.Contains(GC.CrudUpdate);
+        }
+        public bool IsUserPermissionCreate(int permNr)
+        {
+            if (IsService) return true;
+            var p = UserAccount.Permissions.FirstOrDefault(p => p.Nr == permNr);
+            return p != null && p.Crud.Contains(GC.CrudCreate);
+        }
+        public bool IsUserPermissionDelete(int permNr)
+        {
+            if (IsService) return true;
+            var p = UserAccount.Permissions.FirstOrDefault(p => p.Nr == permNr);
+            return p != null && p.Crud.Contains(GC.CrudDelete);
+        }
     }
 }

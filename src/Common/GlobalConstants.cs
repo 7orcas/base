@@ -65,12 +65,6 @@ namespace Common
         public const int ValStatusOk      = 0;
         public const int ValStatusError   = 1;
 
-        //Urls
-        public const string UrlOrgList   = "OrgList";
-        public const string UrlOrgGet    = "OrgGet";
-        public const string UrlOrgUpdate = "OrgUpdate";
-        public const string UrlOrgDef    = "OrgDef";
-
 
         //Permissions and Audit Activities
         public const string CrudCreate   = "c";

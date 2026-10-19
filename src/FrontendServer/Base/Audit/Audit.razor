@@ -91,7 +91,7 @@
 
     private async Task LoadList(AuditSearch search)
     {
-        var response = await PostAsync<_ResponseDto, AuditSearch>(GC.URL_audit_list, search);
+        var response = await PostAsync<_ResponseDto, AuditSearch>(GetUrl("AuditList"), search);
         
         list.Clear();
         List<AuditDto> listX = null;
@@ -127,7 +127,7 @@
     {
         if (!dto.IsLoaded)
         {
-            var record = await GetAsync<AuditDto>(GC.URL_audit_get + dto.Id, false);
+            var record = await GetAsync<AuditDto>(GetUrlSlash("AuditGet") + dto.Id, false);
             dto.Load(record);
         }
 

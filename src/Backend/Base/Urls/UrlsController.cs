@@ -39,7 +39,7 @@ namespace Backend.App.Base.Urls
             var r = new _ResponseDto
             {
                 SuccessMessage = "Ok",
-                Result = list
+                Result = list.Values.ToList()
             };
             return Ok(r);
         }

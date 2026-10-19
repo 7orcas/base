@@ -41,6 +41,7 @@ namespace FrontendServer.Base.Config
 
         public string GetUrl(string urlKey) => IsUrl(urlKey) ? urls[urlKey] : urlKey;
 
+        public string GetUrlSlash(string urlKey) => GetUrl(urlKey) + "/";
 
         public async Task ForceInitialise(string appUrls)
         {

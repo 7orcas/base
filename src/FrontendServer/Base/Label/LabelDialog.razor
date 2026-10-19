@@ -155,7 +155,7 @@ else
             lTooltip = GetLabelHighlightNoKey("Tooltip");
             lVariant = GetLabelHighlightNoKey("Variant");
 
-            labels = await GetAsync<List<LangLabelDto>>(GC.URL_label_relatedlist + LangKey);
+            labels = await GetAsync<List<LangLabelDto>>(GetUrl("LabelRelatedList") + LangKey);
 
             if (labels != null && labels.Count == 1)
             {

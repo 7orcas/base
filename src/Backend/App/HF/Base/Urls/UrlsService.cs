@@ -17,10 +17,9 @@ namespace Backend.App.HF.Base.Urls
 
         public string GetAppUrl() => PrefixUrl("Urls/" + GC.HF + GC.UrlList);
 
-        public List<UrlDto> GetList(SessionEnt session)
+        public Dictionary<string, UrlDto> GetList(SessionEnt session)
         {
             var list = base.GetList(session);
-
 
             return list;
         }
