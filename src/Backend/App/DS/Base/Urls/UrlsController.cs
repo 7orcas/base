@@ -28,8 +28,8 @@ namespace Backend.App.DS.Base.Urls
             _urlsService = urlsService;
         }
 
-        
-        [HttpGet("ds-list")]
+
+        [HttpGet(GC.DS + GC.UrlList)]
         public async Task<IActionResult> GetList()
         {
             var session = HttpContext.Items["session"] as SessionEnt;

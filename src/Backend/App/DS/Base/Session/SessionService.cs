@@ -9,7 +9,7 @@ namespace Backend.App.DS.Base.Session
             : base(serviceProvider) { }
 
 
-        public void ConfigureSession(SessionDS session)
+        public void ConfigureSession(SessionEntDS session)
         {
             if (session == null) return;
             session.Stations = "STATIONS";

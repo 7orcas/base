@@ -11,8 +11,6 @@ namespace Backend.Base.Login.Ent
     public class LoginOptionEnt
     {
         public string UrlSuffix { get; set; }
-        public string AppLoginUrl { get; set; }
-        public string AppMfaUrl { get; set; }
         public bool IsActive { get; set; }
         public int OrgNr { get; set; }
         public string OrgNrs { get; set; }
@@ -22,6 +20,10 @@ namespace Backend.Base.Login.Ent
         public bool IsMasqueradeEnabled { get; set; }
         public int SuccessAction { get; set; }
 
+        [NotMapped]
+        public string AppLoginUrl { get; set; }
+        [NotMapped]
+        public string AppMfaUrl { get; set; }
         [NotMapped]
         public bool IsService { get; set; }
     }

@@ -1,6 +1,6 @@
 ﻿namespace Backend.App.HF.Base.Session.Ent
 {
-    public class SessionHF : SessionEnt
+    public class SessionEntHF : SessionEnt
     {
         public string Trails { get; set; }
     }

@@ -21,9 +21,7 @@ CREATE OR REPLACE FUNCTION immutable_unaccent(text)
 
 CREATE TABLE cntrl.loginOption (
     urlSuffix TEXT PRIMARY KEY NOT NULL,
-	appLoginUrl TEXT NOT NULL,
-	appMfaUrl TEXT NOT NULL,
-	isDefault BOOLEAN NOT NULL DEFAULT FALSE,
+	isOrgDefault BOOLEAN NOT NULL DEFAULT FALSE,
     orgNr INTEGER NOT NULL,
 	orgNrs TEXT NOT NULL, 
     isActive BOOLEAN NOT NULL DEFAULT TRUE,
@@ -36,7 +34,7 @@ CREATE TABLE cntrl.loginOption (
 
 COMMENT ON TABLE cntrl.loginOption IS 'Used by the FrontendLogin screen to configure options and workflows (will be validated in the Backend)';
 COMMENT ON COLUMN cntrl.loginOption.urlsuffix IS 'End part of the login URL - returns the options to the browser';
-COMMENT ON COLUMN cntrl.loginOption.appLoginUrl IS 'Application Login Controller url';
+COMMENT ON COLUMN cntrl.loginOption.isOrgDefault IS 'Default option for the org nr';
 COMMENT ON COLUMN cntrl.loginOption.orgNr IS 'Default org nr for this option';
 COMMENT ON COLUMN cntrl.loginOption.orgNrs IS 'Org nrs that are available for this option';
 COMMENT ON COLUMN cntrl.loginOption.langCode IS 'Default language code for this option';

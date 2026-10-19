@@ -19,7 +19,7 @@
         public const string BearerKey             = "Bearer";
 
         private const string URL_base             = "api/";
-        public const string URL_ulrs              = URL_base + "Urls/ds-list";
+        public const string URL_ulrs              = URL_base + "Urls/";
 
         private const string URL_user             = URL_base + "User/";
         private const string URL_audit            = URL_base + "Audit/";

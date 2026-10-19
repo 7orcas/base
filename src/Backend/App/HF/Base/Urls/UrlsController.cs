@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using DocumentFormat.OpenXml.Drawing.Diagrams;
+using Microsoft.AspNetCore.Mvc;
 using GC = Backend.GlobalConstants;
 
 /// <summary>
@@ -29,7 +30,7 @@ namespace Backend.App.HF.Base.Urls
         }
 
         
-        [HttpGet("hf-list")]
+        [HttpGet(GC.HF + GC.UrlList)]
         public async Task<IActionResult> GetList()
         {
             var session = HttpContext.Items["session"] as SessionEnt;

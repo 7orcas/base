@@ -22,6 +22,7 @@ namespace FrontendServer.Base.Util
         public string? sessionId { get; set; }
         public MarkupString loaded { get; set; }
         public string? loginUrl { get; set; }
+        public string? appUrls { get; set; }
 
         public void Set(AppConfigDto config)
         {

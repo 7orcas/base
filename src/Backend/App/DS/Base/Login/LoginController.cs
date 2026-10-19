@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using AppS = Backend.App.DS.Base.Session;
+using AppU = Backend.App.DS.Base.Urls;
 using GC = Backend.GlobalConstants;
 
 /// <summary>
@@ -22,6 +23,7 @@ namespace Backend.App.DS.Base.Login
         private readonly LoginServiceI _loginService;
         private readonly MfaServiceI _mfaService;
         private readonly AppS.SessionServiceI _sessionService;
+        private readonly AppU.UrlsServiceI _urlsService;
 
         /// <summary>
         /// Constructor
@@ -30,11 +32,13 @@ namespace Backend.App.DS.Base.Login
             IServiceProvider serviceProvider,
             LoginServiceI loginService,
             MfaServiceI mfaService,
-            AppS.SessionServiceI sessionService) : base(serviceProvider)
+            AppS.SessionServiceI sessionService,
+            AppU.UrlsServiceI urlsService) : base(serviceProvider)
         {
             _loginService = loginService;
             _mfaService = mfaService;
             _sessionService = sessionService;
+            _urlsService = urlsService;
         }
 
         [AllowAnonymous]
@@ -43,13 +47,15 @@ namespace Backend.App.DS.Base.Login
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
             var ipAddress = GetClientIp();
-            var (login, session) = await _loginService.LoginUser<SessionDS>(ipAddress, request, false);
+            var (login, session) = await _loginService.LoginUser<SessionEntDS>(ipAddress, request, false);
             _sessionService.ConfigureSession(session);
 
-            var res = _loginService.ConfigureLoginResponse(request, login);
+            var (res, dto) = await _loginService.ConfigureLoginResponse(request, login);
 
             if (!login.Response.IsValid)
-                return Ok(res.ResponseDto);
+                return Ok(res);
+
+            dto.AppUrls = _urlsService.GetAppUrl();
 
             HttpContext.Response.Cookies.Append(GC.Cookie_RememberMe + request.UrlSuffix, res.EncryptedCookie, res.CookieOptions);
             return Ok(res.ResponseDto);
@@ -66,13 +72,16 @@ namespace Backend.App.DS.Base.Login
 
 
             var ipAddress = GetClientIp();
-            var (login, session) = await _loginService.LoginUser<SessionDS>(ipAddress, request, true);
+            var (login, session) = await _loginService.LoginUser<SessionEntDS>(ipAddress, request, true);
             _sessionService.ConfigureSession(session);
+
+            var dto = await _loginService.ConfigureLoginResponseMfa(request, login);
+            dto.AppUrls = _urlsService.GetAppUrl();
 
             var r = new _ResponseDto
             {
                 Valid = result,
-                Result = _loginService.ConfigureLoginResponseMfa(login)
+                Result = dto
             };
             return Ok(r);
         }

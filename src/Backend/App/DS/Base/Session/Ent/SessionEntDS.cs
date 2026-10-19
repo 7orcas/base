@@ -1,6 +1,6 @@
 ﻿namespace Backend.App.DS.Base.Session.Ent
 {
-    public class SessionDS : SessionEnt
+    public class SessionEntDS : SessionEnt
     {
         public string Stations { get; set; }
     }

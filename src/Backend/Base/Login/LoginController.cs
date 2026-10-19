@@ -1,4 +1,5 @@
-﻿using Backend.Base.DataProtection;
+﻿using Backend.App.HF.Base.Session.Ent;
+using Backend.Base.DataProtection;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
@@ -19,6 +20,9 @@ namespace Backend.Base.Login
     public class LoginController : BaseController
     {
         private readonly LoginServiceI _loginService;
+        private readonly MfaServiceI _mfaService;
+        private readonly SessionServiceI _sessionService;
+        private readonly UrlsServiceI _urlsService;
         private readonly OrgServiceI _orgService;
         private readonly CookieProtector _cookieProtector;
 
@@ -28,77 +32,62 @@ namespace Backend.Base.Login
         public LoginController(
             IServiceProvider serviceProvider,
             LoginServiceI loginService,
+            MfaServiceI mfaService,
+            SessionServiceI sessionService,
+            UrlsServiceI urlsService,
             OrgServiceI orgService,
             CookieProtector cookieProtector) : base(serviceProvider)
         {
             _loginService = loginService;
+            _mfaService = mfaService;
+            _sessionService = sessionService;
+            _urlsService = urlsService;
             _orgService = orgService;
             _cookieProtector = cookieProtector;
         }
 
 
-        /* DELETE ME
         [AllowAnonymous]
         [HttpPost("login")]
         [EnableRateLimiting("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
             var ipAddress = GetClientIp();
-            var login = await _loginService.LoginUser(ipAddress, request, false);
-            var res = login.Response;
 
-            if (!res.IsValid)
-                return Ok(new _ResponseDto
-                {
-                    StatusCode = StatusCodes.Status403Forbidden,
-                    Valid = false,
-                    ErrorMessage = res.ErrorMessage,
-                });
+            var (login, session) = await _loginService.LoginUser<SessionEntHF>(ipAddress, request, false);
 
-            //Remember me cookie - only if requested and login is successful.
-            //This is used to pre-populate the login form for the user, it is not a security risk as it does not contain any token or similar, just the username and org for pre-population
-            var cookie = "";
-            if (request.RememberMe)
-            {
-                cookie = "V=1" +
-                    ",x=" + request.UrlSuffix +
-                    ",u=" + request.UserName +
-                    ",p=" + request.Password +
-                    ",o=" + request.Org +
-                    ",l=" + request.LangCode;
-            }
+            var (res, dto) = await _loginService.ConfigureLoginResponse(request, login);
 
-            var encryptedCookie = _cookieProtector.Encrypt(cookie);
+            if (!login.Response.IsValid)
+                return Ok(res.ResponseDto);
 
-            var cookieOptions = new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.None,
-                Expires = DateTime.UtcNow.AddDays(30),
-                Path = "/"
-            };
-            HttpContext.Response.Cookies.Append(GC.Cookie_RememberMe + request.UrlSuffix, encryptedCookie, cookieOptions);
+            dto.AppUrls = _urlsService.GetAppUrl();
+
+            HttpContext.Response.Cookies.Append(GC.Cookie_RememberMe + request.UrlSuffix, res.EncryptedCookie, res.CookieOptions);
+            return Ok(res.ResponseDto);
+        }
 
 
-            //Don't send the next step if MFA is active as that needs to happen first
+        [AllowAnonymous]
+        [HttpPost("verifyMfa")]
+        public async Task<IActionResult> VerifyMfa([FromBody] Common.Request.LoginRequest request)
+        {
+            var result = await _mfaService.VerifyMfaCode(request.Id.Value, request.MfaCode);
+
+            if (!result)
+                return Ok(_mfaService.ConfigureInvalidResponse());
+
+
+            var ipAddress = GetClientIp();
+            var (login, session) = await _loginService.LoginUser<SessionEntHF>(ipAddress, request, true);
+
             var r = new _ResponseDto
             {
-                SuccessMessage = "Login Ok",
-                Valid = true,
-                Result = new LoginSuccessDto
-                {
-                    Id = login.Id,
-                    TokenKey = res.IsMfaRequired ? null : res.TokenKey,
-                    MainUrl = res.IsMfaRequired ? null : res.MainUrl,
-                    LangCode = res.LangCode,
-                    IsMfaRequired = res.IsMfaRequired,
-                    IsMfaEnabled = res.IsMfaEnabled
-                }
+                Valid = result,
+                Result = await _loginService.ConfigureLoginResponseMfa(request, login)
             };
             return Ok(r);
         }
-        */
 
 
         /// <summary>

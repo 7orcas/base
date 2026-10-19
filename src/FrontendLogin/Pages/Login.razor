@@ -559,6 +559,7 @@
                                //Use fragments
                                + "#tk=" + login.TokenKey   
                                + (string.IsNullOrEmpty(autoOpen) ? "" : "&open=" + autoOpen)
+                               + ("&appUrls=" + login.AppUrls)
                                + ("&urlLogin=" + AppSettings.Urls.Login + UrlSuffix),
                                true);
     }

@@ -55,5 +55,11 @@ namespace Backend.Base.Org.Ent
         {
             Encode(Encoding);
         }
+
+        //Application URLs
+        [NotMapped] public virtual string AppLoginUrl { get; } = "login";
+        [NotMapped] public virtual string AppMfaUrl { get; } = "verifyMfa";
+        [NotMapped] public virtual string AppUrls { get; } = "urllist";
+
     }
 }

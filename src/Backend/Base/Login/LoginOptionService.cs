@@ -6,158 +6,56 @@ namespace Backend.Base.Login
 {
     public class LoginOptionService : BaseService, LoginOptionServiceI
     {
+        private readonly LoginOptionRepoI _loginOptionRepo;
         private readonly OrgServiceI _orgService;
         private readonly LabelServiceI _labelService;
 
         public LoginOptionService(IServiceProvider serviceProvider,
+            LoginOptionRepoI loginOptionRepo,
             OrgServiceI orgService,
             LabelServiceI labelService)
             : base(serviceProvider)
         {
+            _loginOptionRepo = loginOptionRepo;
             _orgService = orgService;
             _labelService = labelService;
         }
 
         public async Task<LoginOptionEnt> GetLoginOptionDefault(int orgNr)
         {
-            var loginOption = null as LoginOptionEnt;
-            try
-            {
-                await Sql.Run(
-                    "SELECT * FROM cntrl.loginoption " +
-                        "WHERE orgnr = @orgNr " +
-                        "AND isdefault IS TRUE",
-                    r =>
-                    {
-                        loginOption = Load(r);
-                    },
-                    new NpgsqlParameter("@orgNr", orgNr)
-                );
-            }
-            catch { }
-
-            return loginOption;
+            return await _loginOptionRepo.GetLoginOptions(orgNr);
         }
 
 
         //Login options for the passed in login nr
         public async Task<LoginOptionEnt> GetLoginOptions(string urlSuffix)
         {
-
-            var whereSql = "urlsuffix = @urlsuffix";
-            if (string.IsNullOrEmpty(urlSuffix))
+            var isService = false;
+            if (!string.IsNullOrEmpty(urlSuffix) && urlSuffix == GC.ServiceLoginUrlSuffix)
             {
-                whereSql = "isdefault = true";
-                urlSuffix = "x";
-            }
-            else if (urlSuffix == GC.ServiceLoginUrlSuffix)
-            {
-                return await GetLoginOptionsService();
+                isService = true;
+                urlSuffix = ""; //get default
             }
 
-            var loginOption = null as LoginOptionEnt;
+            var loginOption = await _loginOptionRepo.GetLoginOptions(urlSuffix);
             
-            try
+            if (isService)
             {
-                await Sql.Run(
-                    "SELECT * FROM cntrl.loginoption " +
-                        "WHERE " + whereSql,
-                    r =>
-                    {
-                        loginOption = Load(r);
-                    },
-                    new NpgsqlParameter("@urlsuffix", urlSuffix)
-                );
-            }
-            catch { }
+                var orgList = await _orgService.GetOrgList();
+                var orgs = string.Join(",", orgList.Select(o => o.Nr));
+                loginOption.OrgNrs = orgs;
 
-            if (loginOption == null && !string.IsNullOrEmpty(urlSuffix))
-                return await GetLoginOptions("");
+                var langCodeList = await _labelService.GetLangCodeList();
+                var langs = string.Join(",", langCodeList.Select(l => l.Code));
+                loginOption.LangCode = GC.LangCodeDefault;
+                loginOption.LangLabelVariant = 0;
+                loginOption.LangCodes = langs;
 
-            return loginOption;
-        }
-
-        //Make sure the options are enabled in at least one of the org numbers
-        private async Task ReconcileOptionsWithOrgs(LoginOptionDto dto)
-        {
-            var test = new LoginOptionDto
-            {
-                Mfa = true,
-                RememberMe = false,
-                PasswordReset = false,
-                PasswordResetCaptcha = false,
-                SelfRegistration = false,
-                SelfRegistrationCaptcha = false,
-                Masquerade = false,
-            };
-
-            foreach (var orgDto in dto.Orgs)
-            {
-                var org = await _orgService.GetOrg(orgDto.Nr);
-                ReconcileOptionsWithOrg(test, org);
+                loginOption.SuccessAction = GC.NavigateToFrontendServer;
+                loginOption.IsMasqueradeEnabled = true;
+                loginOption.IsActive = true;
             }
 
-            if (!test.Mfa) dto.Mfa = false;
-            if (!test.RememberMe) dto.RememberMe = false;
-            if (!test.PasswordReset) dto.PasswordReset = false;
-            if (!test.PasswordResetCaptcha) dto.PasswordResetCaptcha = false;
-            if (!test.SelfRegistration) dto.SelfRegistration = false;
-            if (!test.SelfRegistrationCaptcha) dto.SelfRegistrationCaptcha = false;
-            if (!test.Masquerade) dto.Masquerade = false;
-        }
-
-        private void ReconcileOptionsWithOrg(LoginOptionDto test, OrgEnt org)
-        {
-            if (org == null || !org.IsActive) return;
-
-            if (org.Mfa > GC.MfaInactive) test.Mfa = true;
-            if (org.IsRememberMeEnabled) test.RememberMe = true;
-            if (org.IsMasqueradeEnabled) test.Masquerade = true;
-            if (org.IsPasswordResetEnabled) test.PasswordReset = true;
-            if (org.Encoding.IsPasswordResetCaptchaEnabled) test.PasswordResetCaptcha = true;
-            if (org.IsSignupEnabled) test.SelfRegistration = true;
-            if (org.Encoding.IsSignupCaptchaEnabled) test.SelfRegistrationCaptcha = true;
-        }
-
-
-        static public LoginOptionEnt Load(NpgsqlDataReader r)
-        {
-            return new LoginOptionEnt
-            {
-                UrlSuffix = GetString(r, "urlSuffix"),
-                AppLoginUrl = GetString(r, "appLoginUrl"),
-                AppMfaUrl = GetString(r, "appMfaUrl"),
-                OrgNr = GetOrgNr(r),
-                OrgNrs = GetString(r, "orgNrs"),
-                LangCode = GetString(r, "langCode"),
-                LangLabelVariant = GetInt(r, "langLabelVariant"),
-                LangCodes = GetString(r, "langCodes"),
-                SuccessAction = GetInt(r, "successAction"),
-                IsMasqueradeEnabled = GetBoolean(r, "isMasqueradeEnabled"),
-                IsActive = GetBoolean(r, "isActive")
-            };
-        }
-
-
-        private async Task<LoginOptionEnt> GetLoginOptionsService()
-        {
-            var orgList = await _orgService.GetOrgList();
-            var orgs = string.Join(",", orgList.Select(o => o.Nr));
-
-            var langCodeList = await _labelService.GetLangCodeList();
-            var langs = string.Join(",", langCodeList.Select(l => l.Code));
-
-            var loginOption = new LoginOptionEnt
-            {
-                OrgNrs = orgs,
-                LangCode = GC.LangCodeDefault,
-                LangLabelVariant = 0,
-                LangCodes = langs,
-                SuccessAction = GC.NavigateToFrontendServer,
-                IsMasqueradeEnabled = true,
-                IsActive = true
-            };
-            
             return loginOption;
         }
 
@@ -181,8 +79,8 @@ namespace Backend.Base.Login
             var dto = new LoginOptionDto
             {
                 UrlSuffix = ent.UrlSuffix,
-                AppLoginUrl = ent.AppLoginUrl,
-                AppMfaUrl = ent.AppMfaUrl,
+                AppLoginUrl = org.AppLoginUrl,
+                AppMfaUrl = org.AppMfaUrl,
                 Code = org.Code,
                 Icon = icon,
                 OrgNr = ent.OrgNr,
@@ -236,6 +134,48 @@ namespace Backend.Base.Login
 
             }
             return dto;
+        }
+
+        //Make sure the options are enabled in at least one of the org numbers
+        private async Task ReconcileOptionsWithOrgs(LoginOptionDto dto)
+        {
+            var test = new LoginOptionDto
+            {
+                Mfa = true,
+                RememberMe = false,
+                PasswordReset = false,
+                PasswordResetCaptcha = false,
+                SelfRegistration = false,
+                SelfRegistrationCaptcha = false,
+                Masquerade = false,
+            };
+
+            foreach (var orgDto in dto.Orgs)
+            {
+                var org = await _orgService.GetOrg(orgDto.Nr);
+                ReconcileOptionsWithOrg(test, org);
+            }
+
+            if (!test.Mfa) dto.Mfa = false;
+            if (!test.RememberMe) dto.RememberMe = false;
+            if (!test.PasswordReset) dto.PasswordReset = false;
+            if (!test.PasswordResetCaptcha) dto.PasswordResetCaptcha = false;
+            if (!test.SelfRegistration) dto.SelfRegistration = false;
+            if (!test.SelfRegistrationCaptcha) dto.SelfRegistrationCaptcha = false;
+            if (!test.Masquerade) dto.Masquerade = false;
+        }
+
+        private void ReconcileOptionsWithOrg(LoginOptionDto test, OrgEnt org)
+        {
+            if (org == null || !org.IsActive) return;
+
+            if (org.Mfa > GC.MfaInactive) test.Mfa = true;
+            if (org.IsRememberMeEnabled) test.RememberMe = true;
+            if (org.IsMasqueradeEnabled) test.Masquerade = true;
+            if (org.IsPasswordResetEnabled) test.PasswordReset = true;
+            if (org.Encoding.IsPasswordResetCaptchaEnabled) test.PasswordResetCaptcha = true;
+            if (org.IsSignupEnabled) test.SelfRegistration = true;
+            if (org.Encoding.IsSignupCaptchaEnabled) test.SelfRegistrationCaptcha = true;
         }
 
     }

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using AppS = Backend.App.HF.Base.Session;
+using AppU = Backend.App.HF.Base.Urls;
 using GC = Backend.GlobalConstants;
 
 /// <summary>
@@ -23,6 +24,7 @@ namespace Backend.App.HF.Base.Login
         private readonly LoginServiceI _loginService;
         private readonly MfaServiceI _mfaService;
         private readonly AppS.SessionServiceI _sessionService;
+        private readonly AppU.UrlsServiceI _urlsService;
 
         /// <summary>
         /// Constructor
@@ -31,11 +33,13 @@ namespace Backend.App.HF.Base.Login
             IServiceProvider serviceProvider,
             LoginServiceI loginService,
             MfaServiceI mfaService,
-            AppS.SessionServiceI sessionService) : base(serviceProvider)
+            AppS.SessionServiceI sessionService,
+            AppU.UrlsServiceI urlsService) : base(serviceProvider)
         {
             _loginService = loginService;
             _sessionService = sessionService;
             _mfaService = mfaService;
+            _urlsService = urlsService;
         }
 
         [AllowAnonymous]
@@ -45,13 +49,15 @@ namespace Backend.App.HF.Base.Login
         {
             var ipAddress = GetClientIp();
 
-            var (login, session) = await _loginService.LoginUser<SessionHF>(ipAddress, request, false);
+            var (login, session) = await _loginService.LoginUser<SessionEntHF>(ipAddress, request, false);
             _sessionService.ConfigureSession(session);
 
-            var res = _loginService.ConfigureLoginResponse(request, login);
+            var (res, dto) = await _loginService.ConfigureLoginResponse(request, login);
 
             if (!login.Response.IsValid)
                 return Ok(res.ResponseDto);
+
+            dto.AppUrls = _urlsService.GetAppUrl();
 
             HttpContext.Response.Cookies.Append(GC.Cookie_RememberMe + request.UrlSuffix, res.EncryptedCookie, res.CookieOptions);
             return Ok(res.ResponseDto);
@@ -69,13 +75,16 @@ namespace Backend.App.HF.Base.Login
 
 
             var ipAddress = GetClientIp();
-            var (login, session) = await _loginService.LoginUser<SessionHF>(ipAddress, request, true);
+            var (login, session) = await _loginService.LoginUser<SessionEntHF>(ipAddress, request, true);
             _sessionService.ConfigureSession(session);
+
+            var dto = await _loginService.ConfigureLoginResponseMfa(request, login);
+            dto.AppUrls = _urlsService.GetAppUrl();
 
             var r = new _ResponseDto
             {
                 Valid = result,
-                Result = _loginService.ConfigureLoginResponseMfa(login)
+                Result = dto
             };
             return Ok(r);
         }

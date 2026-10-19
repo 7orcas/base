@@ -4,6 +4,7 @@ using Backend.Base.Token.Ent;
 using Org.BouncyCastle.Asn1.Ocsp;
 using Org.BouncyCastle.Tls;
 using Org.BouncyCastle.Utilities;
+using Superpower.Model;
 using System.Reflection.Metadata.Ecma335;
 using System.Security.Cryptography;
 using GC = Backend.GlobalConstants;
@@ -63,12 +64,12 @@ namespace Backend.Base.Login
         }
 
         //Configure the return objects to the client
-        public LoginResponseDto ConfigureLoginResponse(LoginRequest request, LoginEnt login)
+        public async Task<(LoginResponseDto res, LoginSuccessDto? dto)> ConfigureLoginResponse(LoginRequest request, LoginEnt login)
         {
             var res = login.Response;
 
             if (!login.Response.IsValid) 
-                return new LoginResponseDto
+                return (new LoginResponseDto
                 {
                     ResponseDto = new _ResponseDto
                     {
@@ -76,10 +77,8 @@ namespace Backend.Base.Login
                         Valid = false,
                         ErrorMessage = res.ErrorMessage,
                     }
-                };
+                }, null);
             
-
-
             //Remember me cookie - only if requested and login is successful.
             //This is used to pre-populate the login form for the user, it is not a security risk as it does not contain any token or similar, just the username and org for pre-population
             var cookie = "";
@@ -105,30 +104,32 @@ namespace Backend.Base.Login
             };
 
             //Don't send the next step if MFA is active as that needs to happen first
+            var dto = new LoginSuccessDto
+            {
+                Id = login.Id,
+                TokenKey = res.IsMfaRequired ? null : res.TokenKey,
+                MainUrl = res.IsMfaRequired ? null : res.MainUrl,
+                LangCode = res.LangCode,
+                IsMfaRequired = res.IsMfaRequired,
+                IsMfaEnabled = res.IsMfaEnabled,
+            };
+
             var r = new _ResponseDto
             {
                 SuccessMessage = "Login Ok",
                 Valid = true,
-                Result = new LoginSuccessDto
-                {
-                    Id = login.Id,
-                    TokenKey = res.IsMfaRequired ? null : res.TokenKey,
-                    MainUrl = res.IsMfaRequired ? null : res.MainUrl,
-                    LangCode = res.LangCode,
-                    IsMfaRequired = res.IsMfaRequired,
-                    IsMfaEnabled = res.IsMfaEnabled
-                }
+                Result = dto
             };
 
-            return new LoginResponseDto
+            return (new LoginResponseDto
             {
                 EncryptedCookie = encryptedCookie,
                 CookieOptions = cookieOptions,
                 ResponseDto = r
-            };
+            }, dto);
         }
 
-        public LoginSuccessDto ConfigureLoginResponseMfa(LoginEnt login)
+        public async Task<LoginSuccessDto> ConfigureLoginResponseMfa(LoginRequest request, LoginEnt login)
         {
             var res = login.Response;
             return new LoginSuccessDto

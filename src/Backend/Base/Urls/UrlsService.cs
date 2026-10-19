@@ -15,12 +15,12 @@ namespace Backend.Base.Urls
         public UrlsService(IServiceProvider serviceProvider)
            : base(serviceProvider)  { }
 
-
         private const string UrlBase = "api/";
         private readonly string URL_user = UrlBase + "User/";
         private readonly string UrlOrg = UrlBase + "Org/";
         private readonly string URL_audit = UrlBase + "Audit/";
 
+        public string GetAppUrl() => PrefixUrl("Urls/" + GC.UrlList);
 
         public List<UrlDto> GetList(SessionEnt session)
         {
@@ -36,6 +36,9 @@ namespace Backend.Base.Urls
 
             return list;
         }
+
+        public static string PrefixUrl(string url) => UrlBase + url;
+        
 
     }
 }

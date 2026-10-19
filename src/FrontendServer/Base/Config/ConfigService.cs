@@ -54,11 +54,12 @@ namespace FrontendServer.Base.Config
             }
         }
 
-        public LoginParameters SetLoginParameters(string? tokenKey, string? token)
+        public LoginParameters SetLoginParameters(string? tokenKey, string? token, string? appUrls)
         {
             loginParameters = new LoginParameters();
             loginParameters.tokenkey = tokenKey;
             loginParameters.token = token;
+            loginParameters.appUrls = appUrls;
             loginParameters.Set(config);
             return loginParameters;
         }

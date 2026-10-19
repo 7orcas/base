@@ -16,10 +16,11 @@ namespace Backend.App.DS.Base.Urls
            : base(serviceProvider)  { }
 
 
-        private const string URL_base = "api/";
-        private readonly string UrlMachine = URL_base + "Machine/";
+        
+        private readonly string UrlMachine = PrefixUrl("Machine/");
         
 
+        public string GetAppUrl() => PrefixUrl("Urls/" + GC.DS + GC.UrlList);
 
         public List<UrlDto> GetList(SessionEnt session)
         {
@@ -29,6 +30,8 @@ namespace Backend.App.DS.Base.Urls
 
             return list;
         }
+
+
 
     }
 }

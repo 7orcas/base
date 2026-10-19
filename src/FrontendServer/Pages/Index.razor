@@ -26,14 +26,15 @@ else
             </thead>
             <tbody>
                     <tr><td style="width:100px;">Org:</td><td><b>@ConfS?.Config?.Org.Nr: @ConfS?.Config?.Org.Code - @ConfS?.Config?.Org.Description</b></td></tr>
-                    <tr><td style="width:100px;">LangCode:</td><td><b>@ConfS.loginParameters?.lang</b></td></tr>
+                    <tr style="background-color:#f0f0f0;"><td style="width:100px;">LangCode:</td><td><b>@ConfS.loginParameters?.lang</b></td></tr>
                     <tr><td style="width:100px;">LangVariant:</td><td><b>@ConfS.loginParameters?.langVariant</b></td></tr>
-                    <tr><td style="width:100px;">UserId:</td><td><b>@ConfS.loginParameters?.userId</b></td></tr>
+                    <tr style="background-color:#f0f0f0;"><td style="width:100px;">UserId:</td><td><b>@ConfS.loginParameters?.userId</b></td></tr>
                     <tr><td style="width:100px;">SessionId:</td><td><b>@ConfS.loginParameters?.sessionId</b></td></tr>
-                    <tr><td style="width:100px;">Loaded:</td><td><b>@ConfS.loginParameters?.loaded</b></td></tr>
+                    <tr style="background-color:#f0f0f0;"><td style="width:100px;">Loaded:</td><td><b>@ConfS.loginParameters?.loaded</b></td></tr>
                     <tr><td style="width:100px;">Token key:</td><td><b>@ConfS.loginParameters?.tokenkey</b></td></tr>
-                    <tr><td style="width:100px;">Token:</td><td style="width:380px;overflow-wrap:break-word;word-break: break-all;white-space: normal;"><b>@ConfS.loginParameters?.token</b></td></tr>
+                    <tr style="background-color:#f0f0f0;"><td style="width:100px;">Token:</td><td style="width:380px;overflow-wrap:break-word;word-break: break-all;white-space: normal;"><b>@ConfS.loginParameters?.token</b></td></tr>
                     <tr><td style="width:100px;">LoginUrl:</td><td><b>@ConfS.loginParameters?.loginUrl</b></td></tr>
+                    <tr style="background-color:#f0f0f0;"><td style="width:100px;">AppUrls:</td><td><b>@ConfS.loginParameters?.appUrls</b></td></tr>
             </tbody>
         </table>
     </p>
@@ -107,15 +108,23 @@ else
             if (values.TryGetValue("urlLogin", out var urlLogin))
                 config.UrlLogin = urlLogin;
 
+            if (!values.TryGetValue("appUrls", out var appUrls))
+            {
+                _isLoading = false;
+                _isError = true;
+                StateHasChanged();
+                return;
+            }
+            await UrlS.ForceInitialise(appUrls);
+
             // Get App / User Config
-            var lps = ConfS.SetLoginParameters(tokenkey, token);
+            var lps = ConfS.SetLoginParameters(tokenkey, token, appUrls);
             lps.LoadedUrl(GC.URL_config);
             SetConfig(config);
 
             // Get stuff
             await LS.Initialise(lps);
             await PermS.Initialise(lps);
-            await UrlS.ForceInitialise();
             await GetVersion();
 
             _isLoading = false;

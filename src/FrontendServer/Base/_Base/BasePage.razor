@@ -69,14 +69,14 @@
         {
             await ConfS.Initialise();
             string? t = await ConfS.GetToken();
-            ConfS.SetLoginParameters(null, t);
+            ConfS.SetLoginParameters(null, t, null); //FIX_ME
         }
 
         if (!LS.IsInitialized)
             await LS.Initialise(ConfS.loginParameters);
             
         if (!UrlS.IsInitialized)
-            await UrlS.Initialise();
+            await UrlS.Initialise(ConfS.loginParameters.appUrls);
 
         _config = ConfS.Config;
         _labels = LS.Labels;

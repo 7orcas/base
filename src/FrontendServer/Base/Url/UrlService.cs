@@ -42,14 +42,14 @@ namespace FrontendServer.Base.Config
         public string GetUrl(string urlKey) => IsUrl(urlKey) ? urls[urlKey] : urlKey;
 
 
-        public async Task ForceInitialise()
+        public async Task ForceInitialise(string appUrls)
         {
             urls = null;
             _cache.Remove(GC.UrlCacheKey);
-            await Initialise();
+            await Initialise(appUrls);
         }
 
-        public async Task Initialise()
+        public async Task Initialise(string appUrls)
         {
             try
             {
@@ -58,7 +58,7 @@ namespace FrontendServer.Base.Config
                 if (!IsInitialized && !IsInitialising)
                 {
                     IsInitialising = true;
-                    var rl = await client.GetAsync(GC.URL_ulrs);
+                    var rl = await client.GetAsync(appUrls);
                     var rls = await rl.Content.ReadAsStringAsync();
                     var rdto = JsonConvert.DeserializeObject<_ResponseDto>(rls);
 
