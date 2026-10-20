@@ -19,6 +19,7 @@ namespace Backend.Program
 
 
             builder.Services.AddScoped<hf.Urls.UrlsServiceI, hf.Urls.UrlsService>();
+            builder.Services.AddScoped<hf.Menu.MenuServiceI, hf.Menu.MenuService>();
             builder.Services.AddScoped<hf.Session.SessionServiceI, hf.Session.SessionService>();
         }
     }

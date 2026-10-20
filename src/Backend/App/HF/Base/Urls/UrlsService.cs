@@ -20,6 +20,7 @@ namespace Backend.App.HF.Base.Urls
         public Dictionary<string, UrlDto> GetList(SessionEnt session)
         {
             var list = base.GetList(session);
+            base.AddOrReplace(list, "MainMenu", GC.HF + "mainmenu");
 
             return list;
         }

@@ -8,6 +8,7 @@ global using Common.Request;
 global using Serilog;
 global using Backend.Base;
 global using Backend.Base.Urls;
+global using Backend.Base.Menu;
 global using Backend.Base.Database;
 global using Backend.Base.Mfa;
 global using Backend.Base.Token;

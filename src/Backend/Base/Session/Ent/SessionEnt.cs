@@ -50,8 +50,6 @@ namespace Backend.Base.Session.Ent
          ****************************************************/
         public bool IsService => UserAccount.IsService();
 
-
-
         /// <summary>
         /// Return the user's crud value for the permission
         /// Return null if permission not loaded

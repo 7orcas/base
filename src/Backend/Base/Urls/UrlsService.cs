@@ -21,7 +21,7 @@ namespace Backend.Base.Urls
             var urls = new Dictionary<string, UrlDto>();
 
             Add(urls, "Logout", "Logout/logout");
-
+            Add(urls, "MainMenu", "Menu/mainmenu");
 
             if (session.IsUserPermission(GC.PerOrg))
             {

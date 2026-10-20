@@ -8,6 +8,7 @@
         public const string Date_Format_ddMMMyyyy = "dd MMM yyyy";
 
         public const string VersionKey            = "kV";
+        public const string MainMenuCacheKey      = "kMMenu";
         public const string LabelCacheKey         = "kLabel";
         public const string UrlCacheKey           = "kUrl";
         public const string TokenCacheKey         = "kToken";
