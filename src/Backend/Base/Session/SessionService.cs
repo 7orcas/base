@@ -36,12 +36,20 @@ namespace Backend.Base.Session
             var ses = new TSession
             {
                 Key = key,
-                UserAccount = userAccount,
+                Username = userAccount.Username,
+                IsService = userAccount.IsService(),
+                IsAdminUser = userAccount.IsAdminUser,
+                IsAdminLang = userAccount.IsAdminLang,
+                SourceApp = sourceApp,
+                IpAddress = ipAddress,
+                UserAccountId = userAccount.Id,
                 MasqueradeId = masqueradeId,
                 OrgNr = org.Nr,
-                UserConfig = userConfig,
-                SourceApp = sourceApp,
-                IpAddress = ipAddress
+                OrgNrDefault = userAccount.Login.OrgNrDefault,
+                Classification = userAccount.Classification,
+                LangCodeCurrent = userConfig.LangCodeCurrent,
+                Languages = userConfig.Languages,
+                Permissions = userAccount.Permissions,
             };
 
             _memoryCache.Set(Key(key), ses);
@@ -59,7 +67,7 @@ namespace Backend.Base.Session
             }
             
             _log.Information("RemoveSession Key {SessionKey} LoginId {LoginId} Org {OrgId}",
-                key, ses.UserAccount.Id, ses.Org.Nr);
+                key, ses.UserAccountId, ses.Org.Nr);
             _memoryCache.Remove(Key(key));
         }
 

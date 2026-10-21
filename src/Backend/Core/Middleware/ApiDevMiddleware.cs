@@ -71,7 +71,7 @@ namespace Backend.Core.Middleware
                             throw new Exception();
 
                         session = _sessionService.GetSession(apiKey);
-                        session.UserAccount.Login.OrgNrDefault = orgNr;
+                        session.OrgNrDefault = orgNr;
                         session.BearerToken = login.Response.TokenKey;
                     }
                     catch 

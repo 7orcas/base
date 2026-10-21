@@ -48,7 +48,7 @@ namespace Backend.Base.Permission
         /// <returns></returns>
         public async Task<List<PermissionCrudEnt>> LoadEffectivePermissions(SessionEnt session)
         {
-            return await LoadEffectivePermissionsInt(session.UserAccount.Id, session.Org.Nr);
+            return await LoadEffectivePermissionsInt(session.UserAccountId, session.Org.Nr);
         }
 
 
@@ -152,7 +152,7 @@ namespace Backend.Base.Permission
                             OrgNr = GetOrgNr(r)
                         });
                     },
-                    new NpgsqlParameter("@userAccId", session.UserAccount.Id),
+                    new NpgsqlParameter("@userAccId", session.UserAccountId),
                     new NpgsqlParameter("@orgNr", session.Org.Nr)
                 );
 
@@ -166,7 +166,7 @@ namespace Backend.Base.Permission
                             OrgNr = GetOrgNr(r)
                         });
                     },
-                    new NpgsqlParameter("@userAccId", session.UserAccount.Id)
+                    new NpgsqlParameter("@userAccId", session.UserAccountId)
                 );
                 return list.OrderBy(r => r.Role).ThenBy(r => r.PermissionNr).ToList();
             }
@@ -183,14 +183,14 @@ namespace Backend.Base.Permission
             if (permAtt == null) return true;
 
             if (session == null) return false;
-            if (session.UserAccount.IsService()) return true;
+            if (session.IsService) return true;
 
             //ie role - permission not required for this endpoint
             if (crud != null && crud.Action == GC.AuditIgnore)
             {
                 //Hard coded admins
                 //if (permAtt.Nr == GC.PerUser) return session.UserAccount.IsAdminUser; DELETE ME
-                if (permAtt.Nr == GC.PerLang) return session.UserAccount.IsAdminLang;
+                if (permAtt.Nr == GC.PerLang) return session.IsAdminLang;
 
                 return true;
             }

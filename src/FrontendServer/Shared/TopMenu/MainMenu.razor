@@ -60,7 +60,6 @@
         if (MenuS.IsMenu("User")) AddItem(adminMenuItems, "User", AppRoutes.UserRoute, "");
         if (MenuS.IsMenu("User")) AddItem(adminMenuItems, "UserRs", AppRoutes.UserRoleRoute, "");
         if (MenuS.IsMenu("Config")) AddItem(adminMenuItems, "Config", AppRoutes.ConfigRoute, "");
-        if (MenuS.IsMenu("Config")) AddItem(adminMenuItems, "Config", AppRoutes.ConfigRoute, "");
         SetLabels(adminMenuItems);
         isAdminMenu = adminMenuItems.Count > 0;
 
@@ -69,7 +68,8 @@
 
     private void RefreshLayout()
     {
-        SetLabels();
+        SetLabels(mainMenuItems);
+        SetLabels(adminMenuItems);
         InvokeAsync(StateHasChanged);
     }
 

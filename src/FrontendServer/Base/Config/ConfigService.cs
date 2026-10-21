@@ -40,7 +40,8 @@ namespace FrontendServer.Base.Config
             try
             {
                 var client = await GetClient();
-                var cl = await client.GetAsync(_urlService.GetUrl("ClientConfig")); 
+                var url = _urlService.GetUrl("ClientConfig");
+                var cl = await client.GetAsync(url);
                 var cls = await cl.Content.ReadAsStringAsync();
                 var cdto = JsonConvert.DeserializeObject<_ResponseDto>(cls);
                 var cjson = cdto.Result.ToString();

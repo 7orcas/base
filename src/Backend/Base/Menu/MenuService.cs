@@ -28,7 +28,7 @@ namespace Backend.Base.Menu
             
             if (session.IsUserPermission(GC.PerRole))
                 menuItemIds.Add("Role");
-            
+
             if (session.IsUserPermission(GC.PerLabel))
                 menuItemIds.Add("Label");
             

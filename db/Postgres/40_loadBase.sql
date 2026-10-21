@@ -67,10 +67,10 @@ VALUES
  (16, 'user16', '1.V7GXs9KH9TTJSU7Bn0INQg==.Jmfr+bRc1P0FOXF7nw2XmnUJTmhA1TQsa5pu+6tidDc=', 'xx123@3.4', 1, 'en', 10);
 INSERT INTO base.zzz (id, xxx, yyy, email, isEmailVerified, orgnrdefault, langcode)
 VALUES
- (2, 'user', '1.V7GXs9KH9TTJSU7Bn0INQg==.Jmfr+bRc1P0FOXF7nw2XmnUJTmhA1TQsa5pu+6tidDc=', 'xx123@3.4', true, 1, 'en'),
- (-1, '$', '1.8da2kjhE7Yjh8LpInlivMQ==.jRwSyq64a4AYu6mSxBYaZ3tWgyRhPD2ZJlzHovwBYr0=', 'js@7orcas.com', true, 1, 'en'),
- (11, 'user11', '1.V7GXs9KH9TTJSU7Bn0INQg==.Jmfr+bRc1P0FOXF7nw2XmnUJTmhA1TQsa5pu+6tidDc=', 'xx123@3.4', true, 1, 'en'),
- (12, 'Hōne', '1.V7GXs9KH9TTJSU7Bn0INQg==.Jmfr+bRc1P0FOXF7nw2XmnUJTmhA1TQsa5pu+6tidDc=', 'xx123@3.4', true, 1, 'en'),
+ (2, 'user',    '1.V7GXs9KH9TTJSU7Bn0INQg==.Jmfr+bRc1P0FOXF7nw2XmnUJTmhA1TQsa5pu+6tidDc=', 'xx123@3.4', true, 1, 'en'),
+ (-1, '$',      '1.yPDe3BhiQxj2zxJzX+Vtsw==.4vRBCyOlVw9v6OvWCm8c0nDOxv+sNy8Ly/bWujduO1o=', 'js@7orcas.com', true, 1, 'en'),
+ (11, 'user11', '1.yOKi6N28RtoVof3RJ3ntuA==.T3melCMcS1TGsCKCqaRjvdPw8jxLMWPPE/ARJ9Kx2RM=', 'xx123@3.4', true, 1, 'en'),
+ (12, 'Hōne',   '1.V7GXs9KH9TTJSU7Bn0INQg==.Jmfr+bRc1P0FOXF7nw2XmnUJTmhA1TQsa5pu+6tidDc=', 'xx123@3.4', true, 1, 'en'),
  (13, 'user13', '1.V7GXs9KH9TTJSU7Bn0INQg==.Jmfr+bRc1P0FOXF7nw2XmnUJTmhA1TQsa5pu+6tidDc=', 'xx123@3.4', true, 1, 'en'),
  (14, 'user14', '1.V7GXs9KH9TTJSU7Bn0INQg==.Jmfr+bRc1P0FOXF7nw2XmnUJTmhA1TQsa5pu+6tidDc=', 'xx123@3.4', true, 1, 'en'),
  (15, 'user15', '1.V7GXs9KH9TTJSU7Bn0INQg==.Jmfr+bRc1P0FOXF7nw2XmnUJTmhA1TQsa5pu+6tidDc=', 'xx123@3.4', true, 1, 'en'),

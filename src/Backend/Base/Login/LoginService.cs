@@ -359,9 +359,8 @@ namespace Backend.Base.Login
                 return false;
             }
             
-            //var passwordHash = PasswordHash(password);
+            var passwordHash = PasswordHash(password); //TESTING ONLY - REMOVE THIS LINE IN PRODUCTION
             var validPassword = VerifyPassword(password, login.Password);
-            
 
             //Check is user's email is verified if org requires it. 
             if (!login.IsService() 

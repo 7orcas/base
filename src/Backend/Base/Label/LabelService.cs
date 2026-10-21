@@ -34,7 +34,7 @@ namespace Backend.Base.Label
         }
 
         public async Task<Dictionary<string, LangLabel>> GetLanguageLabelDic(SessionEnt session) =>
-            await GetLanguageLabelDic(session.UserConfig.LangCodeCurrent, session.Org.LangLabelVariant);
+            await GetLanguageLabelDic(session.LangCodeCurrent, session.Org.LangLabelVariant);
         
 
         public async Task<Dictionary<string, LangLabel>> GetLanguageLabelDic(string langCode, int? variant)
@@ -55,7 +55,7 @@ namespace Backend.Base.Label
         }
 
         public async Task<Dictionary<string, string>> GetLangCodeDic(SessionEnt session) =>
-            await GetLangCodeDic(session.UserConfig.LangCodeCurrent, session.Org.LangLabelVariant);
+            await GetLangCodeDic(session.LangCodeCurrent, session.Org.LangLabelVariant);
         
 
         public async Task<Dictionary<string, string>> GetLangCodeDic(string langCode, int? variant)

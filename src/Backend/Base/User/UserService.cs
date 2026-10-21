@@ -35,7 +35,7 @@ namespace Backend.Base.User
 
         public async Task<List<UserEnt>> GetUserList(SessionEnt session, UserSearch search)
         {
-            return await _userRepo.GetList(search, session.UserAccount.Login.OrgNrDefault);
+            return await _userRepo.GetList(search, session.OrgNrDefault);
         }
 
         public async Task<UserEnt?> GetUserById(long id)

@@ -78,7 +78,7 @@ namespace Backend.Base.Label
         public async Task<IActionResult> GetRelatedLabels(string langKeyCode)
         {
             var session = HttpContext.Items["session"] as SessionEnt;
-            var langs = session.UserConfig.Languages;
+            var langs = session.Languages;
             
             if (langs.Count == 0)
                 return Ok(new _ResponseDto

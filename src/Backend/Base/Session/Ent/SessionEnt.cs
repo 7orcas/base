@@ -13,27 +13,28 @@ namespace Backend.Base.Session.Ent
     public class SessionEnt
     {
         public string Key { get; set; }
-
-
         public int SourceApp {  get; set; }
         public string IpAddress { get; set; } = string.Empty;
-        public TimeZoneInfo TimeZone = TimeZoneInfo.FindSystemTimeZoneById("New Zealand Standard Time");
+        public bool IsService { get; set; }
+        public bool IsAdminUser { get; set; }
+        public bool IsAdminLang { get; set; }
 
 
         /****************************************************
          * Session attributes
          ****************************************************/
+        public string LangCodeCurrent { get; set; }
+        public string Username { get; set; }
+        public TimeZoneInfo TimeZone = TimeZoneInfo.FindSystemTimeZoneById("New Zealand Standard Time");
         public int OrgNr { get; set; }
-
-
-
-        public LoginAccountEnt UserAccount { get; set; }
+        public int OrgNrDefault { get; set; }
         public long? MasqueradeId { get; set; }
-        public ConfigUser UserConfig { get; set; }
+        public long UserAccountId { get; set; }
+        public int? Classification { get; set; }
 
 
-
-
+        public List<ConfigLanguage> Languages { get; set; }
+        public List<PermissionCrudEnt> Permissions { get; set; }
 
         //Api testing only
         public string? BearerToken { get; set; }
@@ -48,7 +49,6 @@ namespace Backend.Base.Session.Ent
         /****************************************************
          * Convienence methods
          ****************************************************/
-        public bool IsService => UserAccount.IsService();
 
         /// <summary>
         /// Return the user's crud value for the permission
@@ -58,7 +58,7 @@ namespace Backend.Base.Session.Ent
         /// <returns></returns>
         public string GetUserPermissionCrud (int permNr)
         {
-            var p = UserAccount.Permissions.FirstOrDefault(p => p.Nr == permNr);
+            var p = Permissions.FirstOrDefault(p => p.Nr == permNr);
             if (p == null) return null;
             return p.Crud;
         }
@@ -66,25 +66,25 @@ namespace Backend.Base.Session.Ent
         public bool IsUserPermission(int permNr)
         {
             if (IsService) return true;
-            var p = UserAccount.Permissions.FirstOrDefault(p => p.Nr == permNr);
+            var p = Permissions.FirstOrDefault(p => p.Nr == permNr);
             return p != null;
         }
         public bool IsUserPermissionUpdate(int permNr)
         {
             if (IsService) return true;
-            var p = UserAccount.Permissions.FirstOrDefault(p => p.Nr == permNr);
+            var p = Permissions.FirstOrDefault(p => p.Nr == permNr);
             return p != null && p.Crud.Contains(GC.CrudUpdate);
         }
         public bool IsUserPermissionCreate(int permNr)
         {
             if (IsService) return true;
-            var p = UserAccount.Permissions.FirstOrDefault(p => p.Nr == permNr);
+            var p = Permissions.FirstOrDefault(p => p.Nr == permNr);
             return p != null && p.Crud.Contains(GC.CrudCreate);
         }
         public bool IsUserPermissionDelete(int permNr)
         {
             if (IsService) return true;
-            var p = UserAccount.Permissions.FirstOrDefault(p => p.Nr == permNr);
+            var p = Permissions.FirstOrDefault(p => p.Nr == permNr);
             return p != null && p.Crud.Contains(GC.CrudDelete);
         }
     }

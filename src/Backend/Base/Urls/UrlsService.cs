@@ -70,8 +70,8 @@ namespace Backend.Base.Urls
 
             if (session.IsUserPermission(GC.PerConfig))
             {
-                Add(urls, "ClientConfig", "Config/clientConfig");
             }
+Add(urls, "ClientConfig", "Config/clientConfig");
 
             if (session.IsUserPermission(GC.PerPerm))
             {

@@ -54,7 +54,7 @@ namespace Backend.Core.Middleware
                     session.Org = await _orgService.GetOrg(session.OrgNr);
 
                     session.Labels = await _labelService.GetLangCodeDic(
-                        session.UserConfig.LangCodeCurrent,
+                        session.LangCodeCurrent,
                         session.Org.LangLabelVariant);
 
                     context.Items["session"] = session;
