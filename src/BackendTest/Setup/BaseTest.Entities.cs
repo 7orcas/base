@@ -35,8 +35,8 @@ namespace BackendTest.Setup
                     LangLabelVariant = 0,
                     Description = ORG_DESC,
                 },
-                UserConfig = CreateUserConfig(orgNr),
-                UserAccount = CreateUserAccount(orgNr, userAccId)
+                //UserConfig = CreateUserConfig(orgNr),
+                //UserAccount = CreateUserAccount(orgNr, userAccId)
             };
 
             var orgConfig = new ConfigOrg() {
@@ -50,16 +50,16 @@ namespace BackendTest.Setup
             return session;
         }
 
-        public ConfigUser CreateUserConfig(int orgNr)
-        {
-            var userConfig = new ConfigUser
-                {
-                    orgNr = orgNr,
-                    LangCodeCurrent = LANG_CODE_DEFAULT,
-                    Languages = CreateLanguageConfigs()
-            };
-            return userConfig;
-        }
+        //public ConfigUser CreateUserConfig(int orgNr)
+        //{
+        //    var userConfig = new ConfigUser
+        //        {
+        //            orgNr = orgNr,
+        //            LangCodeCurrent = LANG_CODE_DEFAULT,
+        //            Languages = CreateLanguageConfigs()
+        //    };
+        //    return userConfig;
+        //}
 
         public LoginAccountEnt CreateUserAccount(int orgNr, int userAccId)
         {

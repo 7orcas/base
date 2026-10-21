@@ -75,25 +75,26 @@ namespace Backend.Base
             }
         }
 
-        [Obsolete("Use GetList<T>(string sql, object? parameters = null) instead.", false)]
-        public async Task<List<T>> GetList<T>(string sql) 
-        {
-            try
-            {
-                using var conn = Sql.GetConnection();
-                var result = await conn.QueryAsync<T>(sql);
-                return result.ToList();
-            }
-            catch (Exception ex)
-            {
-                Log.Logger.Error(
-                    ex,
-                    "Sql failed: {Sql}",
-                    sql);
+        //DELETE ME
+        //[Obsolete("Use GetList<T>(string sql, object? parameters = null) instead.", false)]
+        //public async Task<List<T>> GetList<T>(string sql) 
+        //{
+        //    try
+        //    {
+        //        using var conn = Sql.GetConnection();
+        //        var result = await conn.QueryAsync<T>(sql);
+        //        return result.ToList();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Log.Logger.Error(
+        //            ex,
+        //            "Sql failed: {Sql}",
+        //            sql);
 
-                throw;
-            }
-        }
+        //        throw;
+        //    }
+        //}
 
         public async Task<List<T>> GetList<T>(string sql, object? parameters = null)
         {

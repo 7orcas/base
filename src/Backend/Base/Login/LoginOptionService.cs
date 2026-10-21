@@ -6,75 +6,134 @@ namespace Backend.Base.Login
 {
     public class LoginOptionService : BaseService, LoginOptionServiceI
     {
+        private readonly LoginOptionRepoI _loginOptionRepo;
         private readonly OrgServiceI _orgService;
         private readonly LabelServiceI _labelService;
 
         public LoginOptionService(IServiceProvider serviceProvider,
+            LoginOptionRepoI loginOptionRepo,
             OrgServiceI orgService,
             LabelServiceI labelService)
             : base(serviceProvider)
         {
+            _loginOptionRepo = loginOptionRepo;
             _orgService = orgService;
             _labelService = labelService;
         }
 
         public async Task<LoginOptionEnt> GetLoginOptionDefault(int orgNr)
         {
-            var loginOption = null as LoginOptionEnt;
-            try
-            {
-                await Sql.Run(
-                    "SELECT * FROM cntrl.loginoption " +
-                        "WHERE orgnr = @orgNr " +
-                        "AND isdefault IS TRUE",
-                    r =>
-                    {
-                        loginOption = Load(r);
-                    },
-                    new NpgsqlParameter("@orgNr", orgNr)
-                );
-            }
-            catch { }
-
-            return loginOption;
+            return await _loginOptionRepo.GetLoginOptions(orgNr);
         }
 
 
         //Login options for the passed in login nr
         public async Task<LoginOptionEnt> GetLoginOptions(string urlSuffix)
         {
-
-            var whereSql = "urlsuffix = @urlsuffix";
-            if (string.IsNullOrEmpty(urlSuffix))
+            var isService = false;
+            if (!string.IsNullOrEmpty(urlSuffix) && urlSuffix == GC.ServiceLoginUrlSuffix)
             {
-                whereSql = "isdefault = true";
-                urlSuffix = "x";
-            }
-            else if (urlSuffix == GC.ServiceLoginUrlSuffix)
-            {
-                return await GetLoginOptionsService();
+                isService = true;
+                urlSuffix = ""; //get default
             }
 
-            var loginOption = null as LoginOptionEnt;
+            var loginOption = await _loginOptionRepo.GetLoginOptions(urlSuffix);
             
-            try
+            if (isService)
             {
-                await Sql.Run(
-                    "SELECT * FROM cntrl.loginoption " +
-                        "WHERE " + whereSql,
-                    r =>
-                    {
-                        loginOption = Load(r);
-                    },
-                    new NpgsqlParameter("@urlsuffix", urlSuffix)
-                );
-            }
-            catch { }
+                var orgList = await _orgService.GetOrgList();
+                var orgs = string.Join(",", orgList.Select(o => o.Nr));
+                loginOption.OrgNrs = orgs;
 
-            if (loginOption == null && !string.IsNullOrEmpty(urlSuffix))
-                return await GetLoginOptions("");
+                var langCodeList = await _labelService.GetLangCodeList();
+                var langs = string.Join(",", langCodeList.Select(l => l.Code));
+                loginOption.LangCode = GC.LangCodeDefault;
+                loginOption.LangLabelVariant = 0;
+                loginOption.LangCodes = langs;
+
+                loginOption.SuccessAction = GC.NavigateToFrontendServer;
+                loginOption.IsMasqueradeEnabled = true;
+                loginOption.IsActive = true;
+            }
 
             return loginOption;
+        }
+
+
+        /// <summary>
+        /// Initialise login options:
+        /// 1. Set options with the default org nr
+        /// 2. Remove options if not valid in other org nrs
+        /// </summary>
+        /// <param name="ent"></param>
+        /// <returns></returns>
+        public async Task<LoginOptionDto> InitialiseLoginOptions(LoginOptionEnt ent)
+        {
+            //Get the default org for this login option
+            var org = await _orgService.GetOrg(ent.OrgNr);
+            var icon = string.Empty;
+            if (!string.IsNullOrEmpty(org.Icon)) icon = org.Icon;
+
+            var orgs = new List<OrgDto>();
+            var langs = new List<LangCodeDto>();
+            var dto = new LoginOptionDto
+            {
+                UrlSuffix = ent.UrlSuffix,
+                AppLoginUrl = org.AppLoginUrl,
+                AppMfaUrl = org.AppMfaUrl,
+                Code = org.Code,
+                Icon = icon,
+                OrgNr = ent.OrgNr,
+                LangCode = ent.LangCode,
+                LangLabelVariant = ent.LangLabelVariant,
+                Orgs = orgs,
+                LangCodes = langs,
+                SuccessAction = ent.SuccessAction,
+                Mfa = org.Mfa > GC.MfaInactive,
+                RememberMe = org.IsRememberMeEnabled,
+                PasswordReset = org.IsPasswordResetEnabled,
+                PasswordResetCaptcha = org.Encoding.IsPasswordResetCaptchaEnabled,
+                SelfRegistration = org.IsSignupEnabled,
+                SelfRegistrationCaptcha = org.Encoding.IsSignupCaptchaEnabled,
+                Masquerade = org.IsMasqueradeEnabled && ent.IsMasqueradeEnabled  //Must be both enabled
+            };
+
+            foreach (var part in ent.OrgNrs.Split(","))
+            {
+                var o = await _orgService.GetOrg(int.Parse(part));
+                if (!ent.IsService && !o.IsActive) continue;
+                dto.Orgs.Add(new OrgDto
+                {
+                    Nr = o.Nr,
+                    Code = o.Code,
+                    Description = o.Description
+                });
+            }
+
+            dto.Orgs = dto.Orgs
+                .OrderBy(o => o.Nr == dto.OrgNr ? 0 : 1)
+                .ThenBy(o => o.Nr)
+                .ToList();
+
+            await ReconcileOptionsWithOrgs(dto);
+
+            if (dto.SelfRegistrationCaptcha || dto.PasswordResetCaptcha)
+                dto.RecaptchaSiteKey = AppSettings.ReCaptcha.SiteKey;
+
+            var list = await _labelService.GetLangCodeList();
+            foreach (var part in ent.LangCodes.Split(","))
+            {
+                var l = list.Find(l => l.Code == part);
+                if (l == null || (!ent.IsService && !l.IsActive)) continue;
+                dto.LangCodes.Add(new LangCodeDto
+                {
+                    Code = l.Code,
+                    Description = l.Description,
+                    Flag = l.Flag,
+                });
+
+            }
+            return dto;
         }
 
         //Make sure the options are enabled in at least one of the org numbers
@@ -117,117 +176,6 @@ namespace Backend.Base.Login
             if (org.Encoding.IsPasswordResetCaptchaEnabled) test.PasswordResetCaptcha = true;
             if (org.IsSignupEnabled) test.SelfRegistration = true;
             if (org.Encoding.IsSignupCaptchaEnabled) test.SelfRegistrationCaptcha = true;
-        }
-
-
-        static public LoginOptionEnt Load(NpgsqlDataReader r)
-        {
-            return new LoginOptionEnt
-            {
-                UrlSuffix = GetString(r, "urlsuffix"),
-                OrgNr = GetOrgNr(r),
-                OrgNrs = GetString(r, "orgnrs"),
-                LangCode = GetString(r, "langcode"),
-                LangLabelVariant = GetInt(r, "langlabelvariant"),
-                LangCodes = GetString(r, "langcodes"),
-                SuccessAction = GetInt(r, "successaction"),
-                IsMasqueradeEnabled = GetBoolean(r, "isMasqueradeEnabled"),
-                IsActive = GetBoolean(r, "isActive")
-            };
-        }
-
-
-        private async Task<LoginOptionEnt> GetLoginOptionsService()
-        {
-            var orgList = await _orgService.GetOrgList();
-            var orgs = string.Join(",", orgList.Select(o => o.Nr));
-
-            var langCodeList = await _labelService.GetLangCodeList();
-            var langs = string.Join(",", langCodeList.Select(l => l.Code));
-
-            var loginOption = new LoginOptionEnt
-            {
-                OrgNrs = orgs,
-                LangCode = GC.LangCodeDefault,
-                LangLabelVariant = 0,
-                LangCodes = langs,
-                SuccessAction = GC.NavigateToFrontendServer,
-                IsMasqueradeEnabled = true,
-                IsActive = true
-            };
-            
-            return loginOption;
-        }
-
-
-        /// <summary>
-        /// Initialise login options:
-        /// 1. Set options with the default org nr
-        /// 2. Remove options if not valid in other org nrs
-        /// </summary>
-        /// <param name="ent"></param>
-        /// <returns></returns>
-        public async Task<LoginOptionDto> InitialiseLoginOptions(LoginOptionEnt ent)
-        {
-            //Get the default org for this login option
-            var org = await _orgService.GetOrg(ent.OrgNr);
-            var icon = string.Empty;
-            if (!string.IsNullOrEmpty(org.Icon)) icon = org.Icon;
-
-            var orgs = new List<OrgDto>();
-            var langs = new List<LangCodeDto>();
-            var dto = new LoginOptionDto
-            {
-                UrlSuffix = ent.UrlSuffix,
-                Code = org.Code,
-                Icon = icon,
-                OrgNr = ent.OrgNr,
-                LangCode = ent.LangCode,
-                LangLabelVariant = ent.LangLabelVariant,
-                Orgs = orgs,
-                LangCodes = langs,
-                SuccessAction = ent.SuccessAction,
-                Mfa = org.Mfa > GC.MfaInactive,
-                RememberMe = org.IsRememberMeEnabled,
-                PasswordReset = org.IsPasswordResetEnabled,
-                PasswordResetCaptcha = org.Encoding.IsPasswordResetCaptchaEnabled,
-                SelfRegistration = org.IsSignupEnabled,
-                SelfRegistrationCaptcha = org.Encoding.IsSignupCaptchaEnabled,
-                Masquerade = org.IsMasqueradeEnabled && ent.IsMasqueradeEnabled  //Must be both enabled
-            };
-
-            foreach (var part in ent.OrgNrs.Split(","))
-            {
-                var o = await _orgService.GetOrg(int.Parse(part));
-                if (!ent.IsService && !o.IsActive) continue;
-                dto.Orgs.Add(new OrgDto
-                {
-                    Nr = o.Nr,
-                    Code = o.Code,
-                    Description = o.Description
-                });
-
-            }
-
-            await ReconcileOptionsWithOrgs(dto);
-
-            if (dto.SelfRegistrationCaptcha || dto.PasswordResetCaptcha)
-                dto.RecaptchaSiteKey = AppSettings.ReCaptcha.SiteKey;
-
-            var list = await _labelService.GetLangCodeList();
-            foreach (var part in ent.LangCodes.Split(","))
-            {
-                var l = list.Find(l => l.Code == part);
-                if (l == null || (!ent.IsService && !l.IsActive)) continue;
-                dto.LangCodes.Add(new LangCodeDto
-                {
-                    Code = l.Code,
-                    Description = l.Description,
-                    Flag = l.Flag,
-                });
-
-            }
-            return dto;
         }
 
     }

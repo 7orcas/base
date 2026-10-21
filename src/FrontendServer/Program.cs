@@ -58,8 +58,10 @@ builder.Services.AddScoped<ProtectedSessionStorage>();
 //Base Services 
 builder.Services.AddScoped<HttpService>();
 builder.Services.AddScoped<ConfigService>();
+builder.Services.AddScoped<MenuService>();
 builder.Services.AddScoped<FieldDefinitionService>();
 builder.Services.AddScoped<LabelService>();
+builder.Services.AddScoped<UrlService>();
 builder.Services.AddScoped<ThemeService>();
 builder.Services.AddScoped<BaseServiceDELETE_ME>();
 builder.Services.AddScoped<LogoutService>();

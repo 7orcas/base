@@ -1,12 +1,11 @@
 ﻿
 <div class="vertical-menu">
-    @for (int i = 0; i < items.Count(); i += cMax)
+    @for (int i = 0; i < mainMenuItems.Count(); i += cMax)
     {
-        var index = i;
-        <MenuButton Title="@items[index + cLabel]" Link="@items[index + cRoute]" />
+        <MenuButton Title="@mainMenuItems[i + cLabel]" Link="@mainMenuItems[i + cRoute]" />
     }
 
-    @if (ConfS.Config.User.IsAdminUser || ConfS.Config.User.IsAdminLang)
+    @if (isAdminMenu)
     {
         <div style="width:100%;">
             <MudButton Class="custom-menu-button"
@@ -21,14 +20,10 @@
             @if (showAdmin)
             {
                 <MudStack Spacing="0" Class="custom-menu-sub">
-                    <MenuButton Title="@GetLabel("Roles")"
-                                Link="@AppRoutes.UserRoleRoute" />
-
-                    <MenuButton Title="@GetLabel("Organisation")"
-                                Link="@AppRoutes.OrgRoute" />
-
-                    <MenuButton Title="@GetLabel("UserAdm")"
-                                Link="@AppRoutes.UserRoute" />
+                    @for (int j = 0; j < adminMenuItems.Count(); j += cMax)
+                    {
+                        <MenuButton Title="@adminMenuItems[j + cLabel]" Link="@adminMenuItems[j + cRoute]" />
+                    }
                 </MudStack>
             }
         </div>
@@ -36,6 +31,7 @@
 </div>
 
 @inject ConfigService ConfS
+@inject MenuService MenuS
 @inject LabelService LS
 @inject ThemeService TS
 @code {
@@ -44,35 +40,43 @@
     private int cLabel = 2;
     private int cMax   = 3;
 
-    private bool showAdmin;
-    private string[] items =
-        {
-            "Machines",     AppRoutes.MachinesRoute, "",
-            "Organisation", AppRoutes.OrgRoute,      "",
-            "Permissions",  AppRoutes.PermRoute,     "",
-            "Roles",        AppRoutes.RoleRoute,     "",
-            "UserRs",       AppRoutes.UserRoleRoute, "",
-            "Config",       AppRoutes.ConfigRoute,   "",
-            "Audit",        AppRoutes.AuditRoute,    "",
-    };
+    private bool isAdminMenu = false;
+    private bool showAdmin = false;
 
+    private List<string> mainMenuItems = new List<string>();
+    private List<string> adminMenuItems = new List<string>();
 
     protected override void OnInitialized()
     {
-        SetLabels();
+
+        if (MenuS.IsMenu("Machine")) AddItem(mainMenuItems, "Machines", AppRoutes.MachinesRoute, "");
+        if (MenuS.IsMenu("Audit")) AddItem(mainMenuItems, "Audit", AppRoutes.AuditRoute, "");
+        if (MenuS.IsMenu("Org")) AddItem(mainMenuItems, "Organisation", AppRoutes.OrgRoute, "");
+        SetLabels(mainMenuItems);
+
+
+        if (MenuS.IsMenu("Perm")) AddItem(adminMenuItems, "Permissions", AppRoutes.PermRoute, "");
+        if (MenuS.IsMenu("Role")) AddItem(adminMenuItems, "Roles", AppRoutes.RoleRoute, "");
+        if (MenuS.IsMenu("User")) AddItem(adminMenuItems, "User", AppRoutes.UserRoute, "");
+        if (MenuS.IsMenu("User")) AddItem(adminMenuItems, "UserRs", AppRoutes.UserRoleRoute, "");
+        if (MenuS.IsMenu("Config")) AddItem(adminMenuItems, "Config", AppRoutes.ConfigRoute, "");
+        SetLabels(adminMenuItems);
+        isAdminMenu = adminMenuItems.Count > 0;
+
         LS.OnLabelsChanged += RefreshLayout;
     }
 
     private void RefreshLayout()
     {
-        SetLabels();
+        SetLabels(mainMenuItems);
+        SetLabels(adminMenuItems);
         InvokeAsync(StateHasChanged);
     }
 
-    private void SetLabels()
+    private void SetLabels(List<string> menu)
     {
-        for (int i = 0; i < items.Count(); i += 3)
-            items[i + cLabel] = LS.GetLabel(items[i + cCode]);
+        for (int i = 0; i < menu.Count(); i += 3)
+            menu[i + cLabel] = LS.GetLabel(menu[i + cCode]);
     }
 
     private string GetLabel(string key) => LS.GetLabel(key);
@@ -82,4 +86,12 @@
     private void ToggleAdminMenu() => showAdmin = !showAdmin;
     
     public string GetLightDarkClassSuffix() => TS.IsDarkMode ? "-dark" : "-light";
+
+    private void AddItem(List<string> menu, string code, string route, string label)
+    {
+        menu.Add(code);
+        menu.Add(route);
+        menu.Add(label);
+    }
+
 }

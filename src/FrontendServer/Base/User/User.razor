@@ -72,7 +72,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var defs = await GetDefinition(GC.URL_user_definition);
+        var defs = await GetDefinition(GetUrl("UserDef"));
         fieldDefinitionUtil = new FieldDefinitionUtil(defs);
     }
 
@@ -125,7 +125,7 @@
 
     private async Task LoadList(UserSearch search)
     {
-        var response = await PostAsync<_ResponseDto, UserSearch>(GC.URL_user_list, search);
+        var response = await PostAsync<_ResponseDto, UserSearch>(GetUrl("UserList"), search);
 
         list.Clear();
         List<UserDto> listX = null;
@@ -178,7 +178,7 @@
     {
         if (!dto.IsLoaded)
         {
-            var record = await GetAsync<UserDto>(GC.URL_user_get + dto.Id, false);
+            var record = await GetAsync<UserDto>(GetUrlSlash("UserGet") + dto.Id, false);
             record.Code = GetCode(record); //for the list table
             dto.Load(record);
         }
@@ -206,7 +206,7 @@
         {
             Updates = updates.Select(x => x.dto).ToList()
         };
-        var response = await PostAsync<List<UserDto>>(GC.URL_user_update, updatesX);
+        var response = await PostAsync<List<UserDto>>(GetUrl("UserUpdate"), updatesX);
 
         var r2 = null as _ResponseDto;
 
@@ -296,7 +296,7 @@
 
     private async Task AddRecord()
     {
-        var dto = await GetAsync<UserDto>(GC.URL_user_new, false);
+        var dto = await GetAsync<UserDto>(GetUrl("UserNew"), false);
         dto.Code = GetCode(dto); //for the list table
         var rec = new ListModel<UserDto>(dto);
         rec.IsLoaded = true;

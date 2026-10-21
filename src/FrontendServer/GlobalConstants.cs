@@ -8,7 +8,9 @@
         public const string Date_Format_ddMMMyyyy = "dd MMM yyyy";
 
         public const string VersionKey            = "kV";
+        public const string MainMenuCacheKey      = "kMMenu";
         public const string LabelCacheKey         = "kLabel";
+        public const string UrlCacheKey           = "kUrl";
         public const string TokenCacheKey         = "kToken";
         public const string RefreshTokenCacheKey  = "kRefreshToken";
         public const string ConfigCacheKey        = "kConf";
@@ -17,9 +19,11 @@
         public const string UnAuthorizedClientKey = "kUAC";
         public const string BearerKey             = "Bearer";
 
+        /* DELETE ME
         private const string URL_base             = "api/";
+        public const string URL_ulrs              = URL_base + "Urls/";
+
         private const string URL_user             = URL_base + "User/";
-        private const string URL_org              = URL_base + "Org/";
         private const string URL_audit            = URL_base + "Audit/";
 
         public const string URL_logout            = URL_base + "Logout/logout";
@@ -37,19 +41,17 @@
         public const string URL_user_update       = URL_user + "update";
         public const string URL_user_new          = URL_user + "new";
         public const string URL_user_definition   = URL_user + "definition";
+
         public const string URL_user_role_list    = URL_base + "Role/userroles";
-
-        public const string URL_org_list          = URL_org + "list";
-        public const string URL_org_get           = URL_org + "get/";
-        public const string URL_org_update        = URL_org + "update";
-        public const string URL_org_definition    = URL_org + "definition";
-
         public const string URL_role_list         = URL_base + "Role/roles";
         public const string URL_role              = URL_base + "Role/get/";
         public const string URL_role_update       = URL_base + "Role/update/";
-        public const string URL_config            = URL_base + "Config/clientConfig";
+
+
         public const string URL_label_clientlist  = URL_base + "Label/clientlist/";
         public const string URL_label_relatedlist = URL_base + "Label/relatedlist/";
+        public const string URL_config            = "api/Config/clientConfig";
+        */
 
         public enum TextSize
         {

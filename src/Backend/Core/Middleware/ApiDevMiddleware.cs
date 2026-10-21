@@ -65,13 +65,13 @@ namespace Backend.Core.Middleware
                             ApiKey = org.ApiKey,
                             ApiTestKeyValue = apiKey
                         };
-                        var login = await _loginService.LoginUser("local", request, true);
+                        var (login, sessionNew) = await _loginService.LoginUser<SessionEnt>("local", request, true);
 
                         if (!login.Response.IsValid)
                             throw new Exception();
 
                         session = _sessionService.GetSession(apiKey);
-                        session.UserAccount.Login.OrgNrDefault = orgNr;
+                        session.OrgNrDefault = orgNr;
                         session.BearerToken = login.Response.TokenKey;
                     }
                     catch 

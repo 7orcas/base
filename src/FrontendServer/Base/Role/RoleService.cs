@@ -16,7 +16,7 @@ namespace FrontendServer.Base.Role
 
         public async Task<(List<UserRoleDto> roles, MarkupString message)> RolesAsync(HttpClient client)
         {
-            return await GetAsync<List<UserRoleDto>>(client, GC.URL_user_role_list);
+            return await GetAsync<List<UserRoleDto>>(client, "xxx");
         }
 
     }

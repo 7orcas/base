@@ -2,6 +2,7 @@
 using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using Npgsql;
 using GC = Backend.GlobalConstants;
 
 namespace Backend.Base.Org
@@ -44,7 +45,6 @@ namespace Backend.Base.Org
             return await GetList<OrgEnt>(sql);
         }
 
-
         public async Task<OrgEnt?> GetByNr(int nr)
         {
             var org = null as OrgEnt;
@@ -66,7 +66,7 @@ namespace Backend.Base.Org
 
             if (org == null)
                 return null;
-
+                       
             org.Decode();
 
             org.Code = orgDto.Code;
@@ -114,13 +114,11 @@ namespace Backend.Base.Org
                 LockoutPasswordResetLink = orgDto.LoginAttemptRule.LockoutPasswordResetLink,
                 WarningPasswordResetLink = orgDto.LoginAttemptRule.WarningPasswordResetLink,
             };
+            
+            org.Encoding.Languages = langs;
+            org.Encoding.PasswordRule = pw;
+            org.Encoding.LoginAttemptRule = attempts;
 
-            org.Encoding = new OrgEnc
-            {
-                Languages = langs,
-                PasswordRule = pw,
-                LoginAttemptRule = attempts,
-            };
             org.Encode();
 
             if (orgDto.IsNew())

@@ -67,8 +67,7 @@ namespace Backend.Core.Middleware
                 var admin = false;
                 admin = perm != null
                     && perm.Nr == GC.PerUser
-                    && session.UserAccount != null
-                    && session.UserAccount.IsAdminUser;
+                    && session.IsAdminUser;
 
 
                 if (admin || _permissionService.IsAuthorizedToAccessEndPoint(session, perm, crud))

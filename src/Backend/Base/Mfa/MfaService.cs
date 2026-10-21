@@ -29,10 +29,14 @@ namespace Backend.Base.Mfa
         {
             var login = await _loginRepo.GetLoginById(id);
 
-            if (login == null || login.IsMfaEnabled || !string.IsNullOrEmpty(login.MfaSecret))
+            if (login == null)
                 return null;
 
             var isService = id == GC.ServiceLoginId && username == GC.ServiceUsername;
+
+            if (!isService && (login.IsMfaEnabled || !string.IsNullOrEmpty(login.MfaSecret)))
+                return null;
+
             var key = GenerateMfaKey();
             var qrCodeUri = GenerateQrCodeUri(login.Email, key, isService);
             _loginRepo.SetMfaKey(id, key);
@@ -77,6 +81,15 @@ namespace Backend.Base.Mfa
         {
             var name = AppSettings.AuthenticatorAppName + (isService?"-Service":""); //ToDo add specific qr for service
             return $"otpauth://totp/{name}:{email}?secret={unformattedKey}&issuer={name}&digits=6";
+        }
+
+        public _ResponseDto ConfigureInvalidResponse()
+        {
+            return new _ResponseDto
+            {
+                Valid = false,
+                ErrorMessage = "Invalid Mfa code"
+            };
         }
 
     }

@@ -56,7 +56,7 @@
     {
         if (firstRender)
         {
-            data = await GetAsync<UserSearch>(GC.URL_user_search, false);
+            data = await GetAsync<UserSearch>(GetUrl("UserSearch"), false);
             data.MaxRecordsReturned = MaxRecordsReturned;
 
             await InvokeAsync(async () =>

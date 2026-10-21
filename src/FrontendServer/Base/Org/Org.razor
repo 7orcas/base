@@ -70,7 +70,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var defs = await GetDefinition(GC.URL_org_definition);
+        var defs = await GetDefinition(GetUrl("OrgDef"));
         fieldDefinitionUtil = new FieldDefinitionUtil(defs);
     }
 
@@ -102,7 +102,7 @@
     private async Task Load()
     {
         list.Clear();
-        var listX = await GetAsync<List<OrgDto>>(GC.URL_org_list);
+        var listX = await GetAsync<List<OrgDto>>(GetUrl("OrgList")); 
 
         if (listX == null)
         {
@@ -144,7 +144,7 @@
     {
         if (!dto.IsLoaded)
         {
-            var record = await GetAsync<OrgDto>(GC.URL_org_get + dto.dto.Nr, false);
+            var record = await GetAsync<OrgDto>(GetUrlSlash("OrgGet") + dto.dto.Nr, false);
             record.Id = GetId(record); //for the list table
             dto.Load(record);
         }
@@ -172,7 +172,7 @@
         {
             Updates = updates.Select(x => x.dto).ToList()
         };
-        var response = await PostAsync<List<OrgDto>>(GC.URL_org_update, updatesX);
+        var response = await PostAsync<List<OrgDto>>(GetUrl("OrgUpdate"), updatesX);
 
         var r2 = null as _ResponseDto;
 

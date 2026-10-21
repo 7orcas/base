@@ -12,6 +12,7 @@ global using FrontendServer.Base;
 global using FrontendServer.Base._Base;
 global using FrontendServer.Base.Config;
 global using FrontendServer.Base.Cache;
+global using FrontendServer.Base.Menu;
 global using FrontendServer.Base.Label;
 global using FrontendServer.Base.Util;
 global using FrontendServer.Base.Permission;

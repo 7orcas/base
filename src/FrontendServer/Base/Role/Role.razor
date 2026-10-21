@@ -53,7 +53,7 @@ else
            // await SetClient();
             await SetConfig();
 
-            roles = await GetAsync<List<UserRoleDto>>(GC.URL_user_role_list);
+            roles = await GetAsync<List<UserRoleDto>>(GetUrl("UserRoles"));
             StateHasChanged();
         }
     }

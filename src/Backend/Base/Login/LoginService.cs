@@ -1,6 +1,10 @@
-﻿using Backend.Base.Email;
+﻿using Backend.Base.DataProtection;
+using Backend.Base.Email;
 using Backend.Base.Token.Ent;
+using Org.BouncyCastle.Asn1.Ocsp;
+using Org.BouncyCastle.Tls;
 using Org.BouncyCastle.Utilities;
+using Superpower.Model;
 using System.Reflection.Metadata.Ecma335;
 using System.Security.Cryptography;
 using GC = Backend.GlobalConstants;
@@ -27,6 +31,7 @@ namespace Backend.Base.Login
         private readonly LabelServiceI _labelService;
         private readonly TemplateServiceI _templateService;
         private readonly EmailServiceI _emailService;
+        private readonly CookieProtector _cookieProtector;
 
         private AppServiceAccount ServiceAccount = AppSettings.ServiceAccount;
 
@@ -41,7 +46,8 @@ namespace Backend.Base.Login
             SessionServiceI sessionService,
             LabelServiceI labelService,
             TemplateServiceI templateService,
-            EmailServiceI emailService) 
+            EmailServiceI emailService,
+            CookieProtector cookieProtector) 
             : base (serviceProvider)
         {
             _environment = environment;
@@ -54,11 +60,94 @@ namespace Backend.Base.Login
             _labelService = labelService;
             _templateService = templateService;
             _emailService = emailService;
+            _cookieProtector = cookieProtector;
         }
 
-        // Get the user login and account details, validate the password
+        //Configure the return objects to the client
+        public async Task<(LoginResponseDto res, LoginSuccessDto? dto)> ConfigureLoginResponse(LoginRequest request, LoginEnt login)
+        {
+            var res = login.Response;
+
+            if (!login.Response.IsValid) 
+                return (new LoginResponseDto
+                {
+                    ResponseDto = new _ResponseDto
+                    {
+                        StatusCode = StatusCodes.Status403Forbidden,
+                        Valid = false,
+                        ErrorMessage = res.ErrorMessage,
+                    }
+                }, null);
+            
+            //Remember me cookie - only if requested and login is successful.
+            //This is used to pre-populate the login form for the user, it is not a security risk as it does not contain any token or similar, just the username and org for pre-population
+            var cookie = "";
+            if (request.RememberMe)
+            {
+                cookie = "V=1" +
+                    ",x=" + request.UrlSuffix +
+                    ",u=" + request.UserName +
+                    ",p=" + request.Password +
+                    ",o=" + request.Org +
+                    ",l=" + request.LangCode;
+            }
+
+            var encryptedCookie = _cookieProtector.Encrypt(cookie);
+
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.None,
+                Expires = DateTime.UtcNow.AddDays(30),
+                Path = "/"
+            };
+
+            //Don't send the next step if MFA is active as that needs to happen first
+            var dto = new LoginSuccessDto
+            {
+                Id = login.Id,
+                TokenKey = res.IsMfaRequired ? null : res.TokenKey,
+                MainUrl = res.IsMfaRequired ? null : res.MainUrl,
+                LangCode = res.LangCode,
+                IsMfaRequired = res.IsMfaRequired,
+                IsMfaEnabled = res.IsMfaEnabled,
+            };
+
+            var r = new _ResponseDto
+            {
+                SuccessMessage = "Login Ok",
+                Valid = true,
+                Result = dto
+            };
+
+            return (new LoginResponseDto
+            {
+                EncryptedCookie = encryptedCookie,
+                CookieOptions = cookieOptions,
+                ResponseDto = r
+            }, dto);
+        }
+
+        public async Task<LoginSuccessDto> ConfigureLoginResponseMfa(LoginRequest request, LoginEnt login)
+        {
+            var res = login.Response;
+            return new LoginSuccessDto
+            {
+                Id = login.Id,
+                TokenKey = res.TokenKey,
+                MainUrl = res.MainUrl,
+                LangCode = res.LangCode,
+                IsMfaRequired = res.IsMfaRequired,
+                IsMfaEnabled = res.IsMfaEnabled
+            };
+        }
+
+
+        // Get the user login, account details and session, validate the password
         // Return a tokenkey if valid and MFA is not required or MFA is enabled and validated 
-        public async Task<LoginEnt> LoginUser(string ipAddress, LoginRequest request, bool isMfaValid)
+        public async Task<(LoginEnt Login, TSession Session)> LoginUser<TSession>(string ipAddress, LoginRequest request, bool isMfaValid)
+            where TSession : SessionEnt, new()
         {
             try
             {
@@ -74,7 +163,7 @@ namespace Backend.Base.Login
                 {
                     _log.Error("Login and/or org null. Username {Username} Org {Org}",
                         request.UserName, request.Org);
-                    return loginErr;
+                    return (loginErr, null);
                 }
 
                 //Test API client 
@@ -83,7 +172,7 @@ namespace Backend.Base.Login
                 {
                     _log.Error("Login API invalid api key. LoginKey {Username} OrgKey {Org}",
                         request.ApiKey, org.ApiKey);
-                    return loginErr;
+                    return (loginErr, null);
                 }
 
                 //Validate user
@@ -91,7 +180,7 @@ namespace Backend.Base.Login
                 if (!await ValidateLogin(login, loginErr, request.Password, org, labels))
                 {
                     _log.Warning("Login not Validated. Error {Error}", loginErr.Response.ErrorMessage);
-                    return loginErr;
+                    return (loginErr, null);
                 }
 
                 //Create service account if required
@@ -114,7 +203,7 @@ namespace Backend.Base.Login
                         _log.Error("Masquerade login invalid. " +
                             "Masquerade {MasqueradeUsername}, LoginUsername {Username} OrgNr {Org}",
                             request.Masquerade, login.Username, org.Nr);
-                        return loginErr;
+                        return (loginErr, null);
                     }
 
                     _log.Warning("Masquerade login valid. " +
@@ -138,7 +227,7 @@ namespace Backend.Base.Login
                     label = ReplaceLabelParameter(label, org.Code);
                     loginErr.Response.ErrorMessage = label;
                     _log.Warning("Login no account. Error {Error}", loginErr.Response.ErrorMessage);
-                    return loginErr;
+                    return (loginErr, null);
                 }
                 else if (!account.IsActive)
                 {
@@ -146,7 +235,7 @@ namespace Backend.Base.Login
                     label = ReplaceLabelParameter(label, org.Code);
                     loginErr.Response.ErrorMessage = label;
                     _log.Warning("Login not active. Error {Error}", loginErr.Response.ErrorMessage);
-                    return loginErr;
+                    return (loginErr, null);
                 }
 
                 account.Login = login;
@@ -157,23 +246,23 @@ namespace Backend.Base.Login
                 if (org.Mfa == GC.MfaRequiredEachLogin) isMfaRequired = true;
                 if (org.Mfa == GC.MfaRequiredEachDay && daysSinceLastLogin > 0) isMfaRequired = true;
                 if (org.Mfa == GC.MfaOptionalEachDay && daysSinceLastLogin > 0 && login.IsMfaRequired) isMfaRequired = true;
-                if (!isMfaRequired && login.IsService()) isMfaRequired = !_environment.IsDevelopment(); //Service account always requires MFA
+               // if (!isMfaRequired && login.IsService()) isMfaRequired = !_environment.IsDevelopment(); //Service account always requires MFA
 
                 if (!isMfaValid && isMfaRequired)
                 {
                     login.Response.IsValid = true;
                     login.Response.IsMfaRequired = true;
                     login.Response.IsMfaEnabled = login.IsMfaEnabled;
-                    return login;
+                    return (login, null);
                 }
 
                 //Continue with login process and return tokenkey
                 var langCode = !string.IsNullOrEmpty(request.LangCode) ? request.LangCode : login.LangCode; 
                 await InitialiseLogin(login, account, org);
-                var userConfig = _configService.CreateUserConfig(account, org, langCode);
                 
+                var userConfig = _configService.CreateUserConfig(account, org, langCode);
                 var sessionKey = _environment.IsDevelopment() ? request.ApiTestKeyValue : null;
-                var session = await _sessionService.CreateSession(account, org, userConfig, masqueradeId, request.SourceApplication, 
+                var session = await _sessionService.CreateSession<TSession>(account, org, userConfig, masqueradeId, request.SourceApplication, 
                     ipAddress, sessionKey);
                 _auditService.LogIn(session);
 
@@ -203,16 +292,17 @@ namespace Backend.Base.Login
                 login.Response.IsMfaRequired = isMfaRequired;
                 login.Response.IsMfaEnabled = login.IsMfaEnabled;
 
-                return login;
+                return (login, session);
             }
             catch 
             {
                 var login = new LoginEnt();
                 login.Response.IsValid = false;
                 login.Response.ErrorMessage = "Unknown Error";
-                return login;
+                return (login, null);
             }
         }
+
 
         //Authenicate the user
         private async Task<LoginEnt?> GetLoginByUsername(string username)
@@ -269,9 +359,8 @@ namespace Backend.Base.Login
                 return false;
             }
             
-            //var passwordHash = PasswordHash(password);
+            var passwordHash = PasswordHash(password); //TESTING ONLY - REMOVE THIS LINE IN PRODUCTION
             var validPassword = VerifyPassword(password, login.Password);
-            
 
             //Check is user's email is verified if org requires it. 
             if (!login.IsService() 

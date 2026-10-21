@@ -151,7 +151,7 @@ namespace Backend.Base.Audit
             await _auditRepo.LogAuditRecord(
                 session.SourceApp,
                 session.OrgNr,
-                session.UserAccount.Id,
+                session.UserAccountId,
                 session.MasqueradeId,
                 entityTypeNr,
                 entityId,

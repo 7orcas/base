@@ -1,9 +1,4 @@
-﻿using Backend.App.Machines;
-using Backend.Base.Label.Ent;
-using Common.DTO.Base;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using System;
+﻿using Microsoft.AspNetCore.Mvc;
 using GC = Backend.GlobalConstants;
 
 /// <summary>
@@ -46,14 +41,12 @@ namespace Backend.Base.Config
         {
             var session = HttpContext.Items["session"] as SessionEnt;
             var org = session.Org;
-            var userAccount = session.UserAccount;
-            var userConfig = session.UserConfig;
 
-            var langCodeCurrent = userConfig.LangCodeCurrent;
+            var langCodeCurrent = session.LangCodeCurrent;
             var isAdminLanguage = false; // userConfig.Languages != null;
 
             var langs = new List<LanguageConfigDto>();
-            foreach (var lang in userConfig.Languages)
+            foreach (var lang in session.Languages)
             {
                 langs.Add(new LanguageConfigDto {
                     LangCode = lang.LangCode,
@@ -66,7 +59,7 @@ namespace Backend.Base.Config
                 SuccessMessage = "Config Ok",
                 Result = new AppConfigDto
                 {
-                    UniqueUserId = userAccount.Id + 987123564,
+                    UniqueUserId = session.UserAccountId + 987123564,
                     UniqueSessionId = UniqueSessionId.GetId(),
                     
                     Org = new OrgConfigDto
@@ -79,10 +72,10 @@ namespace Backend.Base.Config
 
                     User = new UserConfigDto 
                     {
-                        Username = userAccount.Username,
-                        IsService = userAccount.IsService(),
-                        IsAdminUser = userAccount.IsAdminUser,
-                        IsAdminLang = userAccount.IsAdminLang
+                        Username = session.Username,
+                        IsService = session.IsService,
+                        IsAdminUser = session.IsAdminUser,
+                        IsAdminLang = session.IsAdminLang
                     },
 
                     Languages = langs.ToArray(),

@@ -227,7 +227,7 @@ else
             pageStatus.pageCode = BaseRoutes.OrgPageCode;
 
             await Load();
-            permissions = await GetAsync<List<PermissionDto>>(GC.URL_perm_list);
+            permissions = await GetAsync<List<PermissionDto>>(GetUrl("PermissionList"));
 
             showList = roles.Count > 1;
 
@@ -252,7 +252,7 @@ else
 
     private async Task Load()
     {
-        var rolesX = await GetAsync<List<RoleDto>>(GC.URL_role_list);
+        var rolesX = await GetAsync<List<RoleDto>>(GetUrl("RoleList"));
 
         roles = new List<ListModel<RoleDto>>();
         foreach (var r in rolesX)
@@ -293,7 +293,7 @@ else
         int index = -1;
         if (!r.IsLoaded || force)
         {
-            var roleDtoX = await GetAsync<RoleDto>(GC.URL_role + r.Id, true);
+            var roleDtoX = await GetAsync<RoleDto>(GetUrlSlash("RoleGet") + r.Id, true);
             var roleDto = new ListModel<RoleDto>(roleDtoX);
             roleDto.HashMe();
             roleDto.IsLoaded = true;
@@ -363,7 +363,7 @@ else
 
         if (updates.Count>0)
         {
-            var response = await PostAsync<RoleDto>(GC.URL_role_update, updates);
+            var response = await PostAsync<RoleDto>(GetUrl("RoleUpdate"), updates);
             if (response.StatusCode == StatusCodes.Status200OK)
             {
                 await Load();

@@ -21,6 +21,10 @@ namespace Backend.Base.Login.Ent
         public int SuccessAction { get; set; }
 
         [NotMapped]
+        public string AppLoginUrl { get; set; }
+        [NotMapped]
+        public string AppMfaUrl { get; set; }
+        [NotMapped]
         public bool IsService { get; set; }
     }
 }

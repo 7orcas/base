@@ -64,9 +64,9 @@
     {
         if (firstRender)
         {
-            await InitialiseBasePage(GC.PerMach);
+            await InitialiseBasePage(GC.PerMachine);
             pageStatus.pageCode = AppRoutes.MachinesPageCode;
-            machines = await GetAsync<List<MachineDto>>("api/Machine/list");
+            machines = await GetAsync<List<MachineDto>>(GetUrl("MachineList"));
 
             StateHasChanged();
         }

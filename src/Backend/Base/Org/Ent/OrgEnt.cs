@@ -13,9 +13,16 @@ namespace Backend.Base.Org.Ent
 {
     public class OrgEnt : BaseEncode, VersionI
     {
+        public OrgEnt()
+        {
+            Encoding = new OrgEnc();
+        }
+
+
         [Key]
         public int Nr { get; set; }
         public string Code { get; set; }
+        public string TypeOf { get; set; }
         public string? Description { get; set; }
         public DateTimeOffset Updated { get; set; }
         public int Version { get; set; }
@@ -48,5 +55,11 @@ namespace Backend.Base.Org.Ent
         {
             Encode(Encoding);
         }
+
+        //Application URLs
+        [NotMapped] public virtual string AppLoginUrl { get; } = "login";
+        [NotMapped] public virtual string AppMfaUrl { get; } = "verifyMfa";
+        [NotMapped] public virtual string AppUrls { get; } = "urllist";
+
     }
 }

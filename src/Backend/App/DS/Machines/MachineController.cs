@@ -3,10 +3,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using GC = Backend.GlobalConstants;
 
-namespace Backend.App.Machines
+namespace Backend.App.DS.Machines
 {
     //[Authorize]
-    [PermissionAtt(GC.PerMach)]
+    [PermissionAtt(GC.PerMachine)]
     [ApiController]
     [Route("api/[controller]")]
     public class MachineController : BaseController

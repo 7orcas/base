@@ -1,6 +1,6 @@
-﻿using Backend.App.Machines.Ent;
+﻿using Backend.App.DS.Machines.Ent;
 
-namespace Backend.App.Machines
+namespace Backend.App.DS.Machines
 {
     public interface MachineServiceI
     {

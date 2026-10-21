@@ -82,7 +82,7 @@ namespace FrontendLogin.Pages
                 errorMessage = "";
                 loginRequest.MfaCode = mfaModel.MfaCode;
 
-                var login = await LoginToBlue(GC.URL_mfa_verify);
+                var login = await LoginToBlue(GC.URL_mfa_verify + options.AppMfaUrl);
 
                 if (login == null || string.IsNullOrEmpty(login.TokenKey))
                     return;

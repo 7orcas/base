@@ -8,6 +8,7 @@ public class OrgConfig : IEntityTypeConfiguration<OrgEnt>
         entity.ToTable("org", "base");
         entity.Property(e => e.Nr).HasColumnName("nr");
         entity.Property(e => e.Code).HasColumnName("code");
+        entity.Property(e => e.TypeOf).HasColumnName("typeof");
         entity.Property(e => e.Description).HasColumnName("descr");
         entity.Property(e => e.Encoded).HasColumnName("encoded");
         entity.Property(e => e.Updated).HasColumnName("updated");

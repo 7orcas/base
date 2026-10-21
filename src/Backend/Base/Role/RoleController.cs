@@ -65,7 +65,7 @@ namespace Backend.Base.Role
 
         [CrudAtt(GC.CrudRead)]
         [AuditListAtt(GC.CrudReadList)]
-        [HttpGet("roles")]
+        [HttpGet("list")]
         public async Task<IActionResult> GetRoles()
         {
             var session = HttpContext.Items["session"] as SessionEnt;
@@ -98,7 +98,7 @@ Debug.WriteLine(m.Code + " " + m.Id);
         public async Task<IActionResult> GetRole(long roleId)
         {
             var session = HttpContext.Items["session"] as SessionEnt;
-            var langDic = await _labelService.GetLanguageLabelDic(session.UserConfig.LangCodeCurrent, session.Org.LangLabelVariant);
+            var langDic = await _labelService.GetLanguageLabelDic(session.LangCodeCurrent, session.Org.LangLabelVariant);
             var permDic = _PermissionInitialiseService.GetPermissions();
             var permList = permDic.Values.OrderBy(v => v.Nr).ToList();
 

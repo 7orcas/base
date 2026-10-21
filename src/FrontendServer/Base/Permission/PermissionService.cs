@@ -16,22 +16,24 @@ namespace FrontendServer.Base.Permission
     {
         public List<UserRolePermissionDto> AllPermissions {  get; private set; }
         public List<PermissionDto> Permissions { get; private set; }
+        private readonly UrlService _urlService;
 
 
         public PermissionService(ProtectedSessionStorage session,
             ConfigService configService,
-            IHttpClientFactory httpClientFactory)
+            IHttpClientFactory httpClientFactory,
+            UrlService urlService)
         {
             _session = session;
             _configService = configService;
             _httpClientFactory = httpClientFactory;
+            _urlService = urlService;
         }
 
         public PermissionDto? GetPermission(int permissionNr)
         {
             return Permissions.Find(p => p.PermissionNr == permissionNr);
         }
-
 
         public async Task Initialise(LoginParameters lps)
         {
@@ -43,7 +45,7 @@ namespace FrontendServer.Base.Permission
                 var config = _configService.Config;
                 var client = await GetClient();
 
-                var response = await client.GetAsync(GC.URL_perm_user);
+                var response = await client.GetAsync(_urlService.GetUrl("PermissionUserList"));
                 if (response.IsSuccessStatusCode)
                 {
                     var result = await response.Content.ReadAsStringAsync();
@@ -52,7 +54,7 @@ namespace FrontendServer.Base.Permission
                     if (responseDto.Valid)
                     {
                         AllPermissions = JsonConvert.DeserializeObject<List<UserRolePermissionDto>>(responseDto.Result.ToString());
-                        lps.LoadedUrl(GC.URL_perm_user);
+                        lps.LoadedUrl(_urlService.GetUrl("PermissionUserList"));
                     }
                 }
             }
@@ -68,7 +70,7 @@ namespace FrontendServer.Base.Permission
                 var config = _configService.Config;
                 var client = await GetClient();
 
-                var response1 = await client.GetAsync(GC.URL_perm_user_eff);
+                var response1 = await client.GetAsync(_urlService.GetUrl("PermissionUserListEff"));
                 if (response1.IsSuccessStatusCode)
                 {
                     var result = await response1.Content.ReadAsStringAsync();
@@ -77,7 +79,7 @@ namespace FrontendServer.Base.Permission
                     if (responseDto.Valid)
                     {
                         Permissions = JsonConvert.DeserializeObject<List<PermissionDto>>(responseDto.Result.ToString());
-                        lps.LoadedUrl(GC.URL_perm_user_eff);
+                        lps.LoadedUrl(_urlService.GetUrl("PermissionUserListEff"));
                     }
                 }
             }

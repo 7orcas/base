@@ -5,6 +5,7 @@
         static public void Configure(WebApplicationBuilder builder)
         {
             builder.Services.AddScoped<OrgRepoI, OrgRepo>();
+            builder.Services.AddScoped<LoginOptionRepoI, LoginOptionRepo>();
             builder.Services.AddScoped<LoginRepoI, LoginRepo>();
             builder.Services.AddScoped<UserRepoI, UserRepo>();
             builder.Services.AddScoped<UserCacheRepoI, UserCacheRepo>();

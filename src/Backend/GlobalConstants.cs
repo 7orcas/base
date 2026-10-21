@@ -10,6 +10,12 @@
         public const int LangLabelVariantDefault = 0;
         public const string RestActionArg = "RestActionArguments";
 
+        //Urls
+        public const string DS                      = "ds-";
+        public const string HF                      = "hf-";
+        public const string UrlList                 = "urllist";
+
+
         //Login Reset Password
         public const string URL_login_reset         = "reset-password";
         public const string URL_signup_verify_email = "api/signup/signupverifyemail";

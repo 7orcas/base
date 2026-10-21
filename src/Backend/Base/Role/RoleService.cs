@@ -33,7 +33,7 @@ namespace Backend.Base.Role
         /// <returns></returns>
         public async Task<List<RoleUserAccountEnt>> GetUserRoles(SessionEnt session)
         {
-            return await GetUserRoles(session.Org.Nr, session.UserAccount.Id);
+            return await GetUserRoles(session.Org.Nr, session.UserAccountId);
         }
 
         /// <summary>

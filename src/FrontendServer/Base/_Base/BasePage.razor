@@ -13,6 +13,7 @@
 @inject PermissionService PermS
 @inject HttpService HS
 @inject ThemeService TS
+@inject UrlService UrlS
 
 @code {
     [Inject] protected IJSRuntime JS { get; set; }
@@ -68,11 +69,14 @@
         {
             await ConfS.Initialise();
             string? t = await ConfS.GetToken();
-            ConfS.SetLoginParameters(null, t);
+            ConfS.SetLoginParameters(null, t, null); //FIX_ME
         }
 
         if (!LS.IsInitialized)
             await LS.Initialise(ConfS.loginParameters);
+            
+        if (!UrlS.IsInitialized)
+            await UrlS.Initialise(ConfS.loginParameters.appUrls);
 
         _config = ConfS.Config;
         _labels = LS.Labels;
@@ -180,6 +184,9 @@
 
         return new MarkupString(m.ToString() + "<br>" + s);
     }
+
+    public string GetUrl(string urlKey) => UrlS.GetUrl(urlKey);
+    public string GetUrlSlash(string urlKey) => UrlS.GetUrlSlash(urlKey);
 
     public void PutCacheString(string key, string s) => CS.PutString(key + "-" + _config.UniqueSessionId, s);
     public string? GetCacheString(string key) => CS.GetString(key + "-" + _config.UniqueSessionId);

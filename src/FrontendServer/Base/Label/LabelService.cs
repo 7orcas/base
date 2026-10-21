@@ -1,6 +1,7 @@
 ﻿using Common.DTO.Base;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Newtonsoft.Json;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using GC = FrontendServer.GlobalConstants;
 
 /// <summary>
@@ -13,6 +14,7 @@ namespace FrontendServer.Base.Config
 {
     public class LabelService : BaseService
     {
+        private readonly UrlService _urlService;
         private readonly ConfigService _configService;
         private readonly LabelCacheService _labelCacheService;
         private LoginParameters lps;
@@ -20,12 +22,14 @@ namespace FrontendServer.Base.Config
         public LabelService(ProtectedSessionStorage session,
             IHttpClientFactory httpClientFactory,
             ConfigService configService,
-            LabelCacheService labelCacheService)
+            LabelCacheService labelCacheService,
+            UrlService urlService)
         {
             _session = session;
             _httpClientFactory = httpClientFactory;
             _configService = configService;
             _labelCacheService = labelCacheService;
+            _urlService = urlService;
         }
 
         private Dictionary<string, LangLabelDto> labels;
@@ -69,7 +73,7 @@ namespace FrontendServer.Base.Config
                 if (!_labelCacheService.HasLabels(config.Label.LangCode, config.Label.Variant) && !IsInitialising)
                 {
                     IsInitialising = true;
-                    var url = GC.URL_label_clientlist
+                    var url = _urlService.GetUrlSlash("LabelClientList")
                                 + config.Label.LangCode
                                 + (config.Label.Variant.HasValue ? "/" + config.Label.Variant : "");
 
