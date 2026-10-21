@@ -6,7 +6,7 @@ using GC = Backend.GlobalConstants;
 namespace Backend.App.DS.Machines
 {
     //[Authorize]
-    [PermissionAtt(GC.PerMach)]
+    [PermissionAtt(GC.PerMachine)]
     [ApiController]
     [Route("api/[controller]")]
     public class MachineController : BaseController

@@ -15,6 +15,7 @@ namespace Backend.Program
             builder.Services.AddScoped<MachineServiceI, MachineService>();
 
             builder.Services.AddScoped<ds.Urls.UrlsServiceI, ds.Urls.UrlsService>();
+            builder.Services.AddScoped<ds.Menu.MenuServiceI, ds.Menu.MenuService>();
             builder.Services.AddScoped<ds.Session.SessionServiceI, ds.Session.SessionService>();
 
 

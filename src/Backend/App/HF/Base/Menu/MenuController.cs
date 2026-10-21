@@ -29,7 +29,7 @@ namespace Backend.App.HF.Base.Menu
         }
 
         
-        [HttpGet("hf-mainMenu")]
+        [HttpGet(GC.HF + "mainmenu")]
         public async Task<IActionResult> GetMainMenu()
         {
             var session = HttpContext.Items["session"] as SessionEnt;

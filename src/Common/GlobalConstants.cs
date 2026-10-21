@@ -89,7 +89,7 @@ namespace Common
         public const int PerReg       = 9;
         
 
-        public const int PerMach      = 101;
+        public const int PerMachine   = 101;
         public const int PerPerm1     = 102;
         public const int PerPerm2     = 103;
         public const int PerPerm3     = 104;
@@ -121,7 +121,7 @@ namespace Common
             PerAudit,    "Audit",
             PerConfig,   "Conf",
 
-            PerMach,     "Machine",
+            PerMachine,     "Machine",
 
             PerPerm1  ,  "102",
             PerPerm2  ,  "103",

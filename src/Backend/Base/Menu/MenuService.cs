@@ -16,30 +16,30 @@ namespace Backend.Base.Menu
            : base(serviceProvider)  { }
 
 
-        public List<int> GetMenuItemIds(SessionEnt session)
+        public List<string> GetMenuItemIds(SessionEnt session)
         {
-            var menuItemIds = new List<int>();
+            var menuItemIds = new List<string>();
 
             if (session.IsUserPermission(GC.PerOrg))
-                menuItemIds.Add(GC.PerOrg);
+                menuItemIds.Add("Org");
             
             if (session.IsUserPermission(GC.PerUser))
-                menuItemIds.Add(GC.PerUser);
+                menuItemIds.Add("User");
             
             if (session.IsUserPermission(GC.PerRole))
-                menuItemIds.Add(GC.PerRole);
+                menuItemIds.Add("Role");
             
             if (session.IsUserPermission(GC.PerLabel))
-                menuItemIds.Add(GC.PerLabel);
+                menuItemIds.Add("Label");
             
             if (session.IsUserPermission(GC.PerConfig))
-                menuItemIds.Add(GC.PerConfig);
+                menuItemIds.Add("Config");
             
             if (session.IsUserPermission(GC.PerPerm))
-                menuItemIds.Add(GC.PerPerm);
+                menuItemIds.Add("Perm");
             
             if (session.IsUserPermission(GC.PerAudit))
-                menuItemIds.Add(GC.PerAudit);
+                menuItemIds.Add("Audit");
             
             return menuItemIds;
         }

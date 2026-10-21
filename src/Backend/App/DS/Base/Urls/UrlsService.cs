@@ -1,4 +1,5 @@
-﻿using GC = Backend.GlobalConstants;
+﻿using DocumentFormat.OpenXml.Office2010.ExcelAc;
+using GC = Backend.GlobalConstants;
 
 /// <summary>
 /// Urls list
@@ -21,7 +22,9 @@ namespace Backend.App.DS.Base.Urls
         {
             var urls = base.GetList(session);
 
-            if (session.IsUserPermission(GC.PerMach))
+            base.AddOrReplace(urls, "MainMenu", "Menu/" + GC.DS + "mainmenu");
+
+            if (session.IsUserPermission(GC.PerMachine))
             {
                 Add(urls, "MachineList", "Machine/list");
             }

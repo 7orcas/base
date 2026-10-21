@@ -16,7 +16,7 @@ namespace Backend.App.HF.Base.Menu
            : base(serviceProvider)  { }
 
 
-        public List<int> GetMenuItemIds(SessionEnt session)
+        public List<string> GetMenuItemIds(SessionEnt session)
         {
             var menuItemIds = base.GetMenuItemIds(session);
             

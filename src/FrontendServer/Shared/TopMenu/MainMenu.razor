@@ -36,6 +36,7 @@
 </div>
 
 @inject ConfigService ConfS
+@inject MenuService MenuS
 @inject LabelService LS
 @inject ThemeService TS
 @code {
@@ -45,20 +46,19 @@
     private int cMax   = 3;
 
     private bool showAdmin;
-    private string[] items =
-        {
-            "Machines",     AppRoutes.MachinesRoute, "",
-            "Organisation", AppRoutes.OrgRoute,      "",
-            "Permissions",  AppRoutes.PermRoute,     "",
-            "Roles",        AppRoutes.RoleRoute,     "",
-            "UserRs",       AppRoutes.UserRoleRoute, "",
-            "Config",       AppRoutes.ConfigRoute,   "",
-            "Audit",        AppRoutes.AuditRoute,    "",
-    };
-
+    private List<string> items = new List<string>();
 
     protected override void OnInitialized()
     {
+
+        if (MenuS.IsMenu("Machine")) AddMenuItem("Machines", AppRoutes.MachinesRoute, "");
+        if (MenuS.IsMenu("Org")) AddMenuItem("Organisation", AppRoutes.OrgRoute, "");
+        if (MenuS.IsMenu("Perm")) AddMenuItem("Permissions", AppRoutes.PermRoute, "");
+        if (MenuS.IsMenu("Role")) AddMenuItem("Roles", AppRoutes.RoleRoute, "");
+        if (MenuS.IsMenu("User")) AddMenuItem("UserRs", AppRoutes.UserRoleRoute, "");
+        if (MenuS.IsMenu("Config")) AddMenuItem("Config", AppRoutes.ConfigRoute, "");
+        if (MenuS.IsMenu("Audit")) AddMenuItem("Audit", AppRoutes.AuditRoute, "");
+
         SetLabels();
         LS.OnLabelsChanged += RefreshLayout;
     }
@@ -82,4 +82,12 @@
     private void ToggleAdminMenu() => showAdmin = !showAdmin;
     
     public string GetLightDarkClassSuffix() => TS.IsDarkMode ? "-dark" : "-light";
+
+    private void AddMenuItem(string code, string route, string label)
+    {
+        items.Add(code);
+        items.Add(route);
+        items.Add(label);
+    }
+
 }

@@ -2,6 +2,6 @@
 {
     public interface MenuServiceI
     {
-        List<int> GetMenuItemIds(SessionEnt session);
+        List<string> GetMenuItemIds(SessionEnt session);
     }
 }

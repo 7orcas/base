@@ -12,45 +12,44 @@ using GC = FrontendServer.GlobalConstants;
 /// [*Licence*]
 /// Author: John Stewart
 /// </summary>
-namespace FrontendServer.Base.Config
+namespace FrontendServer.Base.Menu
 {
     public class MenuService : BaseService
     {
+        private readonly UrlService _urlService;
         private readonly IMemoryCache _cache;
 
         public MenuService(ProtectedSessionStorage session,
             IHttpClientFactory httpClientFactory,
-            IMemoryCache cache)
+            IMemoryCache cache,
+            UrlService urlService)
         {
             _session = session;
             _httpClientFactory = httpClientFactory;
             _cache = cache;
+            _urlService = urlService;
 
-            if (_cache.TryGetValue(GC.MenuCacheKey, out Dictionary<string, string> urlsX))
-                urls = urlsX;
+            if (_cache.TryGetValue(GC.MainMenuCacheKey, out List<string> mainMenuItemsX))
+                mainMenuItems = mainMenuItemsX;
         }
 
-        private Dictionary<string, string> urls;
+        private List<string> mainMenuItems;
                 
         private bool IsInitialising = false;
 
-        public bool IsInitialized => urls != null;
+        public bool IsInitialized => mainMenuItems != null;
 
 
-        public bool IsUrl(string urlKey) => urls != null && urlKey != null && urls.ContainsKey(urlKey);
+        public bool IsMenu(string key) => mainMenuItems != null && key != null && mainMenuItems.Contains(key);
 
-        public string GetUrl(string urlKey) => IsUrl(urlKey) ? urls[urlKey] : urlKey;
-
-        public string GetUrlSlash(string urlKey) => GetUrl(urlKey) + "/";
-
-        public async Task ForceInitialise(string appUrls)
+        public async Task ForceInitialise()
         {
-            urls = null;
-            _cache.Remove(GC.UrlCacheKey);
-            await Initialise(appUrls);
+            mainMenuItems = null;
+            _cache.Remove(GC.MainMenuCacheKey);
+            await Initialise();
         }
 
-        public async Task Initialise(string appUrls)
+        public async Task Initialise()
         {
             try
             {
@@ -59,20 +58,15 @@ namespace FrontendServer.Base.Config
                 if (!IsInitialized && !IsInitialising)
                 {
                     IsInitialising = true;
-                    var rl = await client.GetAsync(appUrls);
+                    var url = _urlService.GetUrl("MainMenu");
+                    var rl = await client.GetAsync(url);
                     var rls = await rl.Content.ReadAsStringAsync();
                     var rdto = JsonConvert.DeserializeObject<_ResponseDto>(rls);
 
                     if (rdto.Valid)
                     {
-                        var urlsX = JsonConvert.DeserializeObject<List<UrlDto>>(rdto.Result.ToString());
-                        var dic = new Dictionary<string, string>();
-                        foreach (var l in urlsX)
-                            dic.Add(l.Key, l.Url);
-
-                        urls = dic;
-                        _cache.Set(GC.UrlCacheKey, dic);
-
+                        mainMenuItems = JsonConvert.DeserializeObject<List<string>>(rdto.Result.ToString());
+                        _cache.Set(GC.MainMenuCacheKey, mainMenuItems);
                     }
                     IsInitialising = false;
                 }
