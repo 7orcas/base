@@ -135,9 +135,10 @@
         return filter.Filter<AuditDto>(item.dto);
     }
 
-    public void Dispose()
+    public override void Dispose()
     {
         filter.Changed -= OnFilterChanged;
+        base.Dispose();
     }
 
 }

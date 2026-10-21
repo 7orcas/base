@@ -140,7 +140,7 @@
     protected override void OnInitialized() => TS.OnThemeChanged += OnThemeChanged;
     private void OnThemeChanged() => InvokeAsync(StateHasChanged);
 
-    public void Dispose() 
+    public virtual void Dispose()
     {
         TS.OnThemeChanged -= OnThemeChanged;
         loadStatus.OnChange -= Refresh;

@@ -41,7 +41,7 @@ namespace BackendTest.Base.Config
             var orgConfig = memoryCache.Get<ConfigOrg>(GC.CacheKeyOrgConfigPrefix + session.Org.Nr);
 
             Assert.AreEqual(session.Org.Nr, orgConfig.orgNr);
-            Assert.AreEqual(session.UserConfig.LangCodeCurrent, orgConfig.LangCodeDefault);
+            Assert.AreEqual(session.LangCodeCurrent, orgConfig.LangCodeDefault);
 
             //foreach (var lang in GCT.Languages)
             //{

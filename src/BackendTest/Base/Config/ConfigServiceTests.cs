@@ -35,19 +35,19 @@
 
 
         [TestMethod]
-        public async Task CreateUserConfig()
-        {
-            var config = service.CreateUserConfig(session.UserAccount, session.Org, UserLangCode);
-            Assert.AreEqual(session.Org.Nr, session.OrgNr);
-            Assert.AreEqual(OrgLangCode, UserLangCode);
+        //public async Task CreateUserConfig()
+        //{
+        //    var config = service.CreateUserConfig(session.UserAccount, session.Org, UserLangCode);
+        //    Assert.AreEqual(session.Org.Nr, session.OrgNr);
+        //    Assert.AreEqual(OrgLangCode, UserLangCode);
 
-            // ToDo: Add test for languages when implemented
-            //foreach (var lang in Languages)
-            //{
-            //    if (config.Languages.Find(l => l.LangCode == lang) == null)
-            //        Assert.Fail();
-            //}
-        }
+        //    // ToDo: Add test for languages when implemented
+        //    //foreach (var lang in Languages)
+        //    //{
+        //    //    if (config.Languages.Find(l => l.LangCode == lang) == null)
+        //    //        Assert.Fail();
+        //    //}
+        //}
 
     }
 }

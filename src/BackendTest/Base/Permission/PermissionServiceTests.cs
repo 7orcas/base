@@ -65,7 +65,7 @@ namespace BackendTest.Base.Permission
         [TestMethod]
         public async Task LoadEffectivePermissionsInt()
         {
-            var list = await service.LoadEffectivePermissionsInt(session.UserAccount.Id, session.Org.Nr);
+            var list = await service.LoadEffectivePermissionsInt(session.UserAccountId, session.Org.Nr);
             Assert.IsTrue(list.Count > 0);
         }
 

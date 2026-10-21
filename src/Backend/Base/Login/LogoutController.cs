@@ -2,7 +2,9 @@
 
 namespace Backend.Base.Login
 {
-    //[Authorize]
+    /// <summary>
+    /// Logout a client
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     public class LogoutController :  BaseController
@@ -13,7 +15,9 @@ namespace Backend.Base.Login
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="ServiceProvider"></param>
+        /// <param name="serviceProvider"></param>
+        /// <param name="loginService"></param>
+        /// <param name="sessionService"></param>
         public LogoutController(IServiceProvider serviceProvider,
             LoginServiceI loginService,
             SessionServiceI sessionService) : base(serviceProvider)
@@ -22,13 +26,19 @@ namespace Backend.Base.Login
             _sessionService = sessionService;
         }
 
-
+        /// <summary>
+        /// Logout client
+        /// </summary>
+        /// <returns></returns>
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()
         {
             var ses = HttpContext.Items["session"] as SessionEnt;
-            _auditService.LogOut(ses);
-            _sessionService.RemoveSession(ses.Key);
+            if (ses != null)
+            {
+                _auditService.LogOut(ses);
+                await _sessionService.RemoveSession(ses.Key);
+            }
             return Ok("ok");
         }
 
