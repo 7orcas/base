@@ -21,7 +21,7 @@ namespace Backend.Base.Audit
             : base(serviceProvider) { }
 
 
-        [CrudAtt(GC.AuditIgnore)]
+        [CrudAtt(GC.CrudIgnore)]
         [AuditIgnoreAtt]
         [HttpGet("search")]
         public async Task<IActionResult> GetSearch()

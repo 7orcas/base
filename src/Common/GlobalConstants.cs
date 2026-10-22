@@ -74,7 +74,7 @@ namespace Common
         public const string CrudReadList = "l";
         public const string AuditLogin = "i";
         public const string AuditLogout = "o";
-        public const string AuditIgnore   = "x"; //Don't need a permission crud setting
+        public const string CrudIgnore   = "x"; //Don't need a permission crud setting
 
 
         public const int PerIgnore    = 0;

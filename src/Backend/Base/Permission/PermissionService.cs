@@ -185,8 +185,10 @@ namespace Backend.Base.Permission
             if (session == null) return false;
             if (session.IsService) return true;
 
+            if (crud == null) return false; //Must have a crud action
+
             //ie role - permission not required for this endpoint
-            if (crud != null && crud.Action == GC.AuditIgnore)
+            if (crud.Action == GC.CrudIgnore)
             {
                 //DELETE ME this section
                 //Hard coded admins
@@ -202,7 +204,6 @@ namespace Backend.Base.Permission
             var userCrud = session.GetUserPermissionCrud(permEnt.Nr);
             if (userCrud == null) return false; //permission not found in user profile
 
-            if (crud == null) return true;
 
             var c = crud.Action;
             if (crud.Action == GC.CrudReadList) 

@@ -32,7 +32,7 @@ else
                     <tr><td style="width:100px;">SessionId:</td><td><b>@ConfS.loginParameters?.sessionId</b></td></tr>
                     <tr style="background-color:#f0f0f0;"><td style="width:100px;">LoginUrl:</td><td><b>@ConfS.loginParameters?.loginUrl</b></td></tr>
                     <tr><td style="width:100px;">AppUrls:</td><td><b>@ConfS.loginParameters?.appUrls</b></td></tr>
-                    <tr style="background-color:#f0f0f0;"><td style="width:100px;">Loaded:</td><td><b>@ConfS.loginParameters?.loaded</b></td></tr>
+                    <tr style="background-color:#f0f0f0;"><td style="width:100px;">Loaded:</td><td><b>@((MarkupString)@ConfS.loginParameters?.loaded)</b></td></tr>
                     <tr><td style="width:100px;">Token key:</td><td><b>@ConfS.loginParameters?.tokenkey</b></td></tr>
                     <tr style="background-color:#f0f0f0;"><td style="width:100px;">Token:</td><td style="width:380px;overflow-wrap:break-word;word-break: break-all;white-space: normal;"><b>@ConfS.loginParameters?.token</b></td></tr>
             </tbody>
@@ -124,13 +124,12 @@ else
             var lps = ConfS.SetLoginParameters(tokenkey, token, appUrls);
             lps.LoadedUrl(UrlS.GetUrl("ClientConfig"));
             SetConfig(config);
-
-            await LS.Initialise(lps);
-            await PermS.Initialise(lps);
+            await LS.ForceInitialise(lps);
+            await PermS.ForceInitialise(lps);
             await GetVersion();
 
             _isLoading = false;
-            StateHasChanged();
+            await InvokeAsync(StateHasChanged);
 
             // Auto open
             var auto = false;

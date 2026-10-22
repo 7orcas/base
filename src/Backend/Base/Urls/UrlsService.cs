@@ -22,6 +22,10 @@ namespace Backend.Base.Urls
 
             Add(urls, "Logout", "Logout/logout");
             Add(urls, "MainMenu", "Menu/mainmenu");
+            Add(urls, "ClientConfig", "Config/clientConfig");
+            Add(urls, "PermissionUserList", "Permission/userlist");
+            Add(urls, "PermissionUserListEff", "Permission/userlisteff");
+            Add(urls, "LabelClientList", "Label/clientlist");
 
             if (session.IsUserPermission(GC.PerOrg))
             {
@@ -64,20 +68,16 @@ namespace Backend.Base.Urls
 
             if (session.IsUserPermission(GC.PerLabel))
             {
-                Add(urls, "LabelClientList", "Label/clientlist");
                 Add(urls, "LabelRelatedList", "Label/relatedlist");
             }
 
             if (session.IsUserPermission(GC.PerConfig))
             {
             }
-Add(urls, "ClientConfig", "Config/clientConfig");
 
             if (session.IsUserPermission(GC.PerPerm))
             {
                 Add(urls, "PermissionList", "Permission/list");
-                Add(urls, "PermissionUserList", "Permission/userlist");
-                Add(urls, "PermissionUserListEff", "Permission/userlisteff");
             }
 
             if (session.IsUserPermission(GC.PerAudit))

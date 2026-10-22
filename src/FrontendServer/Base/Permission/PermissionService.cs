@@ -1,5 +1,6 @@
 using Common.DTO.Base;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 using GC = FrontendServer.GlobalConstants;
 
@@ -14,25 +15,38 @@ namespace FrontendServer.Base.Permission
 {
     public class PermissionService : BaseService
     {
-        public List<UserRolePermissionDto> AllPermissions {  get; private set; }
-        public List<PermissionDto> Permissions { get; private set; }
+        private readonly IMemoryCache _cache;
         private readonly UrlService _urlService;
 
 
         public PermissionService(ProtectedSessionStorage session,
             ConfigService configService,
             IHttpClientFactory httpClientFactory,
+            IMemoryCache cache,
             UrlService urlService)
         {
             _session = session;
             _configService = configService;
             _httpClientFactory = httpClientFactory;
+            _cache = cache;
             _urlService = urlService;
+
+            if (_cache.TryGetValue(GC.PermCacheKey, out List<PermissionDto> PermissionsX))
+                Permissions = PermissionsX;
         }
+        public List<UserRolePermissionDto> AllPermissions {  get; private set; }
+        public List<PermissionDto> Permissions { get; private set; }
 
         public PermissionDto? GetPermission(int permissionNr)
         {
             return Permissions.Find(p => p.PermissionNr == permissionNr);
+        }
+
+        public async Task ForceInitialise(LoginParameters lps)
+        {
+            Permissions = null;
+            _cache.Remove(GC.PermCacheKey);
+            await Initialise(lps);
         }
 
         public async Task Initialise(LoginParameters lps)
@@ -45,7 +59,8 @@ namespace FrontendServer.Base.Permission
                 var config = _configService.Config;
                 var client = await GetClient();
 
-                var response = await client.GetAsync(_urlService.GetUrl("PermissionUserList"));
+                var url = _urlService.GetUrl("PermissionUserList");
+                var response = await client.GetAsync(url);
                 if (response.IsSuccessStatusCode)
                 {
                     var result = await response.Content.ReadAsStringAsync();
@@ -54,7 +69,7 @@ namespace FrontendServer.Base.Permission
                     if (responseDto.Valid)
                     {
                         AllPermissions = JsonConvert.DeserializeObject<List<UserRolePermissionDto>>(responseDto.Result.ToString());
-                        lps.LoadedUrl(_urlService.GetUrl("PermissionUserList"));
+                        lps.LoadedUrl(url);
                     }
                 }
             }
@@ -70,7 +85,8 @@ namespace FrontendServer.Base.Permission
                 var config = _configService.Config;
                 var client = await GetClient();
 
-                var response1 = await client.GetAsync(_urlService.GetUrl("PermissionUserListEff"));
+                var url = _urlService.GetUrl("PermissionUserListEff");
+                var response1 = await client.GetAsync(url);
                 if (response1.IsSuccessStatusCode)
                 {
                     var result = await response1.Content.ReadAsStringAsync();
@@ -79,7 +95,8 @@ namespace FrontendServer.Base.Permission
                     if (responseDto.Valid)
                     {
                         Permissions = JsonConvert.DeserializeObject<List<PermissionDto>>(responseDto.Result.ToString());
-                        lps.LoadedUrl(_urlService.GetUrl("PermissionUserListEff"));
+                        _cache.Set(GC.PermCacheKey, Permissions);
+                        lps.LoadedUrl(url);
                     }
                 }
             }

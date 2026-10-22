@@ -11,6 +11,7 @@
         public const string MainMenuCacheKey      = "kMMenu";
         public const string LabelCacheKey         = "kLabel";
         public const string UrlCacheKey           = "kUrl";
+        public const string PermCacheKey          = "kPerm";
         public const string TokenCacheKey         = "kToken";
         public const string RefreshTokenCacheKey  = "kRefreshToken";
         public const string ConfigCacheKey        = "kConf";

@@ -1,6 +1,7 @@
 ﻿using Common.DTO.Base;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Newtonsoft.Json;
+using System.Reflection.Emit;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using GC = FrontendServer.GlobalConstants;
 
@@ -57,7 +58,14 @@ namespace FrontendServer.Base.Config
         {
             _labelCacheService.Clear();
             Initialise(lps);
-        } 
+        }
+
+        public async Task ForceInitialise(LoginParameters lps)
+        {
+            labels = null;
+            _labelCacheService.Clear();
+            await Initialise(lps);
+        }
 
         public async Task<Dictionary<string, LangLabelDto>> Initialise(LoginParameters lps)
         {

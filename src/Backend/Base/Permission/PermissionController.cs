@@ -28,7 +28,7 @@ namespace Backend.Base.Permission
             _PermissionService = PermissionService;
         }
 
-        [CrudAtt(GC.CrudRead)]
+        [CrudAtt(GC.CrudIgnore)]
         [AuditListAtt(GC.EntityTypePermUser)]
         [HttpGet("userlist")]
         public async Task<IActionResult> GetUserPermissions()
@@ -66,7 +66,7 @@ namespace Backend.Base.Permission
             return Ok(r);
         }
 
-        [CrudAtt(GC.CrudRead)]
+        [CrudAtt(GC.CrudIgnore)]
         [AuditListAtt(GC.EntityTypePermUserEffect)]
         [HttpGet("userlisteff")]
         public async Task<IActionResult> GetEffective()
