@@ -63,11 +63,11 @@ namespace Backend.Core.Middleware
                     perm = controllerType.GetCustomAttribute<PermissionAtt>();
                 }
 
-                //user must be flagged as User Admin
+                //Permission is flaaged as Admin only
                 var admin = false;
                 admin = perm != null
                     && perm.Nr == GC.PerUser
-                    && session.IsAdminUser;
+                    && session.IsAdmin;
 
 
                 if (admin || _permissionService.IsAuthorizedToAccessEndPoint(session, perm, crud))

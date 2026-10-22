@@ -188,9 +188,10 @@ namespace Backend.Base.Permission
             //ie role - permission not required for this endpoint
             if (crud != null && crud.Action == GC.AuditIgnore)
             {
+                //DELETE ME this section
                 //Hard coded admins
                 //if (permAtt.Nr == GC.PerUser) return session.UserAccount.IsAdminUser; DELETE ME
-                if (permAtt.Nr == GC.PerLang) return session.IsAdminLang;
+                //if (permAtt.Nr == GC.PerLang) return session.IsAdminLang;
 
                 return true;
             }

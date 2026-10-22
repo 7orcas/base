@@ -64,7 +64,7 @@
             var cnfg = GetConfig();
             showTooltip = (cnfg?.Label.ShowTooltip ?? false) && !HideTooltip;
             highlightNoKey = !IsLabel(Key) && (cnfg?.Label.HighlightNoKey ?? false);
-            isAdminLanguage = cnfg?.Label.IsAdminLanguage ?? false;
+            isAdminLanguage = cnfg?.Label.IsAdmin ?? false;
             size = GetTypo(Size);
             if (Bold)
                 style += " font-weight:bold;";

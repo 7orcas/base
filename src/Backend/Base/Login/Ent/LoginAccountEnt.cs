@@ -18,8 +18,7 @@ namespace Backend.Base.Login.Ent
         public int? Classification {  get; set; }
         public DateTimeOffset? Lastlogin { get; set; }
         public bool IsActive { get; set; }
-        public bool IsAdminUser {  get; set; }
-        public bool IsAdminLang { get; set; }
+        public bool IsAdmin { get; set; }
 
         public string Username { get; set; }
         public override void Decode() { }
@@ -44,8 +43,7 @@ namespace Backend.Base.Login.Ent
                 OrgNr = orgNr,
                 Lastlogin = DateTime.Now,
                 IsActive = true,
-                IsAdminUser = true,
-                IsAdminLang = true,
+                IsAdmin = true,
             };
         }
     }

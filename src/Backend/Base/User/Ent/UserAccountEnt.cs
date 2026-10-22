@@ -18,7 +18,7 @@ namespace Backend.Base.User.Ent
         public long UserId { get; set; }
         public int OrgNr { get; set; }
         public bool IsActive { get; set; }
-        public bool IsAdminLang { get; set; }
+        public bool IsAdmin { get; set; }
         public int Classification { get; set; }
         public DateTimeOffset? LastLogin { get; set; }
         public DateTimeOffset Updated { get; set; }

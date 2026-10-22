@@ -16,10 +16,8 @@ namespace Backend.Base.Session.Ent
         public int SourceApp {  get; set; }
         public string IpAddress { get; set; } = string.Empty;
         public bool IsService { get; set; }
-        public bool IsAdminUser { get; set; }
-        public bool IsAdminLang { get; set; }
-
-
+        public bool IsAdmin { get; set; }
+       
         /****************************************************
          * Session attributes
          ****************************************************/

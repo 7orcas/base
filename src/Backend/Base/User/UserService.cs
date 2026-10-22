@@ -110,7 +110,7 @@ namespace Backend.Base.User
                 UserId = user.Id,
                 OrgNr = session.Org.Nr,
                 IsActive = true,
-                IsAdminLang = false,
+                IsAdmin = false,
                 Classification = 0,
                 Version = GC.NewRecordVersion
             };
