@@ -42,6 +42,12 @@ namespace FrontendServer.Base.Permission
             return Permissions.Find(p => p.PermissionNr == permissionNr);
         }
 
+        public bool IsPermission(int permissionNr)
+        {
+            //Check if the permission exists in the list of permissions
+            return GetPermission(permissionNr) != null;
+        }
+
         public async Task ForceInitialise(LoginParameters lps)
         {
             Permissions = null;

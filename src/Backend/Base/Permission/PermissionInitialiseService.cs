@@ -32,9 +32,9 @@ namespace Backend.Base.Permission
 
             for (int i=0; i<GC.Permissions.Length; i += GC.PermissionFields)
             {
-                var nr = (int)GC.Permissions[i];
-                var langKey = (string)GC.Permissions[i + 1];
-                var isAdmin = (bool)GC.Permissions[i + 2];
+                var nr = (int)GC.Permissions[i + GC.PermissionNrIndex];
+                var langKey = (string)GC.Permissions[i + GC.PermissionLabelIndex];
+                var isAdmin = (bool)GC.Permissions[i + GC.PermissionAdminIndex];
 
                 dic.Add(nr, new PermissionEnt 
                 { 

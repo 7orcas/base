@@ -1,5 +1,6 @@
 ﻿using Common.DTO.Base;
 using DocumentFormat.OpenXml.Office2010.ExcelAc;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using GC = Backend.GlobalConstants;
@@ -137,6 +138,8 @@ namespace Backend.Base.User
             foreach (var dto in list)
             {
                 var user = await _userService.GetUserOrCreate(dto);
+                _userService.ValidateAdmin(session, user, dto);
+
                 if (user == null) continue;
 
                 var beforeDto = await _userService.PopulateDto(session, user);
@@ -166,7 +169,7 @@ namespace Backend.Base.User
         {
             var session = HttpContext.Items["session"] as SessionEnt;
             var userDto = await _userService.NewUser(session);
-            
+
             var r = new _ResponseDto
             {
                 SuccessMessage = "Ok",

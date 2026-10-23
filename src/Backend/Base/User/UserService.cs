@@ -244,7 +244,29 @@ namespace Backend.Base.User
             return roleDto;
         }
 
+        /// <summary>
+        /// Only Service is allowed to set Admin status
+        /// </summary>
+        /// <param name="session"></param>
+        /// <param name="user"></param>
+        /// <param name="dto"></param>
+        public void ValidateAdmin (SessionEnt session, UserEnt user, UserDto dto)
+        {
+            if (session.IsService || session.Org.Encoding.IsAdminAssignable) return;
 
+            foreach (var accountDto in dto.Accounts ?? new List<UserDto.UserAccountDto>())
+            {
+                if (!accountDto.IsAdmin) continue;
+
+                UserAccountEnt account = null;
+                if (user != null)
+                    account = user.Accounts.FirstOrDefault(a => a.Id == accountDto.Id);
+
+                if (account == null || !account.IsAdmin)
+                    accountDto.IsAdmin = false; //Reset to false if not allowed
+            }
+
+        }
 
     }
 }

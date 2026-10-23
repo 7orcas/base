@@ -72,11 +72,12 @@ namespace Backend.Base.Permission
         public async Task<IActionResult> GetEffective()
         {
             var session = HttpContext.Items["session"] as SessionEnt;
+            var list = new List<PermissionDto>();
+
             var permissions = await _PermissionService.LoadEffectivePermissions(session);
             var permDic = _PermissionInitialiseService.GetPermissions();
             var langDic = await _labelService.GetLanguageLabelDic(session);
 
-            var list = new List<PermissionDto>();
 
             foreach (var m in permissions)
             {
@@ -93,12 +94,11 @@ namespace Backend.Base.Permission
 
             list = list.OrderBy(r => r.PermissionNr).ToList();
 
-            var r = new _ResponseDto
+            return Ok(new _ResponseDto
             {
                 SuccessMessage = "Ok",
                 Result = list
-            };
-            return Ok(r);
+            });
         }
 
         [CrudAtt(GC.CrudRead)]

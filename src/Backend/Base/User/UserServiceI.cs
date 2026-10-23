@@ -14,5 +14,6 @@ namespace Backend.Base.User
         Task<UserDto> PopulateDto(SessionEnt session, UserEnt user);
         Task<DefinitionDto> GetDefinition(SessionEnt session);
         Task<List<ValidationDto>> ValidateUser(SessionEnt session, List<UserDto> update);
+        void ValidateAdmin(SessionEnt session, UserEnt user, UserDto dto);
     }
 }

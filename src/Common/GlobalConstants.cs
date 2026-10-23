@@ -72,6 +72,8 @@ namespace Common
         public const string CrudUpdate   = "u";
         public const string CrudDelete   = "d";
         public const string CrudReadList = "l";
+        public const string CrudAll = "crudl";
+        public const string CrudAdminOnly = CrudCreate + CrudUpdate + CrudDelete; //Non admin users can't create, update and delete (if permission is admin-only)
         public const string AuditLogin = "i";
         public const string AuditLogout = "o";
         public const string CrudIgnore   = "x"; //Don't need a permission crud setting
@@ -111,13 +113,16 @@ namespace Common
         public const int PerPerm19    = 120;
         public const int PerPerm20    = 121;
 
+        public const int PermissionNrIndex = 0;
+        public const int PermissionLabelIndex = 1;
+        public const int PermissionAdminIndex = 2;
         public const int PermissionFields = 3;
         public static readonly object[] Permissions = { //Permission nr, LangKey, IsAdmin (ie only admin's can update this permission)
             PerOrg,      "Org",    true,
             PerPerm,     "Perm",   false,
             PerLabel,    "Label",  true,
             PerRole,     "Role",   false,
-            PerUser,     "User",   false,
+            PerUser,     "User",   true,
             PerAudit,    "Audit",  false,
             PerConfig,   "Conf",   false,
 

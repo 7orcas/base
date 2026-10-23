@@ -43,7 +43,7 @@ namespace Backend.Base.Config
             var org = session.Org;
 
             var langCodeCurrent = session.LangCodeCurrent;
-            var isAdmin = session.IsAdmin; 
+           // var isAdmin = session.IsAdmin;  << need to save this
 
             var langs = new List<LanguageConfigDto>();
             foreach (var lang in session.Languages)
@@ -74,7 +74,7 @@ namespace Backend.Base.Config
                     {
                         Username = session.Username,
                         IsService = session.IsService,
-                        IsAdmin = session.IsAdmin,
+                       // IsAdmin = session.IsAdmin,
                     },
 
                     Languages = langs.ToArray(),
@@ -83,8 +83,8 @@ namespace Backend.Base.Config
                         LangCode = langCodeCurrent,
                         Variant = org.LangLabelVariant,
                         ShowTooltip = true,
-                        HighlightNoKey = isAdmin, //ToDo turn on/off
-                        IsAdmin = isAdmin, //ToDo turn on/off
+                       // HighlightNoKey = isAdmin, //ToDo turn on/off
+                        //IsAdmin = isAdmin, //ToDo turn on/off
                     },
                 }
             };

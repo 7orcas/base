@@ -48,6 +48,9 @@ namespace Backend.Base.Permission
         /// <returns></returns>
         public async Task<List<PermissionCrudEnt>> LoadEffectivePermissions(SessionEnt session)
         {
+            if (session.IsService)
+                return GetServicePermissions();
+
             return await LoadEffectivePermissionsInt(session.UserAccountId, session.Org.Nr);
         }
 
@@ -177,6 +180,21 @@ namespace Backend.Base.Permission
             }
         }
 
+        private List<PermissionCrudEnt> GetServicePermissions()
+        {
+            var list = new List<PermissionCrudEnt>();
+
+            for (int i = 0; i < GC.Permissions.Length; i += GC.PermissionFields)
+            {
+                list.Add(new PermissionCrudEnt
+                {
+                    Nr = (int)GC.Permissions[i + GC.PermissionNrIndex],
+                    Crud = GC.CrudAll
+                });
+            }
+            return list;
+        }
+
 
         public bool IsAuthorizedToAccessEndPoint(SessionEnt session, PermissionAtt permAtt, CrudAtt crud)
         {
@@ -200,7 +218,13 @@ namespace Backend.Base.Permission
 
             var permEnt = GetPermissionEnt(permAtt.Nr);
             if (permEnt == null) return false;
-            
+
+            //permission is admin only, user is not admin
+            if (permEnt.IsAdmin 
+                && !session.IsAdmin
+                && GC.CrudAdminOnly.Contains(crud.Action)) 
+                return false; 
+
             var userCrud = session.GetUserPermissionCrud(permEnt.Nr);
             if (userCrud == null) return false; //permission not found in user profile
 

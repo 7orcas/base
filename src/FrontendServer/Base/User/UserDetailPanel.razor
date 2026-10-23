@@ -32,12 +32,18 @@
                                 <div class="expansion-title">
                                     <div style="display:flex; justify-content:space-between; align-items:center;">
                                         <Label Size="GC.TextSize.Normal" Key="ConfigG"></Label>
-                                        <CheckboxField Width=GC.TextFieldWidth.TextShort
-                                                        Class="delete-checkbox"
-                                                        LangCode="Delete"
-                                                        ReadOnly="!IsDeleteActive"
-                                                        @bind-Value="dto.IsDelete"
-                                                        @bind-Value:after="OnDeleteChanged" />
+
+                                        <div style="display:flex; gap:12px; align-items:center; margin-right:10px;">
+                                            <CheckboxField Width=GC.TextFieldWidth.TextShort
+                                                    LangCode="Active"
+                                                    @bind-Value="dto.IsActive" />
+                                            <CheckboxField Width=GC.TextFieldWidth.TextShort
+                                                            Class="delete-checkbox"
+                                                            LangCode="Delete"
+                                                            ReadOnly="!IsDeleteActive"
+                                                            @bind-Value="dto.IsDelete"
+                                                            @bind-Value:after="OnDeleteChanged" />
+                                        </div>
                                     </div>
                                 </div>
                             </TitleContent>
@@ -54,10 +60,6 @@
                                                     Immediate="true"
                                                     Value="@dto.Username"
                                                     ValueChanged="@(v => UsernameChanged(v, record))" />
-
-                                        <CheckboxField Width=GC.TextFieldWidth.TextShort
-                                                LangCode="Active"
-                                                @bind-Value="dto.IsActive" />
                                     </div>
 
                                     <div class="password-field-container">
@@ -121,7 +123,18 @@
                                 <MudExpansionPanel @key="account.Id" Text=@GetLabel("UserAc") Expanded=@Expand(account, dto) Style="padding:1px;">
                                     <TitleContent>
                                         <div class="expansion-title">
-                                            @GetLabel("UserAc") : @account.OrgCode @ExpandDefault(account, dto)
+                                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                                @GetLabel("UserAc") : @account.OrgCode @ExpandDefault(account, dto)
+                                                <div style="display:flex; gap:12px; align-items:center; margin-right:10px;">
+                                                    <CheckboxField LangCode="Active"
+                                                                   PageStatus=@PageStatus
+                                                                   @bind-Value="@account.IsActive" />
+
+                                                    <CheckboxField LangCode="AdminM"
+                                                                   PageStatus=@PageStatus
+                                                                   @bind-Value="@account.IsAdmin" />
+                                                </div>
+                                            </div>
                                         </div>
                                     </TitleContent>
                                     <ChildContent>

@@ -34,7 +34,8 @@
         "xORG": "1",
         "LANGCODE": "en",
         "AUTO": "false",
-        "xOPEN": "aud001"
+        "OPEN": "aud001",
+        "xOPEN": "mac001"
       }
     },
     "IIS Express": {

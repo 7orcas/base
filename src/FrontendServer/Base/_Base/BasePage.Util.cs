@@ -45,6 +45,25 @@ namespace FrontendServer.Base._Base
             return await dialog.Result;
         }
 
+        public async Task<DialogResult> OpenOkDialog(string title, string message)
+        {
+            var parameters = new DialogParameters
+                {
+                    { nameof(OkDialog.Message), message }
+                };
+
+            var options = new DialogOptions
+            {
+                CloseOnEscapeKey = true,
+                MaxWidth = MaxWidth.Small
+            };
+
+            var dialog = await DialogService.ShowAsync<OkDialog>(
+                title,
+                parameters,
+                options);
+            return await dialog.Result;
+        }
 
     }
 }
