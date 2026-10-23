@@ -106,11 +106,12 @@ Debug.WriteLine(m.Code + " " + m.Id);
             var dto = LoadDto<RoleEnt, RoleDto>(ent);
             dto.RolePermissions = new List<RolePermissionDto>();
             var newId = -1L;
+            var ao = " (" + GetLabel("AdminO", langDic) + ")";
 
-            foreach(var perm in permList)
+            foreach (var perm in permList)
             {
                 var rp = ent.RolePermissions.Find(r => r.PermissionNr == perm.Nr);
-                var lk = GetLabel(perm.LangKey, langDic);
+                var lk = GetLabel(perm.LangKey, langDic) + (!perm.IsAdmin ? "" : ao);
                 
                 if (rp  != null)
                     dto.RolePermissions.Add(new RolePermissionDto {

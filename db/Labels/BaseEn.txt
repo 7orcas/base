@@ -117,6 +117,7 @@ LenMax,Max Length
 LenMin,Min Length
 Nr,Number
 AdminM,Admin
+AdminO,Admin Only
 AdminU,User Admin
 AdminL,Language Admin
 Role,Role
