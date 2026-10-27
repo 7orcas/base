@@ -290,6 +290,10 @@ a, .btn-link {
     color: red;
 }
 
+.dashed-checkbox .mud-icon-root {
+    border: 2px dashed !important;
+}
+
 .error-row-dark {
     background-color: #8e2f2f !important;
 }

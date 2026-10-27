@@ -156,12 +156,14 @@ else
                                         {
                                             var rolePerm = role.dto.RolePermissions.FirstOrDefault(p => p.PermissionNr == permission.PermissionNr);
                                             var ro = !pageStatus.isCrudU;
-                                            @if (!rolePerm.IsEditable)
+                                            var clazz = "mud-table-cell";
+                                            @if (pageStatus.isCrudU && !rolePerm.IsEditable)
                                             {
                                                 ro = true;
+                                                clazz += " dashed-checkbox";
                                             }
 
-                                            <td class="mud-table-cell" style="@styleDivLeft">
+                                            <td class="@clazz" style="@styleDivLeft">
                                                 <MudCheckBox T="bool"
                                                              Style="@styleCB"
                                                              Value="@IsCrud(rolePerm, GC.CrudCreate)"
@@ -175,14 +177,14 @@ else
                                                              ValueChanged="@(v => SetCrud(rolePerm, GC.CrudRead, v))"
                                                              ReadOnly="@(!pageStatus.isCrudU)" />
                                             </td>
-                                            <td class="mud-table-cell">
+                                            <td class="@clazz">
                                                 <MudCheckBox T="bool"
                                                              Style="@styleCB"
                                                              Value="@IsCrud(rolePerm, GC.CrudUpdate)"
                                                              ValueChanged="@(v => SetCrud(rolePerm, GC.CrudUpdate, v))"
                                                              ReadOnly="@(ro)" />
                                             </td>
-                                            <td class="mud-table-cell">
+                                            <td class="@clazz">
                                                 <MudCheckBox T="bool"
                                                              Style="@styleCB"
                                                              Value="@IsCrud(rolePerm, GC.CrudDelete)"

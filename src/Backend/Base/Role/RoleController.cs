@@ -106,7 +106,7 @@ Debug.WriteLine(m.Code + " " + m.Id);
             var dto = LoadDto<RoleEnt, RoleDto>(ent);
             dto.RolePermissions = new List<RolePermissionDto>();
             var newId = -1L;
-            var ao = " (" + GetLabel("AdminO", langDic) + ")";
+            var ao = " (" + GetLabel("AdminEO", langDic) + ")";
 
             foreach (var perm in permList)
             {
