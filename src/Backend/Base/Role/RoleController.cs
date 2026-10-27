@@ -121,6 +121,7 @@ Debug.WriteLine(m.Code + " " + m.Id);
                         Permission = lk,
                         Crud = rp.Crud,
                         Updated = rp.Updated,
+                        IsEditable = !perm.IsAdmin || session.IsAdmin,
                         IsActive = rp.IsActive,
                     });
                 else
@@ -130,7 +131,8 @@ Debug.WriteLine(m.Code + " " + m.Id);
                         RoleId = ent.Id,
                         PermissionNr = perm.Nr,
                         Permission = lk,
-                        Crud = ""
+                        Crud = "",
+                        IsEditable = !perm.IsAdmin || session.IsAdmin,
                     });
             }
 
