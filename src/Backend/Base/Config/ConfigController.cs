@@ -35,7 +35,7 @@ namespace Backend.Base.Config
         /// This is a mix of organisation and user account config
         /// </summary>
         /// <returns></returns>
-        [CrudAtt(GC.AuditIgnore)]
+        [CrudAtt(GC.CrudIgnore)]
         [HttpGet("clientConfig")]
         public async Task<IActionResult> GetClientConfig()
         {
@@ -43,7 +43,7 @@ namespace Backend.Base.Config
             var org = session.Org;
 
             var langCodeCurrent = session.LangCodeCurrent;
-            var isAdminLanguage = false; // userConfig.Languages != null;
+           // var isAdmin = session.IsAdmin;  << need to save this
 
             var langs = new List<LanguageConfigDto>();
             foreach (var lang in session.Languages)
@@ -74,8 +74,7 @@ namespace Backend.Base.Config
                     {
                         Username = session.Username,
                         IsService = session.IsService,
-                        IsAdminUser = session.IsAdminUser,
-                        IsAdminLang = session.IsAdminLang
+                       // IsAdmin = session.IsAdmin,
                     },
 
                     Languages = langs.ToArray(),
@@ -84,8 +83,8 @@ namespace Backend.Base.Config
                         LangCode = langCodeCurrent,
                         Variant = org.LangLabelVariant,
                         ShowTooltip = true,
-                        HighlightNoKey = isAdminLanguage, //ToDo turn on/off
-                        IsAdminLanguage = isAdminLanguage, //ToDo turn on/off
+                       // HighlightNoKey = isAdmin, //ToDo turn on/off
+                        //IsAdmin = isAdmin, //ToDo turn on/off
                     },
                 }
             };

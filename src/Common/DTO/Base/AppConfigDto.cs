@@ -27,7 +27,7 @@
         public string LangCode { get; set; }
         public int? Variant { get; set; }
         public bool ShowTooltip { get; set; } = false;
-        public bool IsAdminLanguage { get; set; } = false;
+        public bool IsAdmin { get; set; } = false;
         public bool HighlightNoKey { get; set; } = false;
     }
 
@@ -41,8 +41,7 @@
     {
         public string Username { get; set; }
         public bool IsService { get; set; } = false;
-        public bool IsAdminUser { get; set; } = false;
-        public bool IsAdminLang { get; set; } = false;
+        public bool IsAdmin { get; set; } = false;
     }
 
 }

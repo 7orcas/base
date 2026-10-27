@@ -12,5 +12,6 @@ namespace Backend.Base.Permission.Ent
     {   
         public int Nr { get; set; }
         public string LangKey { get; set; }
+        public bool IsAdmin { get; set; }
     }
 }

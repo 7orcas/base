@@ -158,7 +158,6 @@ namespace Backend.Base.Login
                             Password = GetString(r, "yyy"),
                             OrgNrDefault = GetInt(r, "orgnrdefault"),
                             LangCode = GetString(r, "langCode"),
-                            IsAdminUser = GetBoolean(r, "isAdminUser"),
                             Attempts = GetIntNull(r, "attempts"),
                             AttemptsLockout = GetDateTimeNull(r, "attemptsLockout"),
                             Updated = GetDateTime(r, "updated"),
@@ -196,7 +195,7 @@ namespace Backend.Base.Login
                             OrgNr = GetOrgNr(r),
                             Lastlogin = GetDateTimeNull(r, "lastlogin"),
                             IsActive = IsActive(r),
-                            IsAdminLang = GetBoolean(r, "isAdminLang"),
+                            IsAdmin = GetBoolean(r, "isAdmin"),
                             Classification = GetIntNull(r, "classification")
                         };
                     },

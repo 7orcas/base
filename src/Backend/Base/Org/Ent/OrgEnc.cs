@@ -66,6 +66,12 @@ namespace Backend.Base.Org.Ent
         /// </summary>
         [NotMapped]
         public string SupportIT { get; set; } = "";
+
+        /// <summary>
+        /// Can admins assign other admins. (default is false).
+        /// </summary>
+        [NotMapped]
+        public bool IsAdminAssignable { get; set; } = false;
     }
 
     /// <summary>

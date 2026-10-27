@@ -262,6 +262,12 @@
             }
 
         }
+        else if (!string.IsNullOrEmpty(r2?.ErrorMessage))
+        {
+            loadStatus.ResetSaving();
+            StateHasChanged();
+            await OpenOkDialog(GetLabel("Error"), r2?.ErrorMessage);
+        }
         else
         {
             List<ValidationDto> vals = r2?.Validations;

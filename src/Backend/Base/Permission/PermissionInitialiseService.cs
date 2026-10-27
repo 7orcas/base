@@ -30,15 +30,17 @@ namespace Backend.Base.Permission
         {
             var dic = new Dictionary<int, PermissionEnt>(); //permission nr, entity
 
-            for (int i=0; i<GC.Permissions.Length; i += 2)
+            for (int i=0; i<GC.Permissions.Length; i += GC.PermissionFields)
             {
-                var nr = (int)GC.Permissions[i];
-                var langKey = (string)GC.Permissions[i + 1];
+                var nr = (int)GC.Permissions[i + GC.PermissionNrIndex];
+                var langKey = (string)GC.Permissions[i + GC.PermissionLabelIndex];
+                var isAdmin = (bool)GC.Permissions[i + GC.PermissionAdminIndex];
 
                 dic.Add(nr, new PermissionEnt 
                 { 
                     Nr = nr,
                     LangKey = langKey,
+                    IsAdmin = isAdmin
                 });
             }
 

@@ -72,16 +72,18 @@ namespace Common
         public const string CrudUpdate   = "u";
         public const string CrudDelete   = "d";
         public const string CrudReadList = "l";
+        public const string CrudAll = "crudl";
+        public const string CrudAdminOnly = CrudCreate + CrudUpdate + CrudDelete; //Non admin users can't create, update and delete (if permission is admin-only)
         public const string AuditLogin = "i";
         public const string AuditLogout = "o";
-        public const string AuditIgnore   = "x"; //Don't need a permission crud setting
+        public const string CrudIgnore   = "x"; //Don't need a permission crud setting
 
 
         public const int PerIgnore    = 0;
         public const int PerOrg       = 1;
         public const int PerPerm      = 2;
         public const int PerLabel     = 3;
-        public const int PerLang      = 4;
+        //public const int PerLang      = 4; Reuse
         public const int PerRole      = 5;
         public const int PerUser      = 6;
         public const int PerAudit     = 7;
@@ -111,38 +113,41 @@ namespace Common
         public const int PerPerm19    = 120;
         public const int PerPerm20    = 121;
 
-        public static readonly object[] Permissions = {
-            PerOrg,      "Org",
-            PerPerm,     "Perm", 
-            PerLabel,    "Label",
-            PerLang,     "Lang",
-            PerRole,     "Role",
-            PerUser,     "User",
-            PerAudit,    "Audit",
-            PerConfig,   "Conf",
+        public const int PermissionNrIndex = 0;
+        public const int PermissionLabelIndex = 1;
+        public const int PermissionAdminIndex = 2;
+        public const int PermissionFields = 3;
+        public static readonly object[] Permissions = { //Permission nr, LangKey, IsAdmin (ie only admin's can update this permission)
+            PerOrg,      "Org",    true,
+            PerPerm,     "Perm",   false,
+            PerLabel,    "Label",  true,
+            PerRole,     "Role",   false,
+            PerUser,     "User",   true,
+            PerAudit,    "Audit",  false,
+            PerConfig,   "Conf",   false,
 
-            PerMachine,     "Machine",
+            PerMachine,  "Machine",false,
 
-            PerPerm1  ,  "102",
-            PerPerm2  ,  "103",
-            PerPerm3  ,  "104",
-            PerPerm4  ,  "105",
-            PerPerm5  ,  "106",
-            PerPerm6  ,  "107",
-            PerPerm7  ,  "108",
-            PerPerm8  ,  "109",
-            PerPerm9  ,  "110",
-            PerPerm10  ,"111",
-            PerPerm11  ,"112",
-            PerPerm12  ,"113",
-            PerPerm13  ,"114",
-            PerPerm14  ,"115",
-            PerPerm15  ,"116",
-            PerPerm16  ,"117",
-            PerPerm17  ,"118",
-            PerPerm18  ,"119",
-            PerPerm19  ,"120",
-            PerPerm20  ,"121",
+            PerPerm1  ,  "102",    false,
+            PerPerm2  ,  "103",    false,
+            PerPerm3  ,  "104",    false,
+            PerPerm4  ,  "105",    false,
+            PerPerm5  ,  "106",    false,
+            PerPerm6  ,  "107",    false,
+            PerPerm7  ,  "108",    false,
+            PerPerm8  ,  "109",    false,
+            PerPerm9  ,  "110",    false,
+            PerPerm10  ,"111",     false,
+            PerPerm11  ,"112",     false,
+            PerPerm12  ,"113",     false,
+            PerPerm13  ,"114",     false,
+            PerPerm14  ,"115",     false,
+            PerPerm15  ,"116",     false,
+            PerPerm16  ,"117",     false,
+            PerPerm17  ,"118",     false,
+            PerPerm18  ,"119",     false,
+            PerPerm19  ,"120",     false,
+            PerPerm20  ,"121",     false,
 
         };
 

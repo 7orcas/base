@@ -1,4 +1,6 @@
-﻿namespace FrontendServer.Base._Base
+﻿using GC = FrontendServer.GlobalConstants;
+
+namespace FrontendServer.Base._Base
 {
     public class BaseRoutes
     {
@@ -25,16 +27,20 @@
         public const string AuditPageCode    = "aud001";
         public const string UserPageCode     = "usr001";
 
-        static protected readonly string[] BasePageCodeRoutes = {
-            HomeCode,               HomeRoute,
-            ChangePWCode,           ChangePWRoute,
-            OrgPageCode,            OrgRoute,
-            ConfigPageCode,         ConfigRoute,
-            PermPageCode,           PermRoute,
-            UserRolePageCode,       UserRoleRoute,
-            RolePageCode,           RoleRoute,
-            AuditPageCode,          AuditRoute,
-            UserPageCode,           UserRoute,
+        public const int PageCodeIndex = 0;
+        public const int RouteIndex = 1;
+        public const int PermissionIndex = 2;
+        public const int MaxFields = 3; //PageCode, Route, Permission Nr
+        static protected readonly object[] BasePageCodeRoutes = {
+            HomeCode,               HomeRoute,        -1,
+            ChangePWCode,           ChangePWRoute,    -1,
+            OrgPageCode,            OrgRoute,         GC.PerOrg,
+            ConfigPageCode,         ConfigRoute,      GC.PerConfig,
+            PermPageCode,           PermRoute,        GC.PerPerm,
+            UserRolePageCode,       UserRoleRoute,    -1,
+            RolePageCode,           RoleRoute,        GC.PerRole,
+            AuditPageCode,          AuditRoute,       GC.PerAudit,
+            UserPageCode,           UserRoute,        GC.PerUser,
         };
 
     }

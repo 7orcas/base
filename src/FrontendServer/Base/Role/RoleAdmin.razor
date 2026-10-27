@@ -154,34 +154,42 @@ else
                                         <td class="mud-table-cell">@permission.Permission</td>
                                         @foreach (var role in selections)
                                         {
-                                            var matching = role.dto.RolePermissions.FirstOrDefault(p => p.PermissionNr == permission.PermissionNr);
-                                            <td class="mud-table-cell" style="@styleDivLeft">
+                                            var rolePerm = role.dto.RolePermissions.FirstOrDefault(p => p.PermissionNr == permission.PermissionNr);
+                                            var ro = !pageStatus.isCrudU;
+                                            var clazz = "mud-table-cell";
+                                            @if (pageStatus.isCrudU && !rolePerm.IsEditable)
+                                            {
+                                                ro = true;
+                                                clazz += " dashed-checkbox";
+                                            }
+
+                                            <td class="@clazz" style="@styleDivLeft">
                                                 <MudCheckBox T="bool"
                                                              Style="@styleCB"
-                                                             Value="@IsCrud(matching, GC.CrudCreate)"
-                                                             ValueChanged="@(v => SetCrud(matching, GC.CrudCreate, v))"
-                                                             ReadOnly="@(!pageStatus.isCrudU)" />
+                                                             Value="@IsCrud(rolePerm, GC.CrudCreate)"
+                                                             ValueChanged="@(v => SetCrud(rolePerm, GC.CrudCreate, v))"
+                                                             ReadOnly="@(ro)" />
                                             </td>
                                             <td class="mud-table-cell">
                                                 <MudCheckBox T="bool"
                                                              Style="@styleCB"
-                                                             Value="@IsCrud(matching, GC.CrudRead)"
-                                                             ValueChanged="@(v => SetCrud(matching, GC.CrudRead, v))"
+                                                             Value="@IsCrud(rolePerm, GC.CrudRead)"
+                                                             ValueChanged="@(v => SetCrud(rolePerm, GC.CrudRead, v))"
                                                              ReadOnly="@(!pageStatus.isCrudU)" />
                                             </td>
-                                            <td class="mud-table-cell">
+                                            <td class="@clazz">
                                                 <MudCheckBox T="bool"
                                                              Style="@styleCB"
-                                                             Value="@IsCrud(matching, GC.CrudUpdate)"
-                                                             ValueChanged="@(v => SetCrud(matching, GC.CrudUpdate, v))"
-                                                             ReadOnly="@(!pageStatus.isCrudU)" />
+                                                             Value="@IsCrud(rolePerm, GC.CrudUpdate)"
+                                                             ValueChanged="@(v => SetCrud(rolePerm, GC.CrudUpdate, v))"
+                                                             ReadOnly="@(ro)" />
                                             </td>
-                                            <td class="mud-table-cell">
+                                            <td class="@clazz">
                                                 <MudCheckBox T="bool"
                                                              Style="@styleCB"
-                                                             Value="@IsCrud(matching, GC.CrudDelete)"
-                                                             ValueChanged="@(v => SetCrud(matching, GC.CrudDelete, v))"
-                                                             ReadOnly="@(!pageStatus.isCrudU)" />
+                                                             Value="@IsCrud(rolePerm, GC.CrudDelete)"
+                                                             ValueChanged="@(v => SetCrud(rolePerm, GC.CrudDelete, v))"
+                                                             ReadOnly="@(ro)" />
                                             </td>
 
                                         }

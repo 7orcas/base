@@ -27,7 +27,7 @@ namespace Backend.Base.Label
         /// </summary>
         /// <param name="langCode"></param>
         /// <returns></returns>
-        [CrudAtt(GC.CrudRead)]
+        [CrudAtt(GC.CrudIgnore)]
         [AuditListAtt(GC.EntityTypeLangLabelList)]
         [HttpGet("clientlist/{langCode}/{variant}")]
         public async Task<IActionResult> GetClientLabelList(string langCode, int? variant)

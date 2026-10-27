@@ -550,7 +550,6 @@ namespace Backend.Base.Login
             }
 
             account.Username = login.Username;
-            account.IsAdminUser = login.IsAdminUser;
             account.Permissions = await _permissionService.LoadEffectivePermissionsInt(account.Id, org.Nr);
         }
 

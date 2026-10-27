@@ -114,7 +114,6 @@ namespace Backend.Base.User
             user.LangCode = dto.LangCode;
             user.OrgNrDefault = dto.OrgNr;
             user.Attempts = dto.Attempts;
-            user.IsAdminUser = dto.IsAdminUser;
 
             user.IsActive = dto.IsActive;
             VersionIncrement(user);
@@ -140,7 +139,7 @@ namespace Backend.Base.User
                 // Update account
                 account.Encode();
                 account.Classification = accountDto.Classification;
-                account.IsAdminLang = accountDto.IsAdminLang;
+                account.IsAdmin = accountDto.IsAdmin;
                 account.IsActive = accountDto.IsActive;
                 VersionIncrement(account);
 

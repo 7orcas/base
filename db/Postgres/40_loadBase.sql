@@ -198,19 +198,23 @@ VALUES
 -- -------------------------------------------------
 INSERT INTO base.rolepermission (id, roleid, permissionnr, crud)
 VALUES
-(1, 1, 3, 'crud'),
-(2, 1, 1, 'r'),
-(3, 1, 2, 'cru'),
-(5, 1, 5, 'crud');
+(1, 1, 1, 'r'),
+(2, 1, 2, 'cru'),
+(3, 1, 3, 'crud'),
+(5, 1, 5, 'crud'),
+(11, 1, 6, 'r'),
+(12, 1, 7, 'r'),
+(13, 1, 8, 'r'),
+(14, 1, 101, 'r');
 
 -- -------------------------------------------------
 -- base.useraccrole
 -- -------------------------------------------------
-/*
 INSERT INTO base.useraccrole (id, useraccid, roleid, fromdate, todate)
 VALUES
-(1, 2, 1, '2026-01-01', '2026-12-31');
+(10000, 111, 1, '2026-01-01', '2026-12-31');
 
+/*
 INSERT INTO base.useraccrole (id, useraccid, roleid)
 VALUES
 (2, 2, 2),

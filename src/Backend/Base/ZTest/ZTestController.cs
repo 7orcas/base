@@ -28,7 +28,7 @@ namespace Backend.Base.User
 
 
         [AllowAnonymous]
-        [CrudAtt(GC.AuditIgnore)]
+        [CrudAtt(GC.CrudIgnore)]
         [HttpGet("test1")]
         public async Task<IActionResult> GetTest1()
         {
@@ -40,7 +40,7 @@ namespace Backend.Base.User
             return Ok(r);
         }
 
-        [CrudAtt(GC.AuditIgnore)]
+        [CrudAtt(GC.CrudIgnore)]
         [HttpGet("test2")]
         public async Task<IActionResult> GetTest2()
         {

@@ -14,6 +14,9 @@
         public string Crud { get; set; }
         public DateTimeOffset Updated { get; set; }
         public bool IsActive { get; set; }
+
+        //Determined by the permission, if it is an admin permission, then the user must be admin also
+        public bool IsEditable { get; set; } 
     }
 
 }

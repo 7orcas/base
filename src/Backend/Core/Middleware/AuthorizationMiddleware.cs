@@ -63,14 +63,7 @@ namespace Backend.Core.Middleware
                     perm = controllerType.GetCustomAttribute<PermissionAtt>();
                 }
 
-                //user must be flagged as User Admin
-                var admin = false;
-                admin = perm != null
-                    && perm.Nr == GC.PerUser
-                    && session.IsAdminUser;
-
-
-                if (admin || _permissionService.IsAuthorizedToAccessEndPoint(session, perm, crud))
+                if (_permissionService.IsAuthorizedToAccessEndPoint(session, perm, crud))
                 {
                     await _next(context);
                     return;
@@ -91,7 +84,9 @@ namespace Backend.Core.Middleware
             var r = new _ResponseDto
             {
                 Valid = false,
-                ErrorMessage = GetLabel("NAuthX", "Not Authorised", labels),
+                ErrorMessage = GetLabel("NAuth", "Not Authorised", labels)
+                    + "- "
+                    + GetLabel("NAuthA", "Please see your system admin to give you access", labels),
                 StatusCode = StatusCodes.Status403Forbidden
             };
 

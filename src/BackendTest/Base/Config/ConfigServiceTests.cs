@@ -34,7 +34,7 @@
         }
 
 
-        [TestMethod]
+        //[TestMethod]
         //public async Task CreateUserConfig()
         //{
         //    var config = service.CreateUserConfig(session.UserAccount, session.Org, UserLangCode);

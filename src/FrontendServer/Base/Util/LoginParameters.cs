@@ -20,9 +20,10 @@ namespace FrontendServer.Base.Util
         public int? langVariant { get; set; }
         public string? userId { get; set; }
         public string? sessionId { get; set; }
-        public MarkupString loaded { get; set; }
+        public MarkupString loaded { get; set; } = new MarkupString("");
         public string? loginUrl { get; set; }
         public string? appUrls { get; set; }
+        public string? autoError { get; set; }
 
         public void Set(AppConfigDto config)
         {
