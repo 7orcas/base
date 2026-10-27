@@ -74,7 +74,7 @@
 
         if (!LS.IsInitialized)
             await LS.Initialise(ConfS.loginParameters);
-            
+
         if (!UrlS.IsInitialized)
             await UrlS.Initialise(ConfS.loginParameters.appUrls);
 
@@ -172,7 +172,7 @@
         pageStatus.isCrudC = p.Crud.Contains(GC.CrudCreate);
         pageStatus.isCrudR = p.Crud.Contains(GC.CrudRead);
         pageStatus.isCrudU = p.Crud.Contains(GC.CrudUpdate);
-      //  pageStatus.isCrudD = p.Crud.Contains(GC.CrudDelete);
+        //  pageStatus.isCrudD = p.Crud.Contains(GC.CrudDelete);
         pageStatus.isCrudRO = !pageStatus.isCrudC && !pageStatus.isCrudU && !pageStatus.isCrudD;
     }
 

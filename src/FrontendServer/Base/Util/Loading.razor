@@ -2,11 +2,21 @@
 
 @if (@LoadStatus.IsLoading || @LoadStatus.IsSaving || @LoadStatus.IsSearch)
 {
-    <div class="loading-overlay">
-        <div class="loading-spinner">
-            <p>...</p>
+    @if (_showSpinner)
+    {
+        <div class="loading-overlay">
+            <div class="spinner-container">
+                <div class="loading-spinner">
+                    <p>...</p>
+
+                </div>
+                <button class="spinner-close"
+                @onclick="CancelSpinner">
+                    ×
+                </button>
+            </div>
         </div>
-    </div>
+    }
 }
 
 
@@ -15,8 +25,12 @@
 @code {
     [Parameter] public LoadStatus LoadStatus { get; set; }
     
+    private bool _showSpinner = true;
+    private bool _showCancel = false;
+    
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        _showSpinner = true;
         if (firstRender)
         {
             await InitialiseBasePage(GC.PerIgnore);
@@ -24,6 +38,25 @@
         }
     }
 
+    protected override async Task OnInitializedAsync()
+    {
+        _ = Task.Run(async () =>
+        {
+            await Task.Delay(5000);
+            if (_showSpinner)
+            {
+                _showCancel = true;
+                await InvokeAsync(StateHasChanged);
+            }
+        });
+
+    }
+
+    private void CancelSpinner()
+    {
+        _showSpinner = false;
+        // Call whatever you need here
+    }
    
 
 }
