@@ -34,7 +34,7 @@
         "xORG": "1",
         "LANGCODE": "en",
         "AUTO": "false",
-        "OPEN": "aud001",
+        "zOPEN": "aud001",
         "xOPEN": "mac001"
       }
     },
