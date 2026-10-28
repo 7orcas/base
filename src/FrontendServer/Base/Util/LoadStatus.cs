@@ -17,6 +17,11 @@ namespace FrontendServer.Base.Util
 
 
         //Convenience methods
+        public bool ShowSpinner()
+        {
+            return IsLoading || IsSaving || IsSearch;
+        }
+
         public LoadStatus SetLoading()
         {
             IsLoading = true;

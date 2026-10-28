@@ -5,34 +5,44 @@
             <p>...</p>
 
         </div>
-        <button class="spinner-close"
-        @onclick="CancelSpinner">
-            ×
-        </button>
+        @if (_showCancel)
+        {
+            <button class="spinner-close"
+            @onclick="CancelSpinner">
+                ×
+            </button>
+        }
     </div>
 }
 
 @code {
+    [Parameter] public bool HideCancel { get; set; } = false;
+
     private bool _showSpinner = true;
     private bool _showCancel = false;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        _ = Task.Run(async () =>
-        {
-            await Task.Delay(5000);
-            if (_showSpinner)
-            {
-                _showCancel = true;
-                await InvokeAsync(StateHasChanged);
-            }
-        });
-
+        _showSpinner = true;
     }
 
-    private void CancelSpinner()
+    protected override async Task OnInitializedAsync()
+    {
+        if (!HideCancel)
+        {
+            _ = Task.Run(async () =>
+            {
+                await Task.Delay(1500);
+                _showCancel = true;
+                await InvokeAsync(StateHasChanged);
+            });
+        }
+    }
+
+    private async Task CancelSpinner()
     {
         _showSpinner = false;
+        await InvokeAsync(StateHasChanged);
         // Call whatever you need here
     }
 

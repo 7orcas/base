@@ -11,70 +11,74 @@
         ToolBarButtonsLeft="toolBarButtons" />
 
 
-<LoadingWithError LoadStatus="loadStatus">
-    @exception
-</LoadingWithError>
+@if (loadStatus.ShowSpinner())
+{
+    <Loading LoadStatus=@loadStatus>
+        @exception
+    </Loading>
+}
+else
+{
+    <p></p>
+    <MudGrid>
 
-<p></p>
-<MudGrid>
-
-    <MudItem xs="8">
-        <MudPaper Elevation="0" Outlined="@_debugOutlined">
-            <MudExpansionPanels MultiExpansion="true">
-                <MudExpansionPanel Expanded="@_expandFirstPanel">
-                    <TitleContent>
-                        <Label Size="GC.TextSize.Large" Key="PermEff"></Label>
-                        <div class="d-flex">
-                        </div>
-                    </TitleContent>
-                    <ChildContent>
-                        <div style="table-layout: fixed; width: 400px;">
-                            <MudTable Items="@effective">
-                                <HeaderContent>
-                                    <MudTh><Label Key="PermNr" /></MudTh>
-                                    <MudTh><Label Key="Perm" /></MudTh>
-                                    <MudTh><Label Key="Crud" /></MudTh>
-                                </HeaderContent>
-                                <RowTemplate>
-                                    <MudTd DataLabel="Column 1">@context.PermissionNr</MudTd>
-                                    <MudTd DataLabel="Column 2">@context.LangKey</MudTd>
-                                    <MudTd DataLabel="Column 3">@context.Crud</MudTd>
-                                </RowTemplate>
-                            </MudTable>
-                        </div>
-                    </ChildContent>
-                </MudExpansionPanel>
-
-                <MudExpansionPanel>
-                    <TitleContent>
-                        <Label Size="GC.TextSize.Large" Key="PermAll"></Label>
-                    </TitleContent>
-                    <ChildContent>
-                        <div style="table-layout: fixed; width: 600px;">
-                            <MudTable Items="@permissions">
-                                <HeaderContent>
-                                    <MudTh><Label Key="Role" /></MudTh>
-                                    <MudTh><Label Key="OrgNr" /></MudTh>
-                                    <MudTh><Label Key="PermNr" /></MudTh>
-                                    <MudTh><Label Key="Perm" /></MudTh>
-                                    <MudTh><Label Key="Crud" /></MudTh>
-                                </HeaderContent>
-                                <RowTemplate>
-                                    <MudTd DataLabel="Column 1">@context.Role</MudTd>
-                                    <MudTd DataLabel="Column 2">@context.OrgNr</MudTd>
-                                    <MudTd DataLabel="Column 3">@context.PermissionNr</MudTd>
-                                    <MudTd DataLabel="Column 4">@context.LangKey</MudTd>
-                                    <MudTd DataLabel="Column 5">@context.Crud</MudTd>
-                                </RowTemplate>
-                            </MudTable>
+        <MudItem xs="8">
+            <MudPaper Elevation="0" Outlined="@_debugOutlined">
+                <MudExpansionPanels MultiExpansion="true">
+                    <MudExpansionPanel Expanded="@_expandFirstPanel">
+                        <TitleContent>
+                            <Label Size="GC.TextSize.Large" Key="PermEff"></Label>
+                            <div class="d-flex">
                             </div>
-                    </ChildContent>
-                </MudExpansionPanel>
-            </MudExpansionPanels>
-        </MudPaper>
-    </MudItem>
-</MudGrid>
+                        </TitleContent>
+                        <ChildContent>
+                            <div style="table-layout: fixed; width: 400px;">
+                                <MudTable Items="@effective">
+                                    <HeaderContent>
+                                        <MudTh><Label Key="PermNr" /></MudTh>
+                                        <MudTh><Label Key="Perm" /></MudTh>
+                                        <MudTh><Label Key="Crud" /></MudTh>
+                                    </HeaderContent>
+                                    <RowTemplate>
+                                        <MudTd DataLabel="Column 1">@context.PermissionNr</MudTd>
+                                        <MudTd DataLabel="Column 2">@context.LangKey</MudTd>
+                                        <MudTd DataLabel="Column 3">@context.Crud</MudTd>
+                                    </RowTemplate>
+                                </MudTable>
+                            </div>
+                        </ChildContent>
+                    </MudExpansionPanel>
 
+                    <MudExpansionPanel>
+                        <TitleContent>
+                            <Label Size="GC.TextSize.Large" Key="PermAll"></Label>
+                        </TitleContent>
+                        <ChildContent>
+                            <div style="table-layout: fixed; width: 600px;">
+                                <MudTable Items="@permissions">
+                                    <HeaderContent>
+                                        <MudTh><Label Key="Role" /></MudTh>
+                                        <MudTh><Label Key="OrgNr" /></MudTh>
+                                        <MudTh><Label Key="PermNr" /></MudTh>
+                                        <MudTh><Label Key="Perm" /></MudTh>
+                                        <MudTh><Label Key="Crud" /></MudTh>
+                                    </HeaderContent>
+                                    <RowTemplate>
+                                        <MudTd DataLabel="Column 1">@context.Role</MudTd>
+                                        <MudTd DataLabel="Column 2">@context.OrgNr</MudTd>
+                                        <MudTd DataLabel="Column 3">@context.PermissionNr</MudTd>
+                                        <MudTd DataLabel="Column 4">@context.LangKey</MudTd>
+                                        <MudTd DataLabel="Column 5">@context.Crud</MudTd>
+                                    </RowTemplate>
+                                </MudTable>
+                            </div>
+                        </ChildContent>
+                    </MudExpansionPanel>
+                </MudExpansionPanels>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+}
 
 @using Newtonsoft.Json;
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage

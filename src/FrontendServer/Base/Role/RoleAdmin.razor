@@ -14,15 +14,11 @@
         ToolBarButtonsRight="toolBarButtonsRight" />
 
 
-@if (_isLoading || _isError || _isSaving)
+@if (loadStatus.ShowSpinner())
 {
-    <LoadingWithErrorDepciated IsLoading=@_isLoading
-                      IsSaving=@_isSaving
-                      IsError=@_isError
-                      Message=@_errorMessage>
+    <Loading LoadStatus=@loadStatus>
         @exception
-    </LoadingWithErrorDepciated>
-    <MudSkeleton Height="100%" Width="100%" />
+    </Loading>
 }
 else
 {
@@ -425,6 +421,6 @@ else
     }
 
     private string Label(string key) => GetLabel(key);
-    protected override async Task OnInitializedAsync() => _isLoading = true;
+    protected override async Task OnInitializedAsync() => loadStatus.IsLoading = true;
 
 }

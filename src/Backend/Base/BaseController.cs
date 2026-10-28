@@ -147,5 +147,10 @@ namespace Backend.Base
             return await _userCacheService.GetCache<T>(session, cacheKey);
         }
 
+        public async Task Sleep (int milliseconds)
+        {
+            await Task.Delay(milliseconds);
+        }
+
     }
 }

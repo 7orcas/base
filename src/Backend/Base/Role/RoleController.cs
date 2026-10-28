@@ -75,10 +75,6 @@ namespace Backend.Base.Role
             foreach (var m in roles)
                 list.Add(LoadDto<RoleEnt, RoleDto>(m));
 
-foreach (var m in list)
-Debug.WriteLine(m.Code + " " + m.Id); 
-
-
             var r = new _ResponseDto
             {
                 SuccessMessage = "Ok",

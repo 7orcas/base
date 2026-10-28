@@ -1,8 +1,5 @@
 ﻿window.initSplitters = function (dotNetRef) {
 
-    //DeleteMe
-    console.log("initSplitters called");
-
     const leftPanel = document.getElementById("leftPanel");
     const rightPanel = document.getElementById("rightPanel");
 
