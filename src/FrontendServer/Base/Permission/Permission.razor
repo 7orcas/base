@@ -14,7 +14,7 @@
 @if (loadStatus.ShowSpinner())
 {
     <Loading LoadStatus=@loadStatus>
-        @exception
+        @loadStatus.Exception
     </Loading>
 }
 else
