@@ -19,7 +19,7 @@
     @if (loadStatus.IsError)
     {
         <Error LoadStatus=@loadStatus>
-            @exception
+            @loadStatus.Exception
         </Error>
     }
     else

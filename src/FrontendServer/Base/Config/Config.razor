@@ -9,44 +9,42 @@
         PageCode=@pageStatus.pageCode
         ToolBarButtonsRight="toolBarButtonsRight" />
 
-@if (_isLoading || _isError || _isSaving)
+@if (loadStatus.ShowSpinner())
 {
-    <LoadingWithErrorDepciated IsLoading=@_isLoading
-                        IsSaving=@_isSaving
-                        IsError=@_isError
-                        Message=@_errorMessage>
-        @exception
-    </LoadingWithErrorDepciated>
+    <Loading LoadStatus=@loadStatus>
+        @loadStatus.Exception
+    </Loading>
 }
+else
+{
+    <p></p>
 
-<p></p>
+    <MudGrid>
 
-<MudGrid>
-    
-    <!-- Right Side: Details -->
-    @if (configDto != null)
-    {
-        <MudItem xs="8">
-            <MudPaper Elevation="0" Outlined="@_debugOutlined">
-                <MudExpansionPanels MultiExpansion="true">
-                    <MudExpansionPanel>
-                        <TitleContent>
-                            <Label Size="GC.TextSize.Large" Key="ConfigG"></Label>
-                        </TitleContent>
-                        <ChildContent>
-                            <MudGrid>
-                                <MudCheckBox Label="@Label("IsAdminLanguage")" @bind-Value="@configDto.dto.Label.IsAdmin" Variant="Variant.Filled"></MudCheckBox>
-                            </MudGrid>
+        <!-- Right Side: Details -->
+        @if (configDto != null)
+        {
+            <MudItem xs="8">
+                <MudPaper Elevation="0" Outlined="@_debugOutlined">
+                    <MudExpansionPanels MultiExpansion="true">
+                        <MudExpansionPanel>
+                            <TitleContent>
+                                <Label Size="GC.TextSize.Large" Key="ConfigG"></Label>
+                            </TitleContent>
+                            <ChildContent>
+                                <MudGrid>
+                                    <MudCheckBox Label="@Label("IsAdminLanguage")" @bind-Value="@configDto.dto.Label.IsAdmin" Variant="Variant.Filled"></MudCheckBox>
+                                </MudGrid>
 
-                        </ChildContent>
-                    </MudExpansionPanel>
+                            </ChildContent>
+                        </MudExpansionPanel>
 
-                </MudExpansionPanels>
-            </MudPaper>
-        </MudItem>
-    }
-</MudGrid>
-
+                    </MudExpansionPanels>
+                </MudPaper>
+            </MudItem>
+        }
+    </MudGrid>
+}
 
 
 @using System.Net
@@ -69,7 +67,7 @@
             pageStatus.pageCode = BaseRoutes.ConfigPageCode;
             var configDtoX = ConfigService.Config;
             configDto = new ListModel<AppConfigDto>(configDtoX);
-            _isLoading = false;
+            loadStatus.IsLoading = false;
                         
             AddToolbarSave(SaveAsync);
             StateHasChanged();
@@ -94,7 +92,7 @@
 
     private async Task SaveAsync()
     {
-        _isSaving = true;
+        //_isSaving = true;
         // var curIndex = orgDto != null? list.FindIndex(d => d.Id == orgDto.Id) : -1;
         // // var client = await SetClient();
         // for (int i = 0; i < list.Count; i++) {
@@ -114,7 +112,7 @@
         //         }
         //     }
         // }
-        _isSaving = false;
+        //_isSaving = false;
       
     }
 
@@ -125,6 +123,6 @@
     }
 
     private string Label(string key) => GetLabel(key);
-    protected override async Task OnInitializedAsync() => _isLoading = true;
+    protected override async Task OnInitializedAsync() => loadStatus.IsLoading = true;
     
 }

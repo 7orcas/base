@@ -71,7 +71,6 @@ namespace FrontendServer.Base._Base
 
         public async Task<T> GetAsync<T>(string url, bool surpressLoading)
         {
-            _isLoading = !surpressLoading;
             if (!surpressLoading)
                 loadStatus.SetLoading();
             await ValidateAccess();
@@ -84,15 +83,12 @@ namespace FrontendServer.Base._Base
                 response.EnsureSuccessStatusCode();
                 var r = await response.Content.ReadAsStringAsync();
                 var dto = JsonConvert.DeserializeObject<_ResponseDto>(r);
-                _statusCode = dto.StatusCode;
-                _isLoading = false;
                 loadStatus.ResetLoading()
                           .StatusCode = dto.StatusCode;
 
                 if (dto.Valid)
                     return JsonConvert.DeserializeObject<T>(dto.Result.ToString());
 
-                _errorMessage = new MarkupString(dto.ErrorMessage);
                 loadStatus.ErrorMessage = new MarkupString(dto.ErrorMessage);
             }
             catch
@@ -100,11 +96,6 @@ namespace FrontendServer.Base._Base
                 
                 if (response != null && response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
                 {
-                    _statusCode = StatusCodes.Status401Unauthorized;
-                    _errorMessage = new MarkupString(LS.GetLabel("LEx"));
-                    _isLoading = false;
-                    _isError = true;
-                    
                     loadStatus.ResetLoading()
                               .SetError()
                               .SetErrorMessage(new MarkupString(LS.GetLabel("LEx")))
@@ -113,32 +104,24 @@ namespace FrontendServer.Base._Base
                     return default;
                 }
 
-                _statusCode = -1;
                 loadStatus.SetStatusCode(-1);
                 try
                 {
                     var r = await response.Content.ReadAsStringAsync();
                     if (!string.IsNullOrEmpty(r))
-                    {
-                        _errorMessage = new MarkupString(r);
                         loadStatus.SetErrorMessage(new MarkupString(r));
-                    }
+                    
                     //ToDo label
                     else
-                    {
-                        _errorMessage = new MarkupString("Opps, something went wrong");
                         loadStatus.SetErrorMessage(new MarkupString("Opps, something went wrong"));
-                    }
+                    
                 }
                 catch (Exception ex)
                 {
-                    _errorMessage = new MarkupString($"Exception occurred: {ex.Message}");
                     loadStatus.SetErrorMessage(new MarkupString($"Exception occurred: {ex.Message}"));
                 }
             }
 
-            _isLoading = false;
-            _isError = true;
             loadStatus.ResetLoading()
                       .SetError();
 
@@ -147,7 +130,6 @@ namespace FrontendServer.Base._Base
 
         protected async Task<HttpResponseMessage> PostAsync<T>(string url, _BaseDto dto) where T : _BaseDto
         {
-            _isSaving = true;
             loadStatus.SetSaving();
             await ValidateAccess();
             var client = await GetClient();
@@ -156,14 +138,12 @@ namespace FrontendServer.Base._Base
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var response = await client.PostAsync(url, content);
 
-            _isSaving = false;
             loadStatus.ResetSaving();
             return response;
         }
 
         protected async Task<HttpResponseMessage> PostAsync<T>(string url, UpdateRequest<T> updates) where T : IEnumerable<_BaseDto>
         {
-            _isSaving = true;
             loadStatus.SetSaving();
             await ValidateAccess();
             var client = await GetClient();
@@ -172,7 +152,6 @@ namespace FrontendServer.Base._Base
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var response = await client.PostAsync(url, content);
 
-            _isSaving = false;
             loadStatus.ResetSaving();
             return response;
         }
@@ -193,7 +172,6 @@ namespace FrontendServer.Base._Base
 
         protected async Task<_ResponseDto> PostAsync<T>(string url, IEnumerable<T> dtos) where T : _BaseDto
         {
-            _isSaving = true;
             loadStatus.SetSaving();
             _isValidationError = false;
 
@@ -224,7 +202,6 @@ namespace FrontendServer.Base._Base
             }
 
 
-            _isSaving = false;
             loadStatus.ResetSaving();
             return dto;
         }

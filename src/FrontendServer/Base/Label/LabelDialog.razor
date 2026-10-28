@@ -1,14 +1,11 @@
 ﻿@inherits BasePage
 
  
-@if (_isLoading || _isError)
+@if (loadStatus.ShowSpinner())
 {
-    <LoadingWithErrorDepciated 
-        IsLoading=@_isLoading
-        IsError=@_isError
-        Message=@_errorMessage>
-        @exception
-    </LoadingWithErrorDepciated>
+    <Loading LoadStatus=@loadStatus>
+        @loadStatus.Exception
+    </Loading>
 }
 else
 {
@@ -169,7 +166,7 @@ else
         }
     }
 
-    protected override async Task OnInitializedAsync() => _isLoading = true;
+    protected override async Task OnInitializedAsync() => loadStatus.IsLoading = true;
     private bool IsMultiLanguageView() => appConfig != null && appConfig.Languages.Count() > 1;
     private void CloseDialog() => MudDialog.Close();
     

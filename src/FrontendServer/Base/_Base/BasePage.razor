@@ -18,15 +18,7 @@
 @code {
     [Inject] protected IJSRuntime JS { get; set; }
 
-    public LoadStatus loadStatus = new LoadStatus(); //This will replace the attributes below
-    //DELETE ME
-    public bool _isLoading = false;
-    public bool _isError = false;
-    public bool _isSaving = false;
-    public int? _statusCode;
-    public MarkupString? _errorMessage;
-    public Exception? exception;
-
+    public LoadStatus loadStatus = new LoadStatus(); 
     public PageStatus pageStatus = new PageStatus();
 
     public bool _stateChangedToggle = false;

@@ -10,14 +10,12 @@
         PageCode=@pageStatus.pageCode
         ToolBarButtonsLeft="toolBarButtons" />
 
-@if (_isLoading || _isError || _isSaving)
+
+@if (loadStatus.ShowSpinner())
 {
-    <LoadingWithErrorDepciated IsLoading=@_isLoading
-                      IsSaving=@_isSaving
-                      IsError=@_isError
-                      Message=@_errorMessage>
-        @exception
-    </LoadingWithErrorDepciated>
+    <Loading LoadStatus=@loadStatus>
+        @loadStatus.Exception
+    </Loading>
 }
 else
 {
@@ -73,7 +71,7 @@ else
                                         <MudTd DataLabel="Column 5">@context.Crud</MudTd>
                                     </RowTemplate>
                                 </MudTable>
-                             </div>
+                            </div>
                         </ChildContent>
                     </MudExpansionPanel>
                 </MudExpansionPanels>
@@ -108,8 +106,8 @@ else
             permissions = PS.AllPermissions;
             effective = PS.Permissions;
 
-            _isError = effective == null;
-            _isLoading = false;
+            loadStatus.IsError = effective == null;
+            loadStatus.ResetLoading();
 
             toolBarButtons.Add(new ToolBarButton { LangKey = "Export", Action = Export });
             
