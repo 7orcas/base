@@ -6,6 +6,7 @@ namespace Backend.Base.Permission
     public interface PermissionServiceI
     {
         PermissionEnt GetPermissionEnt(int permNr);
+        Task<PermissionEnt> GetPermissionEnt(SessionEnt session, string permission);
         Task<List<PermissionCrudEnt>> LoadEffectivePermissions(SessionEnt session);
         Task<List<PermissionCrudEnt>> LoadEffectivePermissionsInt(long? userId, long orgNr);
         Task<List<RolePermissionCrudEnt>> GetPermissions(SessionEnt session);

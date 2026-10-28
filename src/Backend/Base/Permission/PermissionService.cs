@@ -20,12 +20,15 @@ namespace Backend.Base.Permission
     public class PermissionService: BaseService, PermissionServiceI
     {
         private readonly IMemoryCache _memoryCache;
-        
+        protected LabelServiceI _labelService;
+
         public PermissionService(IServiceProvider serviceProvider,
-            IMemoryCache memoryCache) 
+            IMemoryCache memoryCache,
+            LabelServiceI labelService) 
             : base(serviceProvider)
         { 
             _memoryCache = memoryCache;
+            _labelService = labelService;
         }
 
 
@@ -36,6 +39,26 @@ namespace Backend.Base.Permission
                 var dic = cachedValue as Dictionary<int, PermissionEnt>;
                 if (dic != null && dic.ContainsKey(permNr)) 
                     return dic[permNr];
+            }
+            return null;
+        }
+
+        public async Task<PermissionEnt> GetPermissionEnt(SessionEnt session, string permission)
+        {
+            if (string.IsNullOrWhiteSpace(permission)) return null;
+
+            if (_memoryCache.TryGetValue(GC.CacheKeyPermDic, out var cachedValue))
+            {
+                var dic = cachedValue as Dictionary<int, PermissionEnt>;
+                if (dic == null) return null;
+                var langDic = await _labelService.GetLangCodeDic(session);
+                var perm = permission.ToLower();
+
+                foreach (var p in dic.Values)
+                {
+                    var x = GetLabel(p.LangKey, langDic).ToLower();
+                    if (x.Contains(perm)) return p;
+                }
             }
             return null;
         }

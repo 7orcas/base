@@ -3,7 +3,7 @@ description: Audit listing
 url: https://localhost:6002/v123/api/user/list
 method: POST
 headers:
-  Blue-Api-Key: X123250916,$,$,1
+  Blue-Api-Key: X123251028,$,$,1
 body:
   type: json
   content: "{\r
@@ -18,7 +18,11 @@ body:
 
     \    \"EmailX\":\"xx123@3.4,john\",\r
 
-    \    \"Role\":\"admin,label\"\r
+    \    \"Role\":\"admin,label\",\r
+
+    \    \"Permission\":\"org, lab\",\r
+
+    \    \"Crud\":\"cu d,\"\r
 
     }"
 auth:

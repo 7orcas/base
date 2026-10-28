@@ -2,7 +2,7 @@
 {
     public interface UserRepoI
     {
-        Task<List<UserEnt>> GetList(UserSearch search, int orgNr);
+        Task<List<UserEnt>> GetList(UserSearch search, int orgNr, List<int>? permissionNrs, List<string>? cruds);
         Task<UserEnt> Create(UserEnt User);
         Task<UserEnt?> GetById(long id);
         Task<UserEnt?> Update(UserEnt User, UserDto dto);
