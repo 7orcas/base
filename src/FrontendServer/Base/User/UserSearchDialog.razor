@@ -32,11 +32,18 @@
                        @bind-Value="data.IncludeEffectDate" />
     </div>
 
-    <TextField Width=GC.TextFieldWidth.TextMedium
-               LangCode="Perm"
-               MaxLength="@GC.LenCode"
-               @bind-Value="data.Permission" />
+    <div class="d-flex align-center" style="gap: 10px;">
+        <TextField Width=GC.TextFieldWidth.TextMedium
+                   LangCode="Perm"
+                   MaxLength="@GC.LenCode"
+                   @bind-Value="data.Permission" />
 
+        <TextField Width=GC.TextFieldWidth.TextShort
+                   LangCode="Crud"
+                   MaxLength="@GC.LenCode"
+                   @bind-Value="data.Crud" />
+
+    </div>
 </BaseSearchDialog>
 
 

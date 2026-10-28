@@ -28,14 +28,16 @@ namespace Backend.Base.User
             _context = context;
         }
 
-        public async Task<List<UserEnt>> GetList(UserSearch search, int orgNr)
+        public async Task<List<UserEnt>> GetList(UserSearch search, int orgNr, List<int>? permissionNrs, List<string>? cruds)
         {
             var includeRole = !string.IsNullOrWhiteSpace(search.Role);
+            var includePerm = !string.IsNullOrWhiteSpace(search.Permission) && permissionNrs != null && permissionNrs.Any();
+            var includeCrud = !string.IsNullOrWhiteSpace(search.Crud) && cruds != null && cruds.Any();
 
             var sql = "SELECT DISTINCT z.id, xxx AS Username, z.isActive, z.attempts, z.orgnrdefault AS OrgNrDefault "
                         + "FROM base.zzz z ";
 
-            if (includeRole)
+            if (includeRole || includePerm || includeCrud)
             {
                 sql += @"JOIN base.userAcc ua ON ua.zzzid = z.id
                          JOIN base.userAccRole uar ON uar.userAccId = ua.id AND uar.isActive is TRUE ";
@@ -47,6 +49,11 @@ namespace Backend.Base.User
                 sql += " JOIN base.role r ON r.id = uar.roleId ";
             }
 
+            if (includePerm || includeCrud)
+            {
+                sql += @"JOIN base.rolepermission rp ON rp.roleId = r.Id ";
+            }
+
             sql += "WHERE z.id != " + GC.ServiceLoginId + " ";
 
             var parameters = new DynamicParameters();
@@ -56,7 +63,18 @@ namespace Backend.Base.User
 
             if (includeRole)
                 sql += GetSqlAndClause(search.Role, "Role", parameters, "r.Code", search);
-            
+
+            if (includePerm)
+            {
+                sql += " AND (";
+                for (var i = 0; i < permissionNrs.Count; i++)
+                    sql += (i>0?" OR ":"") + "rp.permissionNr = " + permissionNrs[i];
+                sql += ") ";
+            }
+
+            for (var i = 0; includeCrud && i < cruds.Count; i++)
+                sql += " AND LOWER(rp.crud) LIKE '%" + cruds[i] + "%' ";
+
             sql += GetSqlAndClause(search.Username, "Username", parameters, "z.xxx", search);
             sql += GetSqlAndClause(search.Email, "Email", parameters, "z.email", search);
 

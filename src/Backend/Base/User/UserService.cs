@@ -1,4 +1,7 @@
-﻿using GC = Backend.GlobalConstants;
+﻿using DocumentFormat.OpenXml.Spreadsheet;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using static Common.GlobalConstants;
+using GC = Backend.GlobalConstants;
 
 /// <summary>
 /// User methods
@@ -35,7 +38,37 @@ namespace Backend.Base.User
 
         public async Task<List<UserEnt>> GetUserList(SessionEnt session, UserSearch search)
         {
-            return await _userRepo.GetList(search, session.OrgNrDefault);
+            var permissionNrs = null as List<int>;
+            var cruds = null as List<string>;
+
+            if (!string.IsNullOrWhiteSpace(search.Permission))
+            {
+                var del = ','; // search.TextFieldDelimiterType == TextSearchDelimiter.Or ? ',' : ' '; << don't do this
+
+                var values = search.Permission.Split(del);
+                for (var i = 0; i < values.Length; i++)
+                {
+                    var value = values[i].Trim();
+                    var perm = await _permissionService.GetPermissionEnt(session, value);
+                    if (perm != null)
+                    {
+                        if (permissionNrs == null) permissionNrs = new List<int>();
+                        permissionNrs.Add(perm.Nr);
+                    }
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(search.Crud))
+            {
+                cruds = new List<string>();
+                foreach (char c in search.Crud)
+                {
+                    if (GC.CrudAll.Contains(c))
+                        cruds.Add(c.ToString().ToLower());
+                }
+            }
+
+            return await _userRepo.GetList(search, session.OrgNrDefault, permissionNrs, cruds);
         }
 
         public async Task<UserEnt?> GetUserById(long id)
