@@ -4,6 +4,10 @@
     {
         <MenuButton Title="@mainMenuItems[i + cLabel]" Link="@mainMenuItems[i + cRoute]" />
     }
+    @if (mainMenuItems.Count() == 0)
+    {
+        <div>Press F5</div>
+    }
 
     @if (isAdminMenu)
     {
@@ -46,24 +50,27 @@
     private List<string> mainMenuItems = new List<string>();
     private List<string> adminMenuItems = new List<string>();
 
-    protected override void OnInitialized()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (firstRender)
+        {
+            if (!MenuS.IsInitialized)
+                await MenuS.InitializeFromCache();
 
-        if (MenuS.IsMenu("Machine")) AddItem(mainMenuItems, "Machines", AppRoutes.MachinesRoute, "");
-        if (MenuS.IsMenu("Audit")) AddItem(mainMenuItems, "Audit", AppRoutes.AuditRoute, "");
-        if (MenuS.IsMenu("Org")) AddItem(mainMenuItems, "Organisation", AppRoutes.OrgRoute, "");
-        SetLabels(mainMenuItems);
+            if (MenuS.IsMenu("Machine")) AddItem(mainMenuItems, "Machines", AppRoutes.MachinesRoute, "");
+            if (MenuS.IsMenu("Audit")) AddItem(mainMenuItems, "Audit", AppRoutes.AuditRoute, "");
+            if (MenuS.IsMenu("Org")) AddItem(mainMenuItems, "Organisation", AppRoutes.OrgRoute, "");
 
+            if (MenuS.IsMenu("Perm")) AddItem(adminMenuItems, "Permissions", AppRoutes.PermRoute, "");
+            if (MenuS.IsMenu("Role")) AddItem(adminMenuItems, "Roles", AppRoutes.RoleRoute, "");
+            if (MenuS.IsMenu("User")) AddItem(adminMenuItems, "User", AppRoutes.UserRoute, "");
+            if (MenuS.IsMenu("User")) AddItem(adminMenuItems, "UserRs", AppRoutes.UserRoleRoute, "");
+            if (MenuS.IsMenu("Config")) AddItem(adminMenuItems, "Config", AppRoutes.ConfigRoute, "");
+            isAdminMenu = adminMenuItems.Count > 0;
+            RefreshLayout();
 
-        if (MenuS.IsMenu("Perm")) AddItem(adminMenuItems, "Permissions", AppRoutes.PermRoute, "");
-        if (MenuS.IsMenu("Role")) AddItem(adminMenuItems, "Roles", AppRoutes.RoleRoute, "");
-        if (MenuS.IsMenu("User")) AddItem(adminMenuItems, "User", AppRoutes.UserRoute, "");
-        if (MenuS.IsMenu("User")) AddItem(adminMenuItems, "UserRs", AppRoutes.UserRoleRoute, "");
-        if (MenuS.IsMenu("Config")) AddItem(adminMenuItems, "Config", AppRoutes.ConfigRoute, "");
-        SetLabels(adminMenuItems);
-        isAdminMenu = adminMenuItems.Count > 0;
-
-        LS.OnLabelsChanged += RefreshLayout;
+            LS.OnLabelsChanged += RefreshLayout;
+        }
     }
 
     private void RefreshLayout()

@@ -16,19 +16,23 @@ namespace FrontendServer.Base.Config
 {
     public class UrlService : BaseService
     {
-        private readonly IMemoryCache _cache;
-
         public UrlService(ProtectedSessionStorage session,
-            IHttpClientFactory httpClientFactory,
-            IMemoryCache cache)
+            IHttpClientFactory httpClientFactory)
         {
             _session = session;
             _httpClientFactory = httpClientFactory;
-            _cache = cache;
-
-            if (_cache.TryGetValue(GC.UrlCacheKey, out Dictionary<string, string> urlsX))
-                urls = urlsX;
         }
+
+        public async Task InitializeFromCache()
+        {
+            if (urls != null) return;
+
+            var result = await _session.GetAsync<Dictionary<string, string>>(GC.UrlCacheKey);
+
+            if (result.Success)
+                urls = result.Value;
+        }
+
 
         private Dictionary<string, string> urls;
                 
@@ -42,13 +46,7 @@ namespace FrontendServer.Base.Config
         public string GetUrl(string urlKey) => IsUrl(urlKey) ? urls[urlKey] : urlKey;
 
         public string GetUrlSlash(string urlKey) => GetUrl(urlKey) + "/";
-
-        public async Task ForceInitialise(string appUrls)
-        {
-            urls = null;
-            _cache.Remove(GC.UrlCacheKey);
-            await Initialise(appUrls);
-        }
+               
 
         public async Task Initialise(string appUrls)
         {
@@ -71,8 +69,7 @@ namespace FrontendServer.Base.Config
                             dic.Add(l.Key, l.Url);
 
                         urls = dic;
-                        _cache.Set(GC.UrlCacheKey, dic);
-
+                        await _session.SetAsync(GC.UrlCacheKey, urls);
                     }
                     IsInitialising = false;
                 }

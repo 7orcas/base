@@ -16,24 +16,33 @@ namespace FrontendServer.Base.Config
     {
         public event Action? OnInitialized;
 
-        private readonly UrlService _urlService;
-        private readonly IMemoryCache _cache;
-
         public ConfigService(ProtectedSessionStorage session,
             IHttpClientFactory httpClientFactory,
-            IMemoryCache cache,
             UrlService urlService)            
         {
             _session = session;
             _httpClientFactory = httpClientFactory;
-            _cache = cache;
             _urlService = urlService;
+        }
 
-            if (_cache.TryGetValue(GC.ConfigCacheKey, out AppConfigDto configX))
-                config = configX;
+        public async Task InitializeFromCache()
+        {
+            if (config == null)
+            {
+                var result = await _session.GetAsync<AppConfigDto> (GC.ConfigCacheKey);
 
-            if (_cache.TryGetValue(GC.LoginParamsCacheKey, out LoginParameters loginParametersX))
-                loginParameters = loginParametersX;
+                if (result.Success)
+                    config = result.Value;
+            }
+
+            if (loginParameters == null)
+            {
+                var result = await _session.GetAsync <LoginParameters> (GC.LoginParamsCacheKey);
+
+                if (result.Success)
+                    loginParameters = result.Value;
+            }
+
         }
 
         private AppConfigDto? config;
@@ -57,7 +66,7 @@ namespace FrontendServer.Base.Config
                 var cjson = cdto.Result.ToString();
                 config = JsonConvert.DeserializeObject<AppConfigDto>(cjson);
 
-                _cache.Set(GC.ConfigCacheKey, config);
+                await _session.SetAsync(GC.ConfigCacheKey, config);
 
                 OnInitialized?.Invoke(); // Notify subscribers
                 return config;
@@ -68,7 +77,7 @@ namespace FrontendServer.Base.Config
             }
         }
 
-        public LoginParameters SetLoginParameters(string? tokenKey, string? token, string? appUrls)
+        public async Task<LoginParameters> SetLoginParameters(string? tokenKey, string? token, string? appUrls)
         {
             loginParameters = new LoginParameters();
             loginParameters.tokenkey = tokenKey;
@@ -76,9 +85,14 @@ namespace FrontendServer.Base.Config
             loginParameters.appUrls = appUrls;
             loginParameters.Set(config);
 
-            _cache.Set(GC.LoginParamsCacheKey, loginParameters);
+            await _session.SetAsync(GC.LoginParamsCacheKey, loginParameters);
             return loginParameters;
         }
 
+        public async Task SetLoginParameters(LoginParameters loginParams)
+        {
+            loginParameters = loginParams;
+            await _session.SetAsync(GC.LoginParamsCacheKey, loginParameters);
+        }
     }
 }

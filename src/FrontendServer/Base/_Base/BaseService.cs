@@ -14,6 +14,7 @@ namespace FrontendServer.Base._Base
     public abstract class BaseService
     {
         protected ProtectedSessionStorage _session;
+        protected UrlService _urlService;
         protected ConfigService _configService;
         protected IHttpClientFactory _httpClientFactory;
 
