@@ -83,10 +83,12 @@ else
     }
 
     private async Task Initialise() {
+
         //Already logged in?
         var result = await PS.GetAsync<string>(GC.TokenCacheKey);
         if (result.Success)
         {
+            await ConfS.InitializeFromCache();
             await InitialiseBasePage(GC.PerIgnore);
             _isLoading = false;
             StateHasChanged();
@@ -134,19 +136,19 @@ else
             StateHasChanged();
             return;
         }
-        await UrlS.ForceInitialise(appUrls);
-        await MenuS.ForceInitialise();
+        await UrlS.Initialise(appUrls);
+        await MenuS.Initialise();
 
         var config = await ConfS.Initialise();
         if (values.TryGetValue("urlLogin", out var urlLogin))
             config.UrlLogin = urlLogin;
 
         // Get App / User Config
-        var lps = ConfS.SetLoginParameters(tokenkey, token, appUrls);
+        var lps = await ConfS.SetLoginParameters(tokenkey, token, appUrls);
         lps.LoadedUrl(UrlS.GetUrl("ClientConfig"));
         SetConfig(config);
         await LS.ForceInitialise(lps);
-        await PermS.ForceInitialise(lps);
+        await PermS.Initialise(lps);
         await GetVersion();
         _isLoading = false;
 
@@ -158,7 +160,7 @@ else
         if (string.IsNullOrEmpty(url))
             url = "/home?t=" + Guid.NewGuid();
 
-        ConfS.loginParameters = lps;
+        await ConfS.SetLoginParameters(lps);
         NM.NavigateTo(url, replace: true);
 
         StateHasChanged();

@@ -16,9 +16,6 @@ namespace FrontendServer.Base.Menu
 {
     public class MenuService : BaseService
     {
-        private readonly UrlService _urlService;
-        private readonly IMemoryCache _cache;
-
         public MenuService(ProtectedSessionStorage session,
             IHttpClientFactory httpClientFactory,
             IMemoryCache cache,
@@ -26,28 +23,26 @@ namespace FrontendServer.Base.Menu
         {
             _session = session;
             _httpClientFactory = httpClientFactory;
-            _cache = cache;
             _urlService = urlService;
+        }
 
-            if (_cache.TryGetValue(GC.MainMenuCacheKey, out List<string> mainMenuItemsX))
-                mainMenuItems = mainMenuItemsX;
+        public async Task InitializeFromCache()
+        {
+            if (mainMenuItems != null) return;
+
+            var result = await _session.GetAsync<List<string>>(GC.MainMenuCacheKey);
+
+            if (result.Success)
+                mainMenuItems = result.Value;
         }
 
         private List<string> mainMenuItems;
                 
         private bool IsInitialising = false;
 
-        public bool IsInitialized => mainMenuItems != null;
-
+        public bool IsInitialized => mainMenuItems != null && mainMenuItems.Count > 0;
 
         public bool IsMenu(string key) => mainMenuItems != null && key != null && mainMenuItems.Contains(key);
-
-        public async Task ForceInitialise()
-        {
-            mainMenuItems = null;
-            _cache.Remove(GC.MainMenuCacheKey);
-            await Initialise();
-        }
 
         public async Task Initialise()
         {
@@ -66,7 +61,7 @@ namespace FrontendServer.Base.Menu
                     if (rdto.Valid)
                     {
                         mainMenuItems = JsonConvert.DeserializeObject<List<string>>(rdto.Result.ToString());
-                        _cache.Set(GC.MainMenuCacheKey, mainMenuItems);
+                        await _session.SetAsync(GC.MainMenuCacheKey, mainMenuItems);
                     }
                     IsInitialising = false;
                 }

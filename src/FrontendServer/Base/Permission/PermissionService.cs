@@ -15,25 +15,28 @@ namespace FrontendServer.Base.Permission
 {
     public class PermissionService : BaseService
     {
-        private readonly IMemoryCache _cache;
-        private readonly UrlService _urlService;
-
 
         public PermissionService(ProtectedSessionStorage session,
-            ConfigService configService,
             IHttpClientFactory httpClientFactory,
-            IMemoryCache cache,
+            ConfigService configService,
             UrlService urlService)
         {
             _session = session;
-            _configService = configService;
             _httpClientFactory = httpClientFactory;
-            _cache = cache;
+            _configService = configService;
             _urlService = urlService;
-
-            if (_cache.TryGetValue(GC.PermCacheKey, out List<PermissionDto> PermissionsX))
-                Permissions = PermissionsX;
         }
+
+        public async Task InitializeFromCache()
+        {
+            if (Permissions != null) return;
+
+            var result = await _session.GetAsync<List<PermissionDto>>(GC.PermCacheKey);
+
+            if (result.Success)
+                Permissions = result.Value;
+        }
+
         public List<UserRolePermissionDto> AllPermissions {  get; private set; }
         public List<PermissionDto> Permissions { get; private set; }
 
@@ -46,13 +49,6 @@ namespace FrontendServer.Base.Permission
         {
             //Check if the permission exists in the list of permissions
             return GetPermission(permissionNr) != null;
-        }
-
-        public async Task ForceInitialise(LoginParameters lps)
-        {
-            Permissions = null;
-            _cache.Remove(GC.PermCacheKey);
-            await Initialise(lps);
         }
 
         public async Task Initialise(LoginParameters lps)
@@ -101,7 +97,7 @@ namespace FrontendServer.Base.Permission
                     if (responseDto.Valid)
                     {
                         Permissions = JsonConvert.DeserializeObject<List<PermissionDto>>(responseDto.Result.ToString());
-                        _cache.Set(GC.PermCacheKey, Permissions);
+                        await _session.SetAsync(GC.PermCacheKey, Permissions);
                         lps.LoadedUrl(url);
                     }
                 }

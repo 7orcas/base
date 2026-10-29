@@ -108,6 +108,7 @@
 @implements IAsyncDisposable
 @inject IHttpClientFactory HttpClientFactory
 @inject NavigationManager Navigation
+@inject StartupService SupS
 @inject ConfigService ConfS
 @inject LabelService LS
 @inject ThemeService TS
@@ -127,6 +128,11 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (firstRender && !_isInitialized)
+        {
+            await SupS.InitialiseServicesFromCache();
+        }
+
         if (ConfS.IsInitialized && !_isInitialized)
         {
             _isInitialized = true;
