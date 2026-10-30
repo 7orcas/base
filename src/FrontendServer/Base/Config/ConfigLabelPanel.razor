@@ -1,0 +1,71 @@
+﻿@inherits BaseComponent
+
+@using MudBlazor
+@using GC = FrontendServer.GlobalConstants;
+@using FrontendServer.Base._Base;
+
+<div style="height:100%; overflow:auto;">
+
+    <table style="flex:1; min-height:0; table-layout:fixed; width:100%;@GetDebugBorder("pink")">
+
+        <tbody class="mud-table-body">
+            <tr class="XXmud-table-row">
+                @foreach (var record in Selections.Where(x => x.IsSelected))
+                {
+                var dto = record.dto;
+
+                <td @key="dto.Org.Nr" style="vertical-align: top; padding: 1px; background-color:white">
+
+                    <MudExpansionPanels MultiExpansion="true">
+
+                        @if (record.IsValidation())
+                        {
+                            <MudExpansionPanel @key="record" Text=@GetValidationLabel(record) Expanded=true Style="padding:1px;" Class="@GetValidationClass(record)">
+                                <ChildContent>
+                                    <ErrorPanel List="record.Validation.Messages" />
+                                </ChildContent>
+                            </MudExpansionPanel>
+                        }
+
+                        <MudExpansionPanel Text=@GetLabel("Labels") Expanded="false">
+                            <TitleContent>
+                                <div class="expansion-title">
+                                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                                        <Label Size="GC.TextSize.Normal" Key="Labels"></Label>
+                                    </div>
+                                </div>
+                            </TitleContent>
+                            <ChildContent>
+                                <div style="display: flex; gap: 20px;">
+
+                                    <MudCheckBox Label="@GetLabel("AdminL")" 
+                                        @bind-Value="@dto.Label.IsAdmin" 
+                                        ReadOnly="@(!@dto.User.IsAdmin)" 
+                                        Variant="Variant.Filled">
+                                    </MudCheckBox>
+
+                                    <MudCheckBox Label="@GetLabel("LabelHK")" 
+                                        @bind-Value="@dto.Label.HighlightNoKey" 
+                                        Variant="Variant.Filled">
+                                    </MudCheckBox>
+
+                                </div>
+
+                            </ChildContent>
+                        </MudExpansionPanel>
+
+                    </MudExpansionPanels>
+                </td>
+            }
+            </tr>
+        </tbody>
+
+    </table>
+</div>
+
+@code {
+    [Parameter] public List<ListModel<ConfigDto>> Selections { get; set; } = new List<ListModel<ConfigDto>>();
+    [Parameter] public EventCallback Refresh { get; set; }
+
+    
+}

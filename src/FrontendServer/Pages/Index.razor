@@ -145,7 +145,7 @@ else
 
         // Get App / User Config
         var lps = await ConfS.SetLoginParameters(tokenkey, token, appUrls);
-        lps.LoadedUrl(UrlS.GetUrl("ClientConfig"));
+        lps.LoadedUrl(UrlS.GetUrl("Config"));
         SetConfig(config);
         await LS.ForceInitialise(lps);
         await PermS.Initialise(lps);

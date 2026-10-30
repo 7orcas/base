@@ -104,6 +104,8 @@ LangCode,Lang Code
 Langs,Languages
 LangCodeV,Language Variant
 Label,Label
+Labels,Labels
+LabelHK,Highlight missing label
 Variant,Variant
 LabelEdit,Edit Label
 Tooltip,Tooltip

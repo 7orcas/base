@@ -1,7 +1,6 @@
-﻿using Backend.Base.Config.Ent;
-using Microsoft.AspNetCore.DataProtection.KeyManagement;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
-using System.Collections.Generic;
+using Microsoft.IdentityModel.Tokens;
 using GC = Backend.GlobalConstants;
 
 /// <summary>
@@ -16,13 +15,22 @@ namespace Backend.Base.Config
 {
     public class ConfigService : BaseService, ConfigServiceI
     {
+        private readonly UserCacheServiceI _userCacheService;
         private readonly IMemoryCache _memoryCache;
 
         public ConfigService(IServiceProvider serviceProvider,
-            IMemoryCache memoryCache) 
+            IMemoryCache memoryCache,
+            UserCacheServiceI cacheService) 
             : base(serviceProvider)
         {
             _memoryCache = memoryCache;
+            _userCacheService = cacheService;
+        }
+
+        public async Task<DefinitionDto> GetDefinition(SessionEnt session)
+        {
+            var validator = new ConfigVal(session, this);
+            return validator.GetDefinition();
         }
 
         /// <summary>
@@ -35,7 +43,8 @@ namespace Backend.Base.Config
         public ConfigUser CreateUserConfig(LoginAccountEnt userAccount, OrgEnt org, string? requestedLangCode)
         {
             var orgConfig = _memoryCache.Get<ConfigOrg>(GC.CacheKeyOrgConfigPrefix + org.Nr);
-            var userLangCode = ValidateLanguageCode(userAccount, orgConfig, requestedLangCode);
+
+            var userLangCode = ValidateLanguageCode.Validate(userAccount, orgConfig, requestedLangCode);
 
             var userConfig = new ConfigUser()
             {
@@ -46,31 +55,7 @@ namespace Backend.Base.Config
 
             return userConfig;
         }
-
-        /// <summary>
-        /// Make sure the user is using a valid language code
-        /// </summary>
-        /// <param name="userAccount"></param>
-        /// <param name="orgConfig"></param>
-        /// <param name="requestedLangCode"></param>
-        /// <returns></returns>
-        private string ValidateLanguageCode(LoginAccountEnt userAccount, ConfigOrg orgConfig, string? requestedLangCode)
-        {
-            //Is user using the default org lang code?
-            if (requestedLangCode == null) requestedLangCode = orgConfig.LangCodeDefault;
-            if (requestedLangCode.Equals(orgConfig.LangCodeDefault)) return requestedLangCode;
-
-            //Is the user's lang code used by the organisation (and active if required)?
-            foreach (var lang in orgConfig.Languages)
-                if (requestedLangCode.Equals(lang.LangCode))
-                {
-                    if (userAccount.IsService()) return requestedLangCode;
-                    if (userAccount.IsAdmin && lang.IsActive()) return requestedLangCode;
-                }
-                    
-            return orgConfig.LangCodeDefault;
-        }
-
+               
 
         /// <summary>
         /// Get list of language codes the client is able to view and edit
@@ -112,6 +97,65 @@ namespace Backend.Base.Config
 
             return langListX;
         }
+
+        public async Task<ConfigDto> PopulateDto(SessionEnt session)
+        {
+            var org = session.Org;
+            var orgConfig = _memoryCache.Get<ConfigOrg>(GC.CacheKeyOrgConfigPrefix + org.Nr);
+
+            //Is there a cached version of the config for this user?
+            var cachedConfigDto = await _userCacheService.GetCache<ConfigDto>(session, GetUserCacheKey(org.Nr));
+            cachedConfigDto ??= ConfigDto.CreateEmpty();
+
+            var langCodeCurrent = session.LangCodeCurrent;
+            if (!string.IsNullOrEmpty(cachedConfigDto.Label.LangCode))
+                langCodeCurrent = cachedConfigDto.Label.LangCode;
+            langCodeCurrent = ValidateLanguageCode.Validate(session, orgConfig, langCodeCurrent);
+
+            var langs = new List<LanguageConfigDto>();
+            foreach (var lang in session.Languages)
+            {
+                langs.Add(new LanguageConfigDto
+                {
+                    LangCode = lang.LangCode,
+                    IsUpdateable = lang.IsEditable,
+                });
+            }
+
+            return new ConfigDto
+            {
+                UniqueUserId = session.UserAccountId + 987123564,
+                UniqueSessionId = UniqueSessionId.GetId(),
+
+                Org = new OrgConfigDto
+                {
+                    Nr = session.Org.Nr,
+                    Code = session.Org.Code,
+                    Description = session.Org.Description,
+                    Icon = session.Org.Icon
+                },
+
+                User = new UserConfigDto
+                {
+                    Username = session.Username,
+                    IsService = session.IsService,
+                    IsAdmin = session.IsAdmin,
+                },
+
+                Languages = langs.ToArray(),
+                Label = new LabelConfigDto
+                {
+                    LangCode = langCodeCurrent,
+                    Variant = org.LangLabelVariant,
+                    ShowTooltip = true,
+                    IsAdmin = session.IsAdmin && cachedConfigDto.Label.IsAdmin,
+                    HighlightNoKey = cachedConfigDto.Label.HighlightNoKey, 
+                },
+            };
+        }
+
+        public string GetUserCacheKey(int orgNr) => "UserConfig_" + orgNr;
+        
 
     }
 }

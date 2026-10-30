@@ -1,15 +1,27 @@
 ﻿namespace Common.DTO.Base
 {
-    public class AppConfigDto : _BaseDto
+
+    public class ConfigDto : _BaseDto
     {
-        public OrgConfigDto Org { get; set; }
         public long UniqueUserId { get; set; }
         public long UniqueSessionId { get; set; }
+        public OrgConfigDto Org { get; set; }
         public LanguageConfigDto[] Languages { get; set; }
         public LabelConfigDto Label { get; set; }
         public UserConfigDto User { get; set; }
         public bool DebugMode { get; set; } = false;
         public string UrlLogin { get; set; }
+
+        public static ConfigDto CreateEmpty()
+        {
+            return new ConfigDto
+            {
+                Org = new OrgConfigDto(),
+                Label = new LabelConfigDto(),
+                User = new UserConfigDto(),
+                Languages = Array.Empty<LanguageConfigDto>(),
+            };
+        }
     }
 
     public class OrgConfigDto

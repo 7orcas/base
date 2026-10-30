@@ -8,7 +8,6 @@
 
 namespace Backend.Base.Config.Ent
 {
-    [Obsolete("DELETE ME")]
     public class ConfigUser
     {
         public int orgNr { get; set; }

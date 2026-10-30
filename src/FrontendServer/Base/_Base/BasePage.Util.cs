@@ -12,7 +12,7 @@ namespace FrontendServer.Base._Base
             var parameters = new DialogParameters
                 {
                     { nameof(BaseSearchDialog.MaxRecordsReturned), maxRecordsReturned },
-                    { nameof(BaseSearchDialog.IsService), _config.User.IsService }
+                    { nameof(BaseSearchDialog.IsService), _configDto.User.IsService }
                 };
 
             var options = new DialogOptions

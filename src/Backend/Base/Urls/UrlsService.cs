@@ -22,7 +22,9 @@ namespace Backend.Base.Urls
 
             Add(urls, "Logout", "Logout/logout");
             Add(urls, "MainMenu", "Menu/mainmenu");
-            Add(urls, "ClientConfig", "Config/clientConfig");
+            Add(urls, "Config", "Config/config");
+            Add(urls, "ConfigDef", "Config/def");
+            Add(urls, "ConfigUpdate", "Config/update");
             Add(urls, "PermissionUserList", "Permission/userlist");
             Add(urls, "PermissionUserListEff", "Permission/userlisteff");
             Add(urls, "LabelClientList", "Label/clientlist");

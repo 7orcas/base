@@ -15,11 +15,11 @@ namespace BackendTest.Base.Config
         [TestMethod]
         public async Task GetClientConfig()
         {
-            var result = await _controller.GetClientConfig();
+            var result = await _controller.GetConfig();
             var dto = GetResponseDto(result);
             Assert.AreEqual(dto.StatusCode, 200);
 
-            var config = dto.Result as AppConfigDto;
+            var config = dto.Result as ConfigDto;
             Assert.AreEqual(config.Org.Description, ORG_DESC);
         }
     }

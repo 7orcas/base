@@ -1,13 +1,16 @@
-﻿@attribute [Route(BaseRoutes.ConfigRoute)]
-@inherits BasePage
+﻿@inherits BasePage
+@attribute [Route(BaseRoutes.ConfigRoute)]
+@attribute [PageCode(BaseRoutes.ConfigPageCode)]
+@attribute [PagePermission(GC.PerConfig)]
 @attribute [Authorize]
 
-<ConfirmNavigation Dto="configDto" />
+<ConfirmNavigation List="list" />
 
-<Header TitleKey="Cfg"
+<Header @key=pageStatus.pageCode
+        TitleKey="Conf"
         SubTitleKey="ConfSub"
         PageCode=@pageStatus.pageCode
-        ToolBarButtonsRight="toolBarButtonsRight" />
+        ToolBarButtonsLeft="toolBarButtonsRight" />
 
 @if (loadStatus.ShowSpinner())
 {
@@ -20,100 +23,116 @@ else
     <p></p>
 
     <MudGrid>
-
-        <!-- Right Side: Details -->
-        @if (configDto != null)
-        {
-            <MudItem xs="8">
-                <MudPaper Elevation="0" Outlined="@_debugOutlined">
-                    <MudExpansionPanels MultiExpansion="true">
-                        <MudExpansionPanel>
-                            <TitleContent>
-                                <Label Size="GC.TextSize.Large" Key="ConfigG"></Label>
-                            </TitleContent>
-                            <ChildContent>
-                                <MudGrid>
-                                    <MudCheckBox Label="@Label("IsAdminLanguage")" @bind-Value="@configDto.dto.Label.IsAdmin" Variant="Variant.Filled"></MudCheckBox>
-                                </MudGrid>
-
-                            </ChildContent>
-                        </MudExpansionPanel>
-
-                    </MudExpansionPanels>
-                </MudPaper>
-            </MudItem>
-        }
+       
+        <!-- Right Side Details -->
+        <MudItem xs="10" Style="height:100%; display:flex; flex-direction:column; min-height:0;">
+            <MudPaper Elevation="0" Outlined="false" Style="flex:1; min-height:0; overflow:auto; padding-right:20px;">
+                <ConfigHeaderPanel Selections="listUtil.Selections"
+                                    Refresh="@Refresh"
+                                    PageStatus="@pageStatus" 
+                                    FieldDefinitionUtil="@fieldDefinitionUtil" />
+                <ConfigLabelPanel Selections="listUtil.Selections"
+                                   Refresh="@Refresh"
+                                   PageStatus="@pageStatus"
+                                   FieldDefinitionUtil="@fieldDefinitionUtil" />
+            </MudPaper>
+        </MudItem>
     </MudGrid>
 }
 
-
 @using System.Net
 @using MudBlazor
+@using Newtonsoft.Json;
 @using FrontendServer.Base.Util
-@using System.Text;
-@using sysJ = System.Text.Json
 @using FrontendServer.Base._Base;
 @using GC = FrontendServer.GlobalConstants;
+@inject ConfigService ConfS
 
-@inject ConfigService ConfigService
 @code {
-    private ListModel<AppConfigDto>? configDto;
-    
+    private ListModel<ConfigDto>? configDto;
+    private List<ListModel<ConfigDto>> list = new List<ListModel<ConfigDto>>();
+    private ListUtil<ConfigDto> listUtil = new ListUtil<ConfigDto>();
+    private FieldDefinitionUtil fieldDefinitionUtil;
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            await InitialiseBasePage(GC.PerConfig);
+            loadStatus.IsLoading = true;
+            var defs = await GetDefinition(GetUrl("ConfigDef"));
+            fieldDefinitionUtil = new FieldDefinitionUtil(defs);
+
+            await InitialiseBasePage();
             pageStatus.pageCode = BaseRoutes.ConfigPageCode;
-            var configDtoX = ConfigService.Config;
-            configDto = new ListModel<AppConfigDto>(configDtoX);
-            loadStatus.IsLoading = false;
-                        
+            pageStatus.IsEditMode = true;
+
+            await Load();
+            loadStatus.ResetLoading();
+
             AddToolbarSave(SaveAsync);
             StateHasChanged();
         }
     }
 
-   // private async void OnItemSelected(int index) => Load(index, false);
+    // private async void OnItemSelected(int index) => Load(index, false);
 
-    // private async void Load(int index, bool force) 
-    // {
-    //     var dto = list[index];
-    //     if (!dto.IsLoaded || force){
-    //         orgDto = await GetAsync<OrgDto>(GC.URL_org + dto.Id);
-    //         orgDto.HashMe();
-    //         orgDto.IsLoaded = true;
-    //         list[index] = orgDto;
-    //     }
-    //     else
-    //         orgDto = dto;
-    //     StateHasChanged();
-    // }
+    private async Task Load() 
+    {
+
+        list.Clear();
+
+        var dto = ConfS.Config;
+        configDto = new ListModel<ConfigDto>(dto);
+        configDto.ClearHash();
+        configDto.HashMe();
+        configDto.SetLoaded();
+        list.Add(configDto);
+        listUtil.Select(configDto);
+
+        listUtil.ShowList = false;
+
+    }
 
     private async Task SaveAsync()
     {
-        //_isSaving = true;
-        // var curIndex = orgDto != null? list.FindIndex(d => d.Id == orgDto.Id) : -1;
-        // // var client = await SetClient();
-        // for (int i = 0; i < list.Count; i++) {
-        //     var dto = list[i];
-        //     if (dto.IsLoaded && dto.HasChanged()) {
+        //Get records to be updated
+        var updates = new List<ListModel<ConfigDto>>();
+        for (int i = 0; i < list.Count; i++)
+        {
+            var rec = list[i];
+            rec.ResetValidation();
+            if (rec.IsUpdateable())
+                updates.Add(rec);
+        }
+        if (updates.Count == 0) return;
 
-        //         // var json = sysJ.JsonSerializer.Serialize(dto);
-        //         // var content = new StringContent(json, Encoding.UTF8, "application/json");
-        //         // var response = await client.PostAsync(GC.URL_org_update, content);
+        loadStatus.SetSaving();
 
-        //         var response = await PostAsync<OrgDto>(GC.URL_org_update, dto);
+        var updatesX = new UpdateRequest<List<ConfigDto>>()
+        {
+            Updates = updates.Select(x => x.dto).ToList()
+        };
+        var response = await PostAsync<List<ConfigDto>>(GetUrl("ConfigUpdate"), updatesX);
 
-        //         if (response.StatusCode == HttpStatusCode.OK)
-        //         {
-        //             var o = await GetAsync<OrgDto>(GC.URL_org + dto.Id);
-        //             list[i] = o.HashMe().SetLoaded();
-        //         }
-        //     }
-        // }
-        //_isSaving = false;
-      
+        var r2 = null as _ResponseDto;
+
+        if (response.StatusCode == HttpStatusCode.OK)
+        {
+            var r1 = await response.Content.ReadAsStringAsync();
+            r2 = JsonConvert.DeserializeObject<_ResponseDto>(r1);
+            configDto.ClearHash();
+            configDto.HashMe();
+        }
+        else
+        {
+            loadStatus.ResetSaving();
+            StateHasChanged();
+            await OpenOkDialog(GetLabel("Error"), r2?.ErrorMessage);
+            return;
+        }
+
+        loadStatus.ResetSaving();
+        StateHasChanged();
     }
 
     //ToDo
@@ -122,7 +141,6 @@ else
 
     }
 
-    private string Label(string key) => GetLabel(key);
-    protected override async Task OnInitializedAsync() => loadStatus.IsLoading = true;
+    private void Refresh() => StateHasChanged();
     
 }
