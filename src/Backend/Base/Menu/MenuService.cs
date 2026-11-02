@@ -28,9 +28,9 @@ namespace Backend.Base.Menu
             
             if (session.IsUserPermission(GC.PerRole))
                 menuItemIds.Add("Role");
-
-            if (session.IsUserPermission(GC.PerLabel))
-                menuItemIds.Add("Label");
+//??
+if (session.IsUserPermission(GC.PerLabel))
+    menuItemIds.Add("Label");
             
             if (session.IsUserPermission(GC.PerConfig))
                 menuItemIds.Add("Config");
@@ -40,7 +40,10 @@ namespace Backend.Base.Menu
             
             if (session.IsUserPermission(GC.PerAudit))
                 menuItemIds.Add("Audit");
-            
+
+            if (session.IsUserPermission(GC.PerLabelAdmin))
+                menuItemIds.Add("LabelAdmin");
+
             return menuItemIds;
         }
 

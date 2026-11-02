@@ -13,6 +13,7 @@
             builder.Services.AddScoped<TokenRepoI, TokenRepo>();
             builder.Services.AddScoped<AuditRepoI, AuditRepo>();
             builder.Services.AddScoped<VersionRepoI, VersionRepo>();
+            builder.Services.AddScoped<LabelAdminRepoI, LabelAdminRepo>();
         }
     }
 }

@@ -15,17 +15,19 @@ namespace FrontendServer.Base._Base
         public const string RoleRoute        = "role";
         public const string AuditRoute       = "audit";
         public const string UserRoute        = "user";
+        public const string LabelAdminRoute  = "labeladmin";
 
         //Page Codes
-        public const string HomeCode         = "hme001";
-        public const string ChangePWCode     = "cpw001";
-        public const string OrgPageCode      = "org001";
-        public const string ConfigPageCode   = "con001";
-        public const string PermPageCode     = "per001";
-        public const string UserRolePageCode = "uro001";
-        public const string RolePageCode     = "rol001";
-        public const string AuditPageCode    = "aud001";
-        public const string UserPageCode     = "usr001";
+        public const string HomeCode           = "hme001";
+        public const string ChangePWCode       = "cpw001";
+        public const string OrgPageCode        = "org001";
+        public const string ConfigPageCode     = "con001";
+        public const string PermPageCode       = "per001";
+        public const string UserRolePageCode   = "uro001";
+        public const string RolePageCode       = "rol001";
+        public const string AuditPageCode      = "aud001";
+        public const string UserPageCode       = "usr001";
+        public const string LabelAdminPageCode = "lab001";
 
         public const int PageCodeIndex = 0;
         public const int RouteIndex = 1;
@@ -41,6 +43,7 @@ namespace FrontendServer.Base._Base
             RolePageCode,           RoleRoute,        GC.PerRole,
             AuditPageCode,          AuditRoute,       GC.PerAudit,
             UserPageCode,           UserRoute,        GC.PerUser,
+            LabelAdminPageCode,     LabelAdminRoute,  GC.PerLabelAdmin,
         };
 
     }

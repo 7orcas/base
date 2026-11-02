@@ -1,0 +1,268 @@
+﻿@attribute [Route(BaseRoutes.LabelAdminRoute)]
+@inherits BasePage
+@attribute [Authorize]
+
+
+<ConfirmNavigation List="codes" />
+
+<!-- @key Forces a refresh -->
+<Header @key="_stateChangedToggle"
+        TitleKey="LabelA"
+        PageCode=@BaseRoutes.LabelAdminPageCode
+        ToolBarButtonsLeft="toolBarButtonsLeft"
+        ToolBarButtonsRight="toolBarButtonsRight" />
+
+
+@if (loadStatus.ShowSpinner())
+{
+    <Loading LoadStatus=@loadStatus>
+        @loadStatus.Exception
+    </Loading>
+}
+else
+{
+    <MudGrid Class="mt-4">
+    
+        <!-- Left Side: List -->
+        @if (showList)
+        {
+            <MudItem xs="2">
+                <MudPaper Elevation="0" Outlined="true">
+                    <MudTable Style="table-layout: fixed;"
+                              Items="@codes"
+                              Height="@tableHeight"
+                              FixedHeader="true"
+                              Hover="true"
+                              Bordered="true"
+                              Striped="true">
+
+                        
+                        <HeaderContent>
+                            <MudTh colspan="2"><Label Key="LangCode" /></MudTh>
+                            <MudTh><Label Key="Active" /></MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd Style="max-width:1px; padding:0px; border-right: none;"
+                                   DataLabel="Error"
+                                   Class="@GetFirstColumnErrorClass(context)"
+                                   @onclick="() => OnItemSelected(context)">
+                                @GetSelectRowPointer(context)
+                            </MudTd>
+                            <MudTd DataLabel="LangCode"
+                                    Class="@GetSelectRowClass(context)"
+                                    @onclick="() => OnItemSelected(context)">
+                                @if (editCodes || @context.IsNew())
+                                {
+                                    <MudTextField T="string"
+                                                  @bind-Value="context.Code"
+                                                  Immediate="true"
+                                                  MaxLength="@GC.LenCode"
+                                                  Margin="Margin.Dense"
+                                                  Variant="Variant.Text" />
+                                }
+                                else
+                                {
+                                    @context.Code
+                                }
+                            </MudTd>
+                            <MudTd DataLabel="Active">
+                                <MudCheckBox T="bool"
+                                             ReadOnly="@(!pageStatus.isCrudU)"
+                                             @bind-Value="context.IsActive"/>
+                            </MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                </MudPaper>
+            </MudItem>
+        }
+
+
+        <!-- Right Side: Details -->
+        @if (selections.Count > 0)
+        {
+           
+        }
+    </MudGrid>
+}
+
+@using System.Net
+@using MudBlazor
+@using FrontendServer.Base.Util
+@using System.Text;
+@using sysJ = System.Text.Json
+@using FrontendServer.Base._Base;
+@using GC = FrontendServer.GlobalConstants;
+
+@using Newtonsoft.Json;  
+
+
+@code {
+    private string tableHeight = "70vh";
+    private int maxSelections = 3;
+    private bool showList = false;
+    private bool editCodes = false;
+    private string styleDivLeft = "text-align: center; border-left-style:double; border-left-width:3px; border-left-style:groove;";
+    private string styleCB = "align-items: center;";
+    private List<ListModel<LangCodeAdminDto>> codes;
+    private List<ListModel<LangCodeAdminDto>> selections = new List<ListModel<LangCodeAdminDto>>();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await InitialiseBasePage(GC.PerLabelAdmin, "LabelA");
+            pageStatus.pageCode = BaseRoutes.LabelAdminPageCode;
+
+            await Load();
+
+            showList = codes.Count > 1;
+
+            AddToolbarExport(Export);
+            if (toolBarButtonsLeft.Count>0)
+                AddToolbarSave(SaveAsync);
+
+
+            ForceStateHasChanged();
+        }
+    }
+
+    private async Task Load()
+    {
+        var codesX = await GetAsync<List<LangCodeAdminDto>>(GetUrl("LabelCodesAdmin"));
+
+        codes = new List<ListModel<LangCodeAdminDto>>();
+        foreach (var r in codesX)
+        {
+            codes.Add(new ListModel<LangCodeAdminDto>(r));
+        }
+
+        //Reselect
+        if (selections.Count > 0)
+        {
+            var x = new List<ListModel<LangCodeAdminDto>>(selections);
+            selections.Clear();
+            foreach (var r in x)
+            {
+                var s = codes.Find(z => z.dto.Code.Equals(r.Code));
+                if (s != null)
+                    await Select(s, false);
+            }
+        }
+        else if (codes.Count > 0)
+        {
+            await Select(codes[0], true);
+            //await Select(codes[3], true); //DELETE ME
+            //await Select(codes[4], true); //DELETE ME
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task OnItemSelected(ListModel<LangCodeAdminDto> r)
+    {
+        await Select(r, false);
+        StateHasChanged();
+    }
+
+    private async Task Select(ListModel<LangCodeAdminDto> r, bool force)
+    {
+        int index = -1;
+        if (!r.IsLoaded || force)
+        {
+            var labels = await GetAsync<List<LangLabelAdminDto>>(GetUrlSlash("LabelLabelsAdmin") + r.Code, true);
+
+            // var LangLabelAdminDtoX = await GetAsync<LangLabelAdminDto>(GetUrlSlash("LabelLabelsAdmin") + r.Code, true);
+            // var LangLabelAdminDto = new ListModel<LangLabelAdminDto>(LangLabelAdminDtoX);
+            // LangLabelAdminDto.HashMe();
+            // LangLabelAdminDto.IsLoaded = true;
+            // index = codes.FindIndex(s => s.Id == r.Id);
+            // codes[index] = LangCodeAdminDto;
+            // r = LangCodeAdminDto;
+        }
+
+        // index = selections.FindIndex(s => s.Id == r.Id);
+
+        //Already selected?
+        if (index >= 0)
+            selections.RemoveAt(index);
+        else 
+        {
+            if (selections.Count >= maxSelections)
+                selections.RemoveAt(0);
+
+            selections.Add(r);
+        }
+    }
+
+    private string GetSelectRowPointer(ListModel<LangCodeAdminDto> dto) => GetSelectRowPointer(selections.Contains(dto));
+    private string GetSelectRowClass(ListModel<LangCodeAdminDto> dto) => GetSelectRowClass(selections.Contains(dto));
+    private string GetFirstColumnErrorClass(ListModel<LangCodeAdminDto> dto) => GetFirstColumnErrorClass(dto.dto);
+
+  
+    private async Task EditLabelCodes()
+    {
+        if (!pageStatus.isCrudU) return;
+        editCodes = !editCodes;
+        await Task.CompletedTask;
+    }
+
+    private string GetLabelRoleEdit() => GetLabel("RoleEN") + ": " + (editCodes ? GetLabel("On") : GetLabel("Off"));
+
+    private async Task SaveAsync()
+    {
+        loadStatus.SetSaving();
+
+        var updates = new List<LangCodeAdminDto>();
+        for (int i = 0; i < codes.Count; i++)
+        {
+            var dto = codes[i];
+            if (dto.IsLoaded && dto.HasChanged())
+                updates.Add(dto.dto);
+        }
+
+        if (updates.Count>0)
+        {
+            var response = await PostAsync<LangCodeAdminDto>(GetUrl("RoleUpdate"), updates);
+            if (response.StatusCode == StatusCodes.Status200OK)
+            {
+                await Load();
+            }
+        }
+        loadStatus.ResetSaving();
+    }
+
+
+    private async Task AddRole()
+    {
+        var id = GC.NewRecordId;
+        foreach (var r in codes)
+            id = r.Id < id ? id - 1 : id;
+
+        var role = new LangCodeAdminDto
+            {
+                Id = id,
+                Code = GetLabel("New").ToUpper(),
+                IsActive = true,
+                Updated = DateTime.Now,
+            };
+        var LangCodeAdminDto = new ListModel<LangCodeAdminDto>(role);
+        LangCodeAdminDto.IsLoaded = true;
+     
+
+        LangCodeAdminDto.HashMe();
+        codes.Insert(0, LangCodeAdminDto);
+        Select(LangCodeAdminDto, false);
+        await Task.CompletedTask;
+    }
+
+
+    //ToDo
+    private async Task Export()
+    {
+
+    }
+
+    private string Label(string key) => GetLabel(key);
+    protected override async Task OnInitializedAsync() => loadStatus.IsLoading = true;
+
+}

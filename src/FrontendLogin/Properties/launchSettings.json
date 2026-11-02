@@ -25,15 +25,15 @@
       "applicationUrl": "https://localhost:7289;http://localhost:5217",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "zUSER": "$",
+        "USER": "$",
         "zPASSWORD": "$",
-        "USER": "user11",
+        "zUSER": "user11",
         "PASSWORD": "$",
         "xUSER": "user",
         "xPASSWORD": "xx123",
         "xORG": "1",
         "LANGCODE": "en",
-        "AUTO": "false",
+        "AUTO": "true",
         "zOPEN": "aud001",
         "xOPEN": "mac001"
       }

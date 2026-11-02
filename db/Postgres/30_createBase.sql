@@ -248,7 +248,6 @@ CREATE TABLE base.langLabel (
     tooltip TEXT,
     encoded TEXT,
     updated TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	version INTEGER NOT NULL DEFAULT 1,
     UNIQUE (langKeyId, langCode, variant),
     FOREIGN KEY (langKeyId) REFERENCES base.langKey(id)
 );

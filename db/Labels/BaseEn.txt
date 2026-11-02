@@ -104,6 +104,7 @@ LangCode,Lang Code
 Langs,Languages
 LangCodeV,Language Variant
 Label,Label
+LabelA,Label Admin
 Labels,Labels
 LabelHK,Highlight missing label
 Variant,Variant
