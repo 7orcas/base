@@ -38,6 +38,16 @@ namespace Common.DTO
             Result = search;
         }
 
+        public static _ResponseDto OK()
+        {
+            return new _ResponseDto
+            {
+                SuccessMessage = "Ok",
+                StatusCode = StatusCodes.Status200OK,
+                Valid = true
+            };
+        }
+
         public int StatusCode { get; set; } = StatusCodes.Status200OK;
         public bool Valid { get; set; } = true;
         public string? ErrorMessage { get; set; }

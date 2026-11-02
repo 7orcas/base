@@ -15,15 +15,15 @@ namespace FrontendServer.Base._Base
     {
         protected async Task SetConfig()
         {
-            if (_config != null) return;
-            _config = ConfS.Config;
+            if (_configDto != null) return;
+            _configDto = ConfS.Config;
         }
 
-        public async Task<AppConfigDto> GetConfig() => _config;
+        public async Task<ConfigDto> GetConfig() => _configDto;
         
-        public void SetConfig(AppConfigDto config)
+        public void SetConfig(ConfigDto config)
         {
-            _config = config;
+            _configDto = config;
             ConfS.Set(config);
         }
 

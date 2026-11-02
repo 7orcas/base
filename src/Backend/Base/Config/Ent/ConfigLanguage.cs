@@ -11,6 +11,8 @@ namespace Backend.Base.Config.Ent
     public class ConfigLanguage
     {
         public string LangCode { get; set; }
+        public string? Description { get; set; }
+        public string? Flag { get; set; }
         public bool IsVisible { get; set; } = false;
         public bool IsEditable { get; set; } = false;
 

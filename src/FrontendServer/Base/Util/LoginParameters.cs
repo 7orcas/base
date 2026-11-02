@@ -25,7 +25,7 @@ namespace FrontendServer.Base.Util
         public string? appUrls { get; set; }
         public string? autoError { get; set; }
 
-        public void Set(AppConfigDto config)
+        public void Set(ConfigDto config)
         {
             if (config == null) { throw new ArgumentNullException("config"); }
             org = config.Org.Description;

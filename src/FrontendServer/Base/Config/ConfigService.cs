@@ -29,7 +29,7 @@ namespace FrontendServer.Base.Config
         {
             if (config == null)
             {
-                var result = await _session.GetAsync<AppConfigDto> (GC.ConfigCacheKey);
+                var result = await _session.GetAsync<ConfigDto> (GC.ConfigCacheKey);
 
                 if (result.Success)
                     config = result.Value;
@@ -45,26 +45,26 @@ namespace FrontendServer.Base.Config
 
         }
 
-        private AppConfigDto? config;
+        private ConfigDto? config;
         public LoginParameters? loginParameters {  get; set; }
         public bool IsInitialized => config != null;
-        public AppConfigDto? Config => config;
+        public ConfigDto? Config => config;
         public bool IsDebugMode => config != null && config.DebugMode;
         public bool IsDebugBorder => false;
 
-        public void Set(AppConfigDto config) => this.config = config;
+        public void Set(ConfigDto config) => this.config = config;
 
-        public async Task<AppConfigDto> Initialise()
+        public async Task<ConfigDto> Initialise()
         {
             try
             {
                 var client = await GetClient();
-                var url = _urlService.GetUrl("ClientConfig");
+                var url = _urlService.GetUrl("Config");
                 var cl = await client.GetAsync(url);
                 var cls = await cl.Content.ReadAsStringAsync();
                 var cdto = JsonConvert.DeserializeObject<_ResponseDto>(cls);
                 var cjson = cdto.Result.ToString();
-                config = JsonConvert.DeserializeObject<AppConfigDto>(cjson);
+                config = JsonConvert.DeserializeObject<ConfigDto>(cjson);
 
                 await _session.SetAsync(GC.ConfigCacheKey, config);
 

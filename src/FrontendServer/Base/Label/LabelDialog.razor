@@ -115,7 +115,7 @@ else
     [Parameter] public string LangKey { get; set; }
     [CascadingParameter] private IMudDialogInstance? MudDialog { get; set; }
     
-    private AppConfigDto? appConfig;
+    private ConfigDto? configDto;
     private List<LangLabelDto>? labels;
 
     //Table parameters
@@ -145,7 +145,7 @@ else
         if (firstRender)
         {
             await InitialiseBasePage(GC.PerLabel);
-            appConfig = await GetConfig();
+            configDto = await GetConfig();
             
             lLangCode = GetLabelHighlightNoKey("LangCode");
             lLabel = GetLabelHighlightNoKey("Label");
@@ -167,7 +167,7 @@ else
     }
 
     protected override async Task OnInitializedAsync() => loadStatus.IsLoading = true;
-    private bool IsMultiLanguageView() => appConfig != null && appConfig.Languages.Count() > 1;
+    private bool IsMultiLanguageView() => configDto != null && configDto.Languages.Count() > 1;
     private void CloseDialog() => MudDialog.Close();
     
 
@@ -199,7 +199,7 @@ else
             // LangLabel label = new LangLabel
             // {
             //     Id = langLabel != null ? langLabel.Id : 0,
-            //     LangCode = clientState.appConfig.LangCode,
+            //     LangCode = clientState.configDto.LangCode,
             //     Code = LangKey,
             //     Description = labelField.Value,
             //     Tooltip = tt,

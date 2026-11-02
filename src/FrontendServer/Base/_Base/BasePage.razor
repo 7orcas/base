@@ -26,7 +26,7 @@
     public string? _entityLangKey;
 
     //public ErrorBoundary? errorBoundary;
-    public AppConfigDto _config;
+    public ConfigDto _configDto;
     public DefinitionDto fields;
     private Dictionary<string, LangLabelDto> _labels;
     public List<ToolBarButton> toolBarButtonsLeft = new List<ToolBarButton>();
@@ -70,7 +70,7 @@
         if (!UrlS.IsInitialized)
             await UrlS.Initialise(ConfS.loginParameters.appUrls);
 
-        _config = ConfS.Config;
+        _configDto = ConfS.Config;
         _labels = LS.Labels;
         _entityLangKey = entityLangKey;
 
@@ -180,8 +180,8 @@
     public string GetUrl(string urlKey) => UrlS.GetUrl(urlKey);
     public string GetUrlSlash(string urlKey) => UrlS.GetUrlSlash(urlKey);
 
-    public void PutCacheString(string key, string s) => CS.PutString(key + "-" + _config.UniqueSessionId, s);
-    public string? GetCacheString(string key) => CS.GetString(key + "-" + _config.UniqueSessionId);
+    public void PutCacheString(string key, string s) => CS.PutString(key + "-" + _configDto.UniqueSessionId, s);
+    public string? GetCacheString(string key) => CS.GetString(key + "-" + _configDto.UniqueSessionId);
     public string GetListRowOddEvenClass(int i) => (i % 2 == 0 ? " list-odd-row" : " list-even-row") + GetLightDarkClassSuffix();
     public string GetSelectRowPointer(bool selected) => selected ? "*" : "";
     public string GetSelectRowClass(bool selected) => selected ? " selected-row" : "";

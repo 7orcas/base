@@ -1,0 +1,24 @@
+﻿@inherits BaseComponent
+
+ <MudCheckBox Label="@GetLabel("AdminL")" 
+    @bind-Value="@dto.Label.IsAdmin" 
+    ReadOnly="@(!@dto.User.IsAdmin)" 
+    Variant="Variant.Filled">
+</MudCheckBox>
+
+<MudCheckBox Label="@GetLabel("LabelHK")" 
+    @bind-Value="@dto.Label.HighlightNoKey" 
+    Variant="Variant.Filled">
+</MudCheckBox>
+
+@using MudBlazor
+@using GC = FrontendServer.GlobalConstants;
+@using FrontendServer.Base._Base;
+
+
+@code {
+    [Parameter] public ConfigDto dto { get; set; }
+    [Parameter] public EventCallback Refresh { get; set; }
+
+    
+}

@@ -55,7 +55,6 @@ namespace FrontendServer.Base._Base
         {
             try
             {
-                var token = await GetToken();
                 var client = _httpClientFactory.CreateClient(GC.UnAuthorizedClientKey);
                 return client;
             }

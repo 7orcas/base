@@ -72,16 +72,36 @@ namespace FrontendServer.Base.Config
             this.lps = lps;
             try
             {
+                var config = _configService.Config;
+                var url = await Load(config.Label.LangCode);
+
+                if (url != null)
+                    lps.LoadedUrl(url);
+                
+                return _labelCacheService.GetLabels(config.Label.LangCode, config.Label.Variant);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public async Task<string> Load(string langCode)
+        {
+            try
+            {
+                string url = null;
                 if (!_configService.IsInitialized)
                     await _configService.Initialise();
 
                 var config = _configService.Config;
+                config.Label.LangCode = langCode;
                 var client = await GetClient();
 
                 if (!_labelCacheService.HasLabels(config.Label.LangCode, config.Label.Variant) && !IsInitialising)
                 {
                     IsInitialising = true;
-                    var url = _urlService.GetUrlSlash("LabelClientList")
+                    url = _urlService.GetUrlSlash("LabelClientList")
                                 + config.Label.LangCode
                                 + (config.Label.Variant.HasValue ? "/" + config.Label.Variant : "");
 
@@ -96,13 +116,12 @@ namespace FrontendServer.Base.Config
                         foreach (var l in labels)
                             dic.Add(l.LangKeyCode, l);
                         _labelCacheService.PutLabels(config.Label.LangCode, config.Label.Variant, dic);
-                        lps.LoadedUrl(url);
                     }
                     IsInitialising = false;
                 }
                 var labelsX = _labelCacheService.GetLabels(config.Label.LangCode, config.Label.Variant);
                 SetLabels(labelsX);
-                return labelsX;
+                return url;
             }
             catch
             {

@@ -113,7 +113,7 @@
     public bool IsServiceOnly(string name) => FieldDefinitionUtil.IsServiceOnly(name) && CS.Config.User.IsService;
 
     //Convenience methods
-    public AppConfigDto GetConfig() => CS.Config;
+    public ConfigDto GetConfig() => CS.Config;
     public bool IsLabel(string labelCode) => LS.IsLabel(labelCode);
     public bool IsTooltip(string labelCode) => LS.IsTooltip(labelCode);
     public bool IsEditMode() => PageStatus?.IsEditMode ?? true;

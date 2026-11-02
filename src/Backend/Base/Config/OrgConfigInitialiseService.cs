@@ -37,6 +37,8 @@ namespace Backend.Base.Config
                         langCodes.Add(new LangCode()
                         {
                             Code = GetCode(r),
+                            Description = GetDescription(r),
+                            Flag = GetStringNull(r, "flag"),
                             IsActive = IsActive(r),
                         });
                     }
@@ -88,6 +90,8 @@ namespace Backend.Base.Config
             return new ConfigLanguage()
             {
                 LangCode = orgLang.LangCode,
+                Description = lc.Description,
+                Flag = lc.Flag,
                 IsVisible = orgLang.IsVisible,
                 IsEditable = orgLang.IsEditable,
             };
