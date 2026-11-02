@@ -68,18 +68,23 @@ namespace Backend.Base.Config
         {
             var langList = new List<ConfigLanguage>();
 
-            if (!userAccount.IsAdmin) return langList;
-            if (!userAccount.IsService() && !orgConfig.IsLangCodeEditable) return langList;
+            //if (!userAccount.IsAdmin) return langList;
+            //if (!userAccount.IsService() && !orgConfig.IsLangCodeEditable) return langList;
 
             foreach (var cl in orgConfig.Languages)
             {
-                var up = userAccount.IsService();
-                if (!up && cl.LangCode.Equals(userLangCode)) up = cl.IsEditable;
+                if (!cl.IsVisible) continue;
 
-                langList.Add(new ConfigLanguage { 
+                var up = userAccount.IsService() || userAccount.IsAdmin;
+                //if (!up && cl.LangCode.Equals(userLangCode)) up = cl.IsEditable;
+
+                langList.Add(new ConfigLanguage
+                {
                     LangCode = cl.LangCode,
-                    IsVisible = userAccount.IsService() || cl.IsVisible,
-                    IsEditable = up
+                    Description = cl.Description,
+                    Flag = cl.Flag,
+                    IsVisible = true, //userAccount.IsService() || cl.IsVisible,
+                    IsEditable = up && cl.IsEditable
                 });
             }
 
@@ -118,6 +123,8 @@ namespace Backend.Base.Config
                 langs.Add(new LanguageConfigDto
                 {
                     LangCode = lang.LangCode,
+                    Description = lang.Description,
+                    Flag = lang.Flag,
                     IsUpdateable = lang.IsEditable,
                 });
             }

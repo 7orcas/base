@@ -31,10 +31,6 @@ else
                                     Refresh="@Refresh"
                                     PageStatus="@pageStatus" 
                                     FieldDefinitionUtil="@fieldDefinitionUtil" />
-                <ConfigLabelPanel Selections="listUtil.Selections"
-                                   Refresh="@Refresh"
-                                   PageStatus="@pageStatus"
-                                   FieldDefinitionUtil="@fieldDefinitionUtil" />
             </MudPaper>
         </MudItem>
     </MudGrid>
@@ -47,6 +43,7 @@ else
 @using FrontendServer.Base._Base;
 @using GC = FrontendServer.GlobalConstants;
 @inject ConfigService ConfS
+@inject LabelService LS
 
 @code {
     private ListModel<ConfigDto>? configDto;
@@ -122,6 +119,7 @@ else
             r2 = JsonConvert.DeserializeObject<_ResponseDto>(r1);
             configDto.ClearHash();
             configDto.HashMe();
+            LS.Load(configDto.dto.Label.LangCode);
         }
         else
         {

@@ -17,14 +17,17 @@ namespace Backend.Base.Org
     {
         private readonly AppDbContext _context;
         private readonly IMemoryCache _memoryCache;
+        private readonly OrgConfigInitialiseServiceI _orgConfigInitialiseService;
 
         public OrgRepo(AppDbContext context,
             IServiceProvider serviceProvider,
-            IMemoryCache memoryCache)
+            IMemoryCache memoryCache,
+            OrgConfigInitialiseServiceI orgConfigInitialiseService)
             : base(serviceProvider)
         {
             _context = context;
             _memoryCache = memoryCache;
+            _orgConfigInitialiseService = orgConfigInitialiseService;
         }
 
         public async Task<string?> GetCode(int nr)
@@ -127,7 +130,8 @@ namespace Backend.Base.Org
             await _context.SaveChangesAsync();
             
             _memoryCache.Set(GC.CacheKeyOrgPrefix + org.Nr, org);
-            
+            _orgConfigInitialiseService.InitialiseOrgConfigs();
+
             return org;
 
         }

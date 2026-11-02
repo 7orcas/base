@@ -1,9 +1,5 @@
 ﻿@inherits BaseComponent
 
-@using MudBlazor
-@using GC = FrontendServer.GlobalConstants;
-@using FrontendServer.Base._Base;
-
 <div style="height:100%; overflow:auto;">
 
     <table style="flex:1; min-height:0; table-layout:fixed; width:100%;@GetDebugBorder("pink")">
@@ -36,15 +32,27 @@
                                 </div>
                             </TitleContent>
                             <ChildContent>
-                                <div style="display: flex; gap: 20px;">
+                                <ConfigDetailsPanel 
+                                    Dto="dto"                 
+                                    Refresh="@Refresh"
+                                    PageStatus="@PageStatus"
+                                    FieldDefinitionUtil="@FieldDefinitionUtil" />
+                            </ChildContent>
+                        </MudExpansionPanel>
 
-                                     <TextField Width=GC.TextFieldWidth.TextVeryShort
-                                                LangCode="LangCode"
-                                                PageStatus=@PageStatus
-                                                MaxLength="@GetMaxLength(nameof(dto.Label.LangCode))"
-                                                Required="@IsRequired(nameof(dto.Label.LangCode))"
-                                                @bind-Value="dto.Label.LangCode" />
+                        <MudExpansionPanel Text=@GetLabel("Labels") Expanded="false">
+                            <TitleContent>
+                                <div class="expansion-title">
+                                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                                        <Label Size="GC.TextSize.Normal" Key="Labels"></Label>
+                                    </div>
                                 </div>
+                            </TitleContent>
+                            <ChildContent>
+                                <ConfigLabelPanel Dto="dto"                 
+                                   Refresh="@Refresh"
+                                   PageStatus="@PageStatus"
+                                   FieldDefinitionUtil="@FieldDefinitionUtil" />
 
                             </ChildContent>
                         </MudExpansionPanel>
@@ -58,9 +66,14 @@
     </table>
 </div>
 
+@using MudBlazor
+@using GC = FrontendServer.GlobalConstants;
+@using FrontendServer.Base._Base;
+
+
 @code {
     [Parameter] public List<ListModel<ConfigDto>> Selections { get; set; } = new List<ListModel<ConfigDto>>();
     [Parameter] public EventCallback Refresh { get; set; }
 
-    
+
 }

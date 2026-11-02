@@ -46,6 +46,8 @@
     public class LanguageConfigDto
     {
         public string LangCode { get; set; }
+        public string Description { get; set; }
+        public string Flag { get; set; }
         public bool IsUpdateable { get; set; } = false;
     }
 

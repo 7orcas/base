@@ -42,7 +42,7 @@ VALUES
   'X123',	
   true, true, true, true, true, 
   '/images/Icons/BlueTransparentBlack512.png',
- '{Languages:[{LangCode:"en",IsEditable:true},{LangCode:"de",IsEditable:true},{LangCode:"c1",IsEditable:false},{LangCode:"c2",IsEditable:false}]}');
+ '{Languages:[{LangCode:"en",IsEditable:true},{LangCode:"de",IsEditable:true},{LangCode:"ma",IsEditable:false},{LangCode:"es",IsEditable:false}]}');
 
 INSERT INTO base.org (nr, code, typeOf, descr, langcode, langlabelvariant, mfa, icon, encoded)
 VALUES

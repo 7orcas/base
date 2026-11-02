@@ -1,0 +1,94 @@
+﻿@inherits BaseComponent
+
+
+<div class="mb-3">
+    <label class="form-label field-label">
+        @GetLabel("Lang")
+    </label>
+
+    <div class="input-group">
+
+        <span class="input-group-text bg-white">
+            @if (!string.IsNullOrEmpty(SelectedLangFlag))
+            {
+                <img src="@SelectedLangFlag"
+                alt="Icon"
+                style="width:24px;height:24px;">
+            }
+        </span>
+
+        <InputSelect class="form-select"
+                     style="max-width:200px;"
+                     @bind-Value="dto.Label.LangCode"
+                     @bind-Value:after="UpdateSelectedLanguage">
+
+            @foreach (var lang in LangList)
+            {
+                <option value="@lang.Code">@lang.Name</option>
+            }
+        </InputSelect>
+
+    </div>
+</div>
+
+
+@using System.Net
+@using MudBlazor
+@using FrontendServer.Base.Util
+@using GC = FrontendServer.GlobalConstants;
+@using FrontendServer.Base._Base;
+@using Newtonsoft.Json;
+@inject IDialogService DialogService
+@inject LabelService LS
+
+@code {
+    [Parameter] public ConfigDto dto { get; set; }
+    [Parameter] public EventCallback Refresh { get; set; }
+
+    private string SelectedLangFlag = "";
+    private List<LangItem> LangList = new List<LangItem>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        //Load langauge options
+        LangList = new List<LangItem>();
+        foreach (var o in dto.Languages)
+        {
+            var i = new LangItem
+                {
+                    Code = o.LangCode,
+                    Name = o.Description,
+                };
+            if (!string.IsNullOrEmpty(o.Flag))
+                i.FlagUrl = "/images/flags/" + o.Flag;
+            
+            LangList.Add(i);
+        }
+
+        var selectedLang = LangList.FirstOrDefault(x => x.Code == dto.Label.LangCode);
+        if (selectedLang == null && LangList.Any())
+            selectedLang = LangList.First();
+
+        if (selectedLang != null)
+            SelectedLangFlag = selectedLang.FlagUrl;
+    }
+
+    private async Task UpdateSelectedLanguage()
+    {
+        var lang = LangList.FirstOrDefault(x => x.Code == dto.Label.LangCode);
+        if (lang != null)
+        {
+            SelectedLangFlag = lang.FlagUrl;
+         //   labels = await LS.InitialiseLabels(lang.Code, options.LangLabelVariant);
+        }
+    }
+
+
+    public class LangItem
+    {
+        public string FlagUrl { get; set; }
+        public string Code { get; set; }
+        public string Name { get; set; }
+    }
+    
+}
