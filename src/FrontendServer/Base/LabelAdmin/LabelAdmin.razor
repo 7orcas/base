@@ -170,14 +170,7 @@ else
         if (!r.IsLoaded || force)
         {
             var labels = await GetAsync<List<LangLabelAdminDto>>(GetUrlSlash("LabelLabelsAdmin") + r.Code, true);
-
-            // var LangLabelAdminDtoX = await GetAsync<LangLabelAdminDto>(GetUrlSlash("LabelLabelsAdmin") + r.Code, true);
-            // var LangLabelAdminDto = new ListModel<LangLabelAdminDto>(LangLabelAdminDtoX);
-            // LangLabelAdminDto.HashMe();
-            // LangLabelAdminDto.IsLoaded = true;
-            // index = codes.FindIndex(s => s.Id == r.Id);
-            // codes[index] = LangCodeAdminDto;
-            // r = LangCodeAdminDto;
+            r.dto.Labels = labels;
         }
 
         // index = selections.FindIndex(s => s.Id == r.Id);
