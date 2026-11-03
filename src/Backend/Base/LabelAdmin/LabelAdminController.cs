@@ -21,14 +21,25 @@ namespace Backend.Base.LabelAdmin
             _labelAdminService = labelAdminService;
         }
 
+        [CrudAtt(GC.CrudIgnore)]
+        [AuditIgnoreAtt]
+        [HttpGet("search")]
+        public async Task<IActionResult> GetSearch()
+        {
+            var session = HttpContext.Items["session"] as SessionEnt;
+            var s = await GetUserCache<LabelSearch>(session, "LabelSearch");
+            s = s ?? new LabelSearch();
+            return Ok(new _ResponseDto(s));
+        }
+
         /// <summary>
         /// Gets lang codes
         /// </summary>
         /// <returns></returns>
         [CrudAtt(GC.CrudRead)]
-        [AuditListAtt(GC.EntityTypeLangLabelList)]
-        [HttpGet("codelist")]
-        public async Task<IActionResult> GetLangCodeList()
+        [AuditListAtt(GC.EntityTypeLangCode)]
+        [HttpPost("codelist")]
+        public async Task<IActionResult> GetLangCodeList([FromBody] LabelSearch search)
         {
             var session = HttpContext.Items["session"] as SessionEnt;
 
@@ -43,6 +54,27 @@ namespace Backend.Base.LabelAdmin
             return Ok(r);
         }
 
+        /// <summary>
+        /// Gets lang keys
+        /// </summary>
+        /// <returns></returns>
+        [CrudAtt(GC.CrudRead)]
+        [AuditListAtt(GC.EntityTypeLangKey)]
+        [HttpPost("keylist")]
+        public async Task<IActionResult> GetLangKeyList([FromBody] LabelSearch search)
+        {
+            var session = HttpContext.Items["session"] as SessionEnt;
+
+            var keys = await _labelAdminService.GetLangKeyList();
+            var list = _labelAdminService.PopulateKeys(keys);
+
+            var r = new _ResponseDto
+            {
+                SuccessMessage = "Ok",
+                Result = list
+            };
+            return Ok(r);
+        }
 
         /// <summary>
         /// Gets lang labels
@@ -50,12 +82,12 @@ namespace Backend.Base.LabelAdmin
         /// <returns></returns>
         [CrudAtt(GC.CrudRead)]
         [AuditListAtt(GC.EntityTypeLangLabelList)]
-        [HttpGet("labellist/{langCode}")]
-        public async Task<IActionResult> GetLangLabelList(string langCode)
+        [HttpPost("labellist")]
+        public async Task<IActionResult> GetLangLabelList([FromBody] LabelSearch search)
         {
             var session = HttpContext.Items["session"] as SessionEnt;
 
-            var labels = await _labelAdminService.GetLangLabelList(langCode);
+            var labels = await _labelAdminService.GetLangLabelList(search.LangCode);
             var list = _labelAdminService.PopulateLabels(labels);
 
             var r = new _ResponseDto

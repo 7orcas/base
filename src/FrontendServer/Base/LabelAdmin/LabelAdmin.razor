@@ -1,9 +1,11 @@
-﻿@attribute [Route(BaseRoutes.LabelAdminRoute)]
-@inherits BasePage
+﻿@inherits BasePage
+@attribute [Route(BaseRoutes.LabelAdminRoute)]
+@attribute [PageCode(BaseRoutes.LabelAdminPageCode)]
+@attribute [PagePermission(GC.PerLabelAdmin)]
 @attribute [Authorize]
 
 
-<ConfirmNavigation List="codes" />
+<ConfirmNavigation List="langcodes" />
 
 <!-- @key Forces a refresh -->
 <Header @key="_stateChangedToggle"
@@ -29,7 +31,7 @@ else
             <MudItem xs="2">
                 <MudPaper Elevation="0" Outlined="true">
                     <MudTable Style="table-layout: fixed;"
-                              Items="@codes"
+                              Items="@langcodes"
                               Height="@tableHeight"
                               FixedHeader="true"
                               Hover="true"
@@ -80,7 +82,49 @@ else
         <!-- Right Side: Details -->
         @if (selections.Count > 0)
         {
-           
+            <MudItem xs="2">
+                <MudPaper Elevation="0" Outlined="true">
+                    <MudTable Style="table-layout: fixed;"
+                              Items="@langkeys"
+                              Height="@tableHeight"
+                              FixedHeader="true"
+                              Hover="true"
+                              Bordered="true"
+                              Striped="true">
+
+                        
+                        <HeaderContent>
+                            <MudTh colspan="2"><Label Key="LangKey" /></MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd Style="max-width:1px; padding:0px; border-right: none;"
+                                   DataLabel="Error"
+                                   Class="@GetFirstColumnErrorClass(context)"
+                                   >
+                                
+                            </MudTd>
+                            <MudTd DataLabel="LangKey"
+                                  
+                                   >
+                                @if (editCodes || @context.IsNew())
+                                {
+                                    <MudTextField T="string"
+                                                  @bind-Value="context.Code"
+                                                  Immediate="true"
+                                                  MaxLength="@GC.LenCode"
+                                                  Margin="Margin.Dense"
+                                                  Variant="Variant.Text" />
+                                }
+                                else
+                                {
+                                    @context.Code
+                                }
+                            </MudTd>
+                            
+                        </RowTemplate>
+                    </MudTable>
+                </MudPaper>
+            </MudItem>
         }
     </MudGrid>
 }
@@ -103,8 +147,11 @@ else
     private bool editCodes = false;
     private string styleDivLeft = "text-align: center; border-left-style:double; border-left-width:3px; border-left-style:groove;";
     private string styleCB = "align-items: center;";
-    private List<ListModel<LangCodeAdminDto>> codes;
+
+    private List<ListModel<LangCodeAdminDto>> langcodes = new List<ListModel<LangCodeAdminDto>>();
     private List<ListModel<LangCodeAdminDto>> selections = new List<ListModel<LangCodeAdminDto>>();
+
+    private List<LangKeyAdminDto> langkeys = new List<LangKeyAdminDto>();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -113,28 +160,93 @@ else
             await InitialiseBasePage(GC.PerLabelAdmin, "LabelA");
             pageStatus.pageCode = BaseRoutes.LabelAdminPageCode;
 
-            await Load();
+            //  showList = langcodes.Count > 1;
+showList = true;
+            //Always make edit mode
+            pageStatus.IsEditMode = pageStatus.orCrudCUD();
 
-            showList = codes.Count > 1;
+            //Add standard toolbar
+            AddToolbarSearch(Search);
+            if (pageStatus.isCrudC)
+                AddToolbarAddNew(AddRecord);
 
             AddToolbarExport(Export);
-            if (toolBarButtonsLeft.Count>0)
+
+            if (pageStatus.isCrudU || pageStatus.isCrudC)
                 AddToolbarSave(SaveAsync);
-
-
+loadStatus.IsLoading = false;
+            Search();
             ForceStateHasChanged();
         }
     }
 
-    private async Task Load()
+    private async Task Search()
     {
-        var codesX = await GetAsync<List<LangCodeAdminDto>>(GetUrl("LabelCodesAdmin"));
-
-        codes = new List<ListModel<LangCodeAdminDto>>();
-        foreach (var r in codesX)
+        bool confirmed = true;
+        var ok = await ConfirmNavigationIsOk();
+        if (!ok)
         {
-            codes.Add(new ListModel<LangCodeAdminDto>(r));
+            var result = await OpenConfirmYesNoDialog();
+            confirmed = !result.Canceled;
         }
+
+        if (confirmed)
+        {
+            var result = await OpenSearchDialog<LabelSearchDialog>();
+            if (!result.Canceled)
+            {
+                var data = (LabelSearch)result.Data;
+                await Load(data);
+            }
+        }
+    }
+
+    private async Task Load(LabelSearch search)
+    {
+        var response = await PostAsync<_ResponseDto, LabelSearch>(GetUrl("LangCodesAdmin"), search);
+
+        langcodes.Clear();
+        List<LangCodeAdminDto> langcodesX = null;
+
+        if (response.StatusCode == HttpStatusCode.OK)
+        {
+            var r = await response.Content.ReadAsStringAsync();
+            var dto = JsonConvert.DeserializeObject<_ResponseDto>(r);
+
+            if (dto.Valid)
+                langcodesX = JsonConvert.DeserializeObject<List<LangCodeAdminDto>>(dto.Result.ToString());
+
+        }
+
+        foreach (var r in langcodesX)
+            langcodes.Add(new ListModel<LangCodeAdminDto>(r));
+        
+
+
+        response = await PostAsync<_ResponseDto, LabelSearch>(GetUrl("LangKeysAdmin"), search);
+
+        langkeys.Clear();
+        List<LangKeyAdminDto> langkeysX = null;
+
+        if (response.StatusCode == HttpStatusCode.OK)
+        {
+            var r = await response.Content.ReadAsStringAsync();
+            var dto = JsonConvert.DeserializeObject<_ResponseDto>(r);
+
+            if (dto.Valid)
+                langkeysX = JsonConvert.DeserializeObject<List<LangKeyAdminDto>>(dto.Result.ToString());
+
+        }
+
+        foreach (var r in langkeysX)
+            langkeys.Add(r);
+
+        
+
+
+
+
+
 
         //Reselect
         if (selections.Count > 0)
@@ -143,15 +255,15 @@ else
             selections.Clear();
             foreach (var r in x)
             {
-                var s = codes.Find(z => z.dto.Code.Equals(r.Code));
+                var s = langcodes.Find(z => z.dto.Code.Equals(r.Code));
                 if (s != null)
                     await Select(s, false);
             }
         }
-        else if (codes.Count > 0)
+        else if (langcodes.Count > 0)
         {
-            await Select(codes[0], true);
-            //await Select(codes[3], true); //DELETE ME
+            await Select(langcodes[0], true);
+            //await Select(langcodes[3], true); //DELETE ME
             //await Select(codes[4], true); //DELETE ME
         }
 
@@ -164,16 +276,39 @@ else
         StateHasChanged();
     }
 
+    
+
     private async Task Select(ListModel<LangCodeAdminDto> r, bool force)
     {
         int index = -1;
         if (!r.IsLoaded || force)
         {
-            var labels = await GetAsync<List<LangLabelAdminDto>>(GetUrlSlash("LabelLabelsAdmin") + r.Code, true);
-            r.dto.Labels = labels;
+
+            var search = new LabelSearch
+            {
+                LangCode = r.Code,
+            };
+            var response = await PostAsync<_ResponseDto, LabelSearch>(GetUrl("LangLabelsAdmin"), search);
+
+            List<LangLabelAdminDto> labelsX = null;
+
+            if (response.StatusCode == HttpStatusCode.OK)
+            {
+                var rx = await response.Content.ReadAsStringAsync();
+                var dto = JsonConvert.DeserializeObject<_ResponseDto>(rx);
+
+                if (dto.Valid)
+                    labelsX = JsonConvert.DeserializeObject<List<LangLabelAdminDto>>(dto.Result.ToString());
+
+            }
+
+            // foreach (var l in labelsX)
+            //     langkeys.Add(l);
+
+            r.dto.Labels = labelsX;
         }
 
-        // index = selections.FindIndex(s => s.Id == r.Id);
+        index = selections.FindIndex(s => s.Id == r.Id);
 
         //Already selected?
         if (index >= 0)
@@ -206,9 +341,9 @@ else
         loadStatus.SetSaving();
 
         var updates = new List<LangCodeAdminDto>();
-        for (int i = 0; i < codes.Count; i++)
+        for (int i = 0; i < langcodes.Count; i++)
         {
-            var dto = codes[i];
+            var dto = langcodes[i];
             if (dto.IsLoaded && dto.HasChanged())
                 updates.Add(dto.dto);
         }
@@ -218,7 +353,7 @@ else
             var response = await PostAsync<LangCodeAdminDto>(GetUrl("RoleUpdate"), updates);
             if (response.StatusCode == StatusCodes.Status200OK)
             {
-                await Load();
+              //  await Load();
             }
         }
         loadStatus.ResetSaving();
@@ -228,7 +363,7 @@ else
     private async Task AddRole()
     {
         var id = GC.NewRecordId;
-        foreach (var r in codes)
+        foreach (var r in langcodes)
             id = r.Id < id ? id - 1 : id;
 
         var role = new LangCodeAdminDto
@@ -243,11 +378,31 @@ else
      
 
         LangCodeAdminDto.HashMe();
-        codes.Insert(0, LangCodeAdminDto);
+        langcodes.Insert(0, LangCodeAdminDto);
         Select(LangCodeAdminDto, false);
         await Task.CompletedTask;
     }
 
+    public async Task<bool> ConfirmNavigationIsOk()
+    {
+       // for (int i = 0; list != null && i < list.Count; i++)
+       // {
+       //     var dto = list[i];
+       //     if (dto.IsLoaded && dto.HasChanged())
+       //         return false;
+       // }
+        return true;
+    }
+
+    private async Task AddRecord()
+    {
+        // var dto = await GetAsync<UserDto>(GetUrl("UserNew"), false);
+        // dto.Code = GetCode(dto); //for the list table
+        // var rec = new ListModel<UserDto>(dto);
+        // rec.IsLoaded = true;
+        // list.Insert(0, rec);
+        // OnItemSelected(rec);
+    }
 
     //ToDo
     private async Task Export()

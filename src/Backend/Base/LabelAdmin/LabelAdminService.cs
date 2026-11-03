@@ -47,6 +47,28 @@ namespace Backend.Base.Label
             return list;
         }
 
+        public async Task<List<LangKeyAdmin>> GetLangKeyList()
+        {
+            return await _labelAdminRepo.GetLangKeyList();
+        }
+
+        public List<LangKeyAdminDto> PopulateKeys(List<LangKeyAdmin> keys)
+        {
+            var list = new List<LangKeyAdminDto>();
+
+            foreach (var l in keys)
+            {
+                list.Add(new LangKeyAdminDto
+                {
+                    Id = l.Id,
+                    Code = l.Code,
+                    Description = l.Description,
+                });
+            }
+
+            return list;
+        }
+
         public async Task<List<LangLabelAdmin>> GetLangLabelList(string langCode)
         {
             return await _labelAdminRepo.GetLangLabelList(langCode);

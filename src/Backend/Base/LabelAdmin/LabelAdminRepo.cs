@@ -39,6 +39,17 @@ namespace Backend.Base.LabelAdmin
             return await GetList<LangCodeAdmin>(sql);
         }
 
+        public async Task<List<LangKeyAdmin>> GetLangKeyList()
+        {
+            var sql = "SELECT DISTINCT " +
+                "id, code, descr AS Description, updated, version "
+                       + "FROM base.langKey ";
+
+            sql += " ORDER BY code";
+
+            return await GetList<LangKeyAdmin>(sql);
+        }
+
 
         public async Task<List<LangLabelAdmin>> GetLangLabelList(string langCode)
         {
