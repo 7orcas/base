@@ -45,6 +45,8 @@ namespace Common
         public const int LenCode        = 15;
         public const int LenDescription = 50;
         public const int LenLangCode    = 4;
+        public const int LenLangKey     = 100;
+        public const int LenLangLabel   = 200;
         public const int LenEmail       = 50;
 
         //Searches

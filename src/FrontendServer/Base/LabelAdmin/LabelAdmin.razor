@@ -46,12 +46,12 @@ else
                         <RowTemplate>
                             <MudTd Style="max-width:1px; padding:0px; border-right: none;"
                                    DataLabel="Error"
-                                   Class="@GetFirstColumnErrorClass(context)"
+                                   Class="@GetLangCodeFirstColumnErrorClass(context)"
                                    @onclick="() => OnItemSelected(context)">
-                                @GetSelectRowPointer(context)
+                                @GetLangCodeRowPointer(context)
                             </MudTd>
                             <MudTd DataLabel="LangCode"
-                                    Class="@GetSelectRowClass(context)"
+                                   Class="@GetLangCodeRowClass(context)"
                                     @onclick="() => OnItemSelected(context)">
                                 @if (editCodes || @context.IsNew())
                                 {
@@ -82,47 +82,67 @@ else
         <!-- Right Side: Details -->
         @if (selections.Count > 0)
         {
-            <MudItem xs="2">
+            <MudItem xs="10">
+                
                 <MudPaper Elevation="0" Outlined="true">
-                    <MudTable Style="table-layout: fixed;"
-                              Items="@langkeys"
-                              Height="@tableHeight"
-                              FixedHeader="true"
-                              Hover="true"
-                              Bordered="true"
-                              Striped="true">
+
+                    @if (langkeys != null)
+                    {
+                            
+                        <MudTable Style="table-layout: fixed;"
+                                    Items="@langkeys"
+                                    Height="@tableHeight"
+                                    FixedHeader="true"
+                                    Hover="true"
+                                    Bordered="true"
+                                    Striped="true">
 
                         
-                        <HeaderContent>
-                            <MudTh colspan="2"><Label Key="LangKey" /></MudTh>
-                        </HeaderContent>
-                        <RowTemplate>
-                            <MudTd Style="max-width:1px; padding:0px; border-right: none;"
-                                   DataLabel="Error"
-                                   Class="@GetFirstColumnErrorClass(context)"
-                                   >
-                                
-                            </MudTd>
-                            <MudTd DataLabel="LangKey"
-                                  
-                                   >
-                                @if (editCodes || @context.IsNew())
+                            <HeaderContent>
+                                <MudTh Style="width:150px; min-width:150px; max-width:150px;">
+                                    <Label Key="LangCode" />
+                                </MudTh>
+                                @foreach (var sel in selections)
                                 {
-                                    <MudTextField T="string"
-                                                  @bind-Value="context.Code"
-                                                  Immediate="true"
-                                                  MaxLength="@GC.LenCode"
-                                                  Margin="Margin.Dense"
-                                                  Variant="Variant.Text" />
+                                    <MudTh>@sel.Code</MudTh>
                                 }
-                                else
+                            </HeaderContent>
+                            <RowTemplate>
+                                <MudTd DataLabel="LangKey"
+                                       Style="width:150px; min-width:150px; max-width:150px;">
+                                    @if (editCodes || @context.IsNew())
+                                    {
+                                        <MudTextField T="string"
+                                                      Style="width:100%;"
+                                                        @bind-Value="context.Code"
+                                                        Immediate="true"
+                                                        MaxLength="@GC.LenLangKey"
+                                                        Margin="Margin.Dense"
+                                                        Variant="Variant.Text" />
+                                    }
+                                    else
+                                    {
+                                        @context.Code
+                                    }
+                                </MudTd>
+                                @foreach (var sel in selections)
                                 {
-                                    @context.Code
+                                    <MudTd DataLabel="@sel.Code">
+                                        <MudTextField T="string"
+                                                        Value="@GetLabel(context, sel.dto)"
+                                                        ValueChanged="@(value => OnCodeChanged(value, context, sel.dto))"
+                                                        Immediate="true"
+                                                        MaxLength="@GC.LenLangLabel"
+                                                        AutoGrow="true"
+                                                        Margin="Margin.Dense"
+                                                        Variant="Variant.Text" />
+                                    </MudTd>
                                 }
-                            </MudTd>
-                            
-                        </RowTemplate>
-                    </MudTable>
+                            </RowTemplate>
+                        </MudTable>
+
+                    }
+
                 </MudPaper>
             </MudItem>
         }
@@ -150,7 +170,6 @@ else
 
     private List<ListModel<LangCodeAdminDto>> langcodes = new List<ListModel<LangCodeAdminDto>>();
     private List<ListModel<LangCodeAdminDto>> selections = new List<ListModel<LangCodeAdminDto>>();
-
     private List<LangKeyAdminDto> langkeys = new List<LangKeyAdminDto>();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -161,7 +180,7 @@ else
             pageStatus.pageCode = BaseRoutes.LabelAdminPageCode;
 
             //  showList = langcodes.Count > 1;
-showList = true;
+            showList = true;
             //Always make edit mode
             pageStatus.IsEditMode = pageStatus.orCrudCUD();
 
@@ -174,11 +193,20 @@ showList = true;
 
             if (pageStatus.isCrudU || pageStatus.isCrudC)
                 AddToolbarSave(SaveAsync);
-loadStatus.IsLoading = false;
+            loadStatus.IsLoading = false;
             Search();
             ForceStateHasChanged();
         }
     }
+
+    private void OnCodeChanged(string value, LangKeyAdminDto key, LangCodeAdminDto code)
+    {
+        if (code.LabelsDic == null || !code.LabelsDic.ContainsKey(key.Id)) return;
+
+        code.LabelsDic[key.Id].Code = value;
+
+    }
+
 
     private async Task Search()
     {
@@ -220,7 +248,7 @@ loadStatus.IsLoading = false;
 
         foreach (var r in langcodesX)
             langcodes.Add(new ListModel<LangCodeAdminDto>(r));
-        
+
 
 
         response = await PostAsync<_ResponseDto, LabelSearch>(GetUrl("LangKeysAdmin"), search);
@@ -240,12 +268,6 @@ loadStatus.IsLoading = false;
 
         foreach (var r in langkeysX)
             langkeys.Add(r);
-
-        
-
-
-
-
 
 
         //Reselect
@@ -276,21 +298,23 @@ loadStatus.IsLoading = false;
         StateHasChanged();
     }
 
-    
+    private string GetLabel(LangKeyAdminDto key, LangCodeAdminDto code)
+    {
+        if (code.LabelsDic == null || !code.LabelsDic.ContainsKey(key.Id))
+            return "";
+        return code.LabelsDic[key.Id].Code;
+    }
 
     private async Task Select(ListModel<LangCodeAdminDto> r, bool force)
     {
         int index = -1;
         if (!r.IsLoaded || force)
         {
-
             var search = new LabelSearch
             {
                 LangCode = r.Code,
             };
             var response = await PostAsync<_ResponseDto, LabelSearch>(GetUrl("LangLabelsAdmin"), search);
-
-            List<LangLabelAdminDto> labelsX = null;
 
             if (response.StatusCode == HttpStatusCode.OK)
             {
@@ -298,14 +322,12 @@ loadStatus.IsLoading = false;
                 var dto = JsonConvert.DeserializeObject<_ResponseDto>(rx);
 
                 if (dto.Valid)
-                    labelsX = JsonConvert.DeserializeObject<List<LangLabelAdminDto>>(dto.Result.ToString());
-
+                {
+                    var labels = JsonConvert.DeserializeObject<List<LangLabelAdminDto>>(dto.Result.ToString());
+                    r.dto.LabelsDic = labels.ToDictionary(p => p.LangKeyId);
+                }
+                r.IsLoaded = true;
             }
-
-            // foreach (var l in labelsX)
-            //     langkeys.Add(l);
-
-            r.dto.Labels = labelsX;
         }
 
         index = selections.FindIndex(s => s.Id == r.Id);
@@ -322,9 +344,9 @@ loadStatus.IsLoading = false;
         }
     }
 
-    private string GetSelectRowPointer(ListModel<LangCodeAdminDto> dto) => GetSelectRowPointer(selections.Contains(dto));
-    private string GetSelectRowClass(ListModel<LangCodeAdminDto> dto) => GetSelectRowClass(selections.Contains(dto));
-    private string GetFirstColumnErrorClass(ListModel<LangCodeAdminDto> dto) => GetFirstColumnErrorClass(dto.dto);
+    private string GetLangCodeRowPointer(ListModel<LangCodeAdminDto> dto) => GetSelectRowPointer(selections.Contains(dto));
+    private string GetLangCodeRowClass(ListModel<LangCodeAdminDto> dto) => GetSelectRowClass(selections.Contains(dto));
+    private string GetLangCodeFirstColumnErrorClass(ListModel<LangCodeAdminDto> dto) => GetFirstColumnErrorClass(dto.dto);
 
   
     private async Task EditLabelCodes()
