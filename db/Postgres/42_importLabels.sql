@@ -45,8 +45,7 @@ CREATE TABLE zz_import_labels_base (
 CREATE TABLE zz_import_labels_basex (
     langcode TEXT NOT NULL,
     langkey  TEXT NOT NULL,
-    label    TEXT,
-    tooltip  TEXT
+    label    TEXT
 );
 
 -- -------------------------------------------------
@@ -74,16 +73,6 @@ SELECT 'ma', langkey, label FROM zz_import_labels_base;
 TRUNCATE zz_import_labels_base;
 
 
-\copy zz_import_labels_base FROM 'C:/Source/db/Labels/BaseTtEn.txt' WITH (FORMAT csv);
-INSERT INTO zz_import_labels_basex (langcode, langkey, tooltip)
-SELECT 'en', langkey, label FROM zz_import_labels_base;
-TRUNCATE zz_import_labels_base;
-
-\copy zz_import_labels_base FROM 'C:/Source/db/Labels/BaseTtDe.txt' WITH (FORMAT csv);
-INSERT INTO zz_import_labels_basex (langcode, langkey, tooltip)
-SELECT 'de', langkey, label FROM zz_import_labels_base;
-TRUNCATE zz_import_labels_base;
-
 -- -------------------------------------------------
 -- Cleanup
 -- -------------------------------------------------
@@ -92,19 +81,6 @@ DELETE FROM zz_import_labels_basex WHERE langkey = '<LAST>';
 UPDATE zz_import_labels_basex
 SET label = REPLACE(label, E'||', ',')
 WHERE label LIKE '%' || E'||' || '%';
-
-UPDATE zz_import_labels_basex
-SET tooltip = REPLACE(tooltip, E'||', ',')
-WHERE tooltip LIKE '%' || E'||' || '%';
-
--- Fill missing tooltips
-UPDATE zz_import_labels_basex b
-SET tooltip = x.tooltip
-FROM zz_import_labels_basex x
-WHERE b.tooltip IS NULL
-  AND x.tooltip IS NOT NULL
-  AND b.langcode = x.langcode
-  AND b.langkey = x.langkey;
 
 DELETE FROM zz_import_labels_basex WHERE label IS NULL;
 
@@ -121,19 +97,14 @@ SELECT
     lk.id       AS langkeyid,
     x.langcode,
     x.langkey,
-    x.label     AS code,
-    x.tooltip
+    x.label     AS code
 FROM zz_import_labels_basex x
 JOIN base.langkey lk ON lk.code = x.langkey;
 
-INSERT INTO base.langlabel (langkeyid, langcode, code, tooltip)
-SELECT DISTINCT langkeyid, langcode, code, tooltip
+INSERT INTO base.langlabel (langkeyid, langcode, code)
+SELECT DISTINCT langkeyid, langcode, code
 FROM zz_langlabel;
 
--- -------------------------------------------------
--- NULL cleanup
--- -------------------------------------------------
-UPDATE base.langlabel SET tooltip = NULL WHERE tooltip = 'NULL';
 
 -- -------------------------------------------------
 -- Fix sequences

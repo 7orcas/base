@@ -226,7 +226,7 @@ namespace Backend.Base.Label
             List<string> langCodes,
             int? variant)
         {
-            string sql = "SELECT l.id, l.langKeyId, l.langCode, k.code AS kCode, l.variant, l.code, l.tooltip, l.updated " +
+            string sql = "SELECT l.id, l.langKeyId, l.langCode, k.code AS kCode, l.variant, l.code, l.updated " +
                             "FROM base.langLabel l " +
                             "INNER JOIN base.langKey k ON k.id = l.langKeyId ";
 
@@ -270,7 +270,6 @@ namespace Backend.Base.Label
                             LangCode = GetString(r, "langCode"),
                             Variant = GetIntNull(r, "variant"),
                             Code = GetCode(r),
-                            Tooltip = GetStringNull(r, "tooltip"),
                             Updated = GetUpdated(r)
                         });
                     }
@@ -305,17 +304,15 @@ namespace Backend.Base.Label
             if (label.Id > 0)
                 sql = "UPDATE  base.langLabel SET "
                     + "code = '" + label.Code + "', "
-                    + (label.Tooltip != null ? "tooltip = '" + label.Tooltip + "'" : "Tooltip = NULL" ) + " "
                     + "WHERE id = " + label.Id;
             else
                 sql = "INSERT INTO  base.langLabel "
-                    + "(langKeyId, langCode, variant, code, tooltip) "
+                    + "(langKeyId, langCode, variant, code) "
                     + " VALUES ("
                     + label.LangKeyId + ","
                     + "'" + label.LangCode + "',"
                     + (label.Variant != null ? label.Variant : "NULL") + ","
-                    + "'" + label.Code + "',"
-                    + (label.Tooltip != null ? "'" + label.Tooltip + "'" : "NULL")
+                    + "'" + label.Code + "'"
                     + ")";
 
             await Sql.ExecuteAsync(sql);

@@ -54,8 +54,7 @@ namespace Backend.Base.Label
                 {
                     Id = l.Id,
                     LangKeyCode = l.LangKeyCode,
-                    Label = l.Code,
-                    Tooltip = l.Tooltip
+                    Label = l.Code
                 });
             }
 
@@ -109,7 +108,6 @@ namespace Backend.Base.Label
                             Variant = l.Variant,
                             LangCode = l.LangCode,
                             Label = l.Code,
-                            Tooltip = l.Tooltip,
                             Updated = l.Updated,
                             IsUpdateable = lang.IsEditable,
                         };

@@ -128,7 +128,7 @@ namespace FrontendServer.Base._Base
             return default;
         }
 
-        protected async Task<HttpResponseMessage> PostAsync<T>(string url, _BaseDto dto) where T : _BaseDto
+        protected async Task<HttpResponseMessage> PostAsync<T>(string url, T dto) where T : _BaseDto
         {
             loadStatus.SetSaving();
             await ValidateAccess();

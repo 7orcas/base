@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Common.DTO.Base
+﻿namespace Common.DTO.Base
 {
     public class LangLabelDto
     {
@@ -14,7 +8,6 @@ namespace Common.DTO.Base
         public int? Variant { get; set; }
         public string LangCode { get; set; }
         public string Label { get; set; }
-        public string? Tooltip { get; set; }
         public DateTimeOffset Updated { get; set; }
 
         public bool IsUpdateable { get; set; } = false;

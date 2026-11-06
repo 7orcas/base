@@ -1,0 +1,23 @@
+$kind: http-request
+name: Label New
+description: Audit listing
+url: https://localhost:6002/v123/api/labeladmin/new
+method: POST
+headers:
+  Blue-Api-Key: X123251106,$,$,1
+body:
+  type: json
+  content: "{\r
+
+    \    \"LangCodeId\": 1,\r
+
+    \    \"LangKeyId\": 1,\r
+
+    \    \"XVariant\": 1\r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: ""
+order: 12990

@@ -245,7 +245,6 @@ CREATE TABLE base.langLabel (
     langCode VARCHAR(4) NOT NULL,
     variant INTEGER,
     code TEXT NOT NULL,
-    tooltip TEXT,
     encoded TEXT,
     updated TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     UNIQUE (langKeyId, langCode, variant),

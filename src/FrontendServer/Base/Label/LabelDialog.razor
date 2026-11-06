@@ -33,20 +33,17 @@ else
                                     <ColGroup>
                                         <col style="width: 80px;" />
                                         <col style="width: 300px;" />
-                                        <col style="width: 400px;" />
                                         <col style="width: 80px;" />
                                     </ColGroup>
 
                                     <HeaderContent>
                                         <MudTh>@lLangCode</MudTh>
                                         <MudTh>@lLabel</MudTh>
-                                        <MudTh>@lTooltip</MudTh>
                                         <MudTh>@lVariant</MudTh>
                                     </HeaderContent>
                                     <RowTemplate>
                                         <MudTd DataLabel="LangCode">@context.LangCode</MudTd>
                                         <MudTd DataLabel="Label">@context.Label</MudTd>
-                                        <MudTd DataLabel="ToolTip">@context.Tooltip</MudTd>
                                         <MudTd DataLabel="Variant">@context.Variant</MudTd>
                                     </RowTemplate>
                                     <RowEditingTemplate>
@@ -55,16 +52,6 @@ else
                                             @if (context.IsUpdateable)
                                             {
                                                 <MudTextField @bind-Value="context.Label" Required />
-                                            }
-                                            else
-                                            {
-                                                @context.Label
-                                            }
-                                        </MudTd>
-                                        <MudTd DataLabel="ToolTip">
-                                            @if (context.IsUpdateable)
-                                            {
-                                                <MudTextField @bind-Value="context.Tooltip"/>
                                             }
                                             else
                                             {
@@ -92,7 +79,6 @@ else
                                 </div>
 
                                 <MudTextField T="string" Label="@lLabel" OnBlur="@OnBlu" @ref="labelField" @bind-Value="label" Required="true" RequiredError="Label is required!" />
-                                <MudTextField T="string" Label="@tooltip" OnBlur="@OnBlu" @ref="tooltipField" @bind-Value="tooltip" />
                                 <MudTextField T="int" Label="@lVariant" OnBlur="@OnBlu" @ref="variantField" @bind-Value="variant" />
                             }
                 
@@ -125,19 +111,16 @@ else
     //Single label
     private string? langCode;
     private string? label;
-    private string? tooltip;
     private int variant;
     private bool success  = true;
 
     //Headings
     private string? lLangCode;
     private string? lLabel;
-    private string? lTooltip;
     private string? lVariant;
 
     MudForm form;
     MudTextField<string> labelField;
-    MudTextField<string> tooltipField;
     MudTextField<int> variantField;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -149,7 +132,6 @@ else
             
             lLangCode = GetLabelHighlightNoKey("LangCode");
             lLabel = GetLabelHighlightNoKey("Label");
-            lTooltip = GetLabelHighlightNoKey("Tooltip");
             lVariant = GetLabelHighlightNoKey("Variant");
 
             labels = await GetAsync<List<LangLabelDto>>(GetUrl("LabelRelatedList") + LangKey);
@@ -158,7 +140,6 @@ else
             {
                 langCode = labels[0].LangCode;
                 label = labels[0].Label;
-                tooltip = labels[0].Tooltip;
                 variant = labels[0].Variant.HasValue ? labels[0].Variant.Value : 0;
             }
 
@@ -192,10 +173,7 @@ else
                 variant = null;
             }
 
-            var tt = tooltipField.Value;
-            if (string.IsNullOrEmpty(tt))
-                tt = null;
-
+           
             // LangLabel label = new LangLabel
             // {
             //     Id = langLabel != null ? langLabel.Id : 0,

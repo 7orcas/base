@@ -16,7 +16,7 @@ namespace Backend.Base.LabelAdmin.Ent
         /// <summary>
         /// Label key.
         /// </summary>
-        public string Key { get; set; }
+        public string LangKey { get; set; }
 
         /// <summary>
         /// Language code variant number (null is the default).
@@ -26,12 +26,7 @@ namespace Backend.Base.LabelAdmin.Ent
         /// <summary>
         /// Label label.
         /// </summary>
-        public string Code { get; set; }
-                
-        /// <summary>
-        /// Label tooltip.
-        /// </summary>
-        public string? Tooltip { get; set; }
+        public string Label { get; set; }
 
         /// <summary>
         /// Last date/time of update.

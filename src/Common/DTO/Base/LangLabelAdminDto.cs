@@ -7,8 +7,7 @@ namespace Common.DTO.Base
         public long LangCodeId { set; get; }
         public long LangKeyId { set; get; }
         public int? Variant { get; set; }
-        public string Key { get; set; }
-        public string Code { get; set; }
-        public string? Tooltip { get; set; }
+        public string LangKey { get; set; }
+        public string Label { get; set; }
     }
 }

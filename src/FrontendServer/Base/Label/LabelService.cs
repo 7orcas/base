@@ -48,11 +48,8 @@ namespace FrontendServer.Base.Config
         public bool IsInitialized => labels != null;
 
         public bool IsLabel(string labelCode) => labels != null && labelCode != null && labels.ContainsKey(labelCode);
-        public bool IsTooltip(string labelCode) => IsLabel(labelCode) ? !string.IsNullOrEmpty(labels[labelCode].Tooltip) : false;
-
         public string GetLabel(string labelCode) => IsLabel(labelCode) ? labels[labelCode].Label : labelCode;
         public string GetLabelHighlightNoKey(string labelCode) => IsLabel(labelCode) ? labels[labelCode].Label : "[" + labelCode + "]";
-        public string? GetTooltip(string labelCode) => IsTooltip(labelCode) ? labels[labelCode].Tooltip : null;
 
         public void Reset()
         {

@@ -6,11 +6,16 @@ namespace Backend.Base
 {
     public abstract class BaseRepo : SqlUtils
     {
+        public TempIdServiceI _tempIdService;
         protected readonly Serilog.ILogger _log;
 
         public BaseRepo(IServiceProvider serviceProvider)
         {
             _log = Log.Logger;
+
+            // Create a scoped service provider
+            using var scope = serviceProvider.CreateScope();
+            _tempIdService = scope.ServiceProvider.GetRequiredService<TempIdServiceI>(); 
         }
 
 
@@ -75,26 +80,6 @@ namespace Backend.Base
             }
         }
 
-        //DELETE ME
-        //[Obsolete("Use GetList<T>(string sql, object? parameters = null) instead.", false)]
-        //public async Task<List<T>> GetList<T>(string sql) 
-        //{
-        //    try
-        //    {
-        //        using var conn = Sql.GetConnection();
-        //        var result = await conn.QueryAsync<T>(sql);
-        //        return result.ToList();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Log.Logger.Error(
-        //            ex,
-        //            "Sql failed: {Sql}",
-        //            sql);
-
-        //        throw;
-        //    }
-        //}
 
         public async Task<List<T>> GetList<T>(string sql, object? parameters = null)
         {
@@ -145,6 +130,24 @@ namespace Backend.Base
             return sql;
         }
 
+        public string GetSqlAndClause(int? parameter, string parameterName, DynamicParameters parameters, string columnName)
+        {
+            if (!parameter.HasValue)
+                return string.Empty;
+
+            parameters.Add(parameterName, parameter.Value);
+            return " AND " + columnName + " = @" + parameterName + " ";
+        }
+
+        public string GetSqlAndClause(long? parameter, string parameterName, DynamicParameters parameters, string columnName)
+        {
+            if (!parameter.HasValue)
+                return string.Empty;
+
+            parameters.Add(parameterName, parameter.Value);
+            return " AND " + columnName + " = @" + parameterName + " ";
+        }
+
         public string GetSqlWhereClauseForSearchActive(_BaseSearch search, string tableAlias = "")
         {
             tableAlias = string.IsNullOrWhiteSpace(tableAlias) ? "" : tableAlias + ".";
@@ -189,6 +192,11 @@ namespace Backend.Base
                 return " immutable_unaccent(lower(" + column + ")) LIKE immutable_unaccent(lower(@" + parameter + ")) ";
             
             return " lower(" + column + ") LIKE lower(@" + parameter + ") ";
+        }
+
+        public long GetTempId()
+        {
+            return _tempIdService.GetTempId();
         }
 
     }

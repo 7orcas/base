@@ -101,6 +101,7 @@ Code,Code
 Desc,Description
 Lang,Language
 LangCode,Lang Code
+LangKey,Lang Key
 Langs,Languages
 LangCodeV,Language Variant
 Label,Label

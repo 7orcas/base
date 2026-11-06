@@ -26,11 +26,6 @@ namespace Backend.Base.Label.Ent
         /// Label label.
         /// </summary>
         public string Code { get; set; }
-                
-        /// <summary>
-        /// Label tooltip.
-        /// </summary>
-        public string? Tooltip { get; set; }
 
         /// <summary>
         /// Last date/time of update.

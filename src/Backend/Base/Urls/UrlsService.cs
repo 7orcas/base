@@ -79,6 +79,7 @@ namespace Backend.Base.Urls
                 Add(urls, "LangCodesAdmin", "LabelAdmin/codelist");
                 Add(urls, "LangKeysAdmin", "LabelAdmin/keylist");
                 Add(urls, "LangLabelsAdmin", "LabelAdmin/labellist");
+                Add(urls, "LangLabelsNewAdmin", "LabelAdmin/new");
                 Add(urls, "LabelUpdateAdmin", "LabelAdmin/update");
             }
 
