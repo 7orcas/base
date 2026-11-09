@@ -5,34 +5,34 @@ BEGIN;
 -- -------------------------------------------------
 -- cntrl.loginoption
 -- -------------------------------------------------
-INSERT INTO cntrl.loginoption (urlsuffix, orgnr, orgnrs, langcode, langlabelvariant, langcodes, isOrgDefault)
+INSERT INTO cntrl.loginoption (urlsuffix, orgnr, orgnrs, langcode, langcodevariant, langcodes, isOrgDefault)
 VALUES ('base', 0, '0', 'en', 0, 'en', true);
 
-INSERT INTO cntrl.loginoption (urlsuffix, orgnr, orgnrs, langcode, langlabelvariant, langcodes, isOrgDefault)
+INSERT INTO cntrl.loginoption (urlsuffix, orgnr, orgnrs, langcode, langcodevariant, langcodes, isOrgDefault)
 VALUES ('blue', 1, '1', 'en', 0, 'en', true);
 
-INSERT INTO cntrl.loginoption (urlsuffix, orgnr, orgnrs, langcode, langlabelvariant, langcodes, ismasqueradeenabled)
+INSERT INTO cntrl.loginoption (urlsuffix, orgnr, orgnrs, langcode, langcodevariant, langcodes, ismasqueradeenabled)
 VALUES ('service', 1, '1', 'en', 0, 'en', true);
 
-INSERT INTO cntrl.loginoption (urlsuffix, orgnr, orgnrs, langcode, langlabelvariant, langcodes)
-VALUES ('admin', 1, '1,2', 'en', 0, 'en,de,it,es,ma,cn');
+INSERT INTO cntrl.loginoption (urlsuffix, orgnr, orgnrs, langcode, langcodevariant, langcodes)
+VALUES ('admin', 1, '1,2', 'en', 1, 'en,de,it,es,ma,cn');
 
-INSERT INTO cntrl.loginoption (urlsuffix, orgnr, orgnrs, langcode, langlabelvariant, langcodes, ismasqueradeenabled, isOrgDefault)
+INSERT INTO cntrl.loginoption (urlsuffix, orgnr, orgnrs, langcode, langcodevariant, langcodes, ismasqueradeenabled, isOrgDefault)
 VALUES ('all', 2, '1,2,3', 'de', 1, 'en,de,es,xx', true, true);
 
-INSERT INTO cntrl.loginoption (urlsuffix, orgnr, orgnrs, langcode, langlabelvariant, langcodes, successaction)
+INSERT INTO cntrl.loginoption (urlsuffix, orgnr, orgnrs, langcode, langcodevariant, langcodes, successaction)
 VALUES ('api', 1, '1', 'en', 0, 'en', 1);
 
-INSERT INTO cntrl.loginoption (urlsuffix, orgnr, orgnrs, langcode, langlabelvariant, langcodes, successaction)
+INSERT INTO cntrl.loginoption (urlsuffix, orgnr, orgnrs, langcode, langcodevariant, langcodes, successaction)
 VALUES ('3', 3, '3', 'en', 0, 'en', 1);
 
 -- -------------------------------------------------
 -- base.org
 -- -------------------------------------------------
-INSERT INTO base.org (nr, code, typeOf, descr, langcode, langlabelvariant)
+INSERT INTO base.org (nr, code, typeOf, descr, langcode, langcodevariant)
 VALUES (0, 'Org Base', 'OrgEnt', 'Base Organisation', 'en', 0);
 
-INSERT INTO base.org (nr, code, typeOf, descr, langcode, langlabelvariant, mfa, 
+INSERT INTO base.org (nr, code, typeOf, descr, langcode, langcodevariant, mfa, 
 	apikey,
     ispasswordresetenabled, issignupenabled, isemailrequired, isemailverified, ismasqueradeenabled,
 	icon, 
@@ -44,13 +44,13 @@ VALUES
   '/images/Icons/BlueTransparentBlack512.png',
  '{Languages:[{LangCode:"en",IsEditable:true},{LangCode:"de",IsEditable:true},{LangCode:"ma",IsEditable:false},{LangCode:"es",IsEditable:false}]}');
 
-INSERT INTO base.org (nr, code, typeOf, descr, langcode, langlabelvariant, mfa, icon, encoded)
+INSERT INTO base.org (nr, code, typeOf, descr, langcode, langcodevariant, mfa, icon, encoded)
 VALUES
 (2, 'Org 2', 'OrgEntHF', 'Org 2 Description', 'en', 2, 0,
  '/images/Icons/BlueBlack512.png',
  '{Languages:[{LangCode:"de",IsEditable:true}]}');
 
-INSERT INTO base.org (nr, code, typeOf, descr, langcode, langlabelvariant, encoded)
+INSERT INTO base.org (nr, code, typeOf, descr, langcode, langcodevariant, encoded)
 VALUES (3, 'Org 3', 'OrgEntDS', 'Org 3 Description', 'de', 1,
 '{Languages:[{LangCode:"de",IsEditable:true}]}');
 

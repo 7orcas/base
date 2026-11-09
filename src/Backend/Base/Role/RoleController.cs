@@ -94,7 +94,7 @@ namespace Backend.Base.Role
         public async Task<IActionResult> GetRole(long roleId)
         {
             var session = HttpContext.Items["session"] as SessionEnt;
-            var langDic = await _labelService.GetLanguageLabelDic(session.LangCodeCurrent, session.Org.LangLabelVariant);
+            var langDic = await _labelService.GetLanguageLabelDic(session.LangCodeCurrent, session.Org.LangCodeVariant);
             var permDic = _PermissionInitialiseService.GetPermissions();
             var permList = permDic.Values.OrderBy(v => v.Nr).ToList();
 

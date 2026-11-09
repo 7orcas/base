@@ -40,6 +40,7 @@ namespace Backend.Base.Label
                     Id = l.Id,
                     Code = l.Code,
                     Description = l.Description,
+                    Variant = l.Variant,
                     Flag = l.Flag
                 });
             }
@@ -63,7 +64,6 @@ namespace Backend.Base.Label
                     Id = l.Id,
                     Code = l.Code,
                     Description = l.Description,
-                    Variant = l.Variant
                 });
             }
 
@@ -94,14 +94,12 @@ namespace Backend.Base.Label
                         LangCodeId = search.LangCodeId.Value,
                         LangKeyId = key.Id,
                         LangKey = key.Code,
-                        Variant = key.Variant,
-                        Label = "temp "
+                        //Label = "temp "
                 };
             }
 
             return labelsDic.Values
                             .OrderBy(x => x.LangKey)
-                            .ThenBy(x => x.Variant)
                             .ToList();
         }
 
@@ -119,9 +117,7 @@ namespace Backend.Base.Label
                     Id = l.Id,
                     LangCodeId = l.LangCodeId,
                     LangKeyId = l.LangKeyId,
-                    LangKey = l.LangKey,
                     Label = l.Label,
-                    Variant = l.Variant,
                 });
             }
 
@@ -137,5 +133,36 @@ namespace Backend.Base.Label
             return await _labelAdminRepo.NewLangLabel(dto);
         }
 
+        public async Task<LangLabel?> GetLangLabelOrCreate(LangLabelAdminDto dto)
+        {
+            //No action required
+            if (dto.IsNew() && dto.IsDelete())
+                return null;
+
+            if (dto.IsNew())
+                return new LangLabel {
+                    LangCodeId = dto.LangCodeId,
+                    LangKeyId = dto.LangKeyId
+                };
+
+
+            return await _labelAdminRepo.GetLangLabelById(dto.Id);
+        }
+
+        public async Task<LangLabel?> UpdateLangLabel(LangLabel langLabel, LangLabelAdminDto dto)
+        {
+            return await _labelAdminRepo.UpdateLangLabel(langLabel, dto);
+        }
+
+        public LangLabelAdminDto PopulateLabel(LangLabel langLabel)
+        {
+            return new LangLabelAdminDto
+            {
+                Id = langLabel.Id,
+                LangCodeId = langLabel.LangCodeId,
+                LangKeyId = langLabel.LangKeyId,
+                Label = langLabel.Code,
+            };
+        }
     }
 }

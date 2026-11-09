@@ -34,7 +34,7 @@ namespace Backend.Base.Org
             org.Updated = GetUpdated(r);
             org.Version = GetVersion(r);
             org.IsActive = IsActive(r);
-            org.LangLabelVariant = GetInt(r, "langLabelVariant");
+            org.LangCodeVariant = GetInt(r, "langCodeVariant");
             org.Encoded = GetEncoded(r);
             org.Mfa = GetInt(r, "mfa");
             org.IsRememberMeEnabled = GetBoolean(r, "isRememberMeEnabled");

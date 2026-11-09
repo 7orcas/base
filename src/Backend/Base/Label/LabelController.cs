@@ -34,7 +34,7 @@ namespace Backend.Base.Label
         {
             var session = HttpContext.Items["session"] as SessionEnt;
 
-            if (!IsSame(variant, session.Org.LangLabelVariant))
+            if (!IsSame(variant, session.Org.LangCodeVariant))
             {
                 LogEvent(LogEventLevel.Warning, "Invalid language variant", session);
                 var e = new _ResponseDto

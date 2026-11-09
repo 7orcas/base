@@ -16,12 +16,6 @@ namespace Backend.Base.Label.Ent
         /// </summary>
         public long Id { get; set; }
 
-        /// <summary>
-        /// The language key's packs
-        /// </summary>
-        public string Pack { get; set; }
-
-        /// <summary>
         /// The language code's id.
         /// </summary>
         public string Code { get; set; }

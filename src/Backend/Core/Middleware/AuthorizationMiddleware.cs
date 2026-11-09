@@ -76,7 +76,7 @@ namespace Backend.Core.Middleware
 
         private async Task<_ResponseDto> HandleException(SessionEnt session, HttpContext context, LabelServiceI _labelService)
         {
-            var labels = await _labelService.GetLangCodeDic(GC.LangCodeDefault, GC.LangLabelVariantDefault);
+            var labels = await _labelService.GetLangCodeDic(GC.LangCodeDefault, GC.LangCodeVariantDefault);
             
             var key = session?.Key ?? "NoSession";
             _log.Error("Not Authorised, path {Path} session {key} ", context.Request.Path, key);

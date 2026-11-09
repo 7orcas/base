@@ -34,7 +34,7 @@ namespace Backend.Base.Login
         public async Task<(bool success, string temptoken, string message)> Verify(string ipAddress, string token, string langCode)
         {
             var secret = AppSettings.ReCaptcha.SecretKey; 
-            var labels = await _labelService.GetLangCodeDic(langCode, GC.LangLabelVariantDefault);
+            var labels = await _labelService.GetLangCodeDic(langCode, GC.LangCodeVariantDefault);
 
             var response =
                 await _httpClient.PostAsync(

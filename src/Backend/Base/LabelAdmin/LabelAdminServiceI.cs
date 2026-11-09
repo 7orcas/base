@@ -13,6 +13,10 @@ namespace Backend.Base.LabelAdmin
         Task<List<LangLabelAdmin>> GetLangLabelList(LabelSearch search);
         List<LangLabelAdminDto> PopulateLabels(List<LangLabelAdmin> labels);
 
+        Task<LangLabel?> GetLangLabelOrCreate(LangLabelAdminDto dto);
+        Task<LangLabel?> UpdateLangLabel(LangLabel langLabel, LangLabelAdminDto dto);
+        LangLabelAdminDto PopulateLabel(LangLabel langLabel);
+
         Task<LangLabelAdminDto?> NewLangLabel(SessionEnt session, LangLabelNewDto dto);
 
     }

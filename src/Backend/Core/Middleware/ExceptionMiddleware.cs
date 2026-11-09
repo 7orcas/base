@@ -45,7 +45,7 @@ namespace Backend.Core.Middleware
             string id,
             LabelServiceI _labelService)
         {
-            var labels = await _labelService.GetLangCodeDic(GC.LangCodeDefault, GC.LangLabelVariantDefault);
+            var labels = await _labelService.GetLangCodeDic(GC.LangCodeDefault, GC.LangCodeVariantDefault);
 
             var r = new _ResponseDto
             {

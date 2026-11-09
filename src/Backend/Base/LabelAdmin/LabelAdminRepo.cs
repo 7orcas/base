@@ -17,7 +17,6 @@ namespace Backend.Base.LabelAdmin
     public class LabelAdminRepo : BaseRepo, LabelAdminRepoI
     {
         private readonly AppDbContext _context;
-      
 
         public LabelAdminRepo(AppDbContext context,
             IServiceProvider serviceProvider,
@@ -32,13 +31,17 @@ namespace Backend.Base.LabelAdmin
         {
             var parameters = new DynamicParameters();
             var includeLangCode = !string.IsNullOrWhiteSpace(search.LangCode);
+            var includeVariant = search.Variant.HasValue;
 
-            var sql = "SELECT DISTINCT c.id, c.code, c.descr AS Description, c.flag, c.updated, c.isactive " +
+            var sql = "SELECT DISTINCT c.id, c.code, c.descr AS Description, c.variant, c.flag, c.updated, c.isactive " +
                        "FROM base.langCode AS c " +
                        "WHERE c.id > 0 ";
 
             if (includeLangCode)
                 sql += GetSqlAndClause(search.LangCode, "LangCode", parameters, "c.code", search);
+
+            if (includeVariant)
+                sql += GetSqlAndClause(search.Variant.Value, "Variant", parameters, "c.variant");
 
             sql += " ORDER BY code";
             return await GetList<LangCodeAdmin>(sql, parameters);
@@ -50,16 +53,20 @@ namespace Backend.Base.LabelAdmin
             var includeLangKey = !string.IsNullOrWhiteSpace(search.LangKey);
             var includeVariant = search.Variant.HasValue;
 
-            var sql = "SELECT DISTINCT k.id, k.code, k.descr AS Description, k.updated, k.version, l.variant " +
+            var sql = "SELECT DISTINCT k.id, k.code, k.descr AS Description, k.updated " +
                        "FROM base.langKey AS k " +
-                       "JOIN base.langLabel AS l ON l.langKeyId = k.Id " +
-                       "WHERE k.id > 0 ";
-            
+                       "JOIN base.langLabel AS l ON l.langKeyId = k.Id ";
+
+            if (includeVariant)
+                sql += "JOIN base.langCode AS c ON c.Id = l.langCodeId ";
+
+            sql += "WHERE k.id > 0 ";
+
             if (includeLangKey)
                 sql += GetSqlAndClause(search.LangKey, "LangKey", parameters, "k.code", search);
 
             if (includeVariant)
-                sql += GetSqlAndClause(search.Variant.Value, "Variant", parameters, "l.variant");
+                sql += GetSqlAndClause(search.Variant.Value, "Variant", parameters, "c.variant");
 
             sql += " ORDER BY code";
             return await GetList<LangKeyAdmin>(sql, parameters);
@@ -74,16 +81,16 @@ namespace Backend.Base.LabelAdmin
             var includeVariant = search.Variant.HasValue;
 
             var sql = "SELECT DISTINCT " +
-                        "c.id as LangCodeId, " +
+                        "l.langCodeId, " +
                         "l.langKeyId, " +
                         "l.id as Id, " +
-                        "l.langCode, " +
+                        "c.code AS LangCode, " +
                         "k.code AS LangKey, " +
-                        "l.variant, " +
+                        "c.variant, " +
                         "l.code AS Label " +
                        "FROM base.langLabel AS l " +
+                           "JOIN base.langCode AS c ON c.Id = l.langCodeId " +
                            "JOIN base.langKey AS k ON k.Id = l.langKeyId " +
-                           "JOIN base.langCode AS c ON c.code = l.langCode " +
                        "WHERE c.id > 0 ";
 
             sql += GetSqlAndClause(search.LangCodeId, "LangCodeId", parameters, "c.id");
@@ -95,9 +102,9 @@ namespace Backend.Base.LabelAdmin
                 sql += GetSqlAndClause(search.LangLabel, "Label", parameters, "l.code", search);
 
             if (includeVariant)
-                sql += GetSqlAndClause(search.Variant.Value, "Variant", parameters, "l.variant");
+                sql += GetSqlAndClause(search.Variant.Value, "Variant", parameters, "c.variant");
 
-            sql += " ORDER BY k.code, l.variant ";
+            sql += " ORDER BY k.code, c.variant ";
             return await GetList<LangLabelAdmin>(sql, parameters);
         }
 
@@ -108,7 +115,7 @@ namespace Backend.Base.LabelAdmin
             var sql = "SELECT l.id " +
                         "FROM base.langlabel as l " +
                         "JOIN base.langkey AS k ON k.id = l.langKeyId " +
-                        "JOIN base.langcode AS c ON c.code = l.langcode " +
+                        "JOIN base.langcode AS c ON c.id = l.langCodeId " +
                         "WHERE k.Id = @langKeyId " +
                         "AND c.id = @langCodeId ";
 
@@ -116,10 +123,10 @@ namespace Backend.Base.LabelAdmin
             parameters.Add("@langCodeId", dto.LangCodeId);
             
             if (dto.Variant == null)
-                sql += "AND l.variant IS NULL";
+                sql += "AND c.variant IS NULL";
             else
             {
-                sql += "AND l.variant = @variant";
+                sql += "AND c.variant = @variant";
                 parameters.Add("@variant", dto.Variant);
             }
 
@@ -164,8 +171,6 @@ namespace Backend.Base.LabelAdmin
                     Id = GetTempId(),
                     LangCodeId = dto.LangCodeId,
                     LangKeyId = dto.LangKeyId,
-                    Variant = dto.Variant,
-                    LangKey = langKey,
                 };
             }
             catch (Exception ex)
@@ -177,6 +182,42 @@ namespace Backend.Base.LabelAdmin
                     sqlKey);
                 throw;
             }
+        }
+
+        public async Task<LangLabel?> GetLangLabelById(long id)
+        {
+            try
+            {
+                return await _context.LangLabels
+                    .FirstOrDefaultAsync(x => x.Id == id);
+
+            }
+            catch (Exception ex)
+            {
+                _log.Error($"Error retrieving langLabel with ID {id}", ex);
+                return null;
+            }
+        }
+
+        public async Task<LangLabel?> UpdateLangLabel(LangLabel langLabel, LangLabelAdminDto dto)
+        {
+            //Cascade delete
+            if (dto.IsDelete())
+            {
+                _context.LangLabels.Remove(langLabel);
+                await _context.SaveChangesAsync();
+                return null;
+            }
+
+            langLabel.Code = dto.LabelEdit;
+            langLabel.Updated = DateTimeOffset.UtcNow;
+            langLabel.Encode();
+
+            if (dto.IsNew())
+                _context.LangLabels.Add(langLabel);
+
+            await _context.SaveChangesAsync();
+            return langLabel;
         }
 
     }

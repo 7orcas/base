@@ -48,7 +48,7 @@ namespace Backend.Base.Login
                 var langCodeList = await _labelService.GetLangCodeList();
                 var langs = string.Join(",", langCodeList.Select(l => l.Code));
                 loginOption.LangCode = GC.LangCodeDefault;
-                loginOption.LangLabelVariant = 0;
+                loginOption.LangCodeVariant = 0;
                 loginOption.LangCodes = langs;
 
                 loginOption.SuccessAction = GC.NavigateToFrontendServer;
@@ -85,7 +85,7 @@ namespace Backend.Base.Login
                 Icon = icon,
                 OrgNr = ent.OrgNr,
                 LangCode = ent.LangCode,
-                LangLabelVariant = ent.LangLabelVariant,
+                LangCodeVariant = ent.LangCodeVariant,
                 Orgs = orgs,
                 LangCodes = langs,
                 SuccessAction = ent.SuccessAction,

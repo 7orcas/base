@@ -22,6 +22,11 @@ namespace Backend.Base.LabelAdmin.Ent
         public string? Description { get; set; }
 
         /// <summary>
+        /// Language code variant number (null is the default).
+        /// </summary>
+        public int? Variant { get; set; }
+
+        /// <summary>
         /// The language code's flag.
         /// </summary>
         public string? Flag { get; set; }

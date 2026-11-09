@@ -15,7 +15,6 @@ namespace Backend.Base.LabelAdmin.Ent
         /// The language key.
         /// </summary>
         public string Code { get; set; }
-        public int? Variant { get; set; }
 
         /// <summary>
         /// The language key's description.

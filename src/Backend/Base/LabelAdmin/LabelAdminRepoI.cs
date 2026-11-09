@@ -7,5 +7,7 @@
         Task<List<LangLabelAdmin>> GetLangLabelList(LabelSearch search);
         Task<long> IsExist(LangLabelNewDto dto);
         Task<LangLabelAdminDto> NewLangLabel(LangLabelNewDto dto);
+        Task<LangLabel?> GetLangLabelById(long id);
+        Task<LangLabel?> UpdateLangLabel(LangLabel langLabel, LangLabelAdminDto dto);
     }
 }

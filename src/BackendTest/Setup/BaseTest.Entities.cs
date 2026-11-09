@@ -32,7 +32,7 @@ namespace BackendTest.Setup
             {
                 Org = new OrgEnt { 
                     Nr = orgNr,
-                    LangLabelVariant = 0,
+                    LangCodeVariant = 0,
                     Description = ORG_DESC,
                 },
                 //UserConfig = CreateUserConfig(orgNr),

@@ -128,5 +128,33 @@ namespace Backend.Base.LabelAdmin
             });
         }
 
+        /// <summary>
+        /// Update a Language Label
+        /// </summary>
+        /// <param name="update"></param>
+        /// <returns></returns>
+        [CrudAtt(GC.CrudUpdate)]
+        [AuditListAtt(GC.CrudUpdate)]
+        [HttpPost("update")]
+        public async Task<IActionResult> Update([FromBody] UpdateRequest<List<LangLabelAdminDto>> update)
+        {
+            var session = HttpContext.Items["session"] as SessionEnt;
+            var list = update.Updates as List<LangLabelAdminDto>;
+
+            //Do updates
+            var listUpdated = new List<LangLabelAdminDto>();
+            foreach (var dto in list)
+            {
+                var label = await _labelAdminService.GetLangLabelOrCreate(dto);
+                if (label == null) continue;
+
+                label = await _labelAdminService.UpdateLangLabel(label, dto);
+                if (label != null)
+                    listUpdated.Add(_labelAdminService.PopulateLabel(label));
+            }
+
+            return Ok(new _ResponseDto(null, listUpdated));
+        }
+
     }
 }

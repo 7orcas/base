@@ -21,7 +21,7 @@
       "commandName": "Project",
       "dotnetRunMessages": false,
       "launchBrowser": true,
-      "launchUrl": "admin",
+      "launchUrl": "blue",
       "applicationUrl": "https://localhost:7289;http://localhost:5217",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
@@ -33,7 +33,7 @@
         "xPASSWORD": "xx123",
         "xORG": "1",
         "LANGCODE": "en",
-        "AUTO": "true",
+        "xAUTO": "true",
         "zOPEN": "aud001",
         "xOPEN": "mac001"
       }

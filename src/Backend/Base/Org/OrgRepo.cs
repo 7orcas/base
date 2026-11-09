@@ -85,7 +85,7 @@ namespace Backend.Base.Org
             org.IsEmailVerified = orgDto.IsEmailVerified;
             org.IsEmailHtml = orgDto.IsEmailHtml;
             org.LangCode = orgDto.LangCode;
-            org.LangLabelVariant = orgDto.LangLabelVariant;
+            org.LangCodeVariant = orgDto.LangCodeVariant;
 
             VersionIncrement(org);
 

@@ -13,8 +13,6 @@ namespace Backend.Base.Role
     /// <license>**Licence**</license>
     public class RoleRepo : RoleRepoI
     {
-
-
         private readonly AppDbContext _context;
 
         public RoleRepo(AppDbContext context)

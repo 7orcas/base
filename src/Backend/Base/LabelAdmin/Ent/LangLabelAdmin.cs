@@ -19,11 +19,6 @@ namespace Backend.Base.LabelAdmin.Ent
         public string LangKey { get; set; }
 
         /// <summary>
-        /// Language code variant number (null is the default).
-        /// </summary>
-        public int? Variant { get; set; }
-
-        /// <summary>
         /// Label label.
         /// </summary>
         public string Label { get; set; }
