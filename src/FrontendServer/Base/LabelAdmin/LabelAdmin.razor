@@ -113,6 +113,7 @@ else
                         <MudTable Style="table-layout: fixed;"
                                     Items="@langkeys"
                                     Height="@tableHeight"
+                                    Filter="FilterKey"
                                     FixedHeader="true"
                                     Hover="true"
                                     Bordered="true"
@@ -121,11 +122,48 @@ else
                         
                             <HeaderContent>
                                 <MudTh Style="width:150px; min-width:150px; max-width:150px;">
-                                    <Label Key="LangKey" />
+                                    <div style="display:flex; flex-direction:column;">
+                                        <div style="display:flex; align-items:center;">
+                                            <Label Key="LangKey" />
+                                            <MudIconButton Icon="@Icons.Material.Filled.FilterList"
+                                                           Size="Size.Small"
+                                                           Color="@(_showKeyFilter ? Color.Primary : Color.Default)"
+                                                           OnClick="ToggleKeyFilter" />
+                                        </div>
+                                        @if (_showKeyFilter)
+                                        {
+                                            <MudTextField T="string"
+                                                          @bind-Value="_keyFilter"
+                                                          Immediate="true"
+                                                          Placeholder="@GetLabel("FilterX")"
+                                                          Margin="Margin.Dense"
+                                                          Variant="Variant.Text" />
+                                        }
+                                    </div>
                                 </MudTh>
-                                @foreach (var sel in selections)
+                                @for (var i = 0; i<selections.Count; i++)
                                 {
-                                    <MudTh>@GetLangCodeVariant(sel.dto)</MudTh>
+                                    var x = i;
+                                    <MudTh>
+                                        <div style="display:flex; flex-direction:column;">
+                                            <div style="display:flex; align-items:center;">
+                                                @GetLangCodeVariant(selections[x].dto)
+                                                <MudIconButton Icon="@Icons.Material.Filled.FilterList"
+                                                               Size="Size.Small"
+                                                               Color="@(filters[x].ShowFilter ? Color.Primary : Color.Default)"
+                                                               OnClick="filters[x].ToggleFilter" />
+                                            </div>
+                                            @if (filters[x].ShowFilter)
+                                            {
+                                                <MudTextField T="string"
+                                                              @bind-Value="filters[x].Code"
+                                                              Immediate="true"
+                                                              Placeholder="@GetLabel("FilterX")"
+                                                              Margin="Margin.Dense"
+                                                              Variant="Variant.Text" />
+                                            }
+                                        </div>
+                                    </MudTh>
                                 }
                             </HeaderContent>
                             <RowTemplate>
@@ -181,6 +219,11 @@ else
 
     private bool _showCodeFilter;
     private string _codeFilter = string.Empty;
+    private bool _showKeyFilter;
+    private string _keyFilter = string.Empty;
+    private List<FilterField<LangLabelAdminDto>> filters = new List<FilterField<LangLabelAdminDto>>();
+
+
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -377,13 +420,20 @@ else
 
         //Already selected?
         if (index >= 0)
+        {
             selections.RemoveAt(index);
+            filters.RemoveAt(index);
+        }
         else 
         {
             if (selections.Count >= maxSelections)
+            {
                 selections.RemoveAt(0);
+                filters.RemoveAt(0);
+            }
 
             selections.Add(r);
+            filters.Add(new FilterField<LangLabelAdminDto>());
         }
     }
 
@@ -493,29 +543,6 @@ else
         }
     }
 
-    private async Task AddRole()
-    {
-        var id = GC.NewRecordId;
-        foreach (var r in langcodes)
-            id = r.Id < id ? id - 1 : id;
-
-        var role = new LangCodeAdminDto
-            {
-                Id = id,
-                Code = GetLabel("New").ToUpper(),
-                IsActive = true,
-                Updated = DateTime.Now,
-            };
-        var LangCodeAdminDto = new ListModel<LangCodeAdminDto>(role);
-        LangCodeAdminDto.IsLoaded = true;
-     
-
-        LangCodeAdminDto.HashMe();
-        langcodes.Insert(0, LangCodeAdminDto);
-        Select(LangCodeAdminDto, false);
-        await Task.CompletedTask;
-    }
-
     public async Task<bool> ConfirmNavigationIsOk()
     {
         for (int i = 0; langcodes != null && i < langcodes.Count; i++)
@@ -527,10 +554,8 @@ else
         return true;
     }
 
-    private void ToggleCodeFilter()
-    {
-        _showCodeFilter = !_showCodeFilter;
-    }
+    private void ToggleCodeFilter() => _showCodeFilter = !_showCodeFilter;
+    private void ToggleKeyFilter() => _showKeyFilter = !_showKeyFilter;
 
     private bool FilterCode(ListModel<LangCodeAdminDto> item)
     {
@@ -542,6 +567,31 @@ else
             StringComparison.OrdinalIgnoreCase) == true;
     }
 
+    private bool FilterKey(LangKeyAdminDto key)
+    {
+        if (!string.IsNullOrWhiteSpace(_keyFilter))
+        {
+            if (key.Code?.Contains(_keyFilter, StringComparison.OrdinalIgnoreCase) == false)
+                return false;
+        }
+
+        //Loop filters
+        for (var i=0; i<selections.Count; i++)
+        {
+            var f = filters[i];
+            if (string.IsNullOrWhiteSpace(f.Code)) continue;
+
+            var sel = selections[i];
+
+            var label = GetLabel(key, sel.dto);
+            if (string.IsNullOrEmpty(label)) return false;
+
+            if (label?.Contains(f.Code, StringComparison.OrdinalIgnoreCase) == false)
+                return false;
+        }
+
+        return true;
+    }
 
     private async Task AddRecord()
     {
