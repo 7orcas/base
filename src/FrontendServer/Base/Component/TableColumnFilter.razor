@@ -1,0 +1,45 @@
+﻿
+@* Standalone table column filter *@
+
+@inherits BaseComponent
+
+ <div style="display:flex; flex-direction:column;">
+    <div style="display:flex; align-items:center;">
+        <Label Key="@LangKey" />
+        <MudIconButton Icon="@Icons.Material.Filled.FilterList"
+                        Size="Size.Small"
+                        Color="@(ShowFilter ? Color.Primary : Color.Default)"
+                        OnClick="ToggleFilter" />
+    </div>
+    @if (ShowFilter)
+    {
+        <MudTextField T="string"
+                        Value="FilterText"
+                        ValueChanged="OnFilterTextChanged"
+                        Immediate="true"
+                        Placeholder="@GetLabel("FilterX")"
+                        Margin="Margin.Dense"
+                        Variant="Variant.Text" />
+    }
+</div>
+
+
+@using MudBlazor
+
+@code {
+    [Parameter] public string LangKey { get; set; }
+    [Parameter] public string? FilterText { get; set; }
+    [Parameter] public int FilterIndex { get; set; } = 0;
+    [Parameter] public EventCallback<(string? Value, int FilterIndex)> FilterChanged { get; set; }
+
+    private async Task OnFilterTextChanged(string? value)
+    {
+        FilterText = value;
+        await FilterChanged.InvokeAsync((value, FilterIndex));
+    }
+
+
+    public bool ShowFilter { get; set; } = false;
+    public void ToggleFilter() => ShowFilter = !ShowFilter;
+
+}

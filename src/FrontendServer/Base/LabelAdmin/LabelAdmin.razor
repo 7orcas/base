@@ -50,24 +50,9 @@ else
                         <HeaderContent>
                             <MudTh></MudTh>
                             <MudTh>
-                                <div style="display:flex; flex-direction:column;">
-                                    <div style="display:flex; align-items:center;">
-                                        <Label Key="LangCode" />
-                                        <MudIconButton Icon="@Icons.Material.Filled.FilterList"
-                                                       Size="Size.Small"
-                                                       Color="@(_showCodeFilter ? Color.Primary : Color.Default)"
-                                                       OnClick="ToggleCodeFilter" />
-                                    </div>
-                                    @if (_showCodeFilter)
-                                    {
-                                        <MudTextField T="string"
-                                                      @bind-Value="_codeFilter"
-                                                      Immediate="true"
-                                                      Placeholder="@GetLabel("FilterX")"
-                                                      Margin="Margin.Dense"
-                                                      Variant="Variant.Text" />
-                                    }
-                                </div>
+                                <TableColumnFilter LangKey="LangCode"
+                                                   FilterIndex="@LangCodeIndex"
+                                                   FilterChanged="OnCodeFilterChanged" />
                             </MudTh>
                             <MudTh><Label Key="Variant" /></MudTh>
                             <MudTh><Label Key="Active" /></MudTh>
@@ -122,47 +107,17 @@ else
                         
                             <HeaderContent>
                                 <MudTh Style="width:150px; min-width:150px; max-width:150px;">
-                                    <div style="display:flex; flex-direction:column;">
-                                        <div style="display:flex; align-items:center;">
-                                            <Label Key="LangKey" />
-                                            <MudIconButton Icon="@Icons.Material.Filled.FilterList"
-                                                           Size="Size.Small"
-                                                           Color="@(_showKeyFilter ? Color.Primary : Color.Default)"
-                                                           OnClick="ToggleKeyFilter" />
-                                        </div>
-                                        @if (_showKeyFilter)
-                                        {
-                                            <MudTextField T="string"
-                                                          @bind-Value="_keyFilter"
-                                                          Immediate="true"
-                                                          Placeholder="@GetLabel("FilterX")"
-                                                          Margin="Margin.Dense"
-                                                          Variant="Variant.Text" />
-                                        }
-                                    </div>
+                                    <TableColumnFilter LangKey="LangKey" 
+                                                       FilterIndex="@LangKeyIndex"
+                                                       FilterChanged="OnKeyFilterChanged" />
                                 </MudTh>
                                 @for (var i = 0; i<selections.Count; i++)
                                 {
                                     var x = i;
                                     <MudTh>
-                                        <div style="display:flex; flex-direction:column;">
-                                            <div style="display:flex; align-items:center;">
-                                                @GetLangCodeVariant(selections[x].dto)
-                                                <MudIconButton Icon="@Icons.Material.Filled.FilterList"
-                                                               Size="Size.Small"
-                                                               Color="@(filters[x].ShowFilter ? Color.Primary : Color.Default)"
-                                                               OnClick="filters[x].ToggleFilter" />
-                                            </div>
-                                            @if (filters[x].ShowFilter)
-                                            {
-                                                <MudTextField T="string"
-                                                              @bind-Value="filters[x].Code"
-                                                              Immediate="true"
-                                                              Placeholder="@GetLabel("FilterX")"
-                                                              Margin="Margin.Dense"
-                                                              Variant="Variant.Text" />
-                                            }
-                                        </div>
+                                        <TableColumnFilter LangKey="@GetLangCodeVariant(selections[x].dto)"
+                                                           FilterIndex="@(x + LangLabelStartIndex)"
+                                                           FilterChanged="OnKeyFilterChanged" />
                                     </MudTh>
                                 }
                             </HeaderContent>
@@ -217,12 +172,10 @@ else
     private List<LangKeyAdminDto> langkeys = new List<LangKeyAdminDto>();
     private LabelSearch lastSearch;
 
-    private bool _showCodeFilter;
-    private string _codeFilter = string.Empty;
-    private bool _showKeyFilter;
-    private string _keyFilter = string.Empty;
-    private List<FilterField<LangLabelAdminDto>> filters = new List<FilterField<LangLabelAdminDto>>();
-
+    private int LangCodeIndex = 0;
+    private int LangKeyIndex = 1;
+    private int LangLabelStartIndex = 2;
+    private List<string> filterText = new List<string>();
 
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -231,6 +184,9 @@ else
         {
             await InitialiseBasePage(GC.PerLabelAdmin, "LabelA");
             pageStatus.pageCode = BaseRoutes.LabelAdminPageCode;
+
+            filterText.Add(string.Empty); //LangCodeIndex
+            filterText.Add(string.Empty); //LangKeyIndex
 
             //  showList = langcodes.Count > 1;
             showList = true;
@@ -422,18 +378,18 @@ else
         if (index >= 0)
         {
             selections.RemoveAt(index);
-            filters.RemoveAt(index);
+            filterText.RemoveAt(index + LangLabelStartIndex);
         }
         else 
         {
             if (selections.Count >= maxSelections)
             {
                 selections.RemoveAt(0);
-                filters.RemoveAt(0);
+                filterText.RemoveAt(0 + LangLabelStartIndex);
             }
 
             selections.Add(r);
-            filters.Add(new FilterField<LangLabelAdminDto>());
+            filterText.Add(string.Empty);
         }
     }
 
@@ -554,39 +510,49 @@ else
         return true;
     }
 
-    private void ToggleCodeFilter() => _showCodeFilter = !_showCodeFilter;
-    private void ToggleKeyFilter() => _showKeyFilter = !_showKeyFilter;
-
+    private void OnCodeFilterChanged((string? Value, int FilterIndex) args)
+    {
+        filterText[args.FilterIndex] = args.Value ?? string.Empty;
+        StateHasChanged();
+    }
+    
     private bool FilterCode(ListModel<LangCodeAdminDto> item)
     {
-        if (string.IsNullOrWhiteSpace(_codeFilter))
+        if (string.IsNullOrWhiteSpace(filterText[LangCodeIndex]))
             return true;
 
         return item.Code?.Contains(
-            _codeFilter,
+            filterText[LangCodeIndex],
             StringComparison.OrdinalIgnoreCase) == true;
+    }
+
+
+    private void OnKeyFilterChanged((string? Value, int FilterIndex) args)
+    {
+        filterText[args.FilterIndex] = args.Value ?? string.Empty;
+        StateHasChanged();
     }
 
     private bool FilterKey(LangKeyAdminDto key)
     {
-        if (!string.IsNullOrWhiteSpace(_keyFilter))
+        if (!string.IsNullOrWhiteSpace(filterText[LangKeyIndex]))
         {
-            if (key.Code?.Contains(_keyFilter, StringComparison.OrdinalIgnoreCase) == false)
+            if (key.Code?.Contains(filterText[LangKeyIndex], StringComparison.OrdinalIgnoreCase) == false)
                 return false;
         }
 
         //Loop filters
         for (var i=0; i<selections.Count; i++)
         {
-            var f = filters[i];
-            if (string.IsNullOrWhiteSpace(f.Code)) continue;
+            var f = filterText[i + LangLabelStartIndex];
+            if (string.IsNullOrWhiteSpace(f)) continue;
 
             var sel = selections[i];
 
             var label = GetLabel(key, sel.dto);
             if (string.IsNullOrEmpty(label)) return false;
 
-            if (label?.Contains(f.Code, StringComparison.OrdinalIgnoreCase) == false)
+            if (label?.Contains(f, StringComparison.OrdinalIgnoreCase) == false)
                 return false;
         }
 
