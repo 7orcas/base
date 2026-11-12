@@ -23,7 +23,7 @@ namespace CodeGenerator.Templates
                 IsCreate = true,
                 NewPath = GC.BackendAppPath + AppSubPath + ToEntity,
                 CopyFromPath = GC.BackendAppPath + FromEntity,
-                CopySubFolders = true,
+                CopyEnts = true,
                 CopyControllers = true,
                 CopyRepos = true,
             };

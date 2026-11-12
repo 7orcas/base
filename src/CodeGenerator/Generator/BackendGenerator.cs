@@ -20,6 +20,11 @@ namespace CodeGenerator.Generator
 
             await CreateFolder(project.NewPath, replace: project.IsNewReplace);
 
+            if (project.CopyEnts)
+            {
+                await CopyFolder(project.CopyFromPath + "/Entities", project.NewPath + "/Entities");
+            }
+
             return;
         }
     }           

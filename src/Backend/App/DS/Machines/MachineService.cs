@@ -14,7 +14,7 @@ namespace Backend.App.DS.Machines
             List <Machine> machines = new List<Machine>();
             await Sql.Run(
                     "SELECT * " +
-                    "FROM app.Machine m " +
+                    "FROM ds.Machine m " +
                     "WHERE m.orgNr = " + session.Org.Nr,
                     r => {
                         var m = GetBaseEntity<Machine>(r);

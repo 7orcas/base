@@ -6,7 +6,7 @@
         {
             Console.WriteLine($"Current Directory: {Directory.GetCurrentDirectory()}");
 
-            var template = new Templates.CustomerTemplate().ConfigureTemplate();
+            var template = new Templates.TrailTemplate().ConfigureTemplate();
 
             if (!template.IsValid())
             {

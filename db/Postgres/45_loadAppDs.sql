@@ -2,17 +2,17 @@
 BEGIN;
 
 -- -------------------------------------------------
--- app.machinegroup
+-- ds.machinegroup
 -- -------------------------------------------------
-INSERT INTO app.machinegroup (id, orgnr, code, descr)
+INSERT INTO ds.machinegroup (id, orgnr, code, descr)
 VALUES
 (1, 1, 'MG1', 'Machine Group 1'),
 (2, 2, 'MG2', 'Machine Group 2');
 
 -- -------------------------------------------------
--- app.machine
+-- ds.machine
 -- -------------------------------------------------
-INSERT INTO app.machine
+INSERT INTO ds.machine
     (id, orgnr, machinegroupid, stationpairs, code, descr, classification)
 VALUES
 (1,   1, 1, 12, 'M1-1',  'Machine 11', 2),
@@ -34,13 +34,13 @@ VALUES
 -- Fix identity sequences
 -- -------------------------------------------------
 SELECT setval(
-    pg_get_serial_sequence('app.machinegroup', 'id'),
-    (SELECT MAX(id) FROM app.machinegroup)
+    pg_get_serial_sequence('ds.machinegroup', 'id'),
+    (SELECT MAX(id) FROM ds.machinegroup)
 );
 
 SELECT setval(
-    pg_get_serial_sequence('app.machine', 'id'),
-    (SELECT MAX(id) FROM app.machine)
+    pg_get_serial_sequence('ds.machine', 'id'),
+    (SELECT MAX(id) FROM ds.machine)
 );
 
 

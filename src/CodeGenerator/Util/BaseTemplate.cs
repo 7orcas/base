@@ -22,7 +22,7 @@ namespace CodeGenerator.Util
         public string CopyFromPath { get; set; } = "";
         public string NewPath { get; set; }
         public bool IsNewReplace { get; set; } = false;
-        public bool CopySubFolders { get; set; } = false;
+        public bool CopyEnts { get; set; } = false;
         public bool CopyControllers { get; set; } = false;
         public bool CopyServices { get; set; } = false;
         public bool CopyRepos { get; set; } = false;
