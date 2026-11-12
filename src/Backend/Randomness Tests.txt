@@ -1,0 +1,43 @@
+Randomness Test
+===============
+After N tosses:
+
+Expected heads = N / 2
+Standard deviation = √(N / 4)
+
+Calculate:
+
+z = (Observed Heads−N/2) / sqrt (N/4)
+
+If |z| is:
+	Less than 2 → normal random variation
+	Between 2 and 3 → somewhat unusual
+	Greater than 3 → strong evidence the coin may not be fair
+	
+	
+	
+	
+	
+Runs Test
+=========
+A runs test checks whether the order of coin tosses looks random, not just whether you got about 50% heads.
+A run is a sequence of the same result.	
+
+eg
+H heads
+T tails
+H H H T T H T T T = 4 runs:HHH TT H TTT
+
+
+
+Calculate:
+
+Expected Runs = (2HT / (H+T)) + 1
+
+Eg for 50 heads and 50 tails:
+Expected Runs = 51
+
+So you'd expect roughly 51 runs.
+Getting something like:
+15 runs → suspiciously few
+90 runs → suspiciously many

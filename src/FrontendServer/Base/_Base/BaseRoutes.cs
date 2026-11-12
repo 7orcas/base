@@ -43,7 +43,7 @@ namespace FrontendServer.Base._Base
             RolePageCode,           RoleRoute,        GC.PerRole,
             AuditPageCode,          AuditRoute,       GC.PerAudit,
             UserPageCode,           UserRoute,        GC.PerUser,
-            LabelAdminPageCode,     LabelAdminRoute,  -1, //GC.PerLabelAdmin, //FIX ME
+            LabelAdminPageCode,     LabelAdminRoute,  GC.PerLabelAdmin, 
         };
 
     }
