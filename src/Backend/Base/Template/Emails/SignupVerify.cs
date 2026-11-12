@@ -15,7 +15,7 @@ namespace Backend.Base.Template.Emails
             if (login.LangCode != null) LangCode = login.LangCode;
             else if (org.LangCode != null) LangCode = org.LangCode;
 
-            LangCodeVariant = org.LangLabelVariant;
+            LangCodeVariant = org.LangCodeVariant;
 
             IsHtml = org.IsEmailHtml;
 

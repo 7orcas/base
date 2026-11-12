@@ -11,6 +11,7 @@
         {
         }
 
+        public DbSet<LangLabel> LangLabels => Set<LangLabel>();
         public DbSet<OrgEnt> Orgs => Set<OrgEnt>();
         public DbSet<RoleEnt> Roles => Set<RoleEnt>();
         public DbSet<UserEnt> Users => Set<UserEnt>();

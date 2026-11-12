@@ -78,10 +78,10 @@
                     LangCode="LangCodeV"
                     ReadOnly="@(!IsEditActive)"
                     PageStatus=@PageStatus
-                    Required="@IsRequired(nameof(Dto.LangLabelVariant))"
-                    Value="@Dto.LangLabelVariant"
-                    ValueChanged="@((int val) => Dto.LangLabelVariant = val)"
-                    ValueExpression="() => Dto.LangLabelVariant" />
+                    Required="@IsRequired(nameof(Dto.LangCodeVariant))"
+                    Value="@Dto.LangCodeVariant"
+                    ValueChanged="@((int val) => Dto.LangCodeVariant = val)"
+                    ValueExpression="() => Dto.LangCodeVariant" />
 
     <NumericField TValue="int" 
                     Width=GC.TextFieldWidth.TextVeryShort

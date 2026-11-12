@@ -25,7 +25,7 @@ namespace FrontendLogin.Label
             {
                 var url = GC.URL_login_label
                                 + "?langcode=" + langCode
-                                + (variant.HasValue ? "&langvar=" + variant : "");
+                                + (variant.HasValue ? "&variant=" + variant : "");
 
                 var client = _httpClientFactory.CreateClient(GC.HTTP_Client);
                 var response = await client.GetAsync(url);

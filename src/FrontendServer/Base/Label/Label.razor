@@ -5,41 +5,17 @@
 <div>
     @if (!isAdminLanguage)
     {
-        @if (@IsShowToolTip())
-        {
-            <div data-tooltip="@ShowToolTip()">
-                <div class="@GetClass()">
-                    <MudText Style="@style"
-                        Typo="@size">@ShowLabel()</MudText>
-                </div>
-            </div>
-        }
-        else
-        {
-            <div class="@GetClass()">
-                <MudText Style="@style"
-                    Typo="@size">@ShowLabel()</MudText>
-            </div>
-        }
+        <div class="@GetClass()">
+            <MudText Style="@style"
+                Typo="@size">@ShowLabel()</MudText>
+        </div>
     }
     else 
     {
-        @if (@IsShowToolTip())
-        {
-            <div data-tooltip="@ShowToolTip()">
-                <button class="@GetClass()" @onclick="OpenDialog">
-                    <MudText Style="@style"
-                        Typo="@size">@ShowLabel()</MudText>
-                 </button>
-            </div>
-        }
-        else
-        {
-            <button class="@GetClass()" @onclick="OpenDialog">
-                <MudText Style="@style"
-                    Typo="@size">@ShowLabel()</MudText>
-            </button>
-        }
+        <button class="@GetClass()" @onclick="OpenDialog">
+            <MudText Style="@style"
+                Typo="@size">@ShowLabel()</MudText>
+        </button>
     }
 </div>
 
@@ -78,9 +54,6 @@
         if (highlightNoKey) return GetLabelHighlightNoKey(Key);
         return GetLabel(Key);
     }
-
-    private bool IsShowToolTip() => IsTooltip(Key);
-    private string? ShowToolTip() => showTooltip ? GetTooltip(Key) : null;
 
     private string GetClass()
     {

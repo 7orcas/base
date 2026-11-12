@@ -45,6 +45,8 @@ namespace Common
         public const int LenCode        = 15;
         public const int LenDescription = 50;
         public const int LenLangCode    = 4;
+        public const int LenLangKey     = 100;
+        public const int LenLangLabel   = 200;
         public const int LenEmail       = 50;
 
         //Searches
@@ -79,16 +81,16 @@ namespace Common
         public const string CrudIgnore   = "x"; //Don't need a permission crud setting
 
 
-        public const int PerIgnore    = 0;
-        public const int PerOrg       = 1;
-        public const int PerPerm      = 2;
-        public const int PerLabel     = 3;
-        //public const int PerLang      = 4; Reuse
-        public const int PerRole      = 5;
-        public const int PerUser      = 6;
-        public const int PerAudit     = 7;
-        public const int PerConfig    = 8;
-        public const int PerReg       = 9;
+        public const int PerIgnore     = 0;
+        public const int PerOrg        = 1;
+        public const int PerPerm       = 2;
+        public const int PerLabel      = 3;
+        public const int PerLabelAdmin = 4; 
+        public const int PerRole       = 5;
+        public const int PerUser       = 6;
+        public const int PerAudit      = 7;
+        public const int PerConfig     = 8;
+        public const int PerReg        = 9;
         
 
         public const int PerMachine   = 101;

@@ -34,7 +34,7 @@ namespace Backend.Base.Label
         {
             var session = HttpContext.Items["session"] as SessionEnt;
 
-            if (!IsSame(variant, session.Org.LangLabelVariant))
+            if (!IsSame(variant, session.Org.LangCodeVariant))
             {
                 LogEvent(LogEventLevel.Warning, "Invalid language variant", session);
                 var e = new _ResponseDto
@@ -54,8 +54,7 @@ namespace Backend.Base.Label
                 {
                     Id = l.Id,
                     LangKeyCode = l.LangKeyCode,
-                    Label = l.Code,
-                    Tooltip = l.Tooltip
+                    Label = l.Code
                 });
             }
 
@@ -109,7 +108,6 @@ namespace Backend.Base.Label
                             Variant = l.Variant,
                             LangCode = l.LangCode,
                             Label = l.Code,
-                            Tooltip = l.Tooltip,
                             Updated = l.Updated,
                             IsUpdateable = lang.IsEditable,
                         };

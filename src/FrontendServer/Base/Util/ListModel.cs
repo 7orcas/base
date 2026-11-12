@@ -89,7 +89,10 @@ namespace FrontendServer.Base.Util
         public string? OriginalHashCode { get; set; }
         private string GetHash(T dto)
         {
-            var json = JsonSerializer.Serialize(dto);
+            var json = JsonSerializer.Serialize(dto, new JsonSerializerOptions
+            {
+                IncludeFields = true
+            });
             using var sha256 = SHA256.Create();
             var hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(json));
             var hash = Convert.ToHexString(hashBytes);

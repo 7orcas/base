@@ -10,40 +10,39 @@ namespace Backend.Base.Label.Ent
         /// </summary>
         public long Id { get; set; }
 
+        public long LangCodeId { get; set; }
         public long LangKeyId { set; get; }
 
-        /// <summary>
-        /// Language code of label (eg 'en').
-        /// </summary>
-        public string LangCode { get; set; }
 
-        /// <summary>
-        /// Language code variant number (null is the default).
-        /// </summary>
-        public int? Variant { get; set; }
 
         /// <summary>
         /// Label label.
         /// </summary>
         public string Code { get; set; }
-                
-        /// <summary>
-        /// Label tooltip.
-        /// </summary>
-        public string? Tooltip { get; set; }
 
         /// <summary>
         /// Last date/time of update.
         /// </summary>
         public DateTimeOffset Updated { get; set; }
 
-
         /// <summary>
-        /// Language code of label.
+        /// Language code of label (eg 'en').
         /// </summary>
         /*
          * Indicates this label has been loaded with this lang code
          */
+        [NotMapped]
+        public string? LangCode { get; set; }
+
+        /// <summary>
+        /// Language code variant number (null is the default).
+        /// </summary>
+        [NotMapped]
+        public int? Variant { get; set; }
+
+        /// <summary>
+        /// Language key of label 
+        /// </summary>
         [NotMapped]
         public string? LangKeyCode { get; set; }
 

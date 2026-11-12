@@ -15,7 +15,7 @@ public class OrgConfig : IEntityTypeConfiguration<OrgEnt>
         entity.Property(e => e.Version).HasColumnName("version");
         entity.Property(e => e.IsActive).HasColumnName("isactive");
         entity.Property(e => e.LangCode).HasColumnName("langcode");
-        entity.Property(e => e.LangLabelVariant).HasColumnName("langlabelvariant");
+        entity.Property(e => e.LangCodeVariant).HasColumnName("langcodevariant");
         entity.Property(e => e.Icon).HasColumnName("icon");
         entity.Property(e => e.ApiKey).HasColumnName("apikey");
         entity.Property(e => e.Mfa).HasColumnName("mfa");

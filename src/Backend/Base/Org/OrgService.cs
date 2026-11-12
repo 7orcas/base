@@ -171,7 +171,7 @@ namespace Backend.Base.Org
         {
             var org = await GetOrg(orgNr);
             var val = org.Encoding.PasswordRule;
-            var labels = await _labelService.GetLangCodeDic(langCode, org.LangLabelVariant);
+            var labels = await _labelService.GetLangCodeDic(langCode, org.LangCodeVariant);
 
             var rules = "";
             if (val.MinLength > 0) rules += "<br>" + GetLabel("LenMin", labels) + "=" + val.MinLength;

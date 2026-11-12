@@ -1,0 +1,588 @@
+﻿@inherits BasePage
+@attribute [Route(BaseRoutes.LabelAdminRoute)]
+@attribute [PageCode(BaseRoutes.LabelAdminPageCode)]
+@attribute [PagePermission(GC.PerLabelAdmin)]
+@attribute [Authorize]
+
+
+<ConfirmNavigation List="langcodes" />
+
+<!-- @key Forces a refresh -->
+<Header @key="_stateChangedToggle"
+        TitleKey="LabelA"
+        PageCode=@BaseRoutes.LabelAdminPageCode
+        ToolBarButtonsLeft="toolBarButtonsLeft"
+        ToolBarButtonsRight="toolBarButtonsRight" />
+
+
+@if (loadStatus.ShowSpinner())
+{
+    <Loading LoadStatus=@loadStatus>
+        @loadStatus.Exception
+    </Loading>
+}
+else
+{
+    <MudGrid Class="mt-4">
+    
+        <!-- Left Side: List -->
+        @if (showList)
+        {
+            <MudItem xs="3">
+                <MudPaper Elevation="0" Outlined="true">
+                    <MudTable Style="@($"flex:1; min-height:0; table-layout:fixed; width:100%; {@GetDebugBorder("blue")}")"
+                                T="ListModel<LangCodeAdminDto>"
+                                Items="@langcodes"
+                                Filter="FilterCode"
+                                Height="100%"
+                                FixedHeader="true"
+                                Hover="true"
+                                Bordered="true"
+                                Striped="true"
+                                RowClassFunc="GetRowClass">
+
+                        <ColGroup>
+                            <col style="width:2%;" />
+                            <col style="width:30%;" />
+                            <col style="width:25%;" />
+                            <col style="width:43%;" />
+                        </ColGroup>
+                        <HeaderContent>
+                            <MudTh></MudTh>
+                            <MudTh>
+                                <TableColumnFilter LangKey="LangCode"
+                                                   FilterIndex="@LangCodeIndex"
+                                                   FilterChanged="OnCodeFilterChanged" />
+                            </MudTh>
+                            <MudTh><Label Key="Variant" /></MudTh>
+                            <MudTh><Label Key="Active" /></MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd Style="max-width:1px; padding:0px; border-right: none;"
+                                   @key="context.Id"
+                                   DataLabel="Error"
+                                   Class="@GetLangCodeFirstColumnErrorClass(context)"
+                                   @onclick="() => OnItemSelected(context)">
+                                @GetLangCodeRowPointer(context)
+                            </MudTd>
+                            <MudTd DataLabel="LangCode"
+                                   Class="@GetLangCodeRowClass(context)"
+                                    @onclick="() => OnItemSelected(context)">
+                                <MudText>@context.dto.Code</MudText>
+                            </MudTd>
+                            <MudTd DataLabel="Variant">
+                                <MudText>@context.dto.Variant</MudText>
+                            </MudTd>
+                            <MudTd DataLabel="Active">
+                                <MudCheckBox T="bool"
+                                             ReadOnly="@(!pageStatus.isCrudU)"
+                                             @bind-Value="context.IsActive"/>
+                            </MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                </MudPaper>
+            </MudItem>
+        }
+
+
+        <!-- Right Side: Details -->
+        @if (selections.Count > 0)
+        {
+            <MudItem xs="9">
+                
+                <MudPaper Elevation="0" Outlined="true">
+
+                    @if (langkeys != null)
+                    {
+                            
+                        <MudTable Style="table-layout: fixed;"
+                                    Items="@langkeys"
+                                    Height="@tableHeight"
+                                    Filter="FilterKey"
+                                    FixedHeader="true"
+                                    Hover="true"
+                                    Bordered="true"
+                                    Striped="true">
+
+                        
+                            <HeaderContent>
+                                <MudTh Style="width:150px; min-width:150px; max-width:150px;">
+                                    <TableColumnFilter LangKey="LangKey" 
+                                                       FilterIndex="@LangKeyIndex"
+                                                       FilterChanged="OnKeyFilterChanged" />
+                                </MudTh>
+                                @for (var i = 0; i<selections.Count; i++)
+                                {
+                                    var x = i;
+                                    <MudTh>
+                                        <TableColumnFilter LangKey="@GetLangCodeVariant(selections[x].dto)"
+                                                           FilterIndex="@(x + LangLabelStartIndex)"
+                                                           FilterChanged="OnKeyFilterChanged" />
+                                    </MudTh>
+                                }
+                            </HeaderContent>
+                            <RowTemplate>
+                                <MudTd DataLabel="LangKey"
+                                       Style="width:150px; min-width:150px; max-width:150px;">
+                                    <MudText>@context.Code</MudText>
+                                </MudTd>
+                                @foreach (var sel in selections)
+                                {
+                                    <MudTd DataLabel="@sel.Code">
+                                        <MudTextField T="string"
+                                                        Value="@GetLabel(context, sel.dto)"
+                                                        ValueChanged="@(value => OnLabelChanged(value, context, sel.dto))"
+                                                        Immediate="true"
+                                                        MaxLength="@GC.LenLangLabel"
+                                                        AutoGrow="true"
+                                                        Margin="Margin.Dense"
+                                                        Variant="Variant.Text" />
+                                    </MudTd>
+                                }
+                            </RowTemplate>
+                        </MudTable>
+
+                    }
+
+                </MudPaper>
+            </MudItem>
+        }
+    </MudGrid>
+}
+
+@using System.Net
+@using MudBlazor
+@using FrontendServer.Base.Util
+@using FrontendServer.Base._Base;
+@using GC = FrontendServer.GlobalConstants;
+
+@using Newtonsoft.Json;  
+
+
+@code {
+    private string tableHeight = "70vh";
+    private int maxSelections = 3;
+    private bool showList = false;
+    private bool editCodes = false;
+    private string styleDivLeft = "text-align: center; border-left-style:double; border-left-width:3px; border-left-style:groove;";
+    private string styleCB = "align-items: center;";
+
+    private List<ListModel<LangCodeAdminDto>> langcodes = new List<ListModel<LangCodeAdminDto>>();
+    private List<ListModel<LangCodeAdminDto>> selections = new List<ListModel<LangCodeAdminDto>>();
+    private List<LangKeyAdminDto> langkeys = new List<LangKeyAdminDto>();
+    private LabelSearch lastSearch;
+
+    private int LangCodeIndex = 0;
+    private int LangKeyIndex = 1;
+    private int LangLabelStartIndex = 2;
+    private List<string> filterText = new List<string>();
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await InitialiseBasePage(GC.PerLabelAdmin, "LabelA");
+            pageStatus.pageCode = BaseRoutes.LabelAdminPageCode;
+
+            filterText.Add(string.Empty); //LangCodeIndex
+            filterText.Add(string.Empty); //LangKeyIndex
+
+            //  showList = langcodes.Count > 1;
+            showList = true;
+            //Always make edit mode
+            pageStatus.IsEditMode = pageStatus.orCrudCUD();
+            editCodes = pageStatus.isCrudU;
+
+            //Add standard toolbar
+            AddToolbarSearch(Search);
+            if (pageStatus.isCrudC)
+                AddToolbarAddNew(AddRecord);
+
+            AddToolbarExport(Export);
+
+            if (pageStatus.isCrudU || pageStatus.isCrudC)
+                AddToolbarSave(SaveAsync);
+            loadStatus.IsLoading = false;
+            Search();
+            ForceStateHasChanged();
+        }
+    }
+
+    private async Task OnLabelChanged(string value, LangKeyAdminDto key, LangCodeAdminDto code)
+    {
+        if (code.LabelsDic == null)
+            await OpenOkDialog(GetLabel("Error"), GetLabel("UnKnError"));
+
+        var dto = null as LangLabelAdminDto;
+
+        if (code.LabelsDic.ContainsKey(key.Id))
+            dto = code.LabelsDic[key.Id];
+        else
+        {
+            var newDto = new LangLabelNewDto
+            {
+                LangCodeId = code.Id,
+                LangKeyId = key.Id,
+                Variant = null
+            };
+
+            var response = await PostAsync<LangLabelNewDto>(GetUrl("LangLabelsNewAdmin"), newDto);
+            if (response.StatusCode == HttpStatusCode.OK)
+            {
+                var r = await response.Content.ReadAsStringAsync();
+                var dtoX = JsonConvert.DeserializeObject<_ResponseDto>(r);
+
+                if (dtoX.Valid)
+                {
+                    dto = JsonConvert.DeserializeObject<LangLabelAdminDto>(dtoX.Result.ToString());
+                    code.LabelsDic[key.Id] = dto;
+                }
+
+                else
+                    await OpenOkDialog(GetLabel("Error"), GetLabel("UnKnError"));
+            }
+        }
+
+        if (dto != null)
+            dto.LabelEdit = value;
+
+    }
+
+
+    private async Task Search()
+    {
+        bool confirmed = true;
+        var ok = await ConfirmNavigationIsOk();
+        if (!ok)
+        {
+            var result = await OpenConfirmYesNoDialog();
+            confirmed = !result.Canceled;
+        }
+
+        if (confirmed)
+        {
+            var result = await OpenSearchDialog<LabelSearchDialog>();
+            if (!result.Canceled)
+            {
+                lastSearch = (LabelSearch)result.Data;
+                await Load(lastSearch);
+            }
+        }
+    }
+
+    private async Task Load(LabelSearch search)
+    {
+        var response = await PostAsync<_ResponseDto, LabelSearch>(GetUrl("LangCodesAdmin"), search);
+
+        langcodes.Clear();
+        List<LangCodeAdminDto> langcodesX = null;
+
+        if (response.StatusCode == HttpStatusCode.OK)
+        {
+            var r = await response.Content.ReadAsStringAsync();
+            var dto = JsonConvert.DeserializeObject<_ResponseDto>(r);
+
+            if (dto.Valid)
+                langcodesX = JsonConvert.DeserializeObject<List<LangCodeAdminDto>>(dto.Result.ToString());
+
+        }
+
+        foreach (var r in langcodesX)
+            langcodes.Add(new ListModel<LangCodeAdminDto>(r));
+
+
+
+        response = await PostAsync<_ResponseDto, LabelSearch>(GetUrl("LangKeysAdmin"), search);
+
+        langkeys.Clear();
+        List<LangKeyAdminDto> langkeysX = null;
+
+        if (response.StatusCode == HttpStatusCode.OK)
+        {
+            var r = await response.Content.ReadAsStringAsync();
+            var dto = JsonConvert.DeserializeObject<_ResponseDto>(r);
+
+            if (dto.Valid)
+                langkeysX = JsonConvert.DeserializeObject<List<LangKeyAdminDto>>(dto.Result.ToString());
+
+        }
+
+        foreach (var r in langkeysX)
+            langkeys.Add(r);
+
+
+        //Reselect
+        if (selections.Count > 0)
+        {
+            var x = new List<ListModel<LangCodeAdminDto>>(selections);
+            selections.Clear();
+            foreach (var r in x)
+            {
+                var s = langcodes.Find(z => z.dto.Code.Equals(r.Code));
+                if (s != null)
+                    await Select(s, false);
+            }
+        }
+        else if (langcodes.Count > 0)
+        {
+            await Select(langcodes[0], true);
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task OnItemSelected(ListModel<LangCodeAdminDto> r)
+    {
+        await Select(r, false);
+        StateHasChanged();
+    }
+
+    private string GetLabel(LangKeyAdminDto key, LangCodeAdminDto code)
+    {
+        if (code.LabelsDic == null || !code.LabelsDic.ContainsKey(key.Id))
+            return "";
+
+        var l = code.LabelsDic[key.Id];
+        return !string.IsNullOrEmpty(l.LabelEdit) ? l.LabelEdit : l.Label;
+    }
+
+    private async Task Select(ListModel<LangCodeAdminDto> r, bool force)
+    {
+        int index = -1;
+        if (!r.IsLoaded || force)
+        {
+            LabelSearch search = lastSearch != null ? Clone(lastSearch) : new LabelSearch();
+            search.LangCodeId = r.Id;
+
+            var response = await PostAsync<_ResponseDto, LabelSearch>(GetUrl("LangLabelsAdmin"), search);
+
+            if (response.StatusCode == HttpStatusCode.OK)
+            {
+                var rx = await response.Content.ReadAsStringAsync();
+                var dto = JsonConvert.DeserializeObject<_ResponseDto>(rx);
+
+                if (dto.Valid)
+                {
+                    var labels = JsonConvert.DeserializeObject<List<LangLabelAdminDto>>(dto.Result.ToString());
+                    r.dto.LabelsDic = labels.ToDictionary(p => p.LangKeyId);
+                    r.HashMe();
+                    r.IsLoaded = true;
+                }
+            }
+        }
+
+        index = selections.FindIndex(s => s.Id == r.Id);
+
+        //Already selected?
+        if (index >= 0)
+        {
+            selections.RemoveAt(index);
+            filterText.RemoveAt(index + LangLabelStartIndex);
+        }
+        else 
+        {
+            if (selections.Count >= maxSelections)
+            {
+                selections.RemoveAt(0);
+                filterText.RemoveAt(0 + LangLabelStartIndex);
+            }
+
+            selections.Add(r);
+            filterText.Add(string.Empty);
+        }
+    }
+
+    private string GetLangCodeVariant(LangCodeAdminDto dto)
+    {
+        return dto.Code + (dto.Variant != null ? "-" + dto.Variant : "");
+    }
+
+    private string GetLangCodeRowPointer(ListModel<LangCodeAdminDto> dto) => GetSelectRowPointer(selections.Contains(dto));
+    private string GetLangCodeRowClass(ListModel<LangCodeAdminDto> dto) => GetListRowClass(dto);
+    private string GetLangCodeFirstColumnErrorClass(ListModel<LangCodeAdminDto> dto) => GetFirstColumnErrorClass(dto.dto);
+
+    private string GetRowClass(ListModel<LangCodeAdminDto> item, int index)
+    {
+        if (item.IsValidationError())
+            return "error-row" + GetLightDarkClassSuffix();
+
+        else if (item.IsValidationWarning())
+            return "warning-row" + GetLightDarkClassSuffix();
+
+        return string.Empty;
+    }
+
+    private async Task EditLabelCodes()
+    {
+        if (!pageStatus.isCrudU) return;
+        editCodes = !editCodes;
+        await Task.CompletedTask;
+    }
+
+    private async Task SaveAsync()
+    {
+        loadStatus.SetSaving();
+
+        var updates = new List<LangLabelAdminDto>();
+        for (int i = 0; i < langcodes.Count; i++)
+        {
+            var langCode = langcodes[i];
+            if (langCode.IsLoaded && langCode.HasChanged())
+            {
+                foreach (LangLabelAdminDto label in langCode.dto.LabelsDic.Values)
+                {
+                    if (label.IsDelete() || label.IsChanged())
+                        updates.Add(label);
+
+                }
+            }
+        }
+
+        if (updates.Count>0)
+        {
+            var updatesX = new UpdateRequest<List<LangLabelAdminDto>>()
+            {
+                Updates = updates
+            };
+
+            var r2 = null as _ResponseDto;
+            var response = await PostAsync<List<LangLabelAdminDto>>(GetUrl("LabelUpdateAdmin"), updatesX);
+            if (response.StatusCode == HttpStatusCode.OK)
+            {
+                var r1 = await response.Content.ReadAsStringAsync();
+                r2 = JsonConvert.DeserializeObject<_ResponseDto>(r1);
+            }
+
+            if (r2 != null && r2.Valid)
+            {
+                List<LangLabelAdminDto> dtos = JsonConvert.DeserializeObject<List<LangLabelAdminDto>>(r2.Result.ToString());
+
+                for (int i = 0; i < updates.Count; i++)
+                {
+                    var labelU = updates[i];
+                    var langCode = langcodes.FirstOrDefault(x => x.Id == labelU.LangCodeId);
+
+                    if (labelU.IsDelete())
+                    {
+                        labelU.Id = -1;
+                        labelU.Reset();
+                        continue;
+                    }
+
+                    var labelR = dtos.FirstOrDefault(x => x.LangCodeId == labelU.LangCodeId && x.LangKeyId == labelU.LangKeyId);
+                    var label = langCode.dto.LabelsDic[labelU.LangKeyId];
+                    label.Id = labelR.Id;
+                    label.Label = labelR.Label;
+                    label.LabelEdit = null;
+                }
+
+                ResetHashes();
+            }
+            else if (!string.IsNullOrEmpty(r2?.ErrorMessage))
+            {
+                loadStatus.ResetSaving();
+                StateHasChanged();
+                await OpenOkDialog(GetLabel("Error"), r2?.ErrorMessage);
+            }
+
+        }
+        loadStatus.ResetSaving();
+    }
+
+    private void ResetHashes()
+    {
+        foreach (var r in langcodes)
+        {
+            r.ClearHash();
+            r.HashMe();
+        }
+    }
+
+    public async Task<bool> ConfirmNavigationIsOk()
+    {
+        for (int i = 0; langcodes != null && i < langcodes.Count; i++)
+        {
+            var dto = langcodes[i];
+            if (dto.IsLoaded && dto.HasChanged())
+                return false;
+        }
+        return true;
+    }
+
+    private void OnCodeFilterChanged((string? Value, int FilterIndex) args)
+    {
+        filterText[args.FilterIndex] = args.Value ?? string.Empty;
+        StateHasChanged();
+    }
+    
+    private bool FilterCode(ListModel<LangCodeAdminDto> item)
+    {
+        if (string.IsNullOrWhiteSpace(filterText[LangCodeIndex]))
+            return true;
+
+        return item.Code?.Contains(
+            filterText[LangCodeIndex],
+            StringComparison.OrdinalIgnoreCase) == true;
+    }
+
+
+    private void OnKeyFilterChanged((string? Value, int FilterIndex) args)
+    {
+        filterText[args.FilterIndex] = args.Value ?? string.Empty;
+        StateHasChanged();
+    }
+
+    private bool FilterKey(LangKeyAdminDto key)
+    {
+        if (!string.IsNullOrWhiteSpace(filterText[LangKeyIndex]))
+        {
+            if (key.Code?.Contains(filterText[LangKeyIndex], StringComparison.OrdinalIgnoreCase) == false)
+                return false;
+        }
+
+        //Loop filters
+        for (var i=0; i<selections.Count; i++)
+        {
+            var f = filterText[i + LangLabelStartIndex];
+            if (string.IsNullOrWhiteSpace(f)) continue;
+
+            var sel = selections[i];
+
+            var label = GetLabel(key, sel.dto);
+            if (string.IsNullOrEmpty(label)) return false;
+
+            if (label?.Contains(f, StringComparison.OrdinalIgnoreCase) == false)
+                return false;
+        }
+
+        return true;
+    }
+
+    private async Task AddRecord()
+    {
+        // var dto = await GetAsync<UserDto>(GetUrl("UserNew"), false);
+        // dto.Code = GetCode(dto); //for the list table
+        // var rec = new ListModel<UserDto>(dto);
+        // rec.IsLoaded = true;
+        // list.Insert(0, rec);
+        // OnItemSelected(rec);
+    }
+
+    //ToDo
+    private async Task Export()
+    {
+
+    }
+
+    private string Label(string key) => GetLabel(key);
+    protected override async Task OnInitializedAsync() => loadStatus.IsLoading = true;
+
+
+    public LabelSearch Clone(LabelSearch obj)
+    {
+        var json = System.Text.Json.JsonSerializer.Serialize(obj);
+        return System.Text.Json.JsonSerializer.Deserialize<LabelSearch>(json)!;
+    }
+
+}

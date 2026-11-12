@@ -1,0 +1,65 @@
+﻿@inherits BasePage
+ 
+<BaseSearchDialog Width="800px"
+                  Height="400px"
+                  TitleKey="LabelSr"
+                  SubmitAction="Submit"
+                  IsValid="data.IsValid()"
+                  BaseSearch="data"
+                  MaxRecordsReturned="MaxRecordsReturned"
+                  IsService="IsService">
+
+    <TextField Width=GC.TextFieldWidth.TextMedium
+                LangCode="LangCode"
+                MaxLength="@GC.LenCode"
+                Immediate="true"
+                @ref="langcodeField"
+                @bind-Value="data.LangCode" />
+
+    <TextField Width=GC.TextFieldWidth.TextMedium
+               LangCode="LangKey"
+               MaxLength="@GC.LenCode"
+               @bind-Value="data.LangKey" />
+
+
+</BaseSearchDialog>
+
+
+@using GC = FrontendServer.GlobalConstants;
+
+@code {
+    [CascadingParameter] private IMudDialogInstance? MudDialog { get; set; }
+
+    [Parameter] public int MaxRecordsReturned { get; set; }
+    [Parameter] public bool IsService { get; set; }
+
+    private TextField langcodeField;
+    private LabelSearch data = new LabelSearch ();
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            data = await GetAsync<LabelSearch>(GetUrl("LabelSearch"), false);
+            data.MaxRecordsReturned = MaxRecordsReturned;
+
+            await InvokeAsync(async () =>
+            {
+                await Task.Yield();
+                await Task.Delay(100);
+                await langcodeField!.FocusAsync();
+                StateHasChanged();
+            });
+        }
+    }
+
+    private async Task Submit()
+    {
+        if (data.IsValid())
+        {
+            MudDialog.Close(DialogResult.Ok(data));
+        }
+    }
+
+}

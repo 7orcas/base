@@ -101,10 +101,13 @@ Code,Code
 Desc,Description
 Lang,Language
 LangCode,Lang Code
+LangKey,Lang Key
 Langs,Languages
 LangCodeV,Language Variant
 Label,Label
+LabelA,Label Admin
 Labels,Labels
+LabelSr,Label Search
 LabelHK,Highlight missing label
 Variant,Variant
 LabelEdit,Edit Label

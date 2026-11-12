@@ -73,8 +73,14 @@ namespace Backend.Base.Urls
                 Add(urls, "LabelRelatedList", "Label/relatedlist");
             }
 
-            if (session.IsUserPermission(GC.PerConfig))
+            if (session.IsUserPermission(GC.PerLabelAdmin))
             {
+                Add(urls, "LabelSearch", "LabelAdmin/search");
+                Add(urls, "LangCodesAdmin", "LabelAdmin/codelist");
+                Add(urls, "LangKeysAdmin", "LabelAdmin/keylist");
+                Add(urls, "LangLabelsAdmin", "LabelAdmin/labellist");
+                Add(urls, "LangLabelsNewAdmin", "LabelAdmin/new");
+                Add(urls, "LabelUpdateAdmin", "LabelAdmin/update");
             }
 
             if (session.IsUserPermission(GC.PerPerm))

@@ -1,5 +1,7 @@
-﻿using Npgsql;
+﻿using DocumentFormat.OpenXml.Office2010.ExcelAc;
+using DocumentFormat.OpenXml.VariantTypes;
 using Microsoft.Extensions.Caching.Memory;
+using Npgsql;
 using GC = Backend.GlobalConstants;
 
 /// <summary>
@@ -34,7 +36,7 @@ namespace Backend.Base.Label
         }
 
         public async Task<Dictionary<string, LangLabel>> GetLanguageLabelDic(SessionEnt session) =>
-            await GetLanguageLabelDic(session.LangCodeCurrent, session.Org.LangLabelVariant);
+            await GetLanguageLabelDic(session.LangCodeCurrent, session.Org.LangCodeVariant);
         
 
         public async Task<Dictionary<string, LangLabel>> GetLanguageLabelDic(string langCode, int? variant)
@@ -55,7 +57,7 @@ namespace Backend.Base.Label
         }
 
         public async Task<Dictionary<string, string>> GetLangCodeDic(SessionEnt session) =>
-            await GetLangCodeDic(session.LangCodeCurrent, session.Org.LangLabelVariant);
+            await GetLangCodeDic(session.LangCodeCurrent, session.Org.LangCodeVariant);
         
 
         public async Task<Dictionary<string, string>> GetLangCodeDic(string langCode, int? variant)
@@ -83,7 +85,7 @@ namespace Backend.Base.Label
         }
 
         private string CacheKey(string langCode, int? variant, string type) =>
-            GC.CacheKeyLabelPrefix + langCode + (variant.HasValue ? variant : GC.LangLabelVariantDefault) + type;
+            GC.CacheKeyLabelPrefix + langCode + (variant.HasValue ? variant : GC.LangCodeVariantDefault) + type;
         
         /*
          * Get language list for passed in language code (eg 'en')
@@ -95,7 +97,7 @@ namespace Backend.Base.Label
             if (dic != null) return dic.Values.ToList(); 
 
             var list = await GetLabelList(null, langCode, null, null, null);
-            if (variant.HasValue)
+            if (variant.HasValue && variant.Value > 0)
             {
                 try
                 {
@@ -126,9 +128,35 @@ namespace Backend.Base.Label
             var dic = cache != null ? cache.Get<Dictionary<string, LangLabel>>(key) : null;
             if (dic != null) return dic.Values.ToList();
 
-            var list = await GetLabelList(null, langCode, null, null, variant);
+            var list = await GetLabelList(null, langCode, null, null, null);
+            list = FilterLoginLangKeys(list);
 
-            // Filter the list to only include login-related keys
+            if (variant.HasValue && variant.Value > 0)
+            {
+                var listNew = new List<LangLabel>();
+                
+                var listV = await GetLabelList(null, langCode, null, null, variant);
+                listV = FilterLoginLangKeys(listV);
+
+                foreach (var label in list)
+                {
+                    var labelV = listV.FirstOrDefault(x => x.LangKeyId == label.LangKeyId);
+                    if (labelV != null)
+                        listNew.Add(labelV);
+                    else
+                        listNew.Add(label);
+                }
+
+                list = listNew; 
+            }
+
+            await SetLanguageLabelDic(langCode, variant, list, LoginLabelsCacheKey);
+            return list;
+        }
+
+
+        private List<LangLabel> FilterLoginLangKeys(List<LangLabel> list)
+        {
             var loginKeys = new HashSet<string>
             {
                 "Oops",
@@ -172,9 +200,9 @@ namespace Backend.Base.Label
                 }))
                 .ToList();
 
-            await SetLanguageLabelDic(langCode, variant, list, LoginLabelsCacheKey);
             return list;
         }
+               
 
         /*
          * Get language label for passed in language code id
@@ -206,7 +234,6 @@ namespace Backend.Base.Label
                    r => {
                        k = new LangKey {
                            Id = GetId(r),
-                           Pack = GetStringNull(r, "pack"),
                            Code = GetCode(r),
                            Description = GetDescription(r),
                            Updated = GetUpdated(r),
@@ -226,9 +253,13 @@ namespace Backend.Base.Label
             List<string> langCodes,
             int? variant)
         {
-            string sql = "SELECT l.id, l.langKeyId, l.langCode, k.code AS kCode, l.variant, l.code, l.tooltip, l.updated " +
+            string sql = "SELECT l.id, l.langKeyId, l.langCodeId, " +
+                                "c.code AS langCode, c.variant, " +
+                                "k.code AS kCode, " +
+                                "l.code, l.updated " +
                             "FROM base.langLabel l " +
-                            "INNER JOIN base.langKey k ON k.id = l.langKeyId ";
+                            "JOIN base.langCode c ON c.id = l.langCodeId " +
+                            "JOIN base.langKey k ON k.id = l.langKeyId ";
 
             string sqlWhere = "";
 
@@ -236,16 +267,16 @@ namespace Backend.Base.Label
                 sqlWhere = "WHERE l.id = " + id + " ";
             else
             {
-                sqlWhere = "WHERE l.variant " + (variant.HasValue ? " = " + variant : " IS NULL") + " ";
+                sqlWhere = "WHERE c.variant " + (variant.HasValue && variant.Value > 0 ? " = " + variant : " IS NULL") + " ";
 
                 if (!string.IsNullOrEmpty(langCode))
-                    sqlWhere += "AND l.langCode = '" + langCode + "' ";
+                    sqlWhere += "AND c.code = '" + langCode + "' ";
 
                 else if (langCodes  != null)
                 {
                     sqlWhere += "AND (";
                     for (int i = 0; i < langCodes.Count; i++)
-                        sqlWhere += (i==0?"":" OR ") + "l.langCode = '" + langCodes[i] + "'";
+                        sqlWhere += (i==0?"":" OR ") + "c.code = '" + langCodes[i] + "'";
                     sqlWhere += ") ";
                 }
 
@@ -265,12 +296,12 @@ namespace Backend.Base.Label
                         list.Add(new LangLabel()
                         {
                             Id = GetId(r),
+                            LangCodeId = GetId(r, "langCodeId"),
+                            LangCode = GetString(r, "langCode"),
                             LangKeyId = GetId(r, "langKeyId"),
                             LangKeyCode = GetString(r, "kCode"),
-                            LangCode = GetString(r, "langCode"),
                             Variant = GetIntNull(r, "variant"),
                             Code = GetCode(r),
-                            Tooltip = GetStringNull(r, "tooltip"),
                             Updated = GetUpdated(r)
                         });
                     }
@@ -305,17 +336,15 @@ namespace Backend.Base.Label
             if (label.Id > 0)
                 sql = "UPDATE  base.langLabel SET "
                     + "code = '" + label.Code + "', "
-                    + (label.Tooltip != null ? "tooltip = '" + label.Tooltip + "'" : "Tooltip = NULL" ) + " "
                     + "WHERE id = " + label.Id;
             else
                 sql = "INSERT INTO  base.langLabel "
-                    + "(langKeyId, langCode, variant, code, tooltip) "
+                    + "(langKeyId, langCode, variant, code) "
                     + " VALUES ("
                     + label.LangKeyId + ","
                     + "'" + label.LangCode + "',"
                     + (label.Variant != null ? label.Variant : "NULL") + ","
-                    + "'" + label.Code + "',"
-                    + (label.Tooltip != null ? "'" + label.Tooltip + "'" : "NULL")
+                    + "'" + label.Code + "'"
                     + ")";
 
             await Sql.ExecuteAsync(sql);

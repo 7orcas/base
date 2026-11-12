@@ -74,7 +74,7 @@ namespace Backend.Base.Login
                 OrgNr = GetOrgNr(r),
                 OrgNrs = GetString(r, "orgNrs"),
                 LangCode = GetString(r, "langCode"),
-                LangLabelVariant = GetInt(r, "langLabelVariant"),
+                LangCodeVariant = GetInt(r, "langCodeVariant"),
                 LangCodes = GetString(r, "langCodes"),
                 SuccessAction = GetInt(r, "successAction"),
                 IsMasqueradeEnabled = GetBoolean(r, "isMasqueradeEnabled"),

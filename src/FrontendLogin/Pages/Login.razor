@@ -610,7 +610,7 @@
         if (lang != null)
         {
             SelectedLangFlag = lang.FlagUrl;
-            labels = await LS.InitialiseLabels(lang.Code, options.LangLabelVariant);
+            labels = await LS.InitialiseLabels(lang.Code, options.LangCodeVariant);
         }
     }
 
@@ -638,7 +638,7 @@
         navigateToMain = options.SuccessAction == GC.NavigateToFrontendServer;
 
         //labels = await InitialiseLabels(options);
-        labels = await LS.InitialiseLabels(options.LangCode, options.LangLabelVariant);
+        labels = await LS.InitialiseLabels(options.LangCode, options.LangCodeVariant);
 
         //Load organisation options
         OrgList = new List<OrgItem>();

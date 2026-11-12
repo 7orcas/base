@@ -18,6 +18,8 @@ global using Backend.Base.Config;
 global using Backend.Base.Config.Ent;
 global using Backend.Base.Label;
 global using Backend.Base.Label.Ent;
+global using Backend.Base.LabelAdmin;
+global using Backend.Base.LabelAdmin.Ent;
 global using Backend.Base.Audit;
 global using Backend.Base.Audit.Ent;
 global using Backend.Base.Login;

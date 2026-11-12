@@ -7,7 +7,7 @@
         public const int NewRecordVersion = -1;
 
         public const string DateTimeFormat = "yyyy-MM-dd HH:mm:sszzz";
-        public const int LangLabelVariantDefault = 0;
+        public const int LangCodeVariantDefault = 0;
         public const string RestActionArg = "RestActionArguments";
 
         //Urls

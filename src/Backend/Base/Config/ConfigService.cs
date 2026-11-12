@@ -153,7 +153,7 @@ namespace Backend.Base.Config
                 Label = new LabelConfigDto
                 {
                     LangCode = langCodeCurrent,
-                    Variant = org.LangLabelVariant,
+                    Variant = org.LangCodeVariant,
                     ShowTooltip = true,
                     IsAdmin = session.IsAdmin && cachedConfigDto.Label.IsAdmin,
                     HighlightNoKey = cachedConfigDto.Label.HighlightNoKey, 

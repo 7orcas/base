@@ -109,8 +109,7 @@ namespace Backend.Base.Login
                 {
                     Id = l.Id,
                     LangKeyCode = l.LangKeyCode,
-                    Label = l.Code,
-                    Tooltip = l.Tooltip
+                    Label = l.Code
                 });
             }
 

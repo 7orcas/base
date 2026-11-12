@@ -28,7 +28,7 @@ namespace Backend.Base.Org.Ent
         public int Version { get; set; }
         public bool IsActive { get; set; }
         public string LangCode { get; set; }
-        public int LangLabelVariant { get; set; }
+        public int LangCodeVariant { get; set; }
         public string? Icon { get; set; }
         public string? ApiKey { get; set; }
         public int Mfa { get; set; }

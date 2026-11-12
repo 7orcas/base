@@ -15,6 +15,7 @@ namespace Backend.Program
             builder.Services.AddScoped<MenuServiceI, MenuService>();
             builder.Services.AddScoped<AuditServiceI, AuditService>();
             builder.Services.AddScoped<LabelServiceI, LabelService>();
+            builder.Services.AddScoped<LabelAdminServiceI, LabelAdminService>();
             builder.Services.AddScoped<ConfigServiceI, ConfigService>();
             builder.Services.AddScoped<LoginOptionServiceI, LoginOptionService>();
             builder.Services.AddScoped<LoginServiceI, LoginService>();

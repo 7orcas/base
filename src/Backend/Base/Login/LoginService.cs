@@ -176,7 +176,7 @@ namespace Backend.Base.Login
                 }
 
                 //Validate user
-                var labels = await _labelService.GetLangCodeDic(request.LangCode, org.LangLabelVariant);
+                var labels = await _labelService.GetLangCodeDic(request.LangCode, org.LangCodeVariant);
                 if (!await ValidateLogin(login, loginErr, request.Password, org, labels))
                 {
                     _log.Warning("Login not Validated. Error {Error}", loginErr.Response.ErrorMessage);
@@ -593,7 +593,7 @@ namespace Backend.Base.Login
         public async Task<(bool success, string message)> ResetRequest(string email, string ipAddress, string langCode)
         {
             var login = await GetLoginByEmail(email);
-            var labels = await _labelService.GetLangCodeDic(langCode, GC.LangLabelVariantDefault);
+            var labels = await _labelService.GetLangCodeDic(langCode, GC.LangCodeVariantDefault);
 
             var oops = "Something went wrong! Please see your system admin.";
             if (labels.TryGetValue("Oops", out var value))

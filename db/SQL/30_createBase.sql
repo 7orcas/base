@@ -26,7 +26,7 @@ CREATE TABLE base.org (
 	updated     DATETIME        NOT NULL DEFAULT GETDATE(),
 	isActive    BIT             NOT NULL DEFAULT 1,
 	langCode  NVARCHAR (4)    NULL,
-	langLabelVariant  INT             NULL
+	langCodeVariant  INT             NULL
 );
 
 CREATE TABLE base.zzz
