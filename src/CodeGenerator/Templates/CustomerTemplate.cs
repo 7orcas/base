@@ -21,8 +21,8 @@ namespace CodeGenerator.Templates
             Backend = new ProjectTemplate
             {
                 IsCreate = true,
-                NewPath = GC.BackendAppPath + AppSubPath + ToEntity,
-                CopyFromPath = GC.BackendAppPath + FromEntity,
+                //NewPath = GC.BackendAppPath + AppSubPath + ToEntity,
+                //CopyFromPath = GC.BackendAppPath + FromEntity,
                 CopyEnts = true,
                 CopyControllers = true,
                 CopyRepos = true,

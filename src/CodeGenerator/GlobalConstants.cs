@@ -2,12 +2,23 @@
 {
     public class GlobalConstants 
     {
-        //public const string SolutionPath = "c:/Source/src/";
-        public const string SolutionPath = "c:/Temp/";
-        public const string BackendPath = SolutionPath + "Backend/";
         public const string BackendAppDs = "DS";
         public const string BackendAppHf = "HF";
-        public const string BackendAppPath = BackendPath + "App/";
-        public const string BackendBasePath = BackendPath + "Base/";
+
+        private const string OriginRootPath = "c:/Source/src/";
+        private const string OriginBackendPath = OriginRootPath + "Backend/";
+        public const string OriginBackendBasePath = OriginBackendPath + "Base/";
+        public const string OriginBackendAppPath = OriginBackendPath + "App/";
+
+        private const string DestinationRootPath = "c:/Temp/";
+        private const string DestinationBackendPath = DestinationRootPath + "Backend/";
+        public const string DestinationBackendAppPath = DestinationBackendPath + "App/";
+        public const string DestinationBackendBasePath = DestinationBackendPath + "Base/";
+        
+
+        public const string EntityDirectory = "Ent/";
+        public const string ControllerPattern = "*Controller.cs";
+        public const string ServicePattern = "*Service*";
+        public const string RepositoryPattern = "*Repo*";
     }
 }

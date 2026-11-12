@@ -15,7 +15,7 @@ namespace CodeGenerator.Util
         }
 
 
-        public async Task CreateFolder(string path, bool replace = false)
+        public async Task<string> CreateFolder(string path, bool replace = false)
         {
             if (replace && Directory.Exists(path))
             {
@@ -29,13 +29,67 @@ namespace CodeGenerator.Util
                 Directory.CreateDirectory(path);
             }
 
-            //var entPath = Path.Combine(path, "Ent");
-            //if (template.IsBackendEnt && !Directory.Exists(entPath))
-            //{
-            //    Log("Creating directory: " + entPath);
-            //    Directory.CreateDirectory(entPath);
-            //}
+            return path;
+        }
 
+
+        public async Task CopyFolder(string sourcePath, string destinationPath, ProjectTemplate project)
+        {
+            await CopyFolder(sourcePath, destinationPath, project, "*");
+        }
+
+        public async Task CopyFolder(string sourcePath, string destinationPath, ProjectTemplate project, string searchPattern)
+        {
+            foreach (var sourceFile in Directory.GetFiles(sourcePath, searchPattern))
+            {
+                var fileName = Path.GetFileName(sourceFile);
+
+                foreach (var stringChange in project.StringsToChange)
+                {
+                    fileName = stringChange.Change(fileName);
+                }
+
+                var destinationFile = Path.Combine(destinationPath, fileName);
+
+                if (project.IsNewReplace || !File.Exists(destinationFile))
+                    await CopyFile(sourceFile, destinationFile, project);
+                
+            }
+        }
+
+        public async Task CopyFile (string sourceFile, string destinationFile, ProjectTemplate project)
+        {
+            var contents = File.ReadAllText(sourceFile);
+            
+            foreach (var stringChange in project.StringsToChange)
+                contents = stringChange.Change(contents);
+            
+            foreach (var stringRemove in project.StringsToRemove)
+                contents = stringRemove.Remove(contents);
+            
+            // Write modified file
+            File.WriteAllText(destinationFile, contents);
+        }
+
+
+        public static string CombinePath(string first, string second)
+        {
+            first ??= string.Empty;
+            second ??= string.Empty;
+
+            if (string.IsNullOrEmpty(first))
+                return second;
+
+            if (string.IsNullOrEmpty(second))
+                return first;
+
+            if (!first.EndsWith("/") && !second.StartsWith("/"))
+                return $"{first}/{second}";
+
+            if (first.EndsWith("/") && second.StartsWith("/"))
+                return first + second[1..];
+
+            return first + second;
         }
 
         public void Log(string message)
