@@ -32,12 +32,12 @@ namespace CodeGenerator.Generator
                 await CopyFolder(project.CopyFromPath, project.NewPath, project, GC.ControllerPattern);
 
             if (project.CopyServices)
-                add services
                 await CopyFolder(project.CopyFromPath, project.NewPath, project, GC.ServicePattern);
+                //add services
 
             if (project.CopyRepos)
-                add repo
                 await CopyFolder(project.CopyFromPath, project.NewPath, project, GC.RepositoryPattern);
+                //add repo
 
             return;
         }

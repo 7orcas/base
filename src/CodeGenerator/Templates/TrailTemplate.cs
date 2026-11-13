@@ -12,8 +12,8 @@ namespace CodeGenerator.Templates
         private string[] Changes = {
             "GC.PerCodeTemplate", "GC.PerTrail",
             "namespace Backend.CodeTemplate.Generic", "namespace Backend.App.HF.Trail",
-            "base.zcodetemplate", "hf.trail"
-            "entity.ToTable(\"zcodetemplate\", \"base\")", "entity.ToTable(\"trail\", \"hf\")"
+            "base.zcodetemplate", "hf.trail",
+            "entity.ToTable(\"zcodetemplate\", \"base\")", "entity.ToTable(\"trail\", \"hf\")",
             "CodeTemplateTitle", "Trails",
             "CodeTemplateSub", "TrailSb",
             "CodeTemplates", "Trails",
@@ -45,24 +45,24 @@ namespace CodeGenerator.Templates
             {
                 IsNewReplace = true,
                 IsCreate = true,
-                CopyFromPath = ProjectTemplate.CombinePath(GC.OriginBackendPath, "Generic", FromEntity),
+                CopyFromPath = ProjectTemplate.CombinePath(GC.OriginBackendPath, FromEntity, "Generic"),
                 CopyEnts = true,
                 CopyControllers = true,
                 CopyServices = true,
                 CopyRepos = true,
 
                 NewPath = ProjectTemplate.CombinePath(GC.DestinationBackendAppPath, GC.BackendAppHf, ToEntity),
-                UpdateCommonGlobalConstants = "PerTrail     = 10001;"
+                UpdateCommonGlobalConstants = "PerTrail     = 10001;",
                 UpdateUrlsService = ProjectTemplate.CombinePath(GC.OriginBackendAppPath, GC.BackendAppHf, "Base/Urls"),
 
-                PopulateChanges(Changes),
-                PopulateRemovals(Remove)
             };
+            Backend.PopulateChanges(Changes);
+            Backend.PopulateRemovals(Remove);
 
             Backend.StringsToChange.Add(new StringChange
             {
                 OldString = "*Created*",
-                NewString = ""
+                NewString = DateTime.Now.ToString("MMM yyyy")
             });
 
             

@@ -17,7 +17,7 @@ namespace CodeGenerator.Templates
 
         public override BaseTemplate ConfigureTemplate()
         {
-            AppSubPath = "DS/";
+          //  AppSubPath = "DS/";
             Backend = new ProjectTemplate
             {
                 IsCreate = true,

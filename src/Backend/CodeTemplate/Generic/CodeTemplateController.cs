@@ -21,8 +21,7 @@ namespace Backend.CodeTemplate.Generic
         /// <param name="ServiceProvider"></param>
         /// <param name="CodeTemplateServiceI"></param>
         public CodeTemplateController(IServiceProvider serviceProvider,
-            CodeTemplateServiceI codeTemplateService,
-            PermissionInitialiseServiceI PermissionInitialiseService) 
+            CodeTemplateServiceI codeTemplateService) 
             : base(serviceProvider)
         {
             _codeTemplateService = codeTemplateService;
@@ -49,6 +48,10 @@ namespace Backend.CodeTemplate.Generic
         }
 
 
+        /// <summary>
+        /// Get CodeTemplate search dto from cache or create a new one if not found
+        /// </summary>
+        /// <returns></returns>
         [CrudAtt(GC.CrudIgnore)]
         [AuditIgnoreAtt]
         [HttpGet("search")]
@@ -60,7 +63,11 @@ namespace Backend.CodeTemplate.Generic
             return Ok(new _ResponseDto(s));
         }
 
-
+        /// <summary>
+        /// Get CodeTemplates dtos 
+        /// </summary>
+        /// <param name="search"></param>
+        /// <returns></returns>
         [CrudAtt(GC.CrudRead)]
         [AuditListAtt(GC.CrudReadList)]
         [HttpPost("list")]
