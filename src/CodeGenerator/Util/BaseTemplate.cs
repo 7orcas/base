@@ -7,8 +7,8 @@ namespace CodeGenerator.Util
 {
     public abstract class BaseTemplate
     {
+        public string FromEntity { get; set; }
         public string ToEntity { get; set; }
-        public string AppSubPath { get; set; } = "";
 
         public ProjectTemplate Backend;
         public ProjectTemplate Common;
@@ -28,36 +28,80 @@ namespace CodeGenerator.Util
         public bool CopyControllers { get; set; } = false;
         public bool CopyServices { get; set; } = false;
         public bool CopyRepos { get; set; } = false;
+        public string UpdateCommonGlobalConstants { get; set; } = "";
+        public string UpdateUrlsService { get; set; } = "";
         public List<StringChange> StringsToChange = new List<StringChange>();
         public List<StringRemove> StringsToRemove = new List<StringRemove>();
 
         // public string PermissionAtt = GC.PermissionAttribute;
 
+        public void PopulateChanges(string[] changes)
+        {
+            for (int i = 0; changes != null && i < changes.Length; i += 2)
+            {
+                var oldString = changes[i];
+                var newString = changes[i + 1];
+                StringsToChange.Add(new StringChange
+                {
+                    OldString = oldString,
+                    NewString = newString
+                });
+            }
+        }
+
+        public void PopulateRemovals(string[] removals)
+        {
+            for (int i = 0; removals != null && i < removals.Length; i++)
+            {
+                StringsToRemove.Add(new StringRemove
+                {
+                    OldString = removals[i]
+                });
+            }
+        }
 
         public bool IsValid()
         {
             return !string.IsNullOrEmpty(NewPath);
         }
 
-        public static string CombinePath(string first, string second)
+        public static string CombinePath(params string[] paths)
         {
-            first ??= string.Empty;
-            second ??= string.Empty;
+            if (paths == null || paths.Length == 0)
+                return string.Empty;
 
-            if (string.IsNullOrEmpty(first))
-                return second;
+            string combined = paths[0] ?? string.Empty;
 
-            if (string.IsNullOrEmpty(second))
-                return first;
+            for (int i = 1; i < paths.Length; i++)
+            {
+                string next = paths[i] ?? string.Empty;
 
-            if (!first.EndsWith("/") && !second.StartsWith("/"))
-                return $"{first}/{second}";
+                if (string.IsNullOrEmpty(combined))
+                {
+                    combined = next;
+                    continue;
+                }
 
-            if (first.EndsWith("/") && second.StartsWith("/"))
-                return first + second[1..];
+                if (string.IsNullOrEmpty(next))
+                    continue;
 
-            return first + second;
+                if (!combined.EndsWith("/") && !next.StartsWith("/"))
+                {
+                    combined = $"{combined}/{next}";
+                }
+                else if (combined.EndsWith("/") && next.StartsWith("/"))
+                {
+                    combined += next.Substring(1);
+                }
+                else
+                {
+                    combined += next;
+                }
+            }
+
+            return combined;
         }
+
     }
 
     public class StringChange

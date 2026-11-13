@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.TestPlatform.ObjectModel;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using GC = CodeGenerator.GlobalConstants;
@@ -7,24 +8,26 @@ namespace CodeGenerator.Templates
 {
     public class TrailTemplate : BaseTemplate
     {
-        private const string FromEntityApp = GC.BackendAppDs;
-        private const string FromDir = "Machines";
-        private const string FromEntity = "Machine";
-
+   
         private string[] Changes = {
-            "GC.PerMachine", "GC.PerTrail",
-            "GetMachines", "GetTrails",
-            "Machines", "Trail",
-            "Machine", "Trail",
-            "machine", "trail",
+            "GC.PerCodeTemplate", "GC.PerTrail",
+            "namespace Backend.CodeTemplate.Generic", "namespace Backend.App.HF.Trail",
+            "base.zcodetemplate", "hf.trail"
+            "entity.ToTable(\"zcodetemplate\", \"base\")", "entity.ToTable(\"trail\", \"hf\")"
+            "CodeTemplateTitle", "Trails",
+            "CodeTemplateSub", "TrailSb",
+            "CodeTemplates", "Trails",
+            "CodeTemplate", "Trail",
+            "codeTemplate", "trail",
+            "codetemplates", "trails",
+            "codetemplate", "trail",
         };
 
-        private string[] Remove = {
-            "StationPairs",
-        };
+        private string[] Remove = {  };
 
         public TrailTemplate()
         {
+            FromEntity = "CodeTemplate";
             ToEntity = "Trail";
         }
 
@@ -38,39 +41,31 @@ namespace CodeGenerator.Templates
 
         private void ConfigureBackend()
         {
-            AppSubPath = GC.BackendAppHf + "/";
             Backend = new ProjectTemplate
             {
-                IsNewReplace = false,
+                IsNewReplace = true,
                 IsCreate = true,
-                CopyFromPath = ProjectTemplate.CombinePath(GC.OriginBackendAppPath, FromEntityApp + "/" + FromDir),
+                CopyFromPath = ProjectTemplate.CombinePath(GC.OriginBackendPath, "Generic", FromEntity),
                 CopyEnts = true,
                 CopyControllers = true,
                 CopyServices = true,
                 CopyRepos = true,
 
-                NewPath = ProjectTemplate.CombinePath(GC.DestinationBackendAppPath, AppSubPath + ToEntity),
+                NewPath = ProjectTemplate.CombinePath(GC.DestinationBackendAppPath, GC.BackendAppHf, ToEntity),
+                UpdateCommonGlobalConstants = "PerTrail     = 10001;"
+                UpdateUrlsService = ProjectTemplate.CombinePath(GC.OriginBackendAppPath, GC.BackendAppHf, "Base/Urls"),
+
+                PopulateChanges(Changes),
+                PopulateRemovals(Remove)
             };
 
-            for (int i = 0; i < Changes.Length; i += 2)
+            Backend.StringsToChange.Add(new StringChange
             {
-                var oldString = Changes[i];
-                var newString = Changes[i + 1];
-                Backend.StringsToChange.Add(new StringChange
-                {
-                    OldString = oldString,
-                    NewString = newString
-                });
-            }
+                OldString = "*Created*",
+                NewString = ""
+            });
 
-            for (int i = 0; i < Remove.Length; i++)
-            {
-                var oldString = Remove[i];
-                Backend.StringsToRemove.Add(new StringRemove
-                {
-                    OldString = oldString,
-                });
-            }
+            
         }
 
         public override bool IsValid()

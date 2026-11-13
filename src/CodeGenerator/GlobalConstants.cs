@@ -20,5 +20,6 @@
         public const string ControllerPattern = "*Controller.cs";
         public const string ServicePattern = "*Service*";
         public const string RepositoryPattern = "*Repo*";
+        public const string UlrsService = "*Repo*";
     }
 }

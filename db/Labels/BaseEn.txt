@@ -236,4 +236,7 @@ TextDN,None
 TextDO,Comma (OR)
 Unaccent,Accent Insensitive Search
 Diffs,Differences
+Trail,Trail
+Trails,Trails
+TrailSb,Random Number Trails
 <LAST>,<LAST LINE>
