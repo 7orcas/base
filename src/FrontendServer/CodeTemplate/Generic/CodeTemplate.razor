@@ -74,7 +74,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var defs = await GetDefinition(GetUrl("UserDef"));
+        var defs = await GetDefinition(GetUrl("CodeTemplateDef"));
         fieldDefinitionUtil = new FieldDefinitionUtil(defs);
     }
 
@@ -92,7 +92,7 @@
             if (pageStatus.isCrudC)
                 AddToolbarAddNew(AddRecord);
 
-            AddToolbarExport(Export);
+           // AddToolbarExport(Export);
 
             if (pageStatus.isCrudU || pageStatus.isCrudC)
                 AddToolbarSave(SaveAsync);
@@ -118,16 +118,16 @@
             if (!result.Canceled)
             {
                 listUtil.Clear();
-                var data = (UserSearch)result.Data;
+                var data = (CodeTemplateSearch)result.Data;
                 await LoadList(data);
             }
         }
     }
 
     
-    private async Task LoadList(UserSearch search)
+    private async Task LoadList(CodeTemplateSearch search)
     {
-        var response = await PostAsync<_ResponseDto, UserSearch>(GetUrl("UserList"), search);
+        var response = await PostAsync<_ResponseDto, CodeTemplateSearch>(GetUrl("CodeTemplateList"), search);
 
         list.Clear();
         List<CodeTemplateDto> listX = null;
@@ -149,7 +149,6 @@
             listUtil.ShowList = true;
             foreach (var u in listX)
             {
-                u.Code = GetCode(u); //for the list table
                 list.Add(new ListModel<CodeTemplateDto>(u));
             }
         }
@@ -175,7 +174,6 @@
         if (!dto.IsLoaded)
         {
             var record = await GetAsync<CodeTemplateDto>(GetUrlSlash("CodeTemplateGet") + dto.Id, false);
-            record.Code = GetCode(record); //for the list table
             dto.Load(record);
         }
 
@@ -202,7 +200,7 @@
         {
             Updates = updates.Select(x => x.dto).ToList()
         };
-        var response = await PostAsync<List<CodeTemplateDto>>(GetUrl("UserUpdate"), updatesX);
+        var response = await PostAsync<List<CodeTemplateDto>>(GetUrl("CodeTemplateUpdate"), updatesX);
 
         var r2 = null as _ResponseDto;
 
@@ -239,7 +237,7 @@
 
                 var dto = null as CodeTemplateDto;
                 if (rec.IsNew())
-                    dto = dtos.FirstOrDefault(x => x.Username == rec.dto.Username);
+                    dto = dtos.FirstOrDefault(x => x.Code == rec.dto.Code);
                 else
                     dto = dtos.FirstOrDefault(x => x.Id == rec.Id);
 
@@ -247,7 +245,6 @@
                 if (dto == null) continue;
 
                 rec.ClearHash();
-                dto.Code = GetCode(dto); //for the list table
                 rec.Load(dto);
             }
 

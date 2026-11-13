@@ -9,6 +9,8 @@ namespace Backend.CodeTemplate.Generic
         Task<CodeTemplateEnt> UpdateCodeTemplate(SessionEnt session, CodeTemplateEnt codeTemplate, CodeTemplateDto dto);
         Task<CodeTemplateDto?> NewCodeTemplate(SessionEnt session);
 
+
+        Task<DefinitionDto> GetDefinition(SessionEnt session);
         Task<List<ValidationDto>> ValidateCodeTemplates(SessionEnt session, List<CodeTemplateDto> update);
 
 

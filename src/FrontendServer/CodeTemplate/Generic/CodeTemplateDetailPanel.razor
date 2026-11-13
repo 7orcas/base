@@ -58,8 +58,7 @@
                                                     MaxLength="@GetMaxLength(nameof(dto.Code))"
                                                     Required="@IsRequired(nameof(dto.Code))"
                                                     Immediate="true"
-                                                    Value="@dto.Code"
-                                                    ValueChanged="@(v => CodeChanged(v, record))" />
+                                                    @bind-Value="@dto.Code"/>
                                     </div>
 
                                    
@@ -84,11 +83,6 @@
     [Parameter] public List<ListModel<CodeTemplateDto>> Selections { get; set; } = new List<ListModel<CodeTemplateDto>>();
     [Parameter] public EventCallback Refresh { get; set; }
     
-  
-    private bool Expand(CodeTemplateDto.UserAccountDto account, CodeTemplateDto user)
-    {
-    }
-
     private string GetAttemptsClass() => "error-row" + DarkModeSuffix();
     
 }
