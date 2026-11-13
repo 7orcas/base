@@ -38,7 +38,7 @@ INSERT INTO base.org (nr, code, typeOf, descr, langcode, langcodevariant, mfa,
 	icon, 
 	encoded)
 VALUES
-(1, 'Blue', 'OrgEntDS', 'Focus your heart', 'en', 1, 0, 
+(1, 'Blue', 'OrgEntHF', 'FYH', 'en', 1, 0, 
   'X123',	
   true, true, true, true, true, 
   '/images/Icons/BlueTransparentBlack512.png',
@@ -233,6 +233,17 @@ VALUES
 (15, 1, 5),
 (16, 1, 6);
 */
+
+
+
+--Used in Code Generation
+INSERT INTO base.zcodetemplate (orgnr, code, descr)
+VALUES
+(1, 'T1', 'T1 Desc'),
+(1, 'T2', 'T2 Desc'),
+(1, 'T3', 'T3 Desc');
+
+
 -- -------------------------------------------------
 -- Fix identity sequences
 -- -------------------------------------------------

@@ -19,7 +19,10 @@ namespace Backend.App.HF.Base.Menu
         public List<string> GetMenuItemIds(SessionEnt session)
         {
             var menuItemIds = base.GetMenuItemIds(session);
-            
+
+            if (session.IsUserPermission(GC.PerCodeTemplate))
+                menuItemIds.Add("CodeTemplate");
+
             return menuItemIds;
         }
 

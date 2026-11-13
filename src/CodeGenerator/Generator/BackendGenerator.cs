@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore.Migrations.Operations;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using GC = CodeGenerator.GlobalConstants;
@@ -31,9 +32,11 @@ namespace CodeGenerator.Generator
                 await CopyFolder(project.CopyFromPath, project.NewPath, project, GC.ControllerPattern);
 
             if (project.CopyServices)
+                add services
                 await CopyFolder(project.CopyFromPath, project.NewPath, project, GC.ServicePattern);
 
             if (project.CopyRepos)
+                add repo
                 await CopyFolder(project.CopyFromPath, project.NewPath, project, GC.RepositoryPattern);
 
             return;

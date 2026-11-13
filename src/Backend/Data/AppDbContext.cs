@@ -16,6 +16,9 @@
         public DbSet<RoleEnt> Roles => Set<RoleEnt>();
         public DbSet<UserEnt> Users => Set<UserEnt>();
 
+
+        public DbSet<CodeTemplateEnt> CodeTemplates => Set<CodeTemplateEnt>();
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

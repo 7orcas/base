@@ -9,14 +9,18 @@ namespace FrontendServer.Application
 
         //Routes
         public const string MachinesRoute = "machines";
+        public const string CodeTemplateRoute = "code-templates";
 
         //Page Codes
         public const string MachinesPageCode = "mac001";
+        public const string CodeTemplatePageCode = "cod001";
 
 
         private static readonly object[] PageCodeRoutes = {
 
             MachinesPageCode,       MachinesRoute,    GC.PerMachine,
+
+            CodeTemplatePageCode,   CodeTemplateRoute, GC.PerCodeTemplate,
         };
 
 

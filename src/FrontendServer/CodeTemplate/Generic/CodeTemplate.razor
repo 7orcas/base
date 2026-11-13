@@ -1,0 +1,314 @@
+﻿@inherits BasePage
+@attribute [Route(AppRoutes.CodeTemplateRoute)]
+@attribute [PageCode(AppRoutes.CodeTemplatePageCode)]
+@attribute [PagePermission(GC.PerCodeTemplate)]
+@attribute [Authorize]
+
+
+<ConfirmNavigation List="list" />
+
+<div style="height:100%; display:flex; flex-direction:column; @GetDebugBorder("yellow")">
+
+    <HeaderThin @key=pageStatus.pageCode
+            TitleKey="CodeTemplateTitle"
+            PageCode=@pageStatus.pageCode
+            PageStatus="@pageStatus"
+            ToolBarButtonsLeft="toolBarButtonsLeft"
+            ToolBarButtonsRight="toolBarButtonsRight" />
+
+    <div style="margin-top:10px; border-bottom: 1px solid #ccc; margin-bottom:2px;"></div>
+
+    @if (loadStatus.IsError)
+    {
+        <Error LoadStatus=@loadStatus>
+            @loadStatus.Exception
+        </Error>
+    }
+    else
+    {
+        <Loading LoadStatus=@loadStatus />
+        
+        <MudGrid Class="no-wrap-grid" Spacing="0" Style="@($"flex:1; min-height:0; height:0;{GetDebugBorder("orange")}")">
+
+            @if (listUtil.ShowList)
+            {
+                <!-- Left Side List -->
+                <MudItem xs="2" Style="height:100%; display:flex; flex-direction:column; min-height:0; max-width:300px;">
+                    <MudPaper Elevation="0" Outlined="true" Style="flex:1; min-height:0; display:flex; flex-direction:column;">
+                        <ListPanel TDto="CodeTemplateDto"
+                                   List="@list" 
+                                   CodeKey="Code"
+                                   OnItemSelected="@OnItemSelected" />
+                    </MudPaper>
+                </MudItem>
+            }
+            <!-- Right Side Details -->
+            <MudItem xs="10" Style="height:100%; display:flex; flex-direction:column; min-height:0;">
+                <MudPaper Elevation="0" Outlined="false" Style="flex:1; min-height:0; overflow:auto; padding-right:20px;">
+                    <CodeTemplateDetailPanel Selections="listUtil.Selections"
+                                      Refresh="@Refresh"
+                                      PageStatus="@pageStatus" 
+                                      FieldDefinitionUtil="@fieldDefinitionUtil" />
+                </MudPaper>
+            </MudItem>
+
+        </MudGrid>
+    }
+</div>
+
+
+@using System.Net
+@using MudBlazor
+@using FrontendServer.Base.Util
+@using GC = FrontendServer.GlobalConstants;
+@using FrontendServer.Base._Base;
+@using Newtonsoft.Json;
+@inject IDialogService DialogService;
+
+@code {
+    private List<ListModel<CodeTemplateDto>> list = new List<ListModel<CodeTemplateDto>>();
+    private ListUtil<CodeTemplateDto> listUtil = new ListUtil<CodeTemplateDto>();
+    private MudTable<ListModel<CodeTemplateDto>> _listTable;
+    private FieldDefinitionUtil fieldDefinitionUtil;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var defs = await GetDefinition(GetUrl("UserDef"));
+        fieldDefinitionUtil = new FieldDefinitionUtil(defs);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await InitialiseBasePage();
+
+            //Always make edit mode
+            pageStatus.IsEditMode = pageStatus.orCrudCUD();
+
+            //Add standard toolbar
+            AddToolbarSearch(Search);
+            if (pageStatus.isCrudC)
+                AddToolbarAddNew(AddRecord);
+
+            AddToolbarExport(Export);
+
+            if (pageStatus.isCrudU || pageStatus.isCrudC)
+                AddToolbarSave(SaveAsync);
+
+            Search();
+            StateHasChanged();
+        }
+    }
+
+    private async Task Search()
+    {
+        bool confirmed = true;
+        var ok = await ConfirmNavigationIsOk();
+        if (!ok)
+        {
+            var result = await OpenConfirmYesNoDialog();
+            confirmed = !result.Canceled;
+        }
+
+        if (confirmed)
+        {
+            var result = await OpenSearchDialog<CodeTemplateSearchDialog>();
+            if (!result.Canceled)
+            {
+                listUtil.Clear();
+                var data = (UserSearch)result.Data;
+                await LoadList(data);
+            }
+        }
+    }
+
+    
+    private async Task LoadList(UserSearch search)
+    {
+        var response = await PostAsync<_ResponseDto, UserSearch>(GetUrl("UserList"), search);
+
+        list.Clear();
+        List<CodeTemplateDto> listX = null;
+
+        if (response.StatusCode == HttpStatusCode.OK)
+        {
+            var r = await response.Content.ReadAsStringAsync();
+            var dto = JsonConvert.DeserializeObject<_ResponseDto>(r);
+
+            if (dto.Valid)
+                listX = JsonConvert.DeserializeObject<List<CodeTemplateDto>>(dto.Result.ToString());
+
+        }
+
+        if (listX == null)
+            loadStatus.SetError();
+        else
+        {
+            listUtil.ShowList = true;
+            foreach (var u in listX)
+            {
+                u.Code = GetCode(u); //for the list table
+                list.Add(new ListModel<CodeTemplateDto>(u));
+            }
+        }
+
+        if (list == null) { } //ToDo probably expired login
+        else
+        {
+            if (list.Count > 0)
+                LoadRecord(list[0]);
+        }
+        StateHasChanged();
+    }
+
+    private void Refresh() => StateHasChanged();
+
+    private async Task OnItemSelected(ListModel<CodeTemplateDto> r)
+    {
+        await LoadRecord(r);
+    }
+
+    private async Task LoadRecord(ListModel<CodeTemplateDto> dto)
+    {
+        if (!dto.IsLoaded)
+        {
+            var record = await GetAsync<CodeTemplateDto>(GetUrlSlash("CodeTemplateGet") + dto.Id, false);
+            record.Code = GetCode(record); //for the list table
+            dto.Load(record);
+        }
+
+        listUtil.Select(dto);
+        StateHasChanged();
+    }
+
+    private async Task SaveAsync()
+    {
+        //Get records to be updated
+        var updates = new List<ListModel<CodeTemplateDto>>();
+        for (int i = 0; i < list.Count; i++)
+        {
+            var rec = list[i];
+            rec.ResetValidation();
+            if (rec.IsUpdateable())
+                updates.Add(rec);
+        }
+        if (updates.Count == 0) return;
+
+        loadStatus.SetSaving();
+
+        var updatesX = new UpdateRequest<List<CodeTemplateDto>>()
+        {
+            Updates = updates.Select(x => x.dto).ToList()
+        };
+        var response = await PostAsync<List<CodeTemplateDto>>(GetUrl("UserUpdate"), updatesX);
+
+        var r2 = null as _ResponseDto;
+
+        if (response.StatusCode == HttpStatusCode.OK)
+        {
+            var r1 = await response.Content.ReadAsStringAsync();
+            r2 = JsonConvert.DeserializeObject<_ResponseDto>(r1);
+        }
+        else
+        {
+            //ToDo error response
+            return;
+        }
+
+
+
+        if (r2.Valid)
+        {
+            List<CodeTemplateDto> dtos = JsonConvert.DeserializeObject<List<CodeTemplateDto>>(r2.Result.ToString());
+
+            var deletes = new List<ListModel<CodeTemplateDto>>();
+            for (int i = 0; i < list.Count; i++)
+            {
+                var rec = list[i];
+                var recU = updates.FirstOrDefault(x => x.Id == rec.Id);
+
+                if (recU == null) continue; 
+
+                if (rec.IsDelete)
+                {
+                    deletes.Add(rec);
+                    continue;
+                }
+
+                var dto = null as CodeTemplateDto;
+                if (rec.IsNew())
+                    dto = dtos.FirstOrDefault(x => x.Username == rec.dto.Username);
+                else
+                    dto = dtos.FirstOrDefault(x => x.Id == rec.Id);
+
+
+                if (dto == null) continue;
+
+                rec.ClearHash();
+                dto.Code = GetCode(dto); //for the list table
+                rec.Load(dto);
+            }
+
+            foreach (var rec in deletes)
+            {
+                listUtil.Remove(rec);
+                list.Remove(rec);
+            }
+
+        }
+        else if (!string.IsNullOrEmpty(r2?.ErrorMessage))
+        {
+            loadStatus.ResetSaving();
+            StateHasChanged();
+            await OpenOkDialog(GetLabel("Error"), r2?.ErrorMessage);
+        }
+        else
+        {
+            List<ValidationDto> vals = r2?.Validations;
+            for (int i = 0; i < updates.Count; i++)
+            {
+                var rec = updates[i];
+                var val = vals != null ? vals.FirstOrDefault(x => x.Id == rec.Id) : null;
+                if (val != null)
+                {
+                    rec.Validation = new ValidationModel
+                    {
+                        Validation = val
+                    };
+                }
+            }
+        }
+
+        loadStatus.ResetSaving();
+        StateHasChanged();
+    }
+
+    public async Task<bool> ConfirmNavigationIsOk()
+    {
+        for (int i = 0; list != null && i < list.Count; i++)
+        {
+            var dto = list[i];
+            if (dto.IsLoaded && dto.HasChanged())
+                return false;
+        }
+        return true;
+    }
+
+    private async Task AddRecord()
+    {
+        var dto = await GetAsync<CodeTemplateDto>(GetUrl("CodeTemplateNew"), false);
+        var rec = new ListModel<CodeTemplateDto>(dto);
+        rec.IsLoaded = true;
+        list.Insert(0, rec);
+        OnItemSelected(rec);
+    }
+
+    //ToDo
+    private async Task Export()
+    {
+
+    }
+
+}

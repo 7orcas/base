@@ -23,6 +23,25 @@ namespace Backend.App.HF.Base.Urls
 
             base.AddOrReplace(urls, "MainMenu", "Menu/" + GC.HF + "mainmenu");
 
+            if (session.IsUserPermission(GC.PerCodeTemplate))
+            {
+                Add(urls, "CodeTemplateSearch", "CodeTemplate/search");
+                Add(urls, "CodeTemplateList", "CodeTemplate/list");
+                Add(urls, "CodeTemplateGet", "CodeTemplate/get");
+            }
+
+            if (session.IsUserPermissionUpdate(GC.PerCodeTemplate))
+            {
+                Add(urls, "CodeTemplateDef", "CodeTemplate/def");
+                Add(urls, "CodeTemplateUpdate", "CodeTemplate/update");
+            }
+
+            if (session.IsUserPermissionCreate(GC.PerCodeTemplate))
+            {
+                Add(urls, "CodeTemplateDef", "CodeTemplate/def");
+                Add(urls, "CodeTemplateNew", "CodeTemplate/new");
+            }
+
             return urls;
         }
 

@@ -40,6 +40,8 @@ global using Backend.Base.Template.Emails;
 global using Backend.Base.Version;
 global using Backend.Base.Version.Ent;
 global using Backend.Core.Middleware;
+global using Backend.CodeTemplate.Generic;
+global using Backend.CodeTemplate.Generic.Ent;
 global using Backend.Program;
 global using System.Diagnostics;
 global using Dapper;

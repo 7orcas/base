@@ -111,7 +111,7 @@ namespace Backend.Base.Org
                 var ent = await GetOrg(dto.Nr);
                 OrgDto? currentDto = PopulateDto(session, ent);
 
-                var val = validator.Validate(dto, currentDto);
+                var val = await validator.Validate(dto, currentDto);
                 if (val != null)
                     vals.Add(val);
             }

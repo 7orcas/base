@@ -1,0 +1,14 @@
+$kind: http-request
+description: Audit listing
+url: https://localhost:6002/v123/api/codetemplate/list
+method: POST
+headers:
+  Blue-Api-Key: X123251113,$,$,1
+body:
+  type: json
+  content: "{\r\n    \"Code\": \"t2\"\r\n}"
+auth:
+  type: bearer
+  credentials:
+    token: ""
+order: 2000

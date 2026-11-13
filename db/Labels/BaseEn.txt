@@ -195,6 +195,7 @@ Warning,Warning
 InvR,Invalid Records
 InvO,Invalid Org Nr
 InvF,Field can't be empty
+InvU,Field must be unique
 InvL,Field exceeds maximum length (%%)
 InvS,Field can't contain a space
 InvSp,Field can't contain a special charcter

@@ -93,7 +93,6 @@ namespace Common
         public const int PerReg        = 9;
         
 
-        public const int PerMachine   = 101;
         public const int PerPerm1     = 102;
         public const int PerPerm2     = 103;
         public const int PerPerm3     = 104;
@@ -114,6 +113,11 @@ namespace Common
         public const int PerPerm18    = 119;
         public const int PerPerm19    = 120;
         public const int PerPerm20    = 121;
+
+        public const int PerCodeTemplate  = 10000;
+        public const int PerMachine   = 10001;
+
+
 
         public const int PermissionNrIndex = 0;
         public const int PermissionLabelIndex = 1;
