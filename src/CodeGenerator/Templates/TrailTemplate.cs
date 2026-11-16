@@ -38,23 +38,70 @@ namespace CodeGenerator.Templates
 
         public override BaseTemplate ConfigureTemplate()
         {
+            ConfigureCommon();
             ConfigureBackend();
 
 
             return this;
         }
 
+        private void ConfigureCommon()
+        {
+            Common = new ProjectTemplate
+            {
+                IsReplace = false,
+                IsCreate = true,
+                
+                CopyDto = new CopyFile
+                {
+                    FromFile = ProjectTemplate.CombinePath(GC.OriginCommonBaseDtoPath, $"{FromEntity}Dto.cs"),
+                    ToFile = ProjectTemplate.CombinePath(GC.OriginCommonAppDtoPath, $"{ToEntity}Dto.cs")
+                },
+
+                CopySearch = new CopyFile
+                {
+                    FromFile = ProjectTemplate.CombinePath(GC.OriginCommonBaseSearchPath, $"{FromEntity}Search.cs"),
+                    ToFile = ProjectTemplate.CombinePath(GC.OriginCommonAppSearchPath, $"{ToEntity}Search.cs")
+                },
+
+               
+            };
+
+            Common.PopulateChanges(Changes);
+            Common.PopulateRemovals(Remove);
+
+            Common.StringsToChange.Add(new StringChange
+            {
+                OldString = "*Created*",
+                NewString = DateTime.Now.ToString("MMM yyyy")
+            });
+        }
+
         private void ConfigureBackend()
         {
             Backend = new ProjectTemplate
             {
-                IsNewReplace = true,
+                IsReplace = false,
                 IsCreate = true,
                 CopyFromPath = ProjectTemplate.CombinePath(GC.OriginBackendPath, FromEntity, "Generic"),
                 CopyEnts = true,
+
                 CopyControllers = true,
                 CopyServices = true,
                 CopyRepos = true,
+
+                UpdateGlobalUsings = new ZUpdate
+                {
+                    File = ProjectTemplate.CombinePath(GC.OriginBackendPath, "GlobalUsings.cs"),
+                    ToEntity = $"global using Backend.App.{Application}.{ToEntity};",
+                    ToEntityEnt = $"global using Backend.App.{Application}.{ToEntity}.Ent;"
+                },
+
+                UpdateDbContext = new ZUpdate
+                {
+                    File = ProjectTemplate.CombinePath(GC.OriginBackendPath, "Data", "AppDbContext.cs"),
+                    ToEntity = ToEntity
+                },
 
                 UpdateZService = new ZUpdate
                 {
@@ -85,7 +132,7 @@ namespace CodeGenerator.Templates
                     PermissionTemplate = $"GC.{FromPermission}",
                     PermissionNew = $"GC.{ToPermission}",
                     FromEntity = FromEntity,
-                    ToEntity = ToEntity,   
+                    ToEntity = ToEntity,
                     IsList = true,
                     IsUpdate = true,
                     IsCreate = true

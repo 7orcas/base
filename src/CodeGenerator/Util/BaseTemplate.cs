@@ -28,11 +28,15 @@ namespace CodeGenerator.Util
         public bool IsCreate { get; set; } = false;
         public string CopyFromPath { get; set; } = "";
         public string NewPath { get; set; }
-        public bool IsNewReplace { get; set; } = false;
+        public bool IsReplace { get; set; } = false;
         public bool CopyEnts { get; set; } = false;
+        public CopyFile CopyDto { get; set; } = null;
+        public CopyFile CopySearch { get; set; } = null;
         public bool CopyControllers { get; set; } = false;
         public bool CopyServices { get; set; } = false;
         public bool CopyRepos { get; set; } = false;
+        public ZUpdate UpdateDbContext { get; set; } = null;
+        public ZUpdate UpdateGlobalUsings { get; set; } = null;
         public ZUpdate UpdateZService { get; set; } = null;
         public ZUpdate UpdateZRepo { get; set; } = null;
         public PermissionConstant UpdateCommonGlobalConstants { get; set; } = null;
@@ -197,6 +201,13 @@ namespace CodeGenerator.Util
     {
         public string File { get; set; }
         public string ToEntity { get; set; }
+        public string ToEntityEnt { get; set; }
+    }
+
+    public class CopyFile
+    {
+        public string FromFile { get; set; }
+        public string ToFile { get; set; }
     }
 
 }

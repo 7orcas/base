@@ -1,4 +1,4 @@
-﻿global using Common;
+global using Common;
 global using Common.DTO;
 global using Common.DTO.App;
 global using Common.DTO.Base;
@@ -47,3 +47,7 @@ global using Backend.Program.App.DS;
 global using Backend.Program.App.HF;
 global using System.Diagnostics;
 global using Dapper;
+
+global using Backend.App.HF.Trail;
+global using Backend.App.HF.Trail.Ent;
+//INSERT_GENERATED_CODE_HERE

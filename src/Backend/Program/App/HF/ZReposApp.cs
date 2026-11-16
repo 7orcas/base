@@ -6,6 +6,7 @@ namespace Backend.Program.App.HF
         {
             builder.Services.AddScoped<CodeTemplateRepoI, CodeTemplateRepo>();
 
+            builder.Services.AddScoped<TrailRepoI, TrailRepo>();
             //INSERT_GENERATED_CODE_HERE
         }
     }

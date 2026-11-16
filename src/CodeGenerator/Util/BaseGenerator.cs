@@ -58,16 +58,17 @@ namespace CodeGenerator.Util
 
                 var destinationFile = Path.Combine(destinationPath, fileName);
 
-                if (project.IsNewReplace || !File.Exists(destinationFile))
-                    await CopyFile(sourceFile, destinationFile, project);
-                
+                await CopyFile(sourceFile, destinationFile, project);
             }
         }
 
         public async Task CopyFile (string sourceFile, string destinationFile, ProjectTemplate project)
         {
+            if (!project.IsReplace && File.Exists(destinationFile))
+                return;
+
             var contents = File.ReadAllText(sourceFile);
-            
+
             foreach (var stringChange in project.StringsToChange)
                 contents = stringChange.Change(contents);
             
@@ -163,7 +164,7 @@ namespace CodeGenerator.Util
 
                 if (urlServiceUpdate.IsList)
                 {
-                    contents = ReplaceWithinBlock(
+                    contents = ReplaceWithinBlockIfNotExists(
                         contents,
                         $"if (session.IsUserPermission({urlServiceUpdate.PermissionTemplate}))",
                         urlServiceUpdate);
@@ -171,7 +172,7 @@ namespace CodeGenerator.Util
 
                 if (urlServiceUpdate.IsUpdate)
                 {
-                    contents = ReplaceWithinBlock(
+                    contents = ReplaceWithinBlockIfNotExists(
                         contents,
                         $"if (session.IsUserPermissionUpdate({urlServiceUpdate.PermissionTemplate}))",
                         urlServiceUpdate);
@@ -179,7 +180,7 @@ namespace CodeGenerator.Util
 
                 if (urlServiceUpdate.IsCreate)
                 {
-                    contents = ReplaceWithinBlock(
+                    contents = ReplaceWithinBlockIfNotExists(
                         contents,
                         $"if (session.IsUserPermissionCreate({urlServiceUpdate.PermissionTemplate}))",
                         urlServiceUpdate);
@@ -191,6 +192,93 @@ namespace CodeGenerator.Util
             catch (Exception ex)
             {
                 Log($"Error updating UpdateUrlsService.cs: {ex.Message}");
+            }
+        }
+
+        public async Task UpdateGlobalUsings(ZUpdate zUpdate)
+        {
+            try
+            {
+                var file = zUpdate.File;
+                if (!File.Exists(file))
+                {
+                    Log($"File not found: {file}");
+                    return;
+                }
+
+                var contents = await File.ReadAllTextAsync(file);
+
+                var index = contents.IndexOf(GC.InsertCode);
+                if (index == -1)
+                {
+                    Log($"Placeholder '{GC.InsertCode}' not found in {file}");
+                    return;
+                }
+
+                var statement = zUpdate.ToEntity;
+                index = contents.IndexOf(statement);
+                if (index >= 0)
+                {
+                    Log($"{statement}' already exists in {file}");
+                    return;
+                }
+                contents = InsertGeneratedCode(contents, statement);
+
+                if (zUpdate.ToEntityEnt != null)
+                {
+                    statement = zUpdate.ToEntityEnt;
+                    index = contents.IndexOf(statement);
+                    if (index >= 0)
+                    {
+                        Log($"{statement}' already exists in {file}");
+                        return;
+                    }
+                    contents = InsertGeneratedCode(contents, statement);
+                }
+
+                await File.WriteAllTextAsync(file, contents);
+            }
+            catch (Exception ex)
+            {
+                Log($"Error updating UpdateZService: {ex.Message}");
+            }
+        }
+
+        public async Task UpdateDbContext(ZUpdate zUpdate)
+        {
+            try
+            {
+                var file = zUpdate.File;
+                if (!File.Exists(file))
+                {
+                    Log($"File not found: {file}");
+                    return;
+                }
+
+                var contents = await File.ReadAllTextAsync(file);
+
+                var index = contents.IndexOf(GC.InsertCode);
+                if (index == -1)
+                {
+                    Log($"Placeholder '{GC.InsertCode}' not found in {file}");
+                    return;
+                }
+
+                var dbSet = $" public DbSet<{zUpdate.ToEntity}Ent> {zUpdate.ToEntity}s => Set<{zUpdate.ToEntity}Ent>();";
+                index = contents.IndexOf(dbSet);
+                if (index >= 0)
+                {
+                    Log($"{dbSet}' already exists in {file}");
+                    return;
+                }
+
+                contents = InsertGeneratedCode(contents, dbSet);
+
+                await File.WriteAllTextAsync(file, contents);
+            }
+            catch (Exception ex)
+            {
+                Log($"Error updating UpdateDbContext: {ex.Message}");
             }
         }
 
@@ -286,7 +374,7 @@ namespace CodeGenerator.Util
         }
 
 
-        public string ReplaceWithinBlock(
+        public string ReplaceWithinBlockIfNotExists(
                 string contents,
                 string marker,
                 UrlServiceUpdate urlServiceUpdate)
@@ -323,6 +411,13 @@ namespace CodeGenerator.Util
 
             var updatedBlock = block.Replace(urlServiceUpdate.PermissionTemplate, urlServiceUpdate.PermissionNew);
             updatedBlock = updatedBlock.Replace(urlServiceUpdate.FromEntity, urlServiceUpdate.ToEntity);
+
+            if (contents.Contains(updatedBlock))
+            {
+                Log($"Updated block already exists in the file.");
+                return contents;
+            }
+
             updatedBlock += Environment.NewLine + Environment.NewLine + indent;
 
             var endIndex = contents.IndexOf(GC.InsertCode);
