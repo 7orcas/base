@@ -1,4 +1,4 @@
-﻿using GC = Backend.GlobalConstants;
+using GC = Backend.GlobalConstants;
 
 /// <summary>
 /// Urls list
@@ -41,6 +41,8 @@ namespace Backend.App.HF.Base.Urls
                 Add(urls, "CodeTemplateDef", "CodeTemplate/def");
                 Add(urls, "CodeTemplateNew", "CodeTemplate/new");
             }
+
+            //INSERT_GENERATED_CODE_HERE
 
             return urls;
         }

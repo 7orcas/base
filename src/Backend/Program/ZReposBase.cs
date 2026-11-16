@@ -14,8 +14,6 @@
             builder.Services.AddScoped<AuditRepoI, AuditRepo>();
             builder.Services.AddScoped<VersionRepoI, VersionRepo>();
             builder.Services.AddScoped<LabelAdminRepoI, LabelAdminRepo>();
-
-            builder.Services.AddScoped<CodeTemplateRepoI, CodeTemplateRepo>();
         }
     }
 }

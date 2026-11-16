@@ -7,8 +7,13 @@ namespace CodeGenerator.Util
 {
     public abstract class BaseTemplate
     {
+        public string Application { get; set; }
         public string FromEntity { get; set; }
+        public string FromPermission { get; set; }
         public string ToEntity { get; set; }
+        public string ToPermission { get; set; }
+        public int ToPermissionValue { get; set; }
+        public string LangKey { get; set; }
 
         public ProjectTemplate Backend;
         public ProjectTemplate Common;
@@ -28,8 +33,10 @@ namespace CodeGenerator.Util
         public bool CopyControllers { get; set; } = false;
         public bool CopyServices { get; set; } = false;
         public bool CopyRepos { get; set; } = false;
+        public ZUpdate UpdateZService { get; set; } = null;
+        public ZUpdate UpdateZRepo { get; set; } = null;
         public PermissionConstant UpdateCommonGlobalConstants { get; set; } = null;
-        public string UpdateUrlsService { get; set; } = "";
+        public UrlServiceUpdate UpdateUrlsService { get; set; } = null;
         public List<StringChange> StringsToChange = new List<StringChange>();
         public List<StringRemove> StringsToRemove = new List<StringRemove>();
 
@@ -174,5 +181,22 @@ namespace CodeGenerator.Util
         public bool IsAdmin { get; set; } = false;
     }
 
+    public class UrlServiceUpdate
+    {
+        public string ServiceFile { get; set; }
+        public string PermissionTemplate { get; set; }
+        public string PermissionNew { get; set; }
+        public string FromEntity { get; set; }
+        public string ToEntity { get; set; }
+        public bool IsList { get; set; } = true;
+        public bool IsUpdate { get; set; } = true;
+        public bool IsCreate { get; set; } = true;
+    }
+
+    public class ZUpdate
+    {
+        public string File { get; set; }
+        public string ToEntity { get; set; }
+    }
 
 }

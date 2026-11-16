@@ -43,5 +43,7 @@ global using Backend.Core.Middleware;
 global using Backend.CodeTemplate.Generic;
 global using Backend.CodeTemplate.Generic.Ent;
 global using Backend.Program;
+global using Backend.Program.App.DS;
+global using Backend.Program.App.HF;
 global using System.Diagnostics;
 global using Dapper;

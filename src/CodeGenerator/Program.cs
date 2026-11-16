@@ -1,9 +1,26 @@
-﻿namespace CodeGenerator
+﻿using Microsoft.Extensions.Logging;
+
+namespace CodeGenerator
 {
     internal class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
+            using var loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder
+                    .SetMinimumLevel(LogLevel.Information)
+                    .AddSimpleConsole();
+                    //.AddSimpleConsole(options =>
+                    //{
+                    //    options.TimestampFormat = "HH:mm:ss ";
+                    //});
+            });
+
+            ILogger logger = loggerFactory.CreateLogger<Program>();
+
+            logger.LogInformation("Current Directory: {Directory}", Directory.GetCurrentDirectory());
+
             Console.WriteLine($"Current Directory: {Directory.GetCurrentDirectory()}");
 
             var template = new Templates.TrailTemplate().ConfigureTemplate();
@@ -13,8 +30,8 @@
                 Console.WriteLine($"Invalid Template: {template.ToEntity}");
             }
 
-            var backend = new BackendGenerator(template);
-            backend.Generate();
+            var backend = new BackendGenerator(template, logger);
+            await backend.Generate();
         }
     }
 }

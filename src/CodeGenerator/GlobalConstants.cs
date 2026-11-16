@@ -22,5 +22,7 @@
         public const string ServicePattern = "*Service*";
         public const string RepositoryPattern = "*Repo*";
         public const string UlrsService = "*Repo*";
+
+        public const string InsertCode = "//INSERT_GENERATED_CODE_HERE";
     }
 }

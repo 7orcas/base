@@ -1,4 +1,4 @@
-﻿
+
 /// <summary>
 /// Common constants between all projects
 /// Created: June 2025
@@ -118,8 +118,7 @@ namespace Common
 
         public const int PerCodeTemplate  = 20000;
 
-        //<!-- HF PERMISSION_CONSTANTS -->
-
+        //HF_PERMISSION_CONSTANT
 
 
         public const int PermissionNrIndex = 0;
@@ -138,6 +137,8 @@ namespace Common
             PerMachine,      "Machine", false,
 
             PerCodeTemplate, "Template",false,
+
+            //HF_PERMISSION_OBJECT
 
             PerPerm1,        "102",     false,
             PerPerm2,        "103",     false,

@@ -27,8 +27,13 @@ namespace CodeGenerator.Templates
 
         public TrailTemplate()
         {
+            Application = GC.BackendAppHf;
+            LangKey = "Trail";
             FromEntity = "CodeTemplate";
+            FromPermission = "PerCodeTemplate";
             ToEntity = "Trail";
+            ToPermission = "PerTrail";
+            ToPermissionValue = 20001;
         }
 
         public override BaseTemplate ConfigureTemplate()
@@ -51,22 +56,43 @@ namespace CodeGenerator.Templates
                 CopyServices = true,
                 CopyRepos = true,
 
-                NewPath = ProjectTemplate.CombinePath(GC.DestinationBackendAppPath, GC.BackendAppHf, ToEntity),
+                UpdateZService = new ZUpdate
+                {
+                    File = ProjectTemplate.CombinePath(GC.OriginBackendPath, "Program/App", Application, "ZServicesApp.cs"),
+                    ToEntity = ToEntity
+                },
+
+                UpdateZRepo = new ZUpdate
+                {
+                    File = ProjectTemplate.CombinePath(GC.OriginBackendPath, "Program/App", Application, "ZReposApp.cs"),
+                    ToEntity = ToEntity
+                },
+
+                NewPath = ProjectTemplate.CombinePath(GC.DestinationBackendAppPath, Application, ToEntity),
                 UpdateCommonGlobalConstants = new PermissionConstant
                 {
                     PlaceHolderConstant = "//HF_PERMISSION_CONSTANT",
-                    Name = "PerTrail",
-                    Value = 20001,
+                    Name = ToPermission,
+                    Value = ToPermissionValue,
                     PlaceHolderObject = "//HF_PERMISSION_OBJECT",
-                    LangKey = "Trail",
+                    LangKey = LangKey,
                     IsAdmin = false
                 },
 
-          //>      UpdateUrlsService = ProjectTemplate.CombinePath(GC.OriginBackendAppPath, GC.BackendAppHf, "Base/Urls"),
-          //      UpdateZService
-          //      UpdateZRepo
+                UpdateUrlsService = new UrlServiceUpdate
+                {
+                    ServiceFile = ProjectTemplate.CombinePath(GC.OriginBackendPath, "App", Application, "Base/Urls", "UrlsService.cs"),
+                    PermissionTemplate = $"GC.{FromPermission}",
+                    PermissionNew = $"GC.{ToPermission}",
+                    FromEntity = FromEntity,
+                    ToEntity = ToEntity,   
+                    IsList = true,
+                    IsUpdate = true,
+                    IsCreate = true
+                },
 
             };
+
             Backend.PopulateChanges(Changes);
             Backend.PopulateRemovals(Remove);
 
@@ -75,8 +101,6 @@ namespace CodeGenerator.Templates
                 OldString = "*Created*",
                 NewString = DateTime.Now.ToString("MMM yyyy")
             });
-
-            
         }
 
         public override bool IsValid()

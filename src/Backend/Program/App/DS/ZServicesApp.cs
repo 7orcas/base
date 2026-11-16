@@ -1,8 +1,7 @@
 ﻿using Backend.App.DS.Machines;
 using ds = Backend.App.DS.Base;
-using hf = Backend.App.HF.Base;
 
-namespace Backend.Program
+namespace Backend.Program.App.DS
 {
     public class ZServicesApp
     {
@@ -18,10 +17,8 @@ namespace Backend.Program
             builder.Services.AddScoped<ds.Menu.MenuServiceI, ds.Menu.MenuService>();
             builder.Services.AddScoped<ds.Session.SessionServiceI, ds.Session.SessionService>();
 
+            //INSERT_GENERATED_CODE_HERE
 
-            builder.Services.AddScoped<hf.Urls.UrlsServiceI, hf.Urls.UrlsService>();
-            builder.Services.AddScoped<hf.Menu.MenuServiceI, hf.Menu.MenuService>();
-            builder.Services.AddScoped<hf.Session.SessionServiceI, hf.Session.SessionService>();
         }
     }
 }
