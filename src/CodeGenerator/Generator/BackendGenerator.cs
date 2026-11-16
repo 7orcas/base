@@ -20,24 +20,29 @@ namespace CodeGenerator.Generator
         {
             if (!project.IsValid() || !project.IsCreate) return;
 
-            await CreateFolder(project.NewPath, replace: project.IsNewReplace);
+            //await CreateFolder(project.NewPath, replace: project.IsNewReplace);
 
-            if (project.CopyEnts)
+            //if (project.CopyEnts)
+            //{
+            //    var dir = await CreateFolder(CombinePath(project.NewPath, GC.EntityDirectory), replace: project.IsNewReplace);
+            //    await CopyFolder(CombinePath(project.CopyFromPath, GC.EntityDirectory), dir, project);
+            //}
+
+            //if (project.CopyControllers)
+            //    await CopyFolder(project.CopyFromPath, project.NewPath, project, GC.ControllerPattern);
+
+            //if (project.CopyServices)
+            //    await CopyFolder(project.CopyFromPath, project.NewPath, project, GC.ServicePattern);
+            //    //add services
+
+            //if (project.CopyRepos)
+            //    await CopyFolder(project.CopyFromPath, project.NewPath, project, GC.RepositoryPattern);
+            //    //add repo
+
+            if (project.UpdateCommonGlobalConstants != null)
             {
-                var dir = await CreateFolder(CombinePath(project.NewPath, GC.EntityDirectory), replace: project.IsNewReplace);
-                await CopyFolder(CombinePath(project.CopyFromPath, GC.EntityDirectory), dir, project);
+                await UpdateCommonGlobalConstants(project.UpdateCommonGlobalConstants);
             }
-
-            if (project.CopyControllers)
-                await CopyFolder(project.CopyFromPath, project.NewPath, project, GC.ControllerPattern);
-
-            if (project.CopyServices)
-                await CopyFolder(project.CopyFromPath, project.NewPath, project, GC.ServicePattern);
-                //add services
-
-            if (project.CopyRepos)
-                await CopyFolder(project.CopyFromPath, project.NewPath, project, GC.RepositoryPattern);
-                //add repo
 
             return;
         }

@@ -52,8 +52,19 @@ namespace CodeGenerator.Templates
                 CopyRepos = true,
 
                 NewPath = ProjectTemplate.CombinePath(GC.DestinationBackendAppPath, GC.BackendAppHf, ToEntity),
-                UpdateCommonGlobalConstants = "PerTrail     = 10001;",
-                UpdateUrlsService = ProjectTemplate.CombinePath(GC.OriginBackendAppPath, GC.BackendAppHf, "Base/Urls"),
+                UpdateCommonGlobalConstants = new PermissionConstant
+                {
+                    PlaceHolderConstant = "//HF_PERMISSION_CONSTANT",
+                    Name = "PerTrail",
+                    Value = 20001,
+                    PlaceHolderObject = "//HF_PERMISSION_OBJECT",
+                    LangKey = "Trail",
+                    IsAdmin = false
+                },
+
+          //>      UpdateUrlsService = ProjectTemplate.CombinePath(GC.OriginBackendAppPath, GC.BackendAppHf, "Base/Urls"),
+          //      UpdateZService
+          //      UpdateZRepo
 
             };
             Backend.PopulateChanges(Changes);

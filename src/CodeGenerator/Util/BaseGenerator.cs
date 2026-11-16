@@ -1,7 +1,9 @@
-﻿using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
+﻿using DocumentFormat.OpenXml.Presentation;
+using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using GC = CodeGenerator.GlobalConstants;
 
 namespace CodeGenerator.Util
 {
@@ -91,6 +93,43 @@ namespace CodeGenerator.Util
 
             return first + second;
         }
+
+        public async Task UpdateCommonGlobalConstants(PermissionConstant permissionConstant)
+        {
+            var commonGlobalConstantsPath = Path.Combine(GC.OriginCommonPath, "GlobalConstants.cs");
+            if (!File.Exists(commonGlobalConstantsPath))
+            {
+                Log($"File not found: {commonGlobalConstantsPath}");
+                return;
+            }
+
+            var contents = await File.ReadAllTextAsync(commonGlobalConstantsPath);
+
+            var permConstant = "public const int " + permissionConstant.Name + " = " + permissionConstant.Value + ";";
+            var addPermConstant = !contents.Contains(permConstant);
+            
+            var permObject = "" + permissionConstant.Name + ", \"" + permissionConstant.LangKey + "\", " + (permissionConstant.IsAdmin ? "true" : "false") + ",";
+            var addPermObject = !contents.Contains(permObject);
+
+
+            if (contents.Contains(permissionConstant.PlaceHolderConstant))
+            {
+                var newLine = $"public const int {permissionConstant.Name} = {permissionConstant.Value};";
+                contents = contents.Replace(
+                    permissionConstant.PlaceHolderConstant, 
+                    $"{ newLine}{ Environment.NewLine}{ permissionConstant.PlaceHolderConstant}");
+
+                Log($"Updated {commonGlobalConstantsPath} with {newLine}");
+            }
+            else
+            {
+                Log($"Placeholder '{permissionConstant.PlaceHolderConstant}' not found in {commonGlobalConstantsPath}");
+            }
+
+
+            await File.WriteAllTextAsync(commonGlobalConstantsPath, contents);
+        }
+
 
         public void Log(string message)
         {

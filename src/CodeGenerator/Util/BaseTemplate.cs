@@ -28,7 +28,7 @@ namespace CodeGenerator.Util
         public bool CopyControllers { get; set; } = false;
         public bool CopyServices { get; set; } = false;
         public bool CopyRepos { get; set; } = false;
-        public string UpdateCommonGlobalConstants { get; set; } = "";
+        public PermissionConstant UpdateCommonGlobalConstants { get; set; } = null;
         public string UpdateUrlsService { get; set; } = "";
         public List<StringChange> StringsToChange = new List<StringChange>();
         public List<StringRemove> StringsToRemove = new List<StringRemove>();
@@ -163,5 +163,16 @@ namespace CodeGenerator.Util
         }
 
     }
+
+    public class PermissionConstant
+    {
+        public string PlaceHolderConstant { get; set; }
+        public string PlaceHolderObject { get; set; }
+        public string Name { get; set; }
+        public string LangKey { get; set; }
+        public int Value { get; set; }
+        public bool IsAdmin { get; set; } = false;
+    }
+
 
 }
