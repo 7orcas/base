@@ -1,4 +1,4 @@
-﻿using FrontendServer.Base._Base;
+using FrontendServer.Base._Base;
 using GC = FrontendServer.GlobalConstants;
 
 namespace FrontendServer.Application
@@ -11,16 +11,25 @@ namespace FrontendServer.Application
         public const string MachinesRoute = "machines";
         public const string CodeTemplateRoute = "code-templates";
 
+        public const string TrailRoute = "trails";
+        //INSERT_GENERATED_ROUTE_HERE
+
+
         //Page Codes
         public const string MachinesPageCode = "mac001";
         public const string CodeTemplatePageCode = "cod001";
 
+        public const string TrailPageCode = "tra001";
+        //INSERT_GENERATED_PAGE_CODE_HERE
 
         private static readonly object[] PageCodeRoutes = {
 
             MachinesPageCode,       MachinesRoute,    GC.PerMachine,
 
             CodeTemplatePageCode,   CodeTemplateRoute, GC.PerCodeTemplate,
+
+            TrailPageCode, TrailRoute,  GC.PerTrail,
+            //INSERT_GENERATED_PAGE_CODE_ROUTE_HERE
         };
 
 

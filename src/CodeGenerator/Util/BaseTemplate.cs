@@ -11,6 +11,8 @@ namespace CodeGenerator.Util
         public string FromEntity { get; set; }
         public string FromPermission { get; set; }
         public string ToEntity { get; set; }
+        public string Route { get; set; }
+        public string PageCode { get; set; }
         public string ToPermission { get; set; }
         public int ToPermissionValue { get; set; }
         public string LangKey { get; set; }
@@ -30,6 +32,7 @@ namespace CodeGenerator.Util
         public string NewPath { get; set; }
         public bool IsReplace { get; set; } = false;
         public bool CopyEnts { get; set; } = false;
+        public bool CopyRazors { get; set; } = false;
         public CopyFile CopyDto { get; set; } = null;
         public CopyFile CopySearch { get; set; } = null;
         public bool CopyControllers { get; set; } = false;
@@ -41,6 +44,7 @@ namespace CodeGenerator.Util
         public ZUpdate UpdateZRepo { get; set; } = null;
         public PermissionConstant UpdateCommonGlobalConstants { get; set; } = null;
         public UrlServiceUpdate UpdateUrlsService { get; set; } = null;
+        public AppRoute UpdateAppRoutes { get; set; } = null;
         public List<StringChange> StringsToChange = new List<StringChange>();
         public List<StringRemove> StringsToRemove = new List<StringRemove>();
 
@@ -210,4 +214,15 @@ namespace CodeGenerator.Util
         public string ToFile { get; set; }
     }
 
+    public class AppRoute
+    {
+        public string PlaceHolderRoute { get; set; }
+        public string Route { get; set; }
+        public string PlaceHolderPageCode { get; set; }
+        public string PageCode { get; set; }
+        public string PlaceHolderPageCodeRoute { get; set; }
+        public string PageCodeRoute { get; set; }
+    }
+
 }
+

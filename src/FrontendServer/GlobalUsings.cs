@@ -1,4 +1,4 @@
-﻿global using Common;
+global using Common;
 global using Common.DTO;
 global using Common.DTO.App;
 global using Common.DTO.Base;
@@ -25,4 +25,5 @@ global using FrontendServer.Base.Validation;
 global using FrontendServer.Application;
 global using FrontendServer.Application.Machines;
 
-
+global using FrontendServer.Application.HF.Trail;
+//INSERT_GENERATED_CODE_HERE

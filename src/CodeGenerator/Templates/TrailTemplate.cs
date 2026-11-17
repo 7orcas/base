@@ -34,13 +34,15 @@ namespace CodeGenerator.Templates
             ToEntity = "Trail";
             ToPermission = "PerTrail";
             ToPermissionValue = 20001;
+            Route = "trails";
+            PageCode = "tra001";
         }
 
         public override BaseTemplate ConfigureTemplate()
         {
             ConfigureCommon();
             ConfigureBackend();
-
+            ConfigureFrontend();
 
             return this;
         }
@@ -150,9 +152,51 @@ namespace CodeGenerator.Templates
             });
         }
 
+        private void ConfigureFrontend()
+        {
+            Frontend = new ProjectTemplate
+            {
+                IsReplace = false,
+                IsCreate = true,
+                CopyFromPath = ProjectTemplate.CombinePath(GC.OriginFrontendPath, FromEntity, "Generic"),
+                
+                UpdateGlobalUsings = new ZUpdate
+                {
+                    File = ProjectTemplate.CombinePath(GC.OriginFrontendPath, "GlobalUsings.cs"),
+                    ToEntity = $"global using FrontendServer.Application.{Application}.{ToEntity};",
+                },
+                               
+                NewPath = ProjectTemplate.CombinePath(GC.DestinationFrontendAppPath, Application, ToEntity),
+                CopyRazors = true,
+
+                UpdateAppRoutes = new AppRoute
+                {
+                    PlaceHolderRoute = "//INSERT_GENERATED_ROUTE_HERE",
+                    Route = $"public const string {ToEntity}Route = \"{Route}\";",
+                    PlaceHolderPageCode = "//INSERT_GENERATED_PAGE_CODE_HERE",
+                    PageCode = $"public const string {ToEntity}PageCode = \"{PageCode}\";",
+                    PlaceHolderPageCodeRoute = "//INSERT_GENERATED_PAGE_CODE_ROUTE_HERE",
+                    PageCodeRoute = $"{ToEntity}PageCode, {ToEntity}Route,  GC.{ToPermission},"
+                },
+
+            };
+
+            Frontend.PopulateChanges(Changes);
+            Frontend.PopulateRemovals(Remove);
+
+            Frontend.StringsToChange.Add(new StringChange
+            {
+                OldString = "*Created*",
+                NewString = DateTime.Now.ToString("MMM yyyy")
+            });
+        }
+
+
         public override bool IsValid()
         {
-            return Backend != null && Backend.IsValid();
+            return Backend != null && Backend.IsValid()
+                && Common != null 
+                && Frontend != null && Frontend.IsValid();
         }
     }
 

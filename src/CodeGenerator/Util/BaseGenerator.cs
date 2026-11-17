@@ -358,6 +358,49 @@ namespace CodeGenerator.Util
             }
         }
 
+        public async Task UpdateAppRoutes(AppRoute appRoute)
+        {
+            try
+            {
+                var appRoutesFile = Path.Combine(GC.OriginFrontendAppPath, "AppRoutes.cs");
+                if (!File.Exists(appRoutesFile))
+                {
+                    Log($"File not found: {appRoutesFile}");
+                    return;
+                }
+
+                var contents = await File.ReadAllTextAsync(appRoutesFile);
+
+                var addRoute = !contents.Contains(appRoute.Route) && contents.Contains(appRoute.PlaceHolderRoute);
+                var addPageCode = !contents.Contains(appRoute.PageCode) && contents.Contains(appRoute.PlaceHolderPageCode);
+                var addPageCodeRoute = !contents.Contains(appRoute.PageCodeRoute) && contents.Contains(appRoute.PlaceHolderPageCodeRoute);
+
+                if (addRoute)
+                    contents = InsertBeforePlaceholder(contents, appRoute.PlaceHolderRoute, appRoute.Route);
+                else
+                    Log($"{appRoute.Route} not added to {appRoutesFile}");
+
+
+                if (addPageCode)
+                    contents = InsertBeforePlaceholder(contents, appRoute.PlaceHolderPageCode, appRoute.PageCode);
+                else
+                    Log($"{appRoute.PageCode} not added to {appRoutesFile}");
+
+                if (addPageCodeRoute)
+                    contents = InsertBeforePlaceholder(contents, appRoute.PlaceHolderPageCodeRoute, appRoute.PageCodeRoute);
+                else
+                    Log($"{appRoute.PageCodeRoute} not added to {appRoutesFile}");
+
+
+                await File.WriteAllTextAsync(appRoutesFile, contents);
+            }
+            catch (Exception ex)
+            {
+                Log($"Error updating GlobalConstants.cs: {ex.Message}");
+            }
+        }
+
+
         public string InsertGeneratedCode(
                 string contents,
                 string code)
@@ -428,6 +471,21 @@ namespace CodeGenerator.Util
         }
 
 
+        public string InsertBeforePlaceholder(string contents, string placeholder, string newContent)
+        {
+            var index = contents.IndexOf(placeholder);
+            if (index == -1)
+            {
+                Log($"Placeholder '{placeholder}' not found.");
+                return contents;
+            }
+
+            var indent = GetIndent(contents, placeholder);
+            var newLine = $"{newContent}{Environment.NewLine}{indent}";
+
+            return contents.Insert(index, newLine);
+        }
+
         public string InsertAfterPlaceholder(string contents, string placeholder, string newContent)
         {
             var index = contents.IndexOf(placeholder);
@@ -438,9 +496,9 @@ namespace CodeGenerator.Util
             }
             var indent = GetIndent(contents, placeholder);
             var newLine = $"{Environment.NewLine}{indent}{newContent}";
+
             return contents.Insert(index + placeholder.Length, newLine);
         }
-
 
         public string GetIndent(string contents, string placeholder)
         {
