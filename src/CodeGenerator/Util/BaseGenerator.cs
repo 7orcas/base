@@ -1,6 +1,9 @@
 ﻿using DocumentFormat.OpenXml.Presentation;
+using FrontendServer.Application;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
+using Org.BouncyCastle.Asn1.X509.Qualified;
 using QuestPDF.Helpers;
 using System;
 using System.Collections.Generic;
@@ -35,6 +38,8 @@ namespace CodeGenerator.Util
                 Log("Creating directory: " + path);
                 Directory.CreateDirectory(path);
             }
+            else
+                Log("Directory already exists: " + path);
 
             return path;
         }
@@ -65,7 +70,10 @@ namespace CodeGenerator.Util
         public async Task CopyFile (string sourceFile, string destinationFile, ProjectTemplate project)
         {
             if (!project.IsReplace && File.Exists(destinationFile))
+            {
+                Log("File already exists: " + destinationFile);
                 return;
+            }
 
             var contents = File.ReadAllText(sourceFile);
 
@@ -77,6 +85,7 @@ namespace CodeGenerator.Util
             
             // Write modified file
             File.WriteAllText(destinationFile, contents);
+            Log("File created: " + destinationFile);
         }
 
 
@@ -122,13 +131,19 @@ namespace CodeGenerator.Util
 
 
                 if (addPermConstant)
+                {
+                    Log($"{permissionConstant.Name} constant added to {commonGCFile}");
                     contents = InsertAfterPlaceholder(contents, permissionConstant.PlaceHolderConstant, permConstant);
+                }
                 else
                     Log($"{permissionConstant.Name} constant not added to {commonGCFile}");
 
 
                 if (addPermObject)
+                {
+                    Log($"{permissionConstant.Name} object added to {commonGCFile}");
                     contents = InsertAfterPlaceholder(contents, permissionConstant.PlaceHolderObject, permObject);
+                }
                 else
                     Log($"{permissionConstant.Name} object not added to {commonGCFile}");
 
@@ -164,6 +179,7 @@ namespace CodeGenerator.Util
 
                 if (urlServiceUpdate.IsList)
                 {
+                    Log($"{urlServiceUpdate.PermissionTemplate} read added.");
                     contents = ReplaceWithinBlockIfNotExists(
                         contents,
                         $"if (session.IsUserPermission({urlServiceUpdate.PermissionTemplate}))",
@@ -172,6 +188,7 @@ namespace CodeGenerator.Util
 
                 if (urlServiceUpdate.IsUpdate)
                 {
+                    Log($"{urlServiceUpdate.PermissionTemplate} update added.");
                     contents = ReplaceWithinBlockIfNotExists(
                         contents,
                         $"if (session.IsUserPermissionUpdate({urlServiceUpdate.PermissionTemplate}))",
@@ -180,6 +197,7 @@ namespace CodeGenerator.Util
 
                 if (urlServiceUpdate.IsCreate)
                 {
+                    Log($"{urlServiceUpdate.PermissionTemplate} create added.");
                     contents = ReplaceWithinBlockIfNotExists(
                         contents,
                         $"if (session.IsUserPermissionCreate({urlServiceUpdate.PermissionTemplate}))",
@@ -233,6 +251,7 @@ namespace CodeGenerator.Util
                         Log($"{statement}' already exists in {file}");
                         return;
                     }
+                    Log($"{statement}' added to {file}");
                     contents = InsertGeneratedCode(contents, statement);
                 }
 
@@ -241,6 +260,44 @@ namespace CodeGenerator.Util
             catch (Exception ex)
             {
                 Log($"Error updating UpdateZService: {ex.Message}");
+            }
+        }
+
+        public async Task UpdateMenuService(MainMenu mainMenu)
+        {
+            try
+            {
+                var file = mainMenu.File;
+                if (!File.Exists(file))
+                {
+                    Log($"File not found: {file}");
+                    return;
+                }
+                var contents = await File.ReadAllTextAsync(file);
+                var index = contents.IndexOf(GC.InsertCode);
+                if (index == -1)
+                {
+                    Log($"Placeholder '{GC.InsertCode}' not found in {file}");
+                    return;
+                }
+                var menuItem = $"if (session.IsUserPermission(GC.{mainMenu.Permission}))";
+                index = contents.IndexOf(menuItem);
+                if (index >= 0)
+                {
+                    Log($"{menuItem}' already exists in {file}");
+                    return;
+                }
+
+                menuItem += $" menuItemIds.Add(\"{mainMenu.MenuItem}\");";
+
+                Log($"{mainMenu.Permission} added to {file}");
+                contents = InsertBeforePlaceholder(contents, mainMenu.PlaceHolder, menuItem);
+
+                await File.WriteAllTextAsync(file, contents);
+            }
+            catch (Exception ex)
+            {
+                Log($"Error updating UpdateMenuService: {ex.Message}");
             }
         }
 
@@ -274,6 +331,7 @@ namespace CodeGenerator.Util
 
                 contents = InsertGeneratedCode(contents, dbSet);
 
+                Log($"{dbSet}' added to {file}");
                 await File.WriteAllTextAsync(file, contents);
             }
             catch (Exception ex)
@@ -310,6 +368,7 @@ namespace CodeGenerator.Util
                     return;
                 }
 
+                Log($"{service}' added to {file}");
                 contents = InsertGeneratedCode(contents, service);
 
                 await File.WriteAllTextAsync(file, contents);
@@ -348,6 +407,7 @@ namespace CodeGenerator.Util
                     return;
                 }
 
+                Log($"{service}' added to {file}");
                 contents = InsertGeneratedCode(contents, service);
 
                 await File.WriteAllTextAsync(file, contents);
@@ -376,18 +436,27 @@ namespace CodeGenerator.Util
                 var addPageCodeRoute = !contents.Contains(appRoute.PageCodeRoute) && contents.Contains(appRoute.PlaceHolderPageCodeRoute);
 
                 if (addRoute)
+                {
+                    Log($"{appRoute.Route} added to {appRoutesFile}");
                     contents = InsertBeforePlaceholder(contents, appRoute.PlaceHolderRoute, appRoute.Route);
+                }
                 else
                     Log($"{appRoute.Route} not added to {appRoutesFile}");
 
 
                 if (addPageCode)
+                {
+                    Log($"{appRoute.PageCode} added to {appRoutesFile}");
                     contents = InsertBeforePlaceholder(contents, appRoute.PlaceHolderPageCode, appRoute.PageCode);
+                }
                 else
                     Log($"{appRoute.PageCode} not added to {appRoutesFile}");
 
                 if (addPageCodeRoute)
+                {
+                    Log($"{appRoute.PageCodeRoute} added to {appRoutesFile}");
                     contents = InsertBeforePlaceholder(contents, appRoute.PlaceHolderPageCodeRoute, appRoute.PageCodeRoute);
+                }
                 else
                     Log($"{appRoute.PageCodeRoute} not added to {appRoutesFile}");
 
@@ -400,8 +469,45 @@ namespace CodeGenerator.Util
             }
         }
 
+        public async Task UpdateMainMenu(MainMenu mainMenu)
+        {
+            try
+            {
+                var file = mainMenu.File;
+                if (!File.Exists(file))
+                {
+                    Log($"File not found: {file}");
+                    return;
+                }
+                var contents = await File.ReadAllTextAsync(file);
+                var index = contents.IndexOf(GC.InsertCode);
+                if (index == -1)
+                {
+                    Log($"Placeholder '{GC.InsertCode}' not found in {file}");
+                    return;
+                }
+                var menuItem = $"if (MenuS.IsMenu(\"{mainMenu.MenuItem}\"))";
+                index = contents.IndexOf(menuItem);
+                if (index >= 0)
+                {
+                    Log($"{menuItem}' already exists in {file}");
+                    return;
+                }
 
-        public string InsertGeneratedCode(
+                menuItem += $" AddItem(mainMenuItems, \"{mainMenu.MenuItemLangKey}\", AppRoutes.{mainMenu.Route}, \"\");";
+
+                Log($"{mainMenu.Permission} added to {file}");
+                contents = InsertBeforePlaceholder(contents, mainMenu.PlaceHolder, menuItem);
+
+                await File.WriteAllTextAsync(file, contents);
+            }
+            catch (Exception ex)
+            {
+                Log($"Error updating UpdateMenuService: {ex.Message}");
+            }
+        }
+
+        private string InsertGeneratedCode(
                 string contents,
                 string code)
         {
@@ -417,7 +523,7 @@ namespace CodeGenerator.Util
         }
 
 
-        public string ReplaceWithinBlockIfNotExists(
+        private string ReplaceWithinBlockIfNotExists(
                 string contents,
                 string marker,
                 UrlServiceUpdate urlServiceUpdate)
@@ -471,7 +577,7 @@ namespace CodeGenerator.Util
         }
 
 
-        public string InsertBeforePlaceholder(string contents, string placeholder, string newContent)
+        private string InsertBeforePlaceholder(string contents, string placeholder, string newContent)
         {
             var index = contents.IndexOf(placeholder);
             if (index == -1)
@@ -486,7 +592,7 @@ namespace CodeGenerator.Util
             return contents.Insert(index, newLine);
         }
 
-        public string InsertAfterPlaceholder(string contents, string placeholder, string newContent)
+        private string InsertAfterPlaceholder(string contents, string placeholder, string newContent)
         {
             var index = contents.IndexOf(placeholder);
             if (index == -1)
@@ -500,7 +606,7 @@ namespace CodeGenerator.Util
             return contents.Insert(index + placeholder.Length, newLine);
         }
 
-        public string GetIndent(string contents, string placeholder)
+        private string GetIndent(string contents, string placeholder)
         {
             var match = Regex.Match(
                 contents,
@@ -517,7 +623,7 @@ namespace CodeGenerator.Util
         }
 
 
-        public void Log(string message)
+        private void Log(string message)
         {
             _logger.LogInformation(message);
         }

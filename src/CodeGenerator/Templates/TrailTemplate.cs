@@ -36,6 +36,8 @@ namespace CodeGenerator.Templates
             ToPermissionValue = 20001;
             Route = "trails";
             PageCode = "tra001";
+            MenuItem = "Trail";
+            MenuItemLangKey = "Trails";
         }
 
         public override BaseTemplate ConfigureTemplate()
@@ -140,6 +142,14 @@ namespace CodeGenerator.Templates
                     IsCreate = true
                 },
 
+                UpdateMenuService = new MainMenu
+                {
+                    File = ProjectTemplate.CombinePath(GC.OriginBackendPath, "App", Application, "Base/Menu", "MenuService.cs"),
+                    MenuItem = MenuItem,
+                    Permission = ToPermission,
+                    PlaceHolder = GC.InsertCode,
+                }
+
             };
 
             Backend.PopulateChanges(Changes);
@@ -178,6 +188,15 @@ namespace CodeGenerator.Templates
                     PlaceHolderPageCodeRoute = "//INSERT_GENERATED_PAGE_CODE_ROUTE_HERE",
                     PageCodeRoute = $"{ToEntity}PageCode, {ToEntity}Route,  GC.{ToPermission},"
                 },
+
+                UpdateMainMenu = new MainMenu
+                {
+                    File = ProjectTemplate.CombinePath(GC.OriginFrontendPath, "Shared/TopMenu", "MainMenu.razor"),
+                    MenuItem = MenuItem,
+                    MenuItemLangKey = MenuItemLangKey,
+                    Route = $"{ToEntity}Route",
+                    PlaceHolder = GC.InsertCode,
+                }
 
             };
 

@@ -23,6 +23,8 @@ namespace Backend.App.HF.Base.Menu
             if (session.IsUserPermission(GC.PerCodeTemplate))
                 menuItemIds.Add("CodeTemplate");
 
+            //INSERT_GENERATED_CODE_HERE
+
             return menuItemIds;
         }
 

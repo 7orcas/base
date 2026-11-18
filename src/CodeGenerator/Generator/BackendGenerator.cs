@@ -54,6 +54,8 @@ namespace CodeGenerator.Generator
             if (project.UpdateUrlsService != null)
                 await UpdateUrlsService(project.UpdateUrlsService);
 
+            if (project.UpdateMenuService != null)
+                await UpdateMenuService(project.UpdateMenuService);
 
             return;
         }

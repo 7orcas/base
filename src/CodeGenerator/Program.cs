@@ -30,11 +30,11 @@ namespace CodeGenerator
                 Console.WriteLine($"Invalid Template: {template.ToEntity}");
             }
 
-            //var common = new CommonGenerator(template, logger);
-            //await common.Generate();
+            var common = new CommonGenerator(template, logger);
+            await common.Generate();
 
-            //var backend = new BackendGenerator(template, logger);
-            //await backend.Generate();
+            var backend = new BackendGenerator(template, logger);
+            await backend.Generate();
 
             var frontend = new FrontendGenerator(template, logger);
             await frontend.Generate();

@@ -16,6 +16,8 @@ namespace CodeGenerator.Util
         public string ToPermission { get; set; }
         public int ToPermissionValue { get; set; }
         public string LangKey { get; set; }
+        public string MenuItem { get; set; }
+        public string MenuItemLangKey { get; set; }
 
         public ProjectTemplate Backend;
         public ProjectTemplate Common;
@@ -44,7 +46,9 @@ namespace CodeGenerator.Util
         public ZUpdate UpdateZRepo { get; set; } = null;
         public PermissionConstant UpdateCommonGlobalConstants { get; set; } = null;
         public UrlServiceUpdate UpdateUrlsService { get; set; } = null;
+        public MainMenu UpdateMenuService { get; set; } = null;
         public AppRoute UpdateAppRoutes { get; set; } = null;
+        public MainMenu UpdateMainMenu { get; set; } = null;
         public List<StringChange> StringsToChange = new List<StringChange>();
         public List<StringRemove> StringsToRemove = new List<StringRemove>();
 
@@ -224,5 +228,14 @@ namespace CodeGenerator.Util
         public string PageCodeRoute { get; set; }
     }
 
+    public class MainMenu
+    {
+        public string File { get; set; }
+        public string MenuItem { get; set; }
+        public string MenuItemLangKey { get; set; }
+        public string Route { get; set; }
+        public string Permission { get; set; }
+        public string PlaceHolder { get; set; }
+    }
 }
 
