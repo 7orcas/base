@@ -30,6 +30,9 @@ namespace CodeGenerator.Generator
             if (project.UpdateAppRoutes != null)
                 await UpdateAppRoutes(project.UpdateAppRoutes);
 
+            if (project.UpdateMainMenu != null)
+                await UpdateMainMenu(project.UpdateMainMenu);
+
             return;
         }
     }           

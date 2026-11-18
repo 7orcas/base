@@ -15,4 +15,13 @@
     <ProjectReference Include="..\FrontendServer\FrontendServer.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+	<PackageReference Include="Serilog.Extensions.Logging" Version="9.*" />
+	<PackageReference Include="Serilog.Sinks.File" Version="7.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Logs\" />
+  </ItemGroup>
+
 </Project>

@@ -1,4 +1,9 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Backend.Base.Label.Ent;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Logging;
+using Serilog;
+using System.Security;
 
 namespace CodeGenerator
 {
@@ -6,38 +11,66 @@ namespace CodeGenerator
     {
         static async Task Main(string[] args)
         {
-            using var loggerFactory = LoggerFactory.Create(builder =>
+            var projectDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", ".."));
+
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Information()
+                .WriteTo.Console()
+                .WriteTo.File(
+                    Path.Combine(projectDir, "Logs", "log-.txt"),
+                    rollingInterval: RollingInterval.Day,
+                    outputTemplate: "{Message:lj}{NewLine}")
+                .CreateLogger();
+
+            try
             {
-                builder
-                    .SetMinimumLevel(LogLevel.Information)
-                    .AddSimpleConsole();
-                    //.AddSimpleConsole(options =>
-                    //{
-                    //    options.TimestampFormat = "HH:mm:ss ";
-                    //});
-            });
+                using var loggerFactory = LoggerFactory.Create(builder =>
+                {
+                    builder.AddSerilog();
+                });
 
-            ILogger logger = loggerFactory.CreateLogger<Program>();
+                Microsoft.Extensions.Logging.ILogger logger = loggerFactory.CreateLogger<Program>();
 
-            logger.LogInformation("Current Directory: {Directory}", Directory.GetCurrentDirectory());
+                logger.LogInformation("Application started: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                
+                var template = new Templates.TrailTemplate().ConfigureTemplate();
 
-            Console.WriteLine($"Current Directory: {Directory.GetCurrentDirectory()}");
+                if (!template.IsValid())
+                {
+                    Console.WriteLine($"Invalid Template: {template.ToEntity}");
+                    logger.LogInformation($"Invalid Template: {template.ToEntity}");
+                    return;
+                }
 
-            var template = new Templates.TrailTemplate().ConfigureTemplate();
+                logger.LogInformation($"Application = {template.Application}");
+                logger.LogInformation($"LangKey = {template.LangKey}");
+                logger.LogInformation($"FromEntity = {template.FromEntity}");
+                logger.LogInformation($"FromPermission = {template.FromPermission}");
+                logger.LogInformation($"ToEntity = {template.ToEntity}");
+                logger.LogInformation($"ToPermission = {template.ToPermission}");
+                logger.LogInformation($"ToPermissionValue = {template.ToPermissionValue}");
+                logger.LogInformation($"Route = {template.Route}");
+                logger.LogInformation($"PageCode = {template.PageCode}");
+                logger.LogInformation($"MenuItem = {template.MenuItem}");
+                logger.LogInformation($"MenuItemLangKey = {template.MenuItemLangKey}");
 
-            if (!template.IsValid())
-            {
-                Console.WriteLine($"Invalid Template: {template.ToEntity}");
+
+                logger.LogInformation(Environment.NewLine + ">>>CommonGenerator");
+                var common = new CommonGenerator(template, logger);
+                await common.Generate();
+
+                logger.LogInformation(Environment.NewLine + ">>>BackendGenerator");
+                var backend = new BackendGenerator(template, logger);
+                await backend.Generate();
+
+                logger.LogInformation(Environment.NewLine + ">>>FrontendGenerator");
+                var frontend = new FrontendGenerator(template, logger);
+                await frontend.Generate();
             }
-
-            var common = new CommonGenerator(template, logger);
-            await common.Generate();
-
-            var backend = new BackendGenerator(template, logger);
-            await backend.Generate();
-
-            var frontend = new FrontendGenerator(template, logger);
-            await frontend.Generate();
+            finally
+            {
+                Log.CloseAndFlush();
+            }
         }
     }
 }

@@ -132,20 +132,20 @@ namespace CodeGenerator.Util
 
                 if (addPermConstant)
                 {
-                    Log($"{permissionConstant.Name} constant added to {commonGCFile}");
+                    Log($"Statement added: {permissionConstant.Name} to {commonGCFile}");
                     contents = InsertAfterPlaceholder(contents, permissionConstant.PlaceHolderConstant, permConstant);
                 }
                 else
-                    Log($"{permissionConstant.Name} constant not added to {commonGCFile}");
+                    Log($"Statement not added: {permissionConstant.Name} to {commonGCFile}");
 
 
                 if (addPermObject)
                 {
-                    Log($"{permissionConstant.Name} object added to {commonGCFile}");
+                    Log($"Object added: {permissionConstant.Name} to {commonGCFile}");
                     contents = InsertAfterPlaceholder(contents, permissionConstant.PlaceHolderObject, permObject);
                 }
                 else
-                    Log($"{permissionConstant.Name} object not added to {commonGCFile}");
+                    Log($"Object not added: {permissionConstant.Name} to {commonGCFile}");
 
 
                 await File.WriteAllTextAsync(commonGCFile, contents);
@@ -173,13 +173,13 @@ namespace CodeGenerator.Util
                 var index = contents.IndexOf(GC.InsertCode);
                 if (index == -1)
                 {
-                    Log($"Placeholder '{GC.InsertCode}' not found.");
+                    Log($"Placeholder not found: '{GC.InsertCode}' in {urlsFile}");
                     return;
                 }
 
                 if (urlServiceUpdate.IsList)
                 {
-                    Log($"{urlServiceUpdate.PermissionTemplate} read added.");
+                    Log($"Read URL added: {urlServiceUpdate.PermissionTemplate}");
                     contents = ReplaceWithinBlockIfNotExists(
                         contents,
                         $"if (session.IsUserPermission({urlServiceUpdate.PermissionTemplate}))",
@@ -188,7 +188,7 @@ namespace CodeGenerator.Util
 
                 if (urlServiceUpdate.IsUpdate)
                 {
-                    Log($"{urlServiceUpdate.PermissionTemplate} update added.");
+                    Log($"Update URL added: {urlServiceUpdate.PermissionTemplate}");
                     contents = ReplaceWithinBlockIfNotExists(
                         contents,
                         $"if (session.IsUserPermissionUpdate({urlServiceUpdate.PermissionTemplate}))",
@@ -197,7 +197,7 @@ namespace CodeGenerator.Util
 
                 if (urlServiceUpdate.IsCreate)
                 {
-                    Log($"{urlServiceUpdate.PermissionTemplate} create added.");
+                    Log($"Create URL added: {urlServiceUpdate.PermissionTemplate}");
                     contents = ReplaceWithinBlockIfNotExists(
                         contents,
                         $"if (session.IsUserPermissionCreate({urlServiceUpdate.PermissionTemplate}))",
@@ -229,7 +229,7 @@ namespace CodeGenerator.Util
                 var index = contents.IndexOf(GC.InsertCode);
                 if (index == -1)
                 {
-                    Log($"Placeholder '{GC.InsertCode}' not found in {file}");
+                    Log($"Placeholder not found: '{GC.InsertCode}' in {file}");
                     return;
                 }
 
@@ -237,7 +237,7 @@ namespace CodeGenerator.Util
                 index = contents.IndexOf(statement);
                 if (index >= 0)
                 {
-                    Log($"{statement}' already exists in {file}");
+                    Log($"Statement already exists: {statement} in {file}");
                     return;
                 }
                 contents = InsertGeneratedCode(contents, statement);
@@ -248,10 +248,10 @@ namespace CodeGenerator.Util
                     index = contents.IndexOf(statement);
                     if (index >= 0)
                     {
-                        Log($"{statement}' already exists in {file}");
+                        Log($"Statement already exists: {statement} in {file}");
                         return;
                     }
-                    Log($"{statement}' added to {file}");
+                    Log($"Statement added: {statement} to {file}");
                     contents = InsertGeneratedCode(contents, statement);
                 }
 
@@ -277,20 +277,20 @@ namespace CodeGenerator.Util
                 var index = contents.IndexOf(GC.InsertCode);
                 if (index == -1)
                 {
-                    Log($"Placeholder '{GC.InsertCode}' not found in {file}");
+                    Log($"Placeholder not found: '{GC.InsertCode}' in {file}");
                     return;
                 }
                 var menuItem = $"if (session.IsUserPermission(GC.{mainMenu.Permission}))";
                 index = contents.IndexOf(menuItem);
                 if (index >= 0)
                 {
-                    Log($"{menuItem}' already exists in {file}");
+                    Log($"Statement already exists: {menuItem} in {file}");
                     return;
                 }
 
                 menuItem += $" menuItemIds.Add(\"{mainMenu.MenuItem}\");";
 
-                Log($"{mainMenu.Permission} added to {file}");
+                Log($"Statement added: {mainMenu.Permission} to {file}");
                 contents = InsertBeforePlaceholder(contents, mainMenu.PlaceHolder, menuItem);
 
                 await File.WriteAllTextAsync(file, contents);
@@ -317,7 +317,7 @@ namespace CodeGenerator.Util
                 var index = contents.IndexOf(GC.InsertCode);
                 if (index == -1)
                 {
-                    Log($"Placeholder '{GC.InsertCode}' not found in {file}");
+                    Log($"Placeholder not found: '{GC.InsertCode}' in {file}");
                     return;
                 }
 
@@ -325,13 +325,13 @@ namespace CodeGenerator.Util
                 index = contents.IndexOf(dbSet);
                 if (index >= 0)
                 {
-                    Log($"{dbSet}' already exists in {file}");
+                    Log($"Statement already exists: {dbSet} in {file}");
                     return;
                 }
 
                 contents = InsertGeneratedCode(contents, dbSet);
 
-                Log($"{dbSet}' added to {file}");
+                Log($"Statement added: {dbSet} to {file}");
                 await File.WriteAllTextAsync(file, contents);
             }
             catch (Exception ex)
@@ -356,7 +356,7 @@ namespace CodeGenerator.Util
                 var index = contents.IndexOf(GC.InsertCode);
                 if (index == -1)
                 {
-                    Log($"Placeholder '{GC.InsertCode}' not found in {file}");
+                    Log($"Placeholder not found: '{GC.InsertCode}' in {file}");
                     return;
                 }
 
@@ -364,11 +364,11 @@ namespace CodeGenerator.Util
                 index = contents.IndexOf(service);
                 if (index >= 0)
                 {
-                    Log($"{service}' already exists in {file}");
+                    Log($"Statement already exists: {service} in {file}");
                     return;
                 }
 
-                Log($"{service}' added to {file}");
+                Log($"Statement added: {service} to {file}");
                 contents = InsertGeneratedCode(contents, service);
 
                 await File.WriteAllTextAsync(file, contents);
@@ -395,7 +395,7 @@ namespace CodeGenerator.Util
                 var index = contents.IndexOf(GC.InsertCode);
                 if (index == -1)
                 {
-                    Log($"Placeholder '{GC.InsertCode}' not found in {file}");
+                    Log($"Placeholder not found: '{GC.InsertCode}' in {file}");
                     return;
                 }
 
@@ -403,11 +403,11 @@ namespace CodeGenerator.Util
                 index = contents.IndexOf(service);
                 if (index >= 0)
                 {
-                    Log($"{service}' already exists in {file}");
+                    Log($"Statement already exists: {service} in {file}");
                     return;
                 }
 
-                Log($"{service}' added to {file}");
+                Log($"Statement added: {service} to {file}");
                 contents = InsertGeneratedCode(contents, service);
 
                 await File.WriteAllTextAsync(file, contents);
@@ -437,28 +437,28 @@ namespace CodeGenerator.Util
 
                 if (addRoute)
                 {
-                    Log($"{appRoute.Route} added to {appRoutesFile}");
+                    Log($"Statement added: {appRoute.Route} to {appRoutesFile}");
                     contents = InsertBeforePlaceholder(contents, appRoute.PlaceHolderRoute, appRoute.Route);
                 }
                 else
-                    Log($"{appRoute.Route} not added to {appRoutesFile}");
+                    Log($"Statement not added: {appRoute.Route} to {appRoutesFile}");
 
 
                 if (addPageCode)
                 {
-                    Log($"{appRoute.PageCode} added to {appRoutesFile}");
+                    Log($"Statement added: {appRoute.PageCode} to {appRoutesFile}");
                     contents = InsertBeforePlaceholder(contents, appRoute.PlaceHolderPageCode, appRoute.PageCode);
                 }
                 else
-                    Log($"{appRoute.PageCode} not added to {appRoutesFile}");
+                    Log($"Statement not added: {appRoute.PageCode} to {appRoutesFile}");
 
                 if (addPageCodeRoute)
                 {
-                    Log($"{appRoute.PageCodeRoute} added to {appRoutesFile}");
+                    Log($"Statement added: {appRoute.PageCodeRoute} to {appRoutesFile}");
                     contents = InsertBeforePlaceholder(contents, appRoute.PlaceHolderPageCodeRoute, appRoute.PageCodeRoute);
                 }
                 else
-                    Log($"{appRoute.PageCodeRoute} not added to {appRoutesFile}");
+                    Log($"Statement not added: {appRoute.PageCodeRoute} to {appRoutesFile}");
 
 
                 await File.WriteAllTextAsync(appRoutesFile, contents);
@@ -483,20 +483,20 @@ namespace CodeGenerator.Util
                 var index = contents.IndexOf(GC.InsertCode);
                 if (index == -1)
                 {
-                    Log($"Placeholder '{GC.InsertCode}' not found in {file}");
+                    Log($"Placeholder not found: '{GC.InsertCode}' in {file}");
                     return;
                 }
                 var menuItem = $"if (MenuS.IsMenu(\"{mainMenu.MenuItem}\"))";
                 index = contents.IndexOf(menuItem);
                 if (index >= 0)
                 {
-                    Log($"{menuItem}' already exists in {file}");
+                    Log($"Statement already exists: {menuItem} in {file}");
                     return;
                 }
 
                 menuItem += $" AddItem(mainMenuItems, \"{mainMenu.MenuItemLangKey}\", AppRoutes.{mainMenu.Route}, \"\");";
 
-                Log($"{mainMenu.Permission} added to {file}");
+                Log($"Statement added: {mainMenu.Permission} to {file}");
                 contents = InsertBeforePlaceholder(contents, mainMenu.PlaceHolder, menuItem);
 
                 await File.WriteAllTextAsync(file, contents);
@@ -562,10 +562,7 @@ namespace CodeGenerator.Util
             updatedBlock = updatedBlock.Replace(urlServiceUpdate.FromEntity, urlServiceUpdate.ToEntity);
 
             if (contents.Contains(updatedBlock))
-            {
-                Log($"Updated block already exists in the file.");
                 return contents;
-            }
 
             updatedBlock += Environment.NewLine + Environment.NewLine + indent;
 
