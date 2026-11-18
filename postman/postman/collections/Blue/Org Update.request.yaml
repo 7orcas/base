@@ -139,4 +139,4 @@ auth:
   type: bearer
   credentials:
     token: ""
-order: 11000
+order: 12000

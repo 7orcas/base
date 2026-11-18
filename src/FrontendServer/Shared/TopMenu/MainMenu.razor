@@ -1,4 +1,4 @@
-﻿
+
 <div class="vertical-menu">
     @for (int i = 0; i < mainMenuItems.Count(); i += cMax)
     {
@@ -58,6 +58,11 @@
                 await MenuS.InitializeFromCache();
 
             if (MenuS.IsMenu("Machine")) AddItem(mainMenuItems, "Machines", AppRoutes.MachinesRoute, "");
+            if (MenuS.IsMenu("CodeTemplate")) AddItem(mainMenuItems, "CodeTemplates", AppRoutes.CodeTemplateRoute, "");
+            if (MenuS.IsMenu("Trail")) AddItem(mainMenuItems, "Trails", AppRoutes.TrailRoute, "");
+            //INSERT_GENERATED_CODE_HERE
+
+
             if (MenuS.IsMenu("Audit")) AddItem(mainMenuItems, "Audit", AppRoutes.AuditRoute, "");
             if (MenuS.IsMenu("Org")) AddItem(mainMenuItems, "Organisation", AppRoutes.OrgRoute, "");
             if (MenuS.IsMenu("Config")) AddItem(mainMenuItems, "Config", AppRoutes.ConfigRoute, "");

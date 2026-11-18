@@ -1,0 +1,6 @@
+$kind: http-request
+url: https://localhost:6002/v123/api/codetemplate/search
+method: GET
+headers:
+  Blue-Api-Key: X123251113,$,$,1
+order: 3000

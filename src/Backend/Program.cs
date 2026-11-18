@@ -28,8 +28,10 @@ builder.Services.AddHttpClient();
 
 ZServicesBase.ConfigureStartup(builder);
 ZReposBase.Configure(builder);
+Backend.Program.App.HF.ZReposApp.Configure(builder);
 ZServicesBase.Configure(builder);
-ZServicesApp.Configure(builder);
+Backend.Program.App.DS.ZServicesApp.Configure(builder);
+Backend.Program.App.HF.ZServicesApp.Configure(builder);
 
 
 var app = builder.Build();

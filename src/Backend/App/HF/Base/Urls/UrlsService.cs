@@ -1,4 +1,4 @@
-﻿using GC = Backend.GlobalConstants;
+using GC = Backend.GlobalConstants;
 
 /// <summary>
 /// Urls list
@@ -22,6 +22,46 @@ namespace Backend.App.HF.Base.Urls
             var urls = base.GetList(session);
 
             base.AddOrReplace(urls, "MainMenu", "Menu/" + GC.HF + "mainmenu");
+
+            if (session.IsUserPermission(GC.PerCodeTemplate))
+            {
+                Add(urls, "CodeTemplateSearch", "CodeTemplate/search");
+                Add(urls, "CodeTemplateList", "CodeTemplate/list");
+                Add(urls, "CodeTemplateGet", "CodeTemplate/get");
+            }
+
+            if (session.IsUserPermissionUpdate(GC.PerCodeTemplate))
+            {
+                Add(urls, "CodeTemplateDef", "CodeTemplate/def");
+                Add(urls, "CodeTemplateUpdate", "CodeTemplate/update");
+            }
+
+            if (session.IsUserPermissionCreate(GC.PerCodeTemplate))
+            {
+                Add(urls, "CodeTemplateDef", "CodeTemplate/def");
+                Add(urls, "CodeTemplateNew", "CodeTemplate/new");
+            }
+            
+            if (session.IsUserPermission(GC.PerTrail))
+            {
+                Add(urls, "TrailSearch", "Trail/search");
+                Add(urls, "TrailList", "Trail/list");
+                Add(urls, "TrailGet", "Trail/get");
+            }
+
+            if (session.IsUserPermissionUpdate(GC.PerTrail))
+            {
+                Add(urls, "TrailDef", "Trail/def");
+                Add(urls, "TrailUpdate", "Trail/update");
+            }
+
+            if (session.IsUserPermissionCreate(GC.PerTrail))
+            {
+                Add(urls, "TrailDef", "Trail/def");
+                Add(urls, "TrailNew", "Trail/new");
+            }
+
+            //INSERT_GENERATED_CODE_HERE
 
             return urls;
         }

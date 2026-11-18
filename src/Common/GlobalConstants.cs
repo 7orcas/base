@@ -1,4 +1,4 @@
-﻿
+
 /// <summary>
 /// Common constants between all projects
 /// Created: June 2025
@@ -93,7 +93,6 @@ namespace Common
         public const int PerReg        = 9;
         
 
-        public const int PerMachine   = 101;
         public const int PerPerm1     = 102;
         public const int PerPerm2     = 103;
         public const int PerPerm3     = 104;
@@ -115,41 +114,53 @@ namespace Common
         public const int PerPerm19    = 120;
         public const int PerPerm20    = 121;
 
+        public const int PerMachine   = 10001;
+
+        public const int PerCodeTemplate  = 20000;
+
+        //HF_PERMISSION_CONSTANT
+        public const int PerTrail = 20001;
+
         public const int PermissionNrIndex = 0;
         public const int PermissionLabelIndex = 1;
         public const int PermissionAdminIndex = 2;
         public const int PermissionFields = 3;
         public static readonly object[] Permissions = { //Permission nr, LangKey, IsAdmin (ie only admin's can update this permission)
-            PerOrg,      "Org",    true,
-            PerPerm,     "Perm",   false,
-            PerLabel,    "Label",  true,
-            PerRole,     "Role",   false,
-            PerUser,     "User",   true,
-            PerAudit,    "Audit",  false,
-            PerConfig,   "Conf",   false,
+            PerOrg,          "Org",     true,
+            PerPerm,         "Perm",    false,
+            PerLabel,        "Label",   true,
+            PerRole,         "Role",    false,
+            PerUser,         "User",    true,
+            PerAudit,        "Audit",   false,
+            PerConfig,       "Conf",    false,
+                                       
+            PerMachine,      "Machine", false,
 
-            PerMachine,  "Machine",false,
+            PerCodeTemplate, "Template",false,
 
-            PerPerm1  ,  "102",    false,
-            PerPerm2  ,  "103",    false,
-            PerPerm3  ,  "104",    false,
-            PerPerm4  ,  "105",    false,
-            PerPerm5  ,  "106",    false,
-            PerPerm6  ,  "107",    false,
-            PerPerm7  ,  "108",    false,
-            PerPerm8  ,  "109",    false,
-            PerPerm9  ,  "110",    false,
-            PerPerm10  ,"111",     false,
-            PerPerm11  ,"112",     false,
-            PerPerm12  ,"113",     false,
-            PerPerm13  ,"114",     false,
-            PerPerm14  ,"115",     false,
-            PerPerm15  ,"116",     false,
-            PerPerm16  ,"117",     false,
-            PerPerm17  ,"118",     false,
-            PerPerm18  ,"119",     false,
-            PerPerm19  ,"120",     false,
-            PerPerm20  ,"121",     false,
+            //HF_PERMISSION_OBJECT
+            PerTrail, "Trail", false,
+
+            PerPerm1,        "102",     false,
+            PerPerm2,        "103",     false,
+            PerPerm3,        "104",     false,
+            PerPerm4,        "105",     false,
+            PerPerm5,        "106",     false,
+            PerPerm6,        "107",     false,
+            PerPerm7,        "108",     false,
+            PerPerm8,        "109",     false,
+            PerPerm9,        "110",     false,
+            PerPerm10,       "111",     false,
+            PerPerm11,       "112",     false,
+            PerPerm12,       "113",     false,
+            PerPerm13,       "114",     false,
+            PerPerm14,       "115",     false,
+            PerPerm15,       "116",     false,
+            PerPerm16,       "117",     false,
+            PerPerm17,       "118",     false,
+            PerPerm18,       "119",     false,
+            PerPerm19,       "120",     false,
+            PerPerm20,       "121",     false,
 
         };
 

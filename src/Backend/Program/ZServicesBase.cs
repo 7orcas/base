@@ -39,6 +39,7 @@ namespace Backend.Program
             builder.Services.AddScoped<EmailServiceI, EmailService>();
             builder.Services.AddScoped<WordServiceI, WordService>();
 
+            builder.Services.AddScoped<CodeTemplateServiceI, CodeTemplateService>();
         }
 
         /// <summary>

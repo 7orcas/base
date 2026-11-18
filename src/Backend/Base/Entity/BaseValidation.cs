@@ -18,6 +18,7 @@ namespace Backend.Base.Entity
         protected string maxValueEx;
         protected string minValueEx;
         protected string noPerm;
+        protected string unique;
 
         public BaseValidation (SessionEnt session)
         {
@@ -30,6 +31,7 @@ namespace Backend.Base.Entity
             maxValueEx = GetLabel("MaxV", "Maximum value exceeded"); //has (%%) appended
             minValueEx = GetLabel("MinV", "Minimum value exceeded"); //has (%%) appended
             noPerm = GetLabel("PermNoC", "No Permission to change");
+            unique = GetLabel("InvU", "Field must be unique");
 
             Configure();
         }
@@ -50,18 +52,18 @@ namespace Backend.Base.Entity
             return info;
         }
 
-        public ValidationDto? Validate(T dto)
+        public async Task<ValidationDto?> Validate(T dto)
         {
-            return Validate(dto, null);
+            return await Validate(dto, null);
         }
 
-        public ValidationDto? Validate(T dto, T? currentDto)
+        public async Task<ValidationDto?> Validate(T dto, T? currentDto)
         {
             if (validations == null)
                 throw new Exception("Validations are null");
 
             messages = null;
-            ValidateInternal(dto, currentDto);
+            await ValidateInternal(dto, currentDto);
 
             if (messages != null)
             {
@@ -75,7 +77,7 @@ namespace Backend.Base.Entity
             return null;
         }
 
-        private void ValidateInternal(T dto, T? currentDto)
+        private async Task ValidateInternal(T dto, T? currentDto)
         {
             foreach (var info in validations)
             {
@@ -146,6 +148,16 @@ namespace Backend.Base.Entity
                 {
                     var m = minValueEx.Replace(GC.LabelParameterPrefix, info.MinValue.ToString());
                     AddMessage(info.Label, m);
+                }
+
+
+                if (info.IsUniqueOrg
+                    && dto.IsNew()
+                    && !dto.IsDelete)
+                {
+                    var isUnique = await IsUniqueOrg(dto, info.Name, value);
+                    if (!isUnique)
+                        AddMessage(info.Label, unique);
                 }
 
                 //Call back
@@ -230,6 +242,11 @@ namespace Backend.Base.Entity
             }
         }
 
+        protected virtual async Task<bool> IsUniqueOrg(T dto, string name, object value)
+        {
+            return true;
+        }
+
 
         public class Info
         {
@@ -242,6 +259,7 @@ namespace Backend.Base.Entity
             public bool IsRequiredNew { get; set; } = false;
             public bool IsServiceOnly { get; set; } = false;
             public bool IsUniqueDb { get; set; } = false;
+            public bool IsUniqueOrg { get; set; } = false;
             public object[]? Values { get; set; }
             public Action<T> Callback { get; set; }
 
@@ -285,6 +303,12 @@ namespace Backend.Base.Entity
             public Info setUniqueDb()
             {
                 IsUniqueDb = true;
+                return this;
+            }
+
+            public Info setUniqueOrg()
+            {
+                IsUniqueOrg = true;
                 return this;
             }
 

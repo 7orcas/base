@@ -91,7 +91,7 @@ namespace Backend.Base.User
             {
                 if (dto.IsDelete) continue;
 
-                var val = validator.Validate(dto);
+                var val = await validator.Validate(dto);
                 if (val != null)
                     vals.Add(val);
             }

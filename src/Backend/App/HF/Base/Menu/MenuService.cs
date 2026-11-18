@@ -1,4 +1,4 @@
-﻿using GC = Backend.GlobalConstants;
+using GC = Backend.GlobalConstants;
 
 /// <summary>
 /// Menu items keys
@@ -19,7 +19,13 @@ namespace Backend.App.HF.Base.Menu
         public List<string> GetMenuItemIds(SessionEnt session)
         {
             var menuItemIds = base.GetMenuItemIds(session);
-            
+
+            if (session.IsUserPermission(GC.PerCodeTemplate))
+                menuItemIds.Add("CodeTemplate");
+
+            if (session.IsUserPermission(GC.PerTrail)) menuItemIds.Add("Trail");
+            //INSERT_GENERATED_CODE_HERE
+
             return menuItemIds;
         }
 

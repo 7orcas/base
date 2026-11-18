@@ -14,12 +14,18 @@
             version.Updated,
             TimeZoneInfo.Local)
         .ToString(GC.Date_TS_Format))
-        &nbsp;|&nbsp;
-        @GetLabel("Ver"):
-        @version.Version
     </MudText>
+    @if(ShowVersion)
+    {
+        <MudText Style="line-height:1;" Typo=Typo.overline Class="ma-0 pa-0">
+            &nbsp;|&nbsp;
+            @GetLabel("Ver"):
+            @version.Version
+        </MudText>
+    }
 </div>
 
 @code {
     [Parameter] public _BaseDto version { get; set; }
+    [Parameter] public bool ShowVersion { get; set; } = false;
 }

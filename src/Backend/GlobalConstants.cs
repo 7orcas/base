@@ -61,7 +61,10 @@
         public const int EntityTypeConfig           = 110;
         public const int EntityTypeOrg              = 120;
 
+        public const int EntityTypeTemplate         = 10000;
         public const int EntityTypeMachine          = 10001;
+
+        //EntityTypeApp created here.
 
         public static readonly object[] EntityTypes = {
             EntityTypePermUser,         "PermUser",

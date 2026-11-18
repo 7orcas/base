@@ -10,4 +10,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.10" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Search\App\" />
+  </ItemGroup>
+
 </Project>

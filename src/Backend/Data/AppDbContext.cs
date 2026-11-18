@@ -1,4 +1,4 @@
-﻿namespace Backend.Data
+namespace Backend.Data
 {
     using Backend.App.DS.Base.Org.Ent;
     using Backend.App.HF.Base.Org.Ent;
@@ -15,6 +15,11 @@
         public DbSet<OrgEnt> Orgs => Set<OrgEnt>();
         public DbSet<RoleEnt> Roles => Set<RoleEnt>();
         public DbSet<UserEnt> Users => Set<UserEnt>();
+
+        public DbSet<CodeTemplateEnt> CodeTemplates => Set<CodeTemplateEnt>();
+
+        public DbSet<TrailEnt> Trails => Set<TrailEnt>();
+        //INSERT_GENERATED_CODE_HERE
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

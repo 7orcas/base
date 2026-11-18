@@ -1,4 +1,4 @@
-﻿global using Common;
+global using Common;
 global using Common.DTO;
 global using Common.DTO.App;
 global using Common.DTO.Base;
@@ -40,6 +40,14 @@ global using Backend.Base.Template.Emails;
 global using Backend.Base.Version;
 global using Backend.Base.Version.Ent;
 global using Backend.Core.Middleware;
+global using Backend.CodeTemplate.Generic;
+global using Backend.CodeTemplate.Generic.Ent;
 global using Backend.Program;
+global using Backend.Program.App.DS;
+global using Backend.Program.App.HF;
 global using System.Diagnostics;
 global using Dapper;
+
+global using Backend.App.HF.Trail;
+global using Backend.App.HF.Trail.Ent;
+//INSERT_GENERATED_CODE_HERE

@@ -17,13 +17,13 @@ namespace CodeGenerator.Templates
 
         public override BaseTemplate ConfigureTemplate()
         {
-            AppSubPath = "DS/";
+          //  AppSubPath = "DS/";
             Backend = new ProjectTemplate
             {
                 IsCreate = true,
-                NewPath = GC.BackendAppPath + AppSubPath + ToEntity,
-                CopyFromPath = GC.BackendAppPath + FromEntity,
-                CopySubFolders = true,
+                //NewPath = GC.BackendAppPath + AppSubPath + ToEntity,
+                //CopyFromPath = GC.BackendAppPath + FromEntity,
+                CopyEnts = true,
                 CopyControllers = true,
                 CopyRepos = true,
             };

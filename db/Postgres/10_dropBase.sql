@@ -15,7 +15,7 @@ drop table if exists base.userAccRole;
 drop table if exists base.role;
 drop table if exists base.userAcc;
 drop table if exists base.zzz;
-drop table if exists base.template;
+drop table if exists base.zcodetemplate;
 
 drop sequence if exists cntrl.temp_id;
 
