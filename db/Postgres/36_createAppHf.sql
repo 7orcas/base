@@ -19,7 +19,7 @@ CREATE TABLE hf.trailGroupUserAcc (
     trailGroupId BIGINT NOT NULL,
 	userAccId BIGINT NOT NULL,
     isactive BOOLEAN NOT NULL DEFAULT TRUE,
-	isadmin BOOLEAN NOT NULL DEFAULT TRUE,
+	isadmin BOOLEAN NOT NULL DEFAULT FALSE,
     PRIMARY KEY (id),
     FOREIGN KEY (trailGroupId) REFERENCES hf.trailGroup(id),
 	FOREIGN KEY (userAccId) REFERENCES base.userAcc(id)

@@ -6,6 +6,13 @@ VALUES
 (1, 1, 'TG1', 'Trail Group 1'),
 (2, 2, 'TG2', 'Trail Group 2');
 
+INSERT INTO hf.trailGroupUserAcc (id, trailGroupId, userAccId, isadmin)
+VALUES
+(1, 1, 1, true),
+(2, 1, 111, false),
+(20, 2, 111, true);
+
+
 INSERT INTO hf.trail
     (id, orgnr, trailGroupid, code, descr)
 VALUES
@@ -20,6 +27,11 @@ VALUES
 SELECT setval(
     pg_get_serial_sequence('hf.trailGroup', 'id'),
     (SELECT MAX(id) FROM hf.trailGroup)
+);
+
+SELECT setval(
+    pg_get_serial_sequence('hf.trailGroupUserAcc', 'id'),
+    (SELECT MAX(id) FROM hf.trailGroupUserAcc)
 );
 
 SELECT setval(
