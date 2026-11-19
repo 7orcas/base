@@ -123,10 +123,10 @@ namespace CodeGenerator.Templates
                 NewPath = ProjectTemplate.CombinePath(GC.DestinationBackendAppPath, Application, ToEntity),
                 UpdateCommonGlobalConstants = new PermissionConstant
                 {
-                    PlaceHolderConstant = "//HF_PERMISSION_CONSTANT",
+                    PlaceHolderConstant = GC.InsertCode + ":PERM_CONSTANT",
                     Name = ToPermission,
                     Value = ToPermissionValue,
-                    PlaceHolderObject = "//HF_PERMISSION_OBJECT",
+                    PlaceHolderObject = GC.InsertCode + ":PERM_OBJECT",
                     LangKey = LangKey,
                     IsAdmin = false
                 },

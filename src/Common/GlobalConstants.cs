@@ -92,35 +92,14 @@ namespace Common
         public const int PerConfig     = 8;
         public const int PerReg        = 9;
         
-
-        public const int PerPerm1     = 102;
-        public const int PerPerm2     = 103;
-        public const int PerPerm3     = 104;
-        public const int PerPerm4     = 105;
-        public const int PerPerm5     = 106;
-        public const int PerPerm6     = 107;
-        public const int PerPerm7     = 108;
-        public const int PerPerm8     = 109;
-        public const int PerPerm9     = 110;
-        public const int PerPerm10    = 111;
-        public const int PerPerm11    = 112;
-        public const int PerPerm12    = 113;
-        public const int PerPerm13    = 114;
-        public const int PerPerm14    = 115;
-        public const int PerPerm15    = 116;
-        public const int PerPerm16    = 117;
-        public const int PerPerm17    = 118;
-        public const int PerPerm18    = 119;
-        public const int PerPerm19    = 120;
-        public const int PerPerm20    = 121;
-
+        
         public const int PerMachine   = 10001;
 
         public const int PerCodeTemplate  = 20000;
 
-        //HF_PERMISSION_CONSTANT
-        public const int PerTrailGroup = 20002;
         public const int PerTrail = 20001;
+        public const int PerTrailGroup = 20002;
+        //INSERT_GENERATED_CODE_HERE:PERM_CONSTANT
 
         public const int PermissionNrIndex = 0;
         public const int PermissionLabelIndex = 1;
@@ -139,30 +118,10 @@ namespace Common
 
             PerCodeTemplate, "Template",false,
 
-            //HF_PERMISSION_OBJECT
-            PerTrailGroup, "TrailGrp", false,
             PerTrail, "Trail", false,
+            PerTrailGroup, "TrailGrp", false,
+            //INSERT_GENERATED_CODE_HERE:PERM_OBJECT
 
-            PerPerm1,        "102",     false,
-            PerPerm2,        "103",     false,
-            PerPerm3,        "104",     false,
-            PerPerm4,        "105",     false,
-            PerPerm5,        "106",     false,
-            PerPerm6,        "107",     false,
-            PerPerm7,        "108",     false,
-            PerPerm8,        "109",     false,
-            PerPerm9,        "110",     false,
-            PerPerm10,       "111",     false,
-            PerPerm11,       "112",     false,
-            PerPerm12,       "113",     false,
-            PerPerm13,       "114",     false,
-            PerPerm14,       "115",     false,
-            PerPerm15,       "116",     false,
-            PerPerm16,       "117",     false,
-            PerPerm17,       "118",     false,
-            PerPerm18,       "119",     false,
-            PerPerm19,       "120",     false,
-            PerPerm20,       "121",     false,
 
         };
 
