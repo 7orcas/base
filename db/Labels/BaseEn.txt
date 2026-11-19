@@ -239,4 +239,7 @@ Diffs,Differences
 Trail,Trail
 Trails,Trails
 TrailSb,Random Number Trails
+TrailGrp,Trail Group
+TrailsGrp,Trail Groups
+TrailGrpSb,People in this group
 <LAST>,<LAST LINE>
