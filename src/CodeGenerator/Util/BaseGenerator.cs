@@ -133,7 +133,7 @@ namespace CodeGenerator.Util
                 if (addPermConstant)
                 {
                     Log($"Statement added: {permissionConstant.Name} to {commonGCFile}");
-                    contents = InsertAfterPlaceholder(contents, permissionConstant.PlaceHolderConstant, permConstant);
+                    contents = InsertBeforePlaceholder(contents, permissionConstant.PlaceHolderConstant, permConstant);
                 }
                 else
                     Log($"Statement not added: {permissionConstant.Name} to {commonGCFile}");
@@ -142,7 +142,7 @@ namespace CodeGenerator.Util
                 if (addPermObject)
                 {
                     Log($"Object added: {permissionConstant.Name} to {commonGCFile}");
-                    contents = InsertAfterPlaceholder(contents, permissionConstant.PlaceHolderObject, permObject);
+                    contents = InsertBeforePlaceholder(contents, permissionConstant.PlaceHolderObject, permObject);
                 }
                 else
                     Log($"Object not added: {permissionConstant.Name} to {commonGCFile}");
