@@ -24,6 +24,7 @@ namespace Backend.App.HF.Base.Menu
                 menuItemIds.Add("CodeTemplate");
 
             if (session.IsUserPermission(GC.PerTrail)) menuItemIds.Add("Trail");
+            if (session.IsUserPermission(GC.PerTrailGroup)) menuItemIds.Add("TrailGroup");
             //INSERT_GENERATED_CODE_HERE
 
             return menuItemIds;

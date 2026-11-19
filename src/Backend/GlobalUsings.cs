@@ -50,4 +50,6 @@ global using Dapper;
 
 global using Backend.App.HF.Trail;
 global using Backend.App.HF.Trail.Ent;
+global using Backend.App.HF.TrailGroup;
+global using Backend.App.HF.TrailGroup.Ent;
 //INSERT_GENERATED_CODE_HERE

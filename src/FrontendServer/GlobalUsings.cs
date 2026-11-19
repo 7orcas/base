@@ -26,4 +26,5 @@ global using FrontendServer.Application;
 global using FrontendServer.Application.Machines;
 
 global using FrontendServer.Application.HF.Trail;
+global using FrontendServer.Application.HF.TrailGroup;
 //INSERT_GENERATED_CODE_HERE

@@ -13,7 +13,7 @@ namespace CodeGenerator.Templates
             "GC.PerCodeTemplate", "GC.PerTrailGroup",
             "namespace Backend.CodeTemplate.Generic", "namespace Backend.App.HF.TrailGroup",
             "base.zcodetemplate", "hf.trailGroup",
-            "entity.ToTable(\"zcodetemplate\", \"base\")", "entity.ToTable(\"trail\", \"hf\")",
+            "entity.ToTable(\"zcodetemplate\", \"base\")", "entity.ToTable(\"trailgroup\", \"hf\")",
             "CodeTemplateTitle", "TrailsGrp",
             "CodeTemplateSub", "TrailGrpSb",
             "CodeTemplates", "TrailGroups",
@@ -21,6 +21,7 @@ namespace CodeGenerator.Templates
             "codeTemplate", "trailGroup",
             "codetemplates", "trailgroups",
             "codetemplate", "trailgroup",
+            "CodeTempSr", "TrailGrpSr",
         };
 
         private string[] Remove = {  };

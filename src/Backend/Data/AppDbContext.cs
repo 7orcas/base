@@ -19,6 +19,7 @@ namespace Backend.Data
         public DbSet<CodeTemplateEnt> CodeTemplates => Set<CodeTemplateEnt>();
 
         public DbSet<TrailEnt> Trails => Set<TrailEnt>();
+        public DbSet<TrailGroupEnt> TrailGroups => Set<TrailGroupEnt>();
         //INSERT_GENERATED_CODE_HERE
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
