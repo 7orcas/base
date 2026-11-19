@@ -33,7 +33,7 @@ namespace CodeGenerator
 
                 logger.LogInformation("Application started: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
                 
-                var template = new Templates.TrailTemplate().ConfigureTemplate();
+                var template = new Templates.TrailGroupTemplate().ConfigureTemplate();
 
                 if (!template.IsValid())
                 {

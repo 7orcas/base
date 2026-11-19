@@ -61,6 +61,25 @@ namespace Backend.App.HF.Base.Urls
                 Add(urls, "TrailNew", "Trail/new");
             }
 
+            if (session.IsUserPermission(GC.PerTrailGroup))
+            {
+                Add(urls, "TrailGroupSearch", "TrailGroup/search");
+                Add(urls, "TrailGroupList", "TrailGroup/list");
+                Add(urls, "TrailGroupGet", "TrailGroup/get");
+            }
+
+            if (session.IsUserPermissionUpdate(GC.PerTrailGroup))
+            {
+                Add(urls, "TrailGroupDef", "TrailGroup/def");
+                Add(urls, "TrailGroupUpdate", "TrailGroup/update");
+            }
+
+            if (session.IsUserPermissionCreate(GC.PerTrailGroup))
+            {
+                Add(urls, "TrailGroupDef", "TrailGroup/def");
+                Add(urls, "TrailGroupNew", "TrailGroup/new");
+            }
+
             //INSERT_GENERATED_CODE_HERE
 
             return urls;

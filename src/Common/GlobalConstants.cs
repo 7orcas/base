@@ -119,6 +119,7 @@ namespace Common
         public const int PerCodeTemplate  = 20000;
 
         //HF_PERMISSION_CONSTANT
+        public const int PerTrailGroup = 20002;
         public const int PerTrail = 20001;
 
         public const int PermissionNrIndex = 0;
@@ -139,6 +140,7 @@ namespace Common
             PerCodeTemplate, "Template",false,
 
             //HF_PERMISSION_OBJECT
+            PerTrailGroup, "TrailGrp", false,
             PerTrail, "Trail", false,
 
             PerPerm1,        "102",     false,
