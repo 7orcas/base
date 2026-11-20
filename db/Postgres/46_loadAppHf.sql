@@ -10,9 +10,9 @@ INSERT INTO hf.trailGroupUserAcc (id, trailGroupId, userAccId, isadmin) VALUES
  (2, 1,  111, false),
  (20, 2, 111, true);
 
-INSERT INTO hf.trail (id, orgnr, trailGroupid, code, descr) VALUES
-(1,   1, 1, 'Trail1',  'Trail 1 desc'),
-(2,   1, 1, 'Trail2',  'Trail 2 desc');
+INSERT INTO hf.trail (id, orgnr, trailGroupid, code, descr, status) VALUES
+(1,   1, 1, 'Trail1',  'Trail 1 desc', 0),
+(2,   1, 1, 'Trail2',  'Trail 2 desc', 0);
 
 
 -- -------------------------------------------------

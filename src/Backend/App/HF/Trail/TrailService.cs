@@ -1,13 +1,6 @@
-using Common.Validator;
-using DocumentFormat.OpenXml.Office2010.Excel;
-using Microsoft.AspNetCore.Cors.Infrastructure;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using Npgsql;
-using System.Data;
-using System.Text;
-using System.Transactions;
-using GC = Backend.GlobalConstants;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Caching.Memory;
+using GC = Backend.App.HF.GlobalConstantsHF;
 
 namespace Backend.App.HF.Trail
 {
@@ -20,13 +13,16 @@ namespace Backend.App.HF.Trail
     public class TrailService: BaseService, TrailServiceI
     {
         private readonly TrailRepoI _trailRepo;
+        private readonly IMemoryCache _memoryCache;
+        private readonly IHubContext<TrailHub> _hub;
 
-
-        public TrailService(IServiceProvider serviceProvider, 
+        public TrailService(IServiceProvider serviceProvider,
+            IMemoryCache memoryCache,
             TrailRepoI trailRepo) 
             : base(serviceProvider) 
         { 
             _trailRepo = trailRepo;
+            _memoryCache = memoryCache;
         }
 
 
@@ -78,6 +74,8 @@ namespace Backend.App.HF.Trail
             return new TrailDto
             {
                 Id = entity.Id,
+                Status = entity.Status,
+                StatusDescription = GetStatusDescription(session, entity.Status),
                 Code = entity.Code,
                 Description = entity.Description,
                 IsActive = entity.IsActive,
@@ -85,6 +83,19 @@ namespace Backend.App.HF.Trail
                 Updated = entity.Updated,
             };
         }
+
+        private string GetStatusDescription(SessionEnt session, int status)
+        {
+            return status switch
+            {
+                0 => session.GetLabel("TrailSt" + status, "Pending"),
+                1 => session.GetLabel("TrailSt" + status, "Running"),
+                2 => session.GetLabel("TrailSt" + status, "Completed"),
+                3 => session.GetLabel("TrailSt" + status, "Failed"),
+                _ => session.GetLabel("TrailSt" + status, "Unknown")
+            };
+        }       
+
 
         /// <summary>
         /// Get trail field definitions
@@ -177,5 +188,65 @@ namespace Backend.App.HF.Trail
 
             return Populate(session, ent);
         }
+
+        public TrailInfo CreateTrail(TrailDto dto)
+        {
+            var trail = new TrailInfo
+            {
+                Id = dto.Id,
+                Status = (int)GC.TrailStatus.Running,
+                Count = 0
+            };
+
+            _ = Task.Run(() => RunTrail(trail, dto));
+
+            _memoryCache.Set(Key(trail.Id), trail);
+
+            return trail;
+        }
+
+        public TrailInfo? GetTrail(long id)
+        {
+            if (_memoryCache.TryGetValue(Key(id), out var cachedValue))
+            {
+                return cachedValue as TrailInfo;
+            }
+            return null;
+        }
+
+        private async Task RunTrail(TrailInfo trail, TrailDto dto)
+        {
+            for (int i = 0; i <= 100; i++)
+            {
+                trail.Count = i;
+                dto.Count = i;
+
+                await _hub.Clients.Group(trail.Id.ToString())
+                    .SendAsync("ProgressChanged", dto);
+
+                await Task.Delay(500);
+            }
+
+            trail.Status = (int)GC.TrailStatus.Completed;
+        }
+
+        /// <summary>
+        /// Populate a dto with trail run status
+        /// </summary>
+        /// <param name="session"></param>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public void Populate(SessionEnt session, TrailInfo info, TrailDto dto)
+        {
+            dto.Status = info.Status;
+            dto.StatusDescription = GetStatusDescription(session, info.Status);
+        }
+
+
+        private string Key(long id)
+        {
+            return GC.CacheKeyTrailPrefix + id;
+        }
+
     }
 }

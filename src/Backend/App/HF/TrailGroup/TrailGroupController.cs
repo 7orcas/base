@@ -8,7 +8,7 @@ namespace Backend.App.HF.TrailGroup
     //[Authorize]
     [PermissionAtt(GC.PerTrailGroup)]
     [ApiController]
-    [AuditListAtt(GC.EntityTypeTemplate)]
+    [AuditListAtt(GC.EntityTypeTrailGroup)]
     [Route("api/[controller]")]
     public class TrailGroupController : BaseController
     {

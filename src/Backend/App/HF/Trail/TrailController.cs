@@ -8,7 +8,7 @@ namespace Backend.App.HF.Trail
     //[Authorize]
     [PermissionAtt(GC.PerTrail)]
     [ApiController]
-    [AuditListAtt(GC.EntityTypeTemplate)]
+    [AuditListAtt(GC.EntityTypeTrail)]
     [Route("api/[controller]")]
     public class TrailController : BaseController
     {
@@ -170,6 +170,22 @@ namespace Backend.App.HF.Trail
         {
             var session = HttpContext.Items["session"] as SessionEnt;
             var dto = await _trailService.NewTrail(session);
+
+            return Ok(new _ResponseDto
+            {
+                SuccessMessage = "Ok",
+                Result = dto
+            });
+        }
+
+        [CrudAtt(GC.CrudCreate)]
+        [AuditListAtt(GC.CrudCreate)]
+        [HttpPost("starttrail")]
+        public async Task<IActionResult> StartTrail([FromBody] TrailDto dto)
+        {
+            var session = HttpContext.Items["session"] as SessionEnt;
+            var info = _trailService.CreateTrail(dto);
+            _trailService.Populate(session, info, dto);
 
             return Ok(new _ResponseDto
             {

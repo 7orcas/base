@@ -12,6 +12,8 @@ namespace Backend.App.HF.Trail.Ent
     {
         public TrailEnt() { }
 
+        public int Status { get; set; }
+
         public override void Decode() { }
         public override void Encode() { }
     }

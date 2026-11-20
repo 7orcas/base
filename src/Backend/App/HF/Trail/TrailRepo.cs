@@ -33,7 +33,7 @@ namespace Backend.App.HF.Trail
             var parameters = new DynamicParameters();
             var includeCode = !string.IsNullOrWhiteSpace(search.Code);
 
-            var sql = "SELECT DISTINCT c.id, c.code, c.descr AS Description, c.updated, c.version, c.isactive " +
+            var sql = "SELECT DISTINCT c.id, c.status, c.code, c.descr AS Description, c.updated, c.version, c.isactive " +
                        "FROM hf.trail AS c " +
                        "WHERE c.id > 0 ";
 

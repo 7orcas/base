@@ -244,4 +244,9 @@ TrailGrp,Trail Group
 TrailsGrp,Trail Groups
 TrailGrpSb,People in this group
 TrailGrpSr,Trail Group Search
+TrailSt0,Pending
+TrailSt1,Running
+TrailSt2,Completed
+TrailSt3,Failed
+TrailSt4,Unknown
 <LAST>,<LAST LINE>

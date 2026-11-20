@@ -22,6 +22,9 @@ namespace Backend.App.HF.Trail.Ent
                 .setMaxLength(40)
                 .setUniqueOrg();
 
+            Add(nameof(TrailDto.Description), "Desc")
+                .resetIsRequired()
+                .setMaxLength(100);
         }
 
         protected override async Task<bool> IsUniqueOrg(TrailDto dto, string name, object value)

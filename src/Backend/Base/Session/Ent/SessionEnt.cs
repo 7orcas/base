@@ -85,5 +85,12 @@ namespace Backend.Base.Session.Ent
             var p = Permissions.FirstOrDefault(p => p.Nr == permNr);
             return p != null && p.Crud.Contains(GC.CrudDelete);
         }
+
+        public string GetLabel(string langKey, string nullDefault)
+        {
+            if (Labels == null || !Labels.ContainsKey(langKey))
+                return nullDefault;
+            return Labels[langKey];
+        }
     }
 }

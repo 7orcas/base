@@ -14,6 +14,7 @@ ZSession.Configure(builder);
 
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddMemoryCache();
+builder.Services.AddSignalR();
 
 ZSwagger.Configure(builder);
 ZCors.Configure(builder);
@@ -44,6 +45,8 @@ ZRateLimiter.Use(app);
 ZMiddleware.Configure(app);
 ZLogging.ConfigureRequests(app);
 ZVersionApi.Use(app);
+Backend.Program.App.HF.ZHubApp.Configure(app);
+
 
 if (!app.Environment.IsProduction())
 {
@@ -51,33 +54,6 @@ if (!app.Environment.IsProduction())
 }
 
 app.UseHttpsRedirection();
-
-//DELETE ME
-//app.UseAuthentication();
-//app.Use(async (context, next) =>
-//{
-//    // JWT already authenticated?
-//    if (!(context.User.Identity?.IsAuthenticated ?? false))
-//    {
-//        if (context.Request.Headers.TryGetValue("Blue-Api-Key", out var apiKey)
-//            && apiKey == "my-secret-key")
-//        {
-//            var claims = new[]
-//            {
-//                new Claim(ClaimTypes.Name, "BlueApiClient")
-//            };
-
-//            var identity = new ClaimsIdentity(
-//                claims,
-//                "BlueApiKey");
-
-//            context.User = new ClaimsPrincipal(identity);
-//        }
-//    }
-
-//    await next();
-//});
-
 
 app.UseAuthorization();
 

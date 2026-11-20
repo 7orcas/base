@@ -49,6 +49,7 @@ namespace CodeGenerator
                 logger.LogInformation($"ToEntity = {template.ToEntity}");
                 logger.LogInformation($"ToPermission = {template.ToPermission}");
                 logger.LogInformation($"ToPermissionValue = {template.ToPermissionValue}");
+                logger.LogInformation($"EntityTypeValue = {template.EntityTypeValue}");
                 logger.LogInformation($"Route = {template.Route}");
                 logger.LogInformation($"PageCode = {template.PageCode}");
                 logger.LogInformation($"MenuItem = {template.MenuItem}");

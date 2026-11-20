@@ -1,8 +1,5 @@
-@inherits BaseComponent
-
-@using MudBlazor
-@using GC = FrontendServer.GlobalConstants;
-@using FrontendServer.Base._Base;
+@inherits BasePage
+@inject NavigationManager NavigationManager
 
 <div style="height:100%; overflow:auto;">
 
@@ -46,27 +43,42 @@
                             </TitleContent>
                             <ChildContent>
                                 <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                                    
+                                    <TextField Width=GC.TextFieldWidth.TextShort
+                                                LangCode="Code"
+                                                ReadOnly="!dto.IsNew()"
+                                                PageStatus=@PageStatus
+                                                MaxLength="@GetMaxLength(nameof(dto.Code))"
+                                                Required="@IsRequired(nameof(dto.Code))"
+                                                Immediate="true"
+                                                @bind-Value="@dto.Code"/>
+                                    
 
-                                    <div style="display:flex; align-items:flex-end; gap:5px;">
-                                        <TextField Width=GC.TextFieldWidth.TextMedium
-                                                    LangCode="Code"
-                                                    ReadOnly="!dto.IsNew()"
-                                                    PageStatus=@PageStatus
-                                                    MaxLength="@GetMaxLength(nameof(dto.Code))"
-                                                    Required="@IsRequired(nameof(dto.Code))"
-                                                    Immediate="true"
-                                                    @bind-Value="@dto.Code"/>
-                                    </div>
+                                    
+                                    <TextField Width=GC.TextFieldWidth.TextLong
+                                                LangCode="Desc"
+                                                PageStatus=@PageStatus
+                                                MaxLength="@GetMaxLength(nameof(dto.Description))"
+                                                Required="@IsRequired(nameof(dto.Description))"
+                                                Immediate="true"
+                                                @bind-Value="@dto.Description"/>
+                                    
 
-                                    <div style="display:flex; align-items:flex-end; gap:5px;">
-                                        <TextField Width=GC.TextFieldWidth.TextMedium
-                                                    LangCode="Desc"
-                                                    PageStatus=@PageStatus
-                                                    MaxLength="@GetMaxLength(nameof(dto.Description))"
-                                                    Required="@IsRequired(nameof(dto.Description))"
-                                                    Immediate="true"
-                                                    @bind-Value="@dto.Description"/>
-                                    </div>
+                                    <MudText>@dto.StatusDescription</MudText>
+                                    <MudText>@dto.Count</MudText>
+
+                                    <MudButton OnClick="@(() => StartTrail(record))">
+                                        <div class=" label label-no-link">
+                                            <Label Key="StartTrailX"
+                                                   Size="GC.TextSize.ButtonText"
+                                                   HideTooltip=true>
+                                            </Label>
+                                        </div>
+                                    </MudButton>
+
+
+
+<p>@dto?.Count%</p>
 
                                     <Version version=dto />
 
@@ -84,10 +96,80 @@
     </table>
 </div>
 
+@using System.Net
+@using MudBlazor
+@using FrontendServer.Base.Util
+@using GC = FrontendServer.GlobalConstants;
+@using FrontendServer.Base._Base;
+@using Newtonsoft.Json;
+@using Microsoft.AspNetCore.SignalR.Client;
+
 @code {
     [Parameter] public List<ListModel<TrailDto>> Selections { get; set; } = new List<ListModel<TrailDto>>();
     [Parameter] public EventCallback Refresh { get; set; }
     
     private string GetAttemptsClass() => "error-row" + DarkModeSuffix();
-    
+    private HubConnection? _connection;    
+
+    protected override async Task OnInitializedAsync()
+    {
+        _connection = new HubConnectionBuilder()
+            .WithUrl(NavigationManager.ToAbsoluteUri("/progressHub"))
+            .WithAutomaticReconnect()
+            .Build();
+
+        _connection.On<TrailDto>(
+            "ProgressChanged",
+           dto =>
+            {
+                Selections[0].dto = dto;
+
+                InvokeAsync(StateHasChanged);
+            });
+
+        await _connection.StartAsync();
+
+        await _connection.InvokeAsync(
+            "Subscribe",
+            1.ToString());
+    }
+
+
+    private async Task StartTrail(ListModel<TrailDto> selected)
+    {
+        loadStatus.SetSaving();
+
+        var response = await PostAsync<TrailDto>(GetUrl("StartTrail"), selected.dto);
+        var r2 = null as _ResponseDto;
+
+        if (response.StatusCode == HttpStatusCode.OK)
+        {
+            var r1 = await response.Content.ReadAsStringAsync();
+            r2 = JsonConvert.DeserializeObject<_ResponseDto>(r1);
+        }
+        else
+        {
+            //ToDo error response
+            return;
+        }
+
+        if (r2.Valid)
+        {
+            TrailDto dtoX = JsonConvert.DeserializeObject<TrailDto>(r2.Result.ToString());
+
+            selected.dto = dtoX;
+
+        }
+        else
+        {
+            //   loadStatus.SetError();
+            List<ValidationDto> vals = r2?.Validations;
+                    
+        }
+
+        loadStatus.ResetSaving();
+        StateHasChanged();
+    }
+
+
 }

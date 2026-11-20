@@ -15,7 +15,12 @@ namespace Backend.App.HF.Trail
 
 
         List<TrailDto> Populate(SessionEnt session, List<TrailEnt> entities);
-        TrailDto Populate(SessionEnt session, TrailEnt entity); 
+        TrailDto Populate(SessionEnt session, TrailEnt entity);
+        void Populate(SessionEnt session, TrailInfo info, TrailDto dto);
+
+
+        TrailInfo CreateTrail(TrailDto dto);
+        TrailInfo? GetTrail(long id);
 
     }
 }

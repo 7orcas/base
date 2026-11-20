@@ -10,6 +10,7 @@ namespace CodeGenerator.Templates
     {
    
         private string[] Changes = {
+            "GC.EntityTypeTemplate", "GC.EntityTypeTrail",
             "GC.PerCodeTemplate", "GC.PerTrail",
             "namespace Backend.CodeTemplate.Generic", "namespace Backend.App.HF.Trail",
             "base.zcodetemplate", "hf.trail",

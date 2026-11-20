@@ -16,8 +16,9 @@
         public const string UserLangCode          = "en";
         public static readonly string[] Languages = { "en", "de", "c1", "c2" };
 
-        
-        
+
+        public const int PerPerm7 = -7;
+
         public const string TOrg             = "base.org";
         public const string TUser            = "base.zzz";
         public const string TUserAccount     = "base.useracc";
