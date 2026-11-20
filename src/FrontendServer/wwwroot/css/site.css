@@ -121,6 +121,7 @@ a, .btn-link {
 }
 
 .vertical-menu {
+    margin-top: 20px;
     display: flex;
     flex-direction: column;
     gap: 4px;
