@@ -486,7 +486,7 @@ namespace CodeGenerator.Util
                     Log($"Placeholder not found: '{GC.InsertCode}' in {file}");
                     return;
                 }
-                var menuItem = $"if (MenuS.IsMenu(\"{mainMenu.MenuItem}\"))";
+                var menuItem = $"\"{mainMenu.MenuItem}\"";
                 index = contents.IndexOf(menuItem);
                 if (index >= 0)
                 {
@@ -494,7 +494,7 @@ namespace CodeGenerator.Util
                     return;
                 }
 
-                menuItem += $" AddItem(mainMenuItems, \"{mainMenu.MenuItemLangKey}\", AppRoutes.{mainMenu.Route}, \"\");";
+                menuItem += $", \"{mainMenu.MenuItemLangKey}\", AppRoutes.{mainMenu.Route},";
 
                 Log($"Statement added: {mainMenu.Permission} to {file}");
                 contents = InsertBeforePlaceholder(contents, mainMenu.PlaceHolder, menuItem);
