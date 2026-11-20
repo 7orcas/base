@@ -35,6 +35,7 @@ namespace CodeGenerator.Templates
             ToEntity = "TrailGroup";
             ToPermission = "PerTrailGroup";
             ToPermissionValue = 20002;
+            EntityTypeValue = 20002;
             Route = "trailGroups";
             PageCode = "trg001";
             MenuItem = "TrailGroup";
@@ -121,6 +122,16 @@ namespace CodeGenerator.Templates
                 },
 
                 NewPath = ProjectTemplate.CombinePath(GC.DestinationBackendAppPath, Application, ToEntity),
+
+                UpdateEntityType = new EntityTypeConstant
+                {
+                    PlaceHolderType = GC.InsertCode + ":ENT_TYPE",
+                    PlaceHolderObject = GC.InsertCode + ":ENT_OBJECT",
+                    Name = $"EntityType{ToEntity}",
+                    LangKey = LangKey,
+                    Value = EntityTypeValue,
+                },
+
                 UpdateCommonGlobalConstants = new PermissionConstant
                 {
                     PlaceHolderConstant = GC.InsertCode + ":PERM_CONSTANT",

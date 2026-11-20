@@ -109,6 +109,53 @@ namespace CodeGenerator.Util
             return first + second;
         }
 
+        public async Task UpdateEntityType(EntityTypeConstant entTypeConstant)
+        {
+            try
+            {
+                var globalCFile = Path.Combine(GC.OriginBackendPath, "GlobalConstants.cs");
+                if (!File.Exists(globalCFile))
+                {
+                    Log($"File not found: {globalCFile}");
+                    return;
+                }
+
+                var contents = await File.ReadAllTextAsync(globalCFile);
+
+                var entConstant = $"public const int {entTypeConstant.Name}";
+                var addEntConstant = !contents.Contains(entConstant) && contents.Contains(entTypeConstant.PlaceHolderType);
+                entConstant += $" = {entTypeConstant.Value};";
+
+                var entObject = $"{entTypeConstant.Name}, \"{entTypeConstant.LangKey}\",";
+                var addEntObject = !contents.Contains(entObject);
+
+
+                if (addEntConstant)
+                {
+                    Log($"Statement added: {entTypeConstant.Name} to {globalCFile}");
+                    contents = InsertBeforePlaceholder(contents, entTypeConstant.PlaceHolderConstant, entConstant);
+                }
+                else
+                    Log($"Statement not added: {entTypeConstant.Name} to {globalCFile}");
+
+
+                if (addEntObject)
+                {
+                    Log($"Object added: {entTypeConstant.Name} to {globalCFile}");
+                    contents = InsertBeforePlaceholder(contents, entTypeConstant.PlaceHolderObject, entObject);
+                }
+                else
+                    Log($"Object not added: {entTypeConstant.Name} to {globalCFile}");
+
+
+                await File.WriteAllTextAsync(globalCFile, contents);
+            }
+            catch (Exception ex)
+            {
+                Log($"Error updating GlobalConstants.cs: {ex.Message}");
+            }
+        }
+
         public async Task UpdateCommonGlobalConstants(PermissionConstant permissionConstant)
         {
             try
@@ -126,7 +173,7 @@ namespace CodeGenerator.Util
                 var addPermConstant = !contents.Contains(permConstant) && contents.Contains(permissionConstant.PlaceHolderConstant);
                 permConstant += $" = {permissionConstant.Value};";
 
-                var permObject = $"{permissionConstant.Name}, \"{permissionConstant.LangKey}\", { (permissionConstant.IsAdmin ? "true" : "false")},";
+                var permObject = $"{permissionConstant.Name}, \"{permissionConstant.LangKey}\", {(permissionConstant.IsAdmin ? "true" : "false")},";
                 var addPermObject = !contents.Contains(permObject);
 
 
@@ -262,6 +309,7 @@ namespace CodeGenerator.Util
                 Log($"Error updating UpdateZService: {ex.Message}");
             }
         }
+
 
         public async Task UpdateMenuService(MainMenu mainMenu)
         {

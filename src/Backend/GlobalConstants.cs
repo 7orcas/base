@@ -63,8 +63,7 @@
 
         public const int EntityTypeTemplate         = 10000;
         public const int EntityTypeMachine          = 10001;
-
-        //EntityTypeApp created here.
+        //INSERT_GENERATED_CODE_HERE:ENT_TYPE
 
         public static readonly object[] EntityTypes = {
             EntityTypePermUser,         "PermUser",
@@ -83,6 +82,7 @@
             EntityTypeOrg,              "Org",
 
             EntityTypeMachine,          "Machine",
+            //INSERT_GENERATED_CODE_HERE:ENT_OBJECT
         };
 
         //Service

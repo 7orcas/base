@@ -35,9 +35,6 @@
 
                                         <div style="display:flex; gap:12px; align-items:center; margin-right:10px;">
                                             <CheckboxField Width=GC.TextFieldWidth.TextShort
-                                                    LangCode="Active"
-                                                    @bind-Value="dto.IsActive" />
-                                            <CheckboxField Width=GC.TextFieldWidth.TextShort
                                                             Class="delete-checkbox"
                                                             LangCode="Delete"
                                                             ReadOnly="!IsDeleteActive"
@@ -61,7 +58,15 @@
                                                     @bind-Value="@dto.Code"/>
                                     </div>
 
-                                   
+                                    <div style="display:flex; align-items:flex-end; gap:5px;">
+                                        <TextField Width=GC.TextFieldWidth.TextMedium
+                                                    LangCode="Desc"
+                                                    PageStatus=@PageStatus
+                                                    MaxLength="@GetMaxLength(nameof(dto.Description))"
+                                                    Required="@IsRequired(nameof(dto.Description))"
+                                                    Immediate="true"
+                                                    @bind-Value="@dto.Description"/>
+                                    </div>
 
                                     <Version version=dto />
 

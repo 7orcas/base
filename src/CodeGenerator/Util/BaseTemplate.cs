@@ -15,6 +15,7 @@ namespace CodeGenerator.Util
         public string PageCode { get; set; }
         public string ToPermission { get; set; }
         public int ToPermissionValue { get; set; }
+        public int EntityTypeValue { get; set; }
         public string LangKey { get; set; }
         public string MenuItem { get; set; }
         public string MenuItemLangKey { get; set; }
@@ -40,6 +41,7 @@ namespace CodeGenerator.Util
         public bool CopyControllers { get; set; } = false;
         public bool CopyServices { get; set; } = false;
         public bool CopyRepos { get; set; } = false;
+        public EntityTypeConstant UpdateEntityType { get; set; } = null;
         public ZUpdate UpdateDbContext { get; set; } = null;
         public ZUpdate UpdateGlobalUsings { get; set; } = null;
         public ZUpdate UpdateZService { get; set; } = null;
@@ -181,6 +183,15 @@ namespace CodeGenerator.Util
                 options);
         }
 
+    }
+
+    public class EntityTypeConstant
+    {
+        public string PlaceHolderType { get; set; }
+        public string PlaceHolderObject { get; set; }
+        public string Name { get; set; }
+        public int Value { get; set; }
+        public string LangKey { get; set; }
     }
 
     public class PermissionConstant
