@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 using Org.BouncyCastle.Security;
 using System.Reflection;
 using GC = Backend.GlobalConstants;
+using GCHf = Backend.App.HF.GlobalConstantsHF;
 
 namespace Backend.Core.Middleware
 {
@@ -32,6 +33,8 @@ namespace Backend.Core.Middleware
                 await _next(context);
                 return;
             }
+            
+            var session = context.Items["session"] as SessionEnt;
 
             var controllerActionDescriptor = endpoint?.Metadata.GetMetadata<ControllerActionDescriptor>();
             if (controllerActionDescriptor == null 
@@ -39,6 +42,16 @@ namespace Backend.Core.Middleware
             {
                 await _next(context);
                 return;
+            }
+            else if (controllerActionDescriptor == null
+                && context.Request.Path.ToString().Contains(GCHf.TrailProgressHub))  
+            {
+                if (session != null)
+                {
+                    //Allow the hub to be called without a controller action descriptor
+                    await _next(context);
+                    return;
+                }
             }
             else if (controllerActionDescriptor == null)
             {
@@ -48,7 +61,6 @@ namespace Backend.Core.Middleware
             }
 
 
-            var session = context.Items["session"] as SessionEnt;
             if (session != null)
             {
                 //Method assigns permissions

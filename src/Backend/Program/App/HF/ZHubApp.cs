@@ -1,4 +1,5 @@
 ﻿using hf = Backend.App.HF;
+using GC = Backend.App.HF.GlobalConstantsHF;
 
 namespace Backend.Program.App.HF
 {
@@ -6,7 +7,7 @@ namespace Backend.Program.App.HF
     {
         static public void Configure(WebApplication app)
         {
-            app.MapHub<hf.Trail.TrailHub>("/progressHub");
+            app.MapHub<hf.Trail.TrailHub>("/" + GC.TrailProgressHub);
         }
 
     }

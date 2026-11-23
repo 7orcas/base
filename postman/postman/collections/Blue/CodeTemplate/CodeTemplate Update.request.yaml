@@ -14,13 +14,13 @@ body:
 
     \        {\r
 
-    \        \"id\": 10001,\r
+    \        \"id\": -7,\r
 
-    \        \"code\": \"T2\",\r
+    \        \"code\": \"T171\",\r
 
-    \        \"descr\": \"xxx\",\r
+    \        \"description\": \"xxx\",\r
 
-    \        \"version\": 1,\r
+    \        \"version\": 5,\r
 
     \        \"isActive\": true,\r
 

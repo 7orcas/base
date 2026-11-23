@@ -1,5 +1,5 @@
 
-namespace Common.DTO.Base
+namespace Common.DTO.App
 {
     public class TrailDto : _BaseDto
     {

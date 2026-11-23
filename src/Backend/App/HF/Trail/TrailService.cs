@@ -18,13 +18,14 @@ namespace Backend.App.HF.Trail
 
         public TrailService(IServiceProvider serviceProvider,
             IMemoryCache memoryCache,
-            TrailRepoI trailRepo) 
+            TrailRepoI trailRepo,
+            IHubContext<TrailHub> hub) 
             : base(serviceProvider) 
         { 
             _trailRepo = trailRepo;
+            _hub = hub;
             _memoryCache = memoryCache;
         }
-
 
         /// <summary>
         /// Return a list of trails
@@ -94,7 +95,20 @@ namespace Backend.App.HF.Trail
                 3 => session.GetLabel("TrailSt" + status, "Failed"),
                 _ => session.GetLabel("TrailSt" + status, "Unknown")
             };
-        }       
+        }
+
+        /// <summary>
+        /// Get trail configurations for the client
+        /// </summary>
+        /// <param name="session"></param>
+        /// <returns></returns>
+        public async Task<TrailConfigDto> GetConfiguration(SessionEnt session)
+        {
+            var config = new TrailConfigDto();
+            config.TrailProgressHubUrl = AppSettings.Urls.Api + GC.TrailProgressHub;
+            config.TrailProgressChanged = GC.TrailProgressChanged;
+            return config;
+        }
 
 
         /// <summary>
@@ -216,13 +230,13 @@ namespace Backend.App.HF.Trail
 
         private async Task RunTrail(TrailInfo trail, TrailDto dto)
         {
-            for (int i = 0; i <= 100; i++)
+            for (int i = 0; i <= 10000; i++)
             {
                 trail.Count = i;
                 dto.Count = i;
 
                 await _hub.Clients.Group(trail.Id.ToString())
-                    .SendAsync("ProgressChanged", dto);
+                    .SendAsync(GC.TrailProgressChanged, dto);
 
                 await Task.Delay(500);
             }

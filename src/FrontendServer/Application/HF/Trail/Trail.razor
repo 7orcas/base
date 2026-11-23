@@ -3,7 +3,8 @@
 @attribute [PageCode(AppRoutes.TrailPageCode)]
 @attribute [PagePermission(GC.PerTrail)]
 @attribute [Authorize]
-
+@inject IDialogService DialogService;
+@inject ConfigService ConfS
 
 <ConfirmNavigation List="list" />
 
@@ -48,7 +49,7 @@
                     <TrailDetailPanel Selections="listUtil.Selections"
                                       Refresh="@Refresh"
                                       PageStatus="@pageStatus" 
-                                      FieldDefinitionUtil="@fieldDefinitionUtil" />
+                                      FieldDefinitionUtil="@fieldDefinitionUtil"/>
                 </MudPaper>
             </MudItem>
 
@@ -63,19 +64,22 @@
 @using GC = FrontendServer.GlobalConstants;
 @using FrontendServer.Base._Base;
 @using Newtonsoft.Json;
-@inject IDialogService DialogService;
+@using Microsoft.AspNetCore.SignalR.Client;
 
 @code {
     private List<ListModel<TrailDto>> list = new List<ListModel<TrailDto>>();
     private ListUtil<TrailDto> listUtil = new ListUtil<TrailDto>();
     private MudTable<ListModel<TrailDto>> _listTable;
     private FieldDefinitionUtil fieldDefinitionUtil;
+    private TrailConfigDto _configDto;
+    private HubConnection? _connection;
 
 
     protected override async Task OnInitializedAsync()
     {
         var defs = await GetDefinition(GetUrl("TrailDef"));
         fieldDefinitionUtil = new FieldDefinitionUtil(defs);
+        _configDto = await GetAsync<TrailConfigDto>(GetUrl("TrailConfig"), false);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -104,7 +108,7 @@
 
     private async Task Search()
     {
-        bool confirmed = true;
+        bool confirmed = true; 
         var ok = await ConfirmNavigationIsOk();
         if (!ok)
         {
@@ -114,13 +118,17 @@
 
         if (confirmed)
         {
-            var result = await OpenSearchDialog<TrailSearchDialog>();
-            if (!result.Canceled)
-            {
-                listUtil.Clear();
-                var data = (TrailSearch)result.Data;
-                await LoadList(data);
-            }
+            var search = await GetAsync<TrailSearch>(GetUrl("TrailSearch"), false);
+            listUtil.Clear();
+            await LoadList(search);
+
+ //           var result = await OpenSearchDialog<TrailSearchDialog>();
+ //           if (!result.Canceled)
+ //           {
+ //               listUtil.Clear();
+ //               var data = (TrailSearch)result.Data;
+ //               await LoadList(data);
+ //           }
         }
     }
 
@@ -175,11 +183,52 @@
         {
             var record = await GetAsync<TrailDto>(GetUrlSlash("TrailGet") + dto.Id, false);
             dto.Load(record);
+            await GetSingalRConnection(dto);
         }
 
         listUtil.Select(dto);
         StateHasChanged();
     }
+
+    private async Task GetSingalRConnection(ListModel<TrailDto> sel)
+    {
+        try
+        {
+            var url = _configDto.TrailProgressHubUrl;
+            var token = await ConfS.GetToken();
+
+            _connection = new HubConnectionBuilder()
+                .WithUrl(url, options =>
+                {
+                    options.AccessTokenProvider = () =>
+                        Task.FromResult(token);
+                })
+                .WithAutomaticReconnect()
+                .Build();
+
+       
+            _connection.On<TrailDto>(
+                _configDto.TrailProgressChanged,
+               dto =>
+                {
+                    sel.dto = dto;
+                    InvokeAsync(StateHasChanged);
+                });
+
+            await _connection.StartAsync();
+
+            await _connection.InvokeAsync(
+                "Subscribe",
+                sel.dto.Id.ToString());
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+
+    }
+
 
     private async Task SaveAsync()
     {

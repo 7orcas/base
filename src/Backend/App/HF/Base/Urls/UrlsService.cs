@@ -47,6 +47,7 @@ namespace Backend.App.HF.Base.Urls
                 Add(urls, "TrailSearch", "Trail/search");
                 Add(urls, "TrailList", "Trail/list");
                 Add(urls, "TrailGet", "Trail/get");
+                Add(urls, "TrailConfig", "Trail/config");
             }
 
             if (session.IsUserPermissionUpdate(GC.PerTrail))

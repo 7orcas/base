@@ -28,6 +28,27 @@ namespace Backend.App.HF.Trail
         }
 
         /// <summary>
+        /// Get Trail configuration definition for the front end to use when creating a new Trail
+        /// </summary>
+        /// <returns></returns>
+        [CrudAtt(GC.CrudRead)]
+        [AuditIgnoreAtt]
+        [HttpGet("config")]
+        public async Task<IActionResult> GetConfiguration()
+        {
+            var session = HttpContext.Items["session"] as SessionEnt;
+            var config = await _trailService.GetConfiguration(session);
+
+            var r = new _ResponseDto
+            {
+                SuccessMessage = "Ok",
+                Result = config
+            };
+            return Ok(r);
+        }
+
+
+        /// <summary>
         /// Get Trail entity field definitions
         /// </summary>
         /// <returns></returns>
@@ -70,6 +91,7 @@ namespace Backend.App.HF.Trail
         /// <returns></returns>
         [CrudAtt(GC.CrudRead)]
         [AuditListAtt(GC.CrudReadList)]
+        [UserCacheAtt("TrailSearch")]
         [HttpPost("list")]
         public async Task<IActionResult> GetTrails([FromBody] TrailSearch search)
         {

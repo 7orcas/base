@@ -76,12 +76,7 @@
                                         </div>
                                     </MudButton>
 
-
-
-<p>@dto?.Count%</p>
-
                                     <Version version=dto />
-
                                 </div>
                             </ChildContent>
                         </MudExpansionPanel>
@@ -102,36 +97,15 @@
 @using GC = FrontendServer.GlobalConstants;
 @using FrontendServer.Base._Base;
 @using Newtonsoft.Json;
-@using Microsoft.AspNetCore.SignalR.Client;
 
 @code {
     [Parameter] public List<ListModel<TrailDto>> Selections { get; set; } = new List<ListModel<TrailDto>>();
     [Parameter] public EventCallback Refresh { get; set; }
-    
+
     private string GetAttemptsClass() => "error-row" + DarkModeSuffix();
-    private HubConnection? _connection;    
 
     protected override async Task OnInitializedAsync()
     {
-        _connection = new HubConnectionBuilder()
-            .WithUrl(NavigationManager.ToAbsoluteUri("/progressHub"))
-            .WithAutomaticReconnect()
-            .Build();
-
-        _connection.On<TrailDto>(
-            "ProgressChanged",
-           dto =>
-            {
-                Selections[0].dto = dto;
-
-                InvokeAsync(StateHasChanged);
-            });
-
-        await _connection.StartAsync();
-
-        await _connection.InvokeAsync(
-            "Subscribe",
-            1.ToString());
     }
 
 

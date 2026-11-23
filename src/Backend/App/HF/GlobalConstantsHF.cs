@@ -2,6 +2,8 @@
 {
     public class GlobalConstantsHF : GlobalConstants
     {
+        public const string TrailProgressHub = "trailProgressHub";
+        public const string TrailProgressChanged = "trailProgressChanged";
 
         public enum TrailStatus
         {

@@ -10,6 +10,7 @@ namespace Backend.App.HF.Trail
         Task<TrailDto?> NewTrail(SessionEnt session);
 
 
+        Task<TrailConfigDto> GetConfiguration(SessionEnt session);
         Task<DefinitionDto> GetDefinition(SessionEnt session);
         Task<List<ValidationDto>> ValidateTrails(SessionEnt session, List<TrailDto> update);
 
