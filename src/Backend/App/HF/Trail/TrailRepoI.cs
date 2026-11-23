@@ -9,5 +9,6 @@ namespace Backend.App.HF.Trail
 
 
         Task<TrailEnt> Update(SessionEnt session, TrailEnt trail, TrailDto dto);
+        Task UpdateStatus(SessionEnt session, long trailId, int status);
     }
 }

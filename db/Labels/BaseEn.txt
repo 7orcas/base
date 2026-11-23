@@ -249,4 +249,6 @@ TrailSt1,Running
 TrailSt2,Completed
 TrailSt3,Failed
 TrailSt4,Unknown
+TrailEr1,Trail not found
+TrailEr2,Trail did not start
 <LAST>,<LAST LINE>

@@ -20,8 +20,8 @@ namespace Backend.App.HF.Trail
         void Populate(SessionEnt session, TrailInfo info, TrailDto dto);
 
 
-        TrailInfo CreateTrail(TrailDto dto);
-        TrailInfo? GetTrail(long id);
+        Task<TrailInfo> StartTrail(SessionEnt session, TrailDto dto);
+        Task<TrailInfo?> GetTrail(long id);
 
     }
 }

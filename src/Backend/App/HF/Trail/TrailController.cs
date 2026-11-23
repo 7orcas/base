@@ -1,7 +1,8 @@
 using Common.DTO.Base;
 using Common.Validator.Base;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.AspNetCore.Mvc;
-using GC = Backend.GlobalConstants;
+using GC = Backend.App.HF.GlobalConstantsHF;
 
 namespace Backend.App.HF.Trail
 {
@@ -206,9 +207,19 @@ namespace Backend.App.HF.Trail
         public async Task<IActionResult> StartTrail([FromBody] TrailDto dto)
         {
             var session = HttpContext.Items["session"] as SessionEnt;
-            var info = _trailService.CreateTrail(dto);
-            _trailService.Populate(session, info, dto);
+            var info = await _trailService.StartTrail(session, dto);
+                
+            if (info.Status != (int)GC.TrailStatus.Running)
+            {
+                return Ok(new _ResponseDto
+                {
+                    Valid = false,
+                    ErrorMessage = session.GetLabel("TrailEr2", "Trail did not start")
+                });
+            }
 
+            var entity = await _trailService.GetTrailById(dto.Id);
+            dto = _trailService.Populate(session, entity);
             return Ok(new _ResponseDto
             {
                 SuccessMessage = "Ok",

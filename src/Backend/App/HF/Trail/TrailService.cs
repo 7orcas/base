@@ -15,16 +15,19 @@ namespace Backend.App.HF.Trail
         private readonly TrailRepoI _trailRepo;
         private readonly IMemoryCache _memoryCache;
         private readonly IHubContext<TrailHub> _hub;
+        private readonly IServiceScopeFactory _scopeFactory;
 
         public TrailService(IServiceProvider serviceProvider,
             IMemoryCache memoryCache,
             TrailRepoI trailRepo,
-            IHubContext<TrailHub> hub) 
+            IHubContext<TrailHub> hub,
+            IServiceScopeFactory scopeFactory) 
             : base(serviceProvider) 
         { 
             _trailRepo = trailRepo;
             _hub = hub;
             _memoryCache = memoryCache;
+            _scopeFactory = scopeFactory;
         }
 
         /// <summary>
@@ -203,7 +206,7 @@ namespace Backend.App.HF.Trail
             return Populate(session, ent);
         }
 
-        public TrailInfo CreateTrail(TrailDto dto)
+        public async Task<TrailInfo> StartTrail(SessionEnt session, TrailDto dto)
         {
             var trail = new TrailInfo
             {
@@ -211,26 +214,23 @@ namespace Backend.App.HF.Trail
                 Status = (int)GC.TrailStatus.Running,
                 Count = 0
             };
+            
+            await _trailRepo.UpdateStatus(session, trail.Id, trail.Status);
+            dto.Status = trail.Status;
+            dto.StatusDescription = GetStatusDescription(session, trail.Status);
 
-            _ = Task.Run(() => RunTrail(trail, dto));
+            _ = Task.Run(() => RunTrail(session, trail, dto, _memoryCache));
 
             _memoryCache.Set(Key(trail.Id), trail);
-
             return trail;
         }
 
-        public TrailInfo? GetTrail(long id)
+        private async Task RunTrail(SessionEnt session, TrailInfo trail, TrailDto dto, IMemoryCache memoryCache)
         {
-            if (_memoryCache.TryGetValue(Key(id), out var cachedValue))
-            {
-                return cachedValue as TrailInfo;
-            }
-            return null;
-        }
+            using var scope = _scopeFactory.CreateScope();
+            var trailRepo = scope.ServiceProvider.GetRequiredService<TrailRepoI>();
 
-        private async Task RunTrail(TrailInfo trail, TrailDto dto)
-        {
-            for (int i = 0; i <= 10000; i++)
+            for (int i = 0; i <= 30; i++)
             {
                 trail.Count = i;
                 dto.Count = i;
@@ -242,7 +242,24 @@ namespace Backend.App.HF.Trail
             }
 
             trail.Status = (int)GC.TrailStatus.Completed;
+            await trailRepo.UpdateStatus(session, trail.Id, trail.Status);
+            memoryCache.Remove(Key(trail.Id));
+
+            dto.Status = trail.Status;
+            dto.StatusDescription = GetStatusDescription(session, trail.Status);
+            await _hub.Clients.Group(trail.Id.ToString())
+                    .SendAsync(GC.TrailProgressChanged, dto);
         }
+
+        public async Task<TrailInfo?> GetTrail(long id)
+        {
+            if (_memoryCache.TryGetValue(Key(id), out var cachedValue))
+            {
+                return cachedValue as TrailInfo;
+            }
+            return null;
+        }
+
 
         /// <summary>
         /// Populate a dto with trail run status

@@ -102,6 +102,7 @@ namespace Backend.App.HF.Trail
             trail.Description = dto.Description;
             trail.OrgNr = dto.OrgNr;
             trail.IsActive = dto.IsActive;
+            trail.Status = dto.Status;
             VersionIncrement(trail);
 
             trail.Encode();
@@ -111,6 +112,27 @@ namespace Backend.App.HF.Trail
 
             await _context.SaveChangesAsync();
             return trail;
+        }
+
+        /// <summary>
+        /// Update, create or delete a Trail
+        /// </summary>
+        /// <param name="session"></param>
+        /// <param name="trail"></param>
+        /// <param name="dto"></param>
+        /// <returns></returns>
+        public async Task UpdateStatus(SessionEnt session, long trailId, int status)
+        {
+            var trail = await GetById(trailId);
+            if (trail == null)
+            {
+                _log.Error($"Trail not found with ID {trailId}, update status: {status}"); 
+                throw new InvalidOperationException(session.GetLabel("TrailEr1", "Trail not found"));
+            }
+
+            trail.Status = status;
+            VersionIncrement(trail);
+            await _context.SaveChangesAsync();
         }
 
     }
