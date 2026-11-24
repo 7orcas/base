@@ -1,0 +1,58 @@
+@inherits BasePage
+
+@using MudBlazor
+@using GC = FrontendServer.GlobalConstants;
+@using FrontendServer.Base._Base;
+
+<div style="height:100%; overflow:auto;">
+
+    <table style="flex:1; min-height:0; table-layout:fixed; width:100%;@GetDebugBorder("pink")">
+
+        <tbody class="mud-table-body">
+            <tr class="XXmud-table-row">
+                @foreach (var record in Selections.Where(x => x.IsSelected))
+                {
+                var dto = record.dto;
+
+                <td @key="record.Id" style="vertical-align: top; padding: 1px; background-color:white">
+
+                    
+                        @if (record.IsValidation())
+                        {
+                            <MudExpansionPanel @key="record" Text=@GetValidationLabel(record) Expanded=true Style="padding:1px;" Class="@GetValidationClass(record)">
+                                <ChildContent>
+                                    <ErrorPanel List="record.Validation.Messages" />
+                                </ChildContent>
+                            </MudExpansionPanel>
+                        }
+
+                        <MudTabs @bind-ActivePanelIndex="_selectedTab">
+                            <MudTabPanel Text="@GetLabel("Trials")">
+                                <MudText>Details content</MudText>
+                            </MudTabPanel>
+
+                            <MudTabPanel Text="@GetLabel("TrialGrpSb")">
+                                <MudText>Progress content</MudText>
+                            </MudTabPanel>
+                        </MudTabs>
+
+
+
+
+                </td>
+            }
+            </tr>
+        </tbody>
+
+    </table>
+</div>
+
+@code {
+    [Parameter] public List<ListModel<TrialGroupDto>> Selections { get; set; } = new List<ListModel<TrialGroupDto>>();
+    [Parameter] public EventCallback Refresh { get; set; }
+    
+    private string GetAttemptsClass() => "error-row" + DarkModeSuffix();
+    private int _selectedTab = 0;
+
+
+}

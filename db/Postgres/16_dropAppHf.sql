@@ -1,5 +1,5 @@
-drop table if exists hf.trail;
-drop table if exists hf.trailGroupUserAcc;
-drop table if exists hf.trailGroup;
+drop table if exists hf.trial;
+drop table if exists hf.trialGroupUserAcc;
+drop table if exists hf.trialGroup;
 
 drop schema if exists hf;

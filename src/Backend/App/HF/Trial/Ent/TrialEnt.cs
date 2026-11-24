@@ -1,16 +1,18 @@
 
 /// <summary>
-/// TrailGroup Entity
+/// Trial Entity
 /// Created: Nov 2026
 /// [*Licence*]
 /// Author: John Stewart
 /// </summary>
 
-namespace Backend.App.HF.TrailGroup.Ent
+namespace Backend.App.HF.Trial.Ent
 {
-    public class TrailGroupEnt : BaseEntity <TrailGroupEnt>, VersionI
+    public class TrialEnt : BaseEntity <TrialEnt>, VersionI
     {
-        public TrailGroupEnt() { }
+        public TrialEnt() { }
+
+        public int Status { get; set; }
 
         public override void Decode() { }
         public override void Encode() { }

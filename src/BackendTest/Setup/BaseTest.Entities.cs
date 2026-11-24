@@ -21,7 +21,7 @@ namespace BackendTest.Setup
         public const string ROLE_3 = "Role3";
         public const int ROLE_1_ID = 1;
         public const int USER_ACCOUNT_ID_1 = 1;
-        public const int USER_PERM = GC.PerPerm7;
+        public const int USER_PERM = 1;
         public const string USER_PERM_CRUD = "CU";
         public const int USER_ACCOUNT_ID_2 = 2;
 

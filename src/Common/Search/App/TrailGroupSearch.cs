@@ -1,7 +1,7 @@
 
 namespace Common.Search.Base
 {
-    public class TrailGroupSearch : _BaseSearch
+    public class TrialGroupSearch : _BaseSearch
     {
         public string? Code { get; set; }
     }

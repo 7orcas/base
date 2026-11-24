@@ -1,7 +1,7 @@
 @inherits BasePage
-@attribute [Route(AppRoutes.TrailRoute)]
-@attribute [PageCode(AppRoutes.TrailPageCode)]
-@attribute [PagePermission(GC.PerTrail)]
+@attribute [Route(AppRoutes.TrialGroupRoute)]
+@attribute [PageCode(AppRoutes.TrialGroupPageCode)]
+@attribute [PagePermission(GC.PerTrialGroup)]
 @attribute [Authorize]
 
 
@@ -10,7 +10,7 @@
 <div style="height:100%; display:flex; flex-direction:column; @GetDebugBorder("yellow")">
 
     <HeaderThin @key=pageStatus.pageCode
-            TitleKey="Trails"
+            TitleKey="TrialsGrp"
             PageCode=@pageStatus.pageCode
             PageStatus="@pageStatus"
             ToolBarButtonsLeft="toolBarButtonsLeft"
@@ -35,7 +35,7 @@
                 <!-- Left Side List -->
                 <MudItem xs="2" Style="height:100%; display:flex; flex-direction:column; min-height:0; max-width:300px;">
                     <MudPaper Elevation="0" Outlined="true" Style="flex:1; min-height:0; display:flex; flex-direction:column;">
-                        <ListPanel TDto="TrailDto"
+                        <ListPanel TDto="TrialGroupDto"
                                    List="@list" 
                                    CodeKey="Code"
                                    OnItemSelected="@OnItemSelected" />
@@ -45,7 +45,7 @@
             <!-- Right Side Details -->
             <MudItem xs="10" Style="height:100%; display:flex; flex-direction:column; min-height:0;">
                 <MudPaper Elevation="0" Outlined="false" Style="flex:1; min-height:0; overflow:auto; padding-right:20px;">
-                    <TrailDetailPanel Selections="listUtil.Selections"
+                    <TrialGroupDetailPanel Selections="listUtil.Selections"
                                       Refresh="@Refresh"
                                       PageStatus="@pageStatus" 
                                       FieldDefinitionUtil="@fieldDefinitionUtil" />
@@ -66,15 +66,15 @@
 @inject IDialogService DialogService;
 
 @code {
-    private List<ListModel<TrailDto>> list = new List<ListModel<TrailDto>>();
-    private ListUtil<TrailDto> listUtil = new ListUtil<TrailDto>();
-    private MudTable<ListModel<TrailDto>> _listTable;
+    private List<ListModel<TrialGroupDto>> list = new List<ListModel<TrialGroupDto>>();
+    private ListUtil<TrialGroupDto> listUtil = new ListUtil<TrialGroupDto>();
+    private MudTable<ListModel<TrialGroupDto>> _listTable;
     private FieldDefinitionUtil fieldDefinitionUtil;
 
 
     protected override async Task OnInitializedAsync()
     {
-        var defs = await GetDefinition(GetUrl("TrailDef"));
+        var defs = await GetDefinition(GetUrl("TrialGroupDef"));
         fieldDefinitionUtil = new FieldDefinitionUtil(defs);
     }
 
@@ -92,7 +92,7 @@
             if (pageStatus.isCrudC)
                 AddToolbarAddNew(AddRecord);
 
-           // AddToolbarExport(Export);
+            // AddToolbarExport(Export);
 
             if (pageStatus.isCrudU || pageStatus.isCrudC)
                 AddToolbarSave(SaveAsync);
@@ -114,23 +114,32 @@
 
         if (confirmed)
         {
-            var result = await OpenSearchDialog<TrailSearchDialog>();
-            if (!result.Canceled)
+            var search = null as TrialGroupSearch;
+
+            if (false) //FIX ME Have search config
             {
-                listUtil.Clear();
-                var data = (TrailSearch)result.Data;
-                await LoadList(data);
+                var result = await OpenSearchDialog<TrialGroupSearchDialog>();
+                if (!result.Canceled)
+                {
+                    listUtil.Clear();
+                    search = (TrialGroupSearch)result.Data;
+                }
             }
+            else
+                search = new TrialGroupSearch();
+
+            if (search != null)
+                await LoadList(search);
         }
     }
 
     
-    private async Task LoadList(TrailSearch search)
+    private async Task LoadList(TrialGroupSearch search)
     {
-        var response = await PostAsync<_ResponseDto, TrailSearch>(GetUrl("TrailList"), search);
+        var response = await PostAsync<_ResponseDto, TrialGroupSearch>(GetUrl("TrialGroupList"), search);
 
         list.Clear();
-        List<TrailDto> listX = null;
+        List<TrialGroupDto> listX = null;
 
         if (response.StatusCode == HttpStatusCode.OK)
         {
@@ -138,7 +147,7 @@
             var dto = JsonConvert.DeserializeObject<_ResponseDto>(r);
 
             if (dto.Valid)
-                listX = JsonConvert.DeserializeObject<List<TrailDto>>(dto.Result.ToString());
+                listX = JsonConvert.DeserializeObject<List<TrialGroupDto>>(dto.Result.ToString());
 
         }
 
@@ -149,7 +158,7 @@
             listUtil.ShowList = true;
             foreach (var u in listX)
             {
-                list.Add(new ListModel<TrailDto>(u));
+                list.Add(new ListModel<TrialGroupDto>(u));
             }
         }
 
@@ -164,16 +173,16 @@
 
     private void Refresh() => StateHasChanged();
 
-    private async Task OnItemSelected(ListModel<TrailDto> r)
+    private async Task OnItemSelected(ListModel<TrialGroupDto> r)
     {
         await LoadRecord(r);
     }
 
-    private async Task LoadRecord(ListModel<TrailDto> dto)
+    private async Task LoadRecord(ListModel<TrialGroupDto> dto)
     {
         if (!dto.IsLoaded)
         {
-            var record = await GetAsync<TrailDto>(GetUrlSlash("TrailGet") + dto.Id, false);
+            var record = await GetAsync<TrialGroupDto>(GetUrlSlash("TrialGroupGet") + dto.Id, false);
             dto.Load(record);
         }
 
@@ -184,7 +193,7 @@
     private async Task SaveAsync()
     {
         //Get records to be updated
-        var updates = new List<ListModel<TrailDto>>();
+        var updates = new List<ListModel<TrialGroupDto>>();
         for (int i = 0; i < list.Count; i++)
         {
             var rec = list[i];
@@ -196,11 +205,11 @@
 
         loadStatus.SetSaving();
 
-        var updatesX = new UpdateRequest<List<TrailDto>>()
+        var updatesX = new UpdateRequest<List<TrialGroupDto>>()
         {
             Updates = updates.Select(x => x.dto).ToList()
         };
-        var response = await PostAsync<List<TrailDto>>(GetUrl("TrailUpdate"), updatesX);
+        var response = await PostAsync<List<TrialGroupDto>>(GetUrl("TrialGroupUpdate"), updatesX);
 
         var r2 = null as _ResponseDto;
 
@@ -219,9 +228,9 @@
 
         if (r2.Valid)
         {
-            List<TrailDto> dtos = JsonConvert.DeserializeObject<List<TrailDto>>(r2.Result.ToString());
+            List<TrialGroupDto> dtos = JsonConvert.DeserializeObject<List<TrialGroupDto>>(r2.Result.ToString());
 
-            var deletes = new List<ListModel<TrailDto>>();
+            var deletes = new List<ListModel<TrialGroupDto>>();
             for (int i = 0; i < list.Count; i++)
             {
                 var rec = list[i];
@@ -235,7 +244,7 @@
                     continue;
                 }
 
-                var dto = null as TrailDto;
+                var dto = null as TrialGroupDto;
                 if (rec.IsNew())
                     dto = dtos.FirstOrDefault(x => x.Code == rec.dto.Code);
                 else
@@ -295,8 +304,8 @@
 
     private async Task AddRecord()
     {
-        var dto = await GetAsync<TrailDto>(GetUrl("TrailNew"), false);
-        var rec = new ListModel<TrailDto>(dto);
+        var dto = await GetAsync<TrialGroupDto>(GetUrl("TrialGroupNew"), false);
+        var rec = new ListModel<TrialGroupDto>(dto);
         rec.IsLoaded = true;
         list.Insert(0, rec);
         OnItemSelected(rec);

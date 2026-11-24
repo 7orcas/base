@@ -3,32 +3,32 @@ using Common.Validator.Base;
 using Microsoft.AspNetCore.Mvc;
 using GC = Backend.GlobalConstants;
 
-namespace Backend.App.HF.TrailGroup
+namespace Backend.App.HF.TrialGroup
 {
     //[Authorize]
-    [PermissionAtt(GC.PerTrailGroup)]
+    [PermissionAtt(GC.PerTrialGroup)]
     [ApiController]
-    [AuditListAtt(GC.EntityTypeTemplate)]
+    [AuditListAtt(GC.EntityTypeTrialGroup)]
     [Route("api/[controller]")]
-    public class TrailGroupController : BaseController
+    public class TrialGroupController : BaseController
     {
-        private readonly TrailGroupServiceI _trailGroupService;
-        private const string SearchCacheKey = "TrailGroupSearch";
+        private readonly TrialGroupServiceI _trialGroupService;
+        private const string SearchCacheKey = "TrialGroupSearch";
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="ServiceProvider"></param>
-        /// <param name="TrailGroupServiceI"></param>
-        public TrailGroupController(IServiceProvider serviceProvider,
-            TrailGroupServiceI trailGroupService) 
+        /// <param name="TrialGroupServiceI"></param>
+        public TrialGroupController(IServiceProvider serviceProvider,
+            TrialGroupServiceI trialGroupService) 
             : base(serviceProvider)
         {
-            _trailGroupService = trailGroupService;
+            _trialGroupService = trialGroupService;
         }
 
         /// <summary>
-        /// Get TrailGroup entity field definitions
+        /// Get TrialGroup entity field definitions
         /// </summary>
         /// <returns></returns>
         [CrudAtt(GC.CrudRead)]
@@ -37,7 +37,7 @@ namespace Backend.App.HF.TrailGroup
         public async Task<IActionResult> GetDefinition()
         {
             var session = HttpContext.Items["session"] as SessionEnt;
-            var def = await _trailGroupService.GetDefinition(session);
+            var def = await _trialGroupService.GetDefinition(session);
 
             var r = new _ResponseDto
             {
@@ -49,7 +49,7 @@ namespace Backend.App.HF.TrailGroup
 
 
         /// <summary>
-        /// Get TrailGroup search dto from cache or create a new one if not found
+        /// Get TrialGroup search dto from cache or create a new one if not found
         /// </summary>
         /// <returns></returns>
         [CrudAtt(GC.CrudIgnore)]
@@ -58,24 +58,24 @@ namespace Backend.App.HF.TrailGroup
         public async Task<IActionResult> GetSearch()
         {
             var session = HttpContext.Items["session"] as SessionEnt;
-            var s = await GetUserCache<TrailGroupSearch>(session, SearchCacheKey);
-            s = s ?? new TrailGroupSearch();
+            var s = await GetUserCache<TrialGroupSearch>(session, SearchCacheKey);
+            s = s ?? new TrialGroupSearch();
             return Ok(new _ResponseDto(s));
         }
 
         /// <summary>
-        /// Get TrailGroups dtos 
+        /// Get TrialGroups dtos 
         /// </summary>
         /// <param name="search"></param>
         /// <returns></returns>
         [CrudAtt(GC.CrudRead)]
         [AuditListAtt(GC.CrudReadList)]
         [HttpPost("list")]
-        public async Task<IActionResult> GetTrailGroups([FromBody] TrailGroupSearch search)
+        public async Task<IActionResult> GetTrialGroups([FromBody] TrialGroupSearch search)
         {
             var session = HttpContext.Items["session"] as SessionEnt;
-            var entities = await _trailGroupService.GetTrailGroupList(session, search);
-            var list = _trailGroupService.Populate(session, entities);
+            var entities = await _trialGroupService.GetTrialGroupList(session, search);
+            var list = _trialGroupService.Populate(session, entities);
 
             return Ok(new _ResponseDto
             {
@@ -85,18 +85,18 @@ namespace Backend.App.HF.TrailGroup
         }
 
         /// <summary>
-        /// Get specific TrailGroup
+        /// Get specific TrialGroup
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
         [CrudAtt(GC.CrudRead)] //ToDo
         [AuditListAtt(GC.CrudRead)]
         [HttpGet("get/{id}")]
-        public async Task<IActionResult> GetTrailGroup(long id)
+        public async Task<IActionResult> GetTrialGroup(long id)
         {
             var session = HttpContext.Items["session"] as SessionEnt;
-            var entity = await _trailGroupService.GetTrailGroupById(id);
-            var dto = _trailGroupService.Populate(session, entity);
+            var entity = await _trialGroupService.GetTrialGroupById(id);
+            var dto = _trialGroupService.Populate(session, entity);
 
             return Ok(new _ResponseDto
             {
@@ -106,20 +106,20 @@ namespace Backend.App.HF.TrailGroup
         }
 
         /// <summary>
-        /// Update TrailGroups
+        /// Update TrialGroups
         /// </summary>
         /// <returns></returns>
         [CrudAtt(GC.CrudUpdate)]
         [AuditListAtt(GC.CrudUpdate)]
-        [VersionAtt("hf.trailGroup")]
+        [VersionAtt("hf.trialGroup")]
         [HttpPost("update")]
-        public async Task<IActionResult> UpdateTrailGroups([FromBody] UpdateRequest<List<TrailGroupDto>> update)
+        public async Task<IActionResult> UpdateTrialGroups([FromBody] UpdateRequest<List<TrialGroupDto>> update)
         {
             var session = HttpContext.Items["session"] as SessionEnt;
-            var list = update.Updates as List<TrailGroupDto>;
+            var list = update.Updates as List<TrialGroupDto>;
 
             //Validate 
-            var vals = await _trailGroupService.ValidateTrailGroups(session, list);
+            var vals = await _trialGroupService.ValidateTrialGroups(session, list);
             if (vals.Count > 0)
                 return Ok(new _ResponseDto
                 {
@@ -129,22 +129,22 @@ namespace Backend.App.HF.TrailGroup
 
 
             //Do updates
-            var listBefore = new List<TrailGroupDto>();
-            var listUpdated = new List<TrailGroupDto>();
+            var listBefore = new List<TrialGroupDto>();
+            var listUpdated = new List<TrialGroupDto>();
             foreach (var dto in list)
             {
-                var trailGroup = await _trailGroupService.GetTrailGroupOrCreate(session, dto);
-                if (trailGroup == null) continue;
+                var trialGroup = await _trialGroupService.GetTrialGroupOrCreate(session, dto);
+                if (trialGroup == null) continue;
 
-                var beforeDto = _trailGroupService.Populate(session, trailGroup);
+                var beforeDto = _trialGroupService.Populate(session, trialGroup);
                 beforeDto.IsDelete = dto.IsDelete;
                 listBefore.Add(beforeDto);
 
-                trailGroup = await _trailGroupService.UpdateTrailGroup(session, trailGroup, dto);
-                if (trailGroup != null)
+                trialGroup = await _trialGroupService.UpdateTrialGroup(session, trialGroup, dto);
+                if (trialGroup != null)
                 {
-                    beforeDto.Id = trailGroup.Id; //link them
-                    listUpdated.Add(_trailGroupService.Populate(session, trailGroup));
+                    beforeDto.Id = trialGroup.Id; //link them
+                    listUpdated.Add(_trialGroupService.Populate(session, trialGroup));
                 }
             }
 
@@ -159,8 +159,8 @@ namespace Backend.App.HF.TrailGroup
         }
 
         /// <summary>
-        /// Get a new TrailGroup entity with default values
-        /// Note it is not saved to the database yet, it is just a template for creating a new TrailGroup dto
+        /// Get a new TrialGroup entity with default values
+        /// Note it is not saved to the database yet, it is just a template for creating a new TrialGroup dto
         /// </summary>
         /// <returns></returns>
         [CrudAtt(GC.CrudCreate)]
@@ -169,7 +169,7 @@ namespace Backend.App.HF.TrailGroup
         public async Task<IActionResult> New()
         {
             var session = HttpContext.Items["session"] as SessionEnt;
-            var dto = await _trailGroupService.NewTrailGroup(session);
+            var dto = await _trialGroupService.NewTrialGroup(session);
 
             return Ok(new _ResponseDto
             {

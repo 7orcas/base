@@ -25,6 +25,6 @@ global using FrontendServer.Base.Validation;
 global using FrontendServer.Application;
 global using FrontendServer.Application.Machines;
 
-global using FrontendServer.Application.HF.Trail;
-global using FrontendServer.Application.HF.TrailGroup;
+global using FrontendServer.Application.HF.Trial;
+global using FrontendServer.Application.HF.TrialGroup;
 //INSERT_GENERATED_CODE_HERE

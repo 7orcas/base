@@ -48,6 +48,9 @@ namespace CodeGenerator.Generator
             if (project.UpdateZRepo != null)
                 await UpdateZRepo(project.UpdateZRepo);
 
+            if (project.UpdateEntityType != null)
+                await UpdateEntityType(project.UpdateEntityType);
+
             if (project.UpdateCommonGlobalConstants != null)
                 await UpdateCommonGlobalConstants(project.UpdateCommonGlobalConstants);
 

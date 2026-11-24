@@ -6,39 +6,41 @@ using GC = CodeGenerator.GlobalConstants;
 
 namespace CodeGenerator.Templates
 {
-    public class TrailGroupTemplate : BaseTemplate
+    public class TrialGroupTemplate : BaseTemplate
     {
    
         private string[] Changes = {
-            "GC.PerCodeTemplate", "GC.PerTrailGroup",
-            "namespace Backend.CodeTemplate.Generic", "namespace Backend.App.HF.TrailGroup",
-            "base.zcodetemplate", "hf.trailGroup",
-            "entity.ToTable(\"zcodetemplate\", \"base\")", "entity.ToTable(\"trailgroup\", \"hf\")",
-            "CodeTemplateTitle", "TrailsGrp",
-            "CodeTemplateSub", "TrailGrpSb",
-            "CodeTemplates", "TrailGroups",
-            "CodeTemplate", "TrailGroup",
-            "codeTemplate", "trailGroup",
-            "codetemplates", "trailgroups",
-            "codetemplate", "trailgroup",
-            "CodeTempSr", "TrailGrpSr",
+            "GC.EntityTypeTemplate", "GC.EntityTypeGroupTrial",
+            "GC.PerCodeTemplate", "GC.PerTrialGroup",
+            "namespace Backend.CodeTemplate.Generic", "namespace Backend.App.HF.TrialGroup",
+            "base.zcodetemplate", "hf.trialGroup",
+            "entity.ToTable(\"zcodetemplate\", \"base\")", "entity.ToTable(\"trialgroup\", \"hf\")",
+            "CodeTemplateTitle", "TrialsGrp",
+            "CodeTemplateSub", "TrialGrpSb",
+            "CodeTemplates", "TrialGroups",
+            "CodeTemplate", "TrialGroup",
+            "codeTemplate", "trialGroup",
+            "codetemplates", "trialgroups",
+            "codetemplate", "trialgroup",
+            "CodeTempSr", "TrialGrpSr",
         };
 
         private string[] Remove = {  };
 
-        public TrailGroupTemplate()
+        public TrialGroupTemplate()
         {
             Application = GC.BackendAppHf;
-            LangKey = "TrailGrp";
+            LangKey = "TrialGrp";
             FromEntity = "CodeTemplate";
             FromPermission = "PerCodeTemplate";
-            ToEntity = "TrailGroup";
-            ToPermission = "PerTrailGroup";
+            ToEntity = "TrialGroup";
+            ToPermission = "PerTrialGroup";
             ToPermissionValue = 20002;
-            Route = "trailGroups";
+            EntityTypeValue = 20002;
+            Route = "trialGroups";
             PageCode = "trg001";
-            MenuItem = "TrailGroup";
-            MenuItemLangKey = "TrailsGrp";
+            MenuItem = "TrialGroup";
+            MenuItemLangKey = "TrialsGrp";
         }
 
         public override BaseTemplate ConfigureTemplate()
@@ -121,6 +123,16 @@ namespace CodeGenerator.Templates
                 },
 
                 NewPath = ProjectTemplate.CombinePath(GC.DestinationBackendAppPath, Application, ToEntity),
+
+                UpdateEntityType = new EntityTypeConstant
+                {
+                    PlaceHolderType = GC.InsertCode + ":ENT_TYPE",
+                    PlaceHolderObject = GC.InsertCode + ":ENT_OBJECT",
+                    Name = $"EntityType{ToEntity}",
+                    LangKey = LangKey,
+                    Value = EntityTypeValue,
+                },
+
                 UpdateCommonGlobalConstants = new PermissionConstant
                 {
                     PlaceHolderConstant = GC.InsertCode + ":PERM_CONSTANT",

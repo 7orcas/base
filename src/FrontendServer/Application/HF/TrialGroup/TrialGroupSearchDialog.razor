@@ -2,7 +2,7 @@
  
 <BaseSearchDialog Width="800px"
                   Height="400px"
-                  TitleKey="TrailGrpSr"
+                  TitleKey="TrialGrpSr"
                   SubmitAction="Submit"
                   IsValid="data.IsValid()"
                   BaseSearch="data"
@@ -27,7 +27,7 @@
     [Parameter] public int MaxRecordsReturned { get; set; }
     [Parameter] public bool IsService { get; set; }
 
-    private TrailGroupSearch data = new TrailGroupSearch ();
+    private TrialGroupSearch data = new TrialGroupSearch ();
     private TextField codeField;
 
 
@@ -35,7 +35,7 @@
     {
         if (firstRender)
         {
-            data = await GetAsync<TrailGroupSearch>(GetUrl("TrailGroupSearch"), false);
+            data = await GetAsync<TrialGroupSearch>(GetUrl("TrialGroupSearch"), false);
             data.MaxRecordsReturned = MaxRecordsReturned;
 
             await InvokeAsync(async () =>

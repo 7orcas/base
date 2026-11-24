@@ -236,12 +236,20 @@ TextDN,None
 TextDO,Comma (OR)
 Unaccent,Accent Insensitive Search
 Diffs,Differences
-Trail,Trail
-Trails,Trails
-TrailSb,Random Number Trails
-TrailSr,Trail Search
-TrailGrp,Trail Group
-TrailsGrp,Trail Groups
-TrailGrpSb,People in this group
-TrailGrpSr,Trail Group Search
+Trial,Trial
+Trials,Trials
+TrialSb,Random Number Trials
+TrialSr,Trial Search
+TrialGrp,Trial Group
+TrialsGrp,Trial Groups
+TrialGrpSb,People in this group
+TrialGrpSr,Trial Group Search
+TrialSt0,Pending
+TrialSt1,Running
+TrialSt2,Completed
+TrialSt3,Failed
+TrialSt4,Unknown
+TrialEr1,Trial not found
+TrialEr2,Trial did not start
+Members,Members
 <LAST>,<LAST LINE>

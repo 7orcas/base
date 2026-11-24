@@ -48,8 +48,8 @@ global using Backend.Program.App.HF;
 global using System.Diagnostics;
 global using Dapper;
 
-global using Backend.App.HF.Trail;
-global using Backend.App.HF.Trail.Ent;
-global using Backend.App.HF.TrailGroup;
-global using Backend.App.HF.TrailGroup.Ent;
+global using Backend.App.HF.Trial;
+global using Backend.App.HF.Trial.Ent;
+global using Backend.App.HF.TrialGroup;
+global using Backend.App.HF.TrialGroup.Ent;
 //INSERT_GENERATED_CODE_HERE

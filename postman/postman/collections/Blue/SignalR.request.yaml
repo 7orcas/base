@@ -1,0 +1,13 @@
+$kind: http-request
+description: ""
+url: https://localhost:6002/v123/trailProgressHub/negotiate?negotiateVersion=1
+method: POST
+headers:
+  Content-Type: application/json
+  Blue-Api-Key: X123251123,$,$,1
+queryParams:
+  negotiateVersion: "1"
+body:
+  type: json
+  content: ""
+order: 14182

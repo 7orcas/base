@@ -12,7 +12,7 @@ namespace Backend.App.HF.Base.Session
         public void ConfigureSession(SessionEntHF session)
         {
             if (session == null) return;
-            session.Trails = "TRAILS";
+            session.Trials = "TRAILS";
         }
     }
 }

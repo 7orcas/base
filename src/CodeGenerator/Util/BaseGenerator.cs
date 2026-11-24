@@ -109,6 +109,53 @@ namespace CodeGenerator.Util
             return first + second;
         }
 
+        public async Task UpdateEntityType(EntityTypeConstant entTypeConstant)
+        {
+            try
+            {
+                var globalCFile = Path.Combine(GC.OriginBackendPath, "GlobalConstants.cs");
+                if (!File.Exists(globalCFile))
+                {
+                    Log($"File not found: {globalCFile}");
+                    return;
+                }
+
+                var contents = await File.ReadAllTextAsync(globalCFile);
+
+                var entConstant = $"public const int {entTypeConstant.Name}";
+                var addEntConstant = !contents.Contains(entConstant) && contents.Contains(entTypeConstant.PlaceHolderType);
+                entConstant += $" = {entTypeConstant.Value};";
+
+                var entObject = $"{entTypeConstant.Name}, \"{entTypeConstant.LangKey}\",";
+                var addEntObject = !contents.Contains(entObject);
+
+
+                if (addEntConstant)
+                {
+                    Log($"Statement added: {entTypeConstant.Name} to {globalCFile}");
+                    contents = InsertBeforePlaceholder(contents, entTypeConstant.PlaceHolderType, entConstant);
+                }
+                else
+                    Log($"Statement not added: {entTypeConstant.Name} to {globalCFile}");
+
+
+                if (addEntObject)
+                {
+                    Log($"Statement added: {entTypeConstant.Name} to {globalCFile}");
+                    contents = InsertBeforePlaceholder(contents, entTypeConstant.PlaceHolderObject, entObject);
+                }
+                else
+                    Log($"Statement not added: {entTypeConstant.Name} to {globalCFile}");
+
+
+                await File.WriteAllTextAsync(globalCFile, contents);
+            }
+            catch (Exception ex)
+            {
+                Log($"Error updating GlobalConstants.cs: {ex.Message}");
+            }
+        }
+
         public async Task UpdateCommonGlobalConstants(PermissionConstant permissionConstant)
         {
             try
@@ -126,7 +173,7 @@ namespace CodeGenerator.Util
                 var addPermConstant = !contents.Contains(permConstant) && contents.Contains(permissionConstant.PlaceHolderConstant);
                 permConstant += $" = {permissionConstant.Value};";
 
-                var permObject = $"{permissionConstant.Name}, \"{permissionConstant.LangKey}\", { (permissionConstant.IsAdmin ? "true" : "false")},";
+                var permObject = $"{permissionConstant.Name}, \"{permissionConstant.LangKey}\", {(permissionConstant.IsAdmin ? "true" : "false")},";
                 var addPermObject = !contents.Contains(permObject);
 
 
@@ -141,11 +188,11 @@ namespace CodeGenerator.Util
 
                 if (addPermObject)
                 {
-                    Log($"Object added: {permissionConstant.Name} to {commonGCFile}");
+                    Log($"Statement added: {permissionConstant.Name} to {commonGCFile}");
                     contents = InsertBeforePlaceholder(contents, permissionConstant.PlaceHolderObject, permObject);
                 }
                 else
-                    Log($"Object not added: {permissionConstant.Name} to {commonGCFile}");
+                    Log($"Statement not added: {permissionConstant.Name} to {commonGCFile}");
 
 
                 await File.WriteAllTextAsync(commonGCFile, contents);
@@ -179,29 +226,41 @@ namespace CodeGenerator.Util
 
                 if (urlServiceUpdate.IsList)
                 {
-                    Log($"Read URL added: {urlServiceUpdate.PermissionTemplate}");
-                    contents = ReplaceWithinBlockIfNotExists(
-                        contents,
-                        $"if (session.IsUserPermission({urlServiceUpdate.PermissionTemplate}))",
-                        urlServiceUpdate);
+                    var marker = $"if (session.IsUserPermission({urlServiceUpdate.PermissionTemplate}))";
+                    var add = contents.IndexOf(marker);
+                    if (add < 0)
+                    {
+                        Log($"Statement added: {marker}");
+                        contents = ReplaceWithinBlockIfNotExists(contents, marker, urlServiceUpdate);
+                    }
+                    else
+                        Log($"Statement not added: {marker} in {urlsFile}");
                 }
 
                 if (urlServiceUpdate.IsUpdate)
                 {
-                    Log($"Update URL added: {urlServiceUpdate.PermissionTemplate}");
-                    contents = ReplaceWithinBlockIfNotExists(
-                        contents,
-                        $"if (session.IsUserPermissionUpdate({urlServiceUpdate.PermissionTemplate}))",
-                        urlServiceUpdate);
+                    var marker = $"if (session.IsUserPermissionUpdate({urlServiceUpdate.PermissionTemplate}))";
+                    var add = contents.IndexOf(marker);
+                    if (add < 0)
+                    {
+                        Log($"Statement added: {marker}");
+                        contents = ReplaceWithinBlockIfNotExists(contents, marker, urlServiceUpdate);
+                    }
+                    else
+                        Log($"Statement not added: {marker} in {urlsFile}");
                 }
 
                 if (urlServiceUpdate.IsCreate)
                 {
-                    Log($"Create URL added: {urlServiceUpdate.PermissionTemplate}");
-                    contents = ReplaceWithinBlockIfNotExists(
-                        contents,
-                        $"if (session.IsUserPermissionCreate({urlServiceUpdate.PermissionTemplate}))",
-                        urlServiceUpdate);
+                    var marker = $"if (session.IsUserPermissionCreate({urlServiceUpdate.PermissionTemplate}))";
+                    var add = contents.IndexOf(marker);
+                    if (add < 0)
+                    {
+                        Log($"Statement added: {marker}");
+                        contents = ReplaceWithinBlockIfNotExists(contents, marker, urlServiceUpdate);
+                    }
+                    else
+                        Log($"Statement not added: {marker} in {urlsFile}");
                 }
 
 
@@ -237,7 +296,7 @@ namespace CodeGenerator.Util
                 index = contents.IndexOf(statement);
                 if (index >= 0)
                 {
-                    Log($"Statement already exists: {statement} in {file}");
+                    Log($"Statement not added: {statement} in {file}");
                     return;
                 }
                 contents = InsertGeneratedCode(contents, statement);
@@ -248,7 +307,7 @@ namespace CodeGenerator.Util
                     index = contents.IndexOf(statement);
                     if (index >= 0)
                     {
-                        Log($"Statement already exists: {statement} in {file}");
+                        Log($"Statement not added: {statement} in {file}");
                         return;
                     }
                     Log($"Statement added: {statement} to {file}");
@@ -262,6 +321,7 @@ namespace CodeGenerator.Util
                 Log($"Error updating UpdateZService: {ex.Message}");
             }
         }
+
 
         public async Task UpdateMenuService(MainMenu mainMenu)
         {
@@ -284,7 +344,7 @@ namespace CodeGenerator.Util
                 index = contents.IndexOf(menuItem);
                 if (index >= 0)
                 {
-                    Log($"Statement already exists: {menuItem} in {file}");
+                    Log($"Statement not added: {menuItem} in {file}");
                     return;
                 }
 
@@ -325,7 +385,7 @@ namespace CodeGenerator.Util
                 index = contents.IndexOf(dbSet);
                 if (index >= 0)
                 {
-                    Log($"Statement already exists: {dbSet} in {file}");
+                    Log($"Statement not added: {dbSet} in {file}");
                     return;
                 }
 
@@ -364,7 +424,7 @@ namespace CodeGenerator.Util
                 index = contents.IndexOf(service);
                 if (index >= 0)
                 {
-                    Log($"Statement already exists: {service} in {file}");
+                    Log($"Statement not added: {service} in {file}");
                     return;
                 }
 
@@ -403,7 +463,7 @@ namespace CodeGenerator.Util
                 index = contents.IndexOf(service);
                 if (index >= 0)
                 {
-                    Log($"Statement already exists: {service} in {file}");
+                    Log($"Statement not added: {service} in {file}");
                     return;
                 }
 
@@ -490,7 +550,7 @@ namespace CodeGenerator.Util
                 index = contents.IndexOf(menuItem);
                 if (index >= 0)
                 {
-                    Log($"Statement already exists: {menuItem} in {file}");
+                    Log($"Statement not added: {menuItem} in {file}");
                     return;
                 }
 

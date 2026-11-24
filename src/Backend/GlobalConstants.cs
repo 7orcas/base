@@ -1,4 +1,4 @@
-﻿namespace Backend
+namespace Backend
 {
     public class GlobalConstants : Common.GlobalConstants
     {
@@ -27,6 +27,9 @@
         public const string CacheKeySessionPrefix   = "SS_";
         public const string CacheKeyLabelPrefix     = "LK_";
         public const string CacheKeyPermDic         = "PS_dic";
+
+        //HF keys
+        public const string CacheKeyTrialPrefix     = "hfT_";
 
         //API Testing
         public const string ApiTestKey              = "Blue-Api-Key";
@@ -63,8 +66,9 @@
 
         public const int EntityTypeTemplate         = 10000;
         public const int EntityTypeMachine          = 10001;
-
-        //EntityTypeApp created here.
+        public const int EntityTypeTrial = 20001;
+        public const int EntityTypeTrialGroup = 20002;
+        //INSERT_GENERATED_CODE_HERE:ENT_TYPE
 
         public static readonly object[] EntityTypes = {
             EntityTypePermUser,         "PermUser",
@@ -83,6 +87,9 @@
             EntityTypeOrg,              "Org",
 
             EntityTypeMachine,          "Machine",
+            EntityTypeTrial, "Trial",
+            EntityTypeTrialGroup, "TrialGrp",
+            //INSERT_GENERATED_CODE_HERE:ENT_OBJECT
         };
 
         //Service
