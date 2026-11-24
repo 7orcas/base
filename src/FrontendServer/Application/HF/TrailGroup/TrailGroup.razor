@@ -92,7 +92,7 @@
             if (pageStatus.isCrudC)
                 AddToolbarAddNew(AddRecord);
 
-           // AddToolbarExport(Export);
+            // AddToolbarExport(Export);
 
             if (pageStatus.isCrudU || pageStatus.isCrudC)
                 AddToolbarSave(SaveAsync);
@@ -114,13 +114,22 @@
 
         if (confirmed)
         {
-            var result = await OpenSearchDialog<TrailGroupSearchDialog>();
-            if (!result.Canceled)
+            var search = null as TrailGroupSearch;
+
+            if (false) //FIX ME Have search config
             {
-                listUtil.Clear();
-                var data = (TrailGroupSearch)result.Data;
-                await LoadList(data);
+                var result = await OpenSearchDialog<TrailGroupSearchDialog>();
+                if (!result.Canceled)
+                {
+                    listUtil.Clear();
+                    search = (TrailGroupSearch)result.Data;
+                }
             }
+            else
+                search = new TrailGroupSearch();
+
+            if (search != null)
+                await LoadList(search);
         }
     }
 
