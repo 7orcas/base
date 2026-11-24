@@ -23,8 +23,8 @@ namespace Backend.App.HF.Base.Menu
             if (session.IsUserPermission(GC.PerCodeTemplate))
                 menuItemIds.Add("CodeTemplate");
 
-            if (session.IsUserPermission(GC.PerTrail)) menuItemIds.Add("Trail");
-            if (session.IsUserPermission(GC.PerTrailGroup)) menuItemIds.Add("TrailGroup");
+            if (session.IsUserPermission(GC.PerTrial)) menuItemIds.Add("Trial");
+            if (session.IsUserPermission(GC.PerTrialGroup)) menuItemIds.Add("TrialGroup");
             //INSERT_GENERATED_CODE_HERE
 
             return menuItemIds;

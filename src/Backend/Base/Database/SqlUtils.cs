@@ -30,7 +30,7 @@ namespace Backend.Base.Database
         }
 
         /// <summary>
-        /// Remove trailing comma from a SQL statement if it exists
+        /// Remove trialing comma from a SQL statement if it exists
         /// </summary>
         static public string NoComma(string column) => column.EndsWith(",") ? column.Substring(0, column.Length - 1) : column;
 

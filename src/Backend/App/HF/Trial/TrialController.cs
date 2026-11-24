@@ -4,32 +4,32 @@ using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.AspNetCore.Mvc;
 using GC = Backend.App.HF.GlobalConstantsHF;
 
-namespace Backend.App.HF.Trail
+namespace Backend.App.HF.Trial
 {
     //[Authorize]
-    [PermissionAtt(GC.PerTrail)]
+    [PermissionAtt(GC.PerTrial)]
     [ApiController]
-    [AuditListAtt(GC.EntityTypeTrail)]
+    [AuditListAtt(GC.EntityTypeTrial)]
     [Route("api/[controller]")]
-    public class TrailController : BaseController
+    public class TrialController : BaseController
     {
-        private readonly TrailServiceI _trailService;
-        private const string SearchCacheKey = "TrailSearch";
+        private readonly TrialServiceI _trialService;
+        private const string SearchCacheKey = "TrialSearch";
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="ServiceProvider"></param>
-        /// <param name="TrailServiceI"></param>
-        public TrailController(IServiceProvider serviceProvider,
-            TrailServiceI trailService) 
+        /// <param name="TrialServiceI"></param>
+        public TrialController(IServiceProvider serviceProvider,
+            TrialServiceI trialService) 
             : base(serviceProvider)
         {
-            _trailService = trailService;
+            _trialService = trialService;
         }
 
         /// <summary>
-        /// Get Trail configuration definition for the front end to use when creating a new Trail
+        /// Get Trial configuration definition for the front end to use when creating a new Trial
         /// </summary>
         /// <returns></returns>
         [CrudAtt(GC.CrudRead)]
@@ -38,7 +38,7 @@ namespace Backend.App.HF.Trail
         public async Task<IActionResult> GetConfiguration()
         {
             var session = HttpContext.Items["session"] as SessionEnt;
-            var config = await _trailService.GetConfiguration(session);
+            var config = await _trialService.GetConfiguration(session);
 
             var r = new _ResponseDto
             {
@@ -50,7 +50,7 @@ namespace Backend.App.HF.Trail
 
 
         /// <summary>
-        /// Get Trail entity field definitions
+        /// Get Trial entity field definitions
         /// </summary>
         /// <returns></returns>
         [CrudAtt(GC.CrudRead)]
@@ -59,7 +59,7 @@ namespace Backend.App.HF.Trail
         public async Task<IActionResult> GetDefinition()
         {
             var session = HttpContext.Items["session"] as SessionEnt;
-            var def = await _trailService.GetDefinition(session);
+            var def = await _trialService.GetDefinition(session);
 
             var r = new _ResponseDto
             {
@@ -71,7 +71,7 @@ namespace Backend.App.HF.Trail
 
 
         /// <summary>
-        /// Get Trail search dto from cache or create a new one if not found
+        /// Get Trial search dto from cache or create a new one if not found
         /// </summary>
         /// <returns></returns>
         [CrudAtt(GC.CrudIgnore)]
@@ -80,25 +80,25 @@ namespace Backend.App.HF.Trail
         public async Task<IActionResult> GetSearch()
         {
             var session = HttpContext.Items["session"] as SessionEnt;
-            var s = await GetUserCache<TrailSearch>(session, SearchCacheKey);
-            s = s ?? new TrailSearch();
+            var s = await GetUserCache<TrialSearch>(session, SearchCacheKey);
+            s = s ?? new TrialSearch();
             return Ok(new _ResponseDto(s));
         }
 
         /// <summary>
-        /// Get Trails dtos 
+        /// Get Trials dtos 
         /// </summary>
         /// <param name="search"></param>
         /// <returns></returns>
         [CrudAtt(GC.CrudRead)]
         [AuditListAtt(GC.CrudReadList)]
-        [UserCacheAtt("TrailSearch")]
+        [UserCacheAtt("TrialSearch")]
         [HttpPost("list")]
-        public async Task<IActionResult> GetTrails([FromBody] TrailSearch search)
+        public async Task<IActionResult> GetTrials([FromBody] TrialSearch search)
         {
             var session = HttpContext.Items["session"] as SessionEnt;
-            var entities = await _trailService.GetTrailList(session, search);
-            var list = _trailService.Populate(session, entities);
+            var entities = await _trialService.GetTrialList(session, search);
+            var list = _trialService.Populate(session, entities);
 
             return Ok(new _ResponseDto
             {
@@ -108,18 +108,18 @@ namespace Backend.App.HF.Trail
         }
 
         /// <summary>
-        /// Get specific Trail
+        /// Get specific Trial
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
         [CrudAtt(GC.CrudRead)] //ToDo
         [AuditListAtt(GC.CrudRead)]
         [HttpGet("get/{id}")]
-        public async Task<IActionResult> GetTrail(long id)
+        public async Task<IActionResult> GetTrial(long id)
         {
             var session = HttpContext.Items["session"] as SessionEnt;
-            var entity = await _trailService.GetTrailById(id);
-            var dto = _trailService.Populate(session, entity);
+            var entity = await _trialService.GetTrialById(id);
+            var dto = _trialService.Populate(session, entity);
 
             return Ok(new _ResponseDto
             {
@@ -129,20 +129,20 @@ namespace Backend.App.HF.Trail
         }
 
         /// <summary>
-        /// Update Trails
+        /// Update Trials
         /// </summary>
         /// <returns></returns>
         [CrudAtt(GC.CrudUpdate)]
         [AuditListAtt(GC.CrudUpdate)]
-        [VersionAtt("hf.trail")]
+        [VersionAtt("hf.trial")]
         [HttpPost("update")]
-        public async Task<IActionResult> UpdateTrails([FromBody] UpdateRequest<List<TrailDto>> update)
+        public async Task<IActionResult> UpdateTrials([FromBody] UpdateRequest<List<TrialDto>> update)
         {
             var session = HttpContext.Items["session"] as SessionEnt;
-            var list = update.Updates as List<TrailDto>;
+            var list = update.Updates as List<TrialDto>;
 
             //Validate 
-            var vals = await _trailService.ValidateTrails(session, list);
+            var vals = await _trialService.ValidateTrials(session, list);
             if (vals.Count > 0)
                 return Ok(new _ResponseDto
                 {
@@ -152,22 +152,22 @@ namespace Backend.App.HF.Trail
 
 
             //Do updates
-            var listBefore = new List<TrailDto>();
-            var listUpdated = new List<TrailDto>();
+            var listBefore = new List<TrialDto>();
+            var listUpdated = new List<TrialDto>();
             foreach (var dto in list)
             {
-                var trail = await _trailService.GetTrailOrCreate(session, dto);
-                if (trail == null) continue;
+                var trial = await _trialService.GetTrialOrCreate(session, dto);
+                if (trial == null) continue;
 
-                var beforeDto = _trailService.Populate(session, trail);
+                var beforeDto = _trialService.Populate(session, trial);
                 beforeDto.IsDelete = dto.IsDelete;
                 listBefore.Add(beforeDto);
 
-                trail = await _trailService.UpdateTrail(session, trail, dto);
-                if (trail != null)
+                trial = await _trialService.UpdateTrial(session, trial, dto);
+                if (trial != null)
                 {
-                    beforeDto.Id = trail.Id; //link them
-                    listUpdated.Add(_trailService.Populate(session, trail));
+                    beforeDto.Id = trial.Id; //link them
+                    listUpdated.Add(_trialService.Populate(session, trial));
                 }
             }
 
@@ -182,8 +182,8 @@ namespace Backend.App.HF.Trail
         }
 
         /// <summary>
-        /// Get a new Trail entity with default values
-        /// Note it is not saved to the database yet, it is just a template for creating a new Trail dto
+        /// Get a new Trial entity with default values
+        /// Note it is not saved to the database yet, it is just a template for creating a new Trial dto
         /// </summary>
         /// <returns></returns>
         [CrudAtt(GC.CrudCreate)]
@@ -192,7 +192,7 @@ namespace Backend.App.HF.Trail
         public async Task<IActionResult> New()
         {
             var session = HttpContext.Items["session"] as SessionEnt;
-            var dto = await _trailService.NewTrail(session);
+            var dto = await _trialService.NewTrial(session);
 
             return Ok(new _ResponseDto
             {
@@ -203,23 +203,23 @@ namespace Backend.App.HF.Trail
 
         [CrudAtt(GC.CrudCreate)]
         [AuditListAtt(GC.CrudCreate)]
-        [HttpPost("starttrail")]
-        public async Task<IActionResult> StartTrail([FromBody] TrailDto dto)
+        [HttpPost("starttrial")]
+        public async Task<IActionResult> StartTrial([FromBody] TrialDto dto)
         {
             var session = HttpContext.Items["session"] as SessionEnt;
-            var info = await _trailService.StartTrail(session, dto);
+            var info = await _trialService.StartTrial(session, dto);
                 
-            if (info.Status != (int)GC.TrailStatus.Running)
+            if (info.Status != (int)GC.TrialStatus.Running)
             {
                 return Ok(new _ResponseDto
                 {
                     Valid = false,
-                    ErrorMessage = session.GetLabel("TrailEr2", "Trail did not start")
+                    ErrorMessage = session.GetLabel("TrialEr2", "Trial did not start")
                 });
             }
 
-            var entity = await _trailService.GetTrailById(dto.Id);
-            dto = _trailService.Populate(session, entity);
+            var entity = await _trialService.GetTrialById(dto.Id);
+            dto = _trialService.Populate(session, entity);
             return Ok(new _ResponseDto
             {
                 SuccessMessage = "Ok",

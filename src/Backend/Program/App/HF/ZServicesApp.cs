@@ -14,8 +14,8 @@ namespace Backend.Program.App.HF
             builder.Services.AddScoped<hf.Menu.MenuServiceI, hf.Menu.MenuService>();
             builder.Services.AddScoped<hf.Session.SessionServiceI, hf.Session.SessionService>();
 
-            builder.Services.AddScoped<TrailServiceI, TrailService>();
-            builder.Services.AddScoped<TrailGroupServiceI, TrailGroupService>();
+            builder.Services.AddScoped<TrialServiceI, TrialService>();
+            builder.Services.AddScoped<TrialGroupServiceI, TrialGroupService>();
             //INSERT_GENERATED_CODE_HERE
         }
     }

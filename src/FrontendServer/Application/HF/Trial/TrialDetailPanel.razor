@@ -67,9 +67,9 @@
                                     <MudText>@dto.StatusDescription</MudText>
                                     <MudText>@dto.Count</MudText>
 
-                                    <MudButton OnClick="@(() => StartTrail(record))">
+                                    <MudButton OnClick="@(() => StartTrial(record))">
                                         <div class=" label label-no-link">
-                                            <Label Key="StartTrailX"
+                                            <Label Key="StartTrialX"
                                                    Size="GC.TextSize.ButtonText"
                                                    HideTooltip=true>
                                             </Label>
@@ -99,7 +99,7 @@
 @using Newtonsoft.Json;
 
 @code {
-    [Parameter] public List<ListModel<TrailDto>> Selections { get; set; } = new List<ListModel<TrailDto>>();
+    [Parameter] public List<ListModel<TrialDto>> Selections { get; set; } = new List<ListModel<TrialDto>>();
     [Parameter] public EventCallback Refresh { get; set; }
 
     private string GetAttemptsClass() => "error-row" + DarkModeSuffix();
@@ -109,11 +109,11 @@
     }
 
 
-    private async Task StartTrail(ListModel<TrailDto> selected)
+    private async Task StartTrial(ListModel<TrialDto> selected)
     {
         loadStatus.SetSaving();
 
-        var response = await PostAsync<TrailDto>(GetUrl("StartTrail"), selected.dto);
+        var response = await PostAsync<TrialDto>(GetUrl("StartTrial"), selected.dto);
         var r2 = null as _ResponseDto;
 
         if (response.StatusCode == HttpStatusCode.OK)
@@ -129,7 +129,7 @@
 
         if (r2.Valid)
         {
-            TrailDto dtoX = JsonConvert.DeserializeObject<TrailDto>(r2.Result.ToString());
+            TrialDto dtoX = JsonConvert.DeserializeObject<TrialDto>(r2.Result.ToString());
 
           //  selected.dto = dtoX;
 

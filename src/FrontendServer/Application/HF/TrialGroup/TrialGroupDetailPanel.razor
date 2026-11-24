@@ -27,11 +27,11 @@
                         }
 
                         <MudTabs @bind-ActivePanelIndex="_selectedTab">
-                            <MudTabPanel Text="@GetLabel("Trails")">
+                            <MudTabPanel Text="@GetLabel("Trials")">
                                 <MudText>Details content</MudText>
                             </MudTabPanel>
 
-                            <MudTabPanel Text="@GetLabel("TrailGrpSb")">
+                            <MudTabPanel Text="@GetLabel("TrialGrpSb")">
                                 <MudText>Progress content</MudText>
                             </MudTabPanel>
                         </MudTabs>
@@ -48,7 +48,7 @@
 </div>
 
 @code {
-    [Parameter] public List<ListModel<TrailGroupDto>> Selections { get; set; } = new List<ListModel<TrailGroupDto>>();
+    [Parameter] public List<ListModel<TrialGroupDto>> Selections { get; set; } = new List<ListModel<TrialGroupDto>>();
     [Parameter] public EventCallback Refresh { get; set; }
     
     private string GetAttemptsClass() => "error-row" + DarkModeSuffix();

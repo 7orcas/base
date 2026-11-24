@@ -2,6 +2,6 @@
 {
     public class SessionEntHF : SessionEnt
     {
-        public string Trails { get; set; }
+        public string Trials { get; set; }
     }
 }

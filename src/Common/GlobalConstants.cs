@@ -97,8 +97,8 @@ namespace Common
 
         public const int PerCodeTemplate  = 20000;
 
-        public const int PerTrail = 20001;
-        public const int PerTrailGroup = 20002;
+        public const int PerTrial = 20001;
+        public const int PerTrialGroup = 20002;
         //INSERT_GENERATED_CODE_HERE:PERM_CONSTANT
 
         public const int PermissionNrIndex = 0;
@@ -118,8 +118,8 @@ namespace Common
 
             PerCodeTemplate, "Template",false,
 
-            PerTrail, "Trail", false,
-            PerTrailGroup, "TrailGrp", false,
+            PerTrial, "Trial", false,
+            PerTrialGroup, "TrialGrp", false,
             //INSERT_GENERATED_CODE_HERE:PERM_OBJECT
 
 

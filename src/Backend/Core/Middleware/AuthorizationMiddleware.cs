@@ -44,7 +44,7 @@ namespace Backend.Core.Middleware
                 return;
             }
             else if (controllerActionDescriptor == null
-                && context.Request.Path.ToString().Contains(GCHf.TrailProgressHub))  
+                && context.Request.Path.ToString().Contains(GCHf.TrialProgressHub))  
             {
                 if (session != null)
                 {

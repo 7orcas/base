@@ -3,19 +3,19 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Backend.Data;
 
-namespace Backend.App.HF.Trail
+namespace Backend.App.HF.Trial
 {
     /// <summary>
-    /// Manage trail database activities
+    /// Manage trial database activities
     /// </summary>
     /// <author>John Stewart</author>
     /// <created>Nov 2026</created>
     /// <license>**Licence**</license>
-    public class TrailRepo : BaseRepo, TrailRepoI
+    public class TrialRepo : BaseRepo, TrialRepoI
     {
         private readonly AppDbContext _context;
 
-        public TrailRepo(AppDbContext context,
+        public TrialRepo(AppDbContext context,
             IServiceProvider serviceProvider)
             : base(serviceProvider)
         {
@@ -23,115 +23,115 @@ namespace Backend.App.HF.Trail
         }
 
         /// <summary>
-        /// Return a list of trails
+        /// Return a list of trials
         /// </summary>
         /// <param name="session"></param>
         /// <param name="search"></param>
         /// <returns></returns>
-        public async Task<List<TrailEnt>> GetList(SessionEnt session, TrailSearch search)
+        public async Task<List<TrialEnt>> GetList(SessionEnt session, TrialSearch search)
         {
             var parameters = new DynamicParameters();
             var includeCode = !string.IsNullOrWhiteSpace(search.Code);
 
             var sql = "SELECT DISTINCT c.id, c.status, c.code, c.descr AS Description, c.updated, c.version, c.isactive " +
-                       "FROM hf.trail AS c " +
+                       "FROM hf.trial AS c " +
                        "WHERE c.id > 0 ";
 
             if (includeCode)
                 sql += GetSqlAndClause(search.Code, "Code", parameters, "c.code", search);
 
             sql += " ORDER BY code";
-            return await GetList<TrailEnt>(sql, parameters);
+            return await GetList<TrialEnt>(sql, parameters);
         }
 
         /// <summary>
-        /// Return the specific trail for the passed in id
+        /// Return the specific trial for the passed in id
         /// </summary>
-        /// <param name="trailId"></param>
+        /// <param name="trialId"></param>
         /// <returns></returns>
-        public async Task<TrailEnt?> GetById(long trailId)
+        public async Task<TrialEnt?> GetById(long trialId)
         {
             try
             {
-                return await _context.Trails 
-                    .FirstOrDefaultAsync(x => x.Id == trailId);
+                return await _context.Trials 
+                    .FirstOrDefaultAsync(x => x.Id == trialId);
             }
             catch (Exception ex)
             {
-                _log.Error($"Error retrieving trail with ID {trailId}", ex);
+                _log.Error($"Error retrieving trial with ID {trialId}", ex);
                 return null;
             }
         }
 
         /// <summary>
-        /// Return the specific trail for the passed in code / orgNr
+        /// Return the specific trial for the passed in code / orgNr
         /// </summary>
-        /// <param name="trailId"></param>
+        /// <param name="trialId"></param>
         /// <returns></returns>
-        public async Task<TrailEnt?> GetByCode(string code, int orgNr)
+        public async Task<TrialEnt?> GetByCode(string code, int orgNr)
         {
             try
             {
-                return await _context.Trails
+                return await _context.Trials
                     .FirstOrDefaultAsync(x => x.Code == code && x.OrgNr == orgNr);
             }
             catch (Exception ex)
             {
-                _log.Error($"Error retrieving trail with Code {code} and OrgNr {orgNr}", ex);
+                _log.Error($"Error retrieving trial with Code {code} and OrgNr {orgNr}", ex);
                 return null;
             }
         }
 
         /// <summary>
-        /// Update, create or delete a Trail
+        /// Update, create or delete a Trial
         /// </summary>
         /// <param name="session"></param>
-        /// <param name="trail"></param>
+        /// <param name="trial"></param>
         /// <param name="dto"></param>
         /// <returns></returns>
-        public async Task<TrailEnt> Update(SessionEnt session, TrailEnt trail, TrailDto dto)
+        public async Task<TrialEnt> Update(SessionEnt session, TrialEnt trial, TrialDto dto)
         {
             if (dto.IsDelete)
             {
-                _context.Trails.Remove(trail);
+                _context.Trials.Remove(trial);
                 await _context.SaveChangesAsync();
                 return null;
             }
             
-            trail.Code = dto.Code;
-            trail.Description = dto.Description;
-            trail.OrgNr = dto.OrgNr;
-            trail.IsActive = dto.IsActive;
-            trail.Status = dto.Status;
-            VersionIncrement(trail);
+            trial.Code = dto.Code;
+            trial.Description = dto.Description;
+            trial.OrgNr = dto.OrgNr;
+            trial.IsActive = dto.IsActive;
+            trial.Status = dto.Status;
+            VersionIncrement(trial);
 
-            trail.Encode();
+            trial.Encode();
 
             if (dto.IsNew())
-                _context.Trails.Add(trail);
+                _context.Trials.Add(trial);
 
             await _context.SaveChangesAsync();
-            return trail;
+            return trial;
         }
 
         /// <summary>
-        /// Update, create or delete a Trail
+        /// Update, create or delete a Trial
         /// </summary>
         /// <param name="session"></param>
-        /// <param name="trail"></param>
+        /// <param name="trial"></param>
         /// <param name="dto"></param>
         /// <returns></returns>
-        public async Task UpdateStatus(SessionEnt session, long trailId, int status)
+        public async Task UpdateStatus(SessionEnt session, long trialId, int status)
         {
-            var trail = await GetById(trailId);
-            if (trail == null)
+            var trial = await GetById(trialId);
+            if (trial == null)
             {
-                _log.Error($"Trail not found with ID {trailId}, update status: {status}"); 
-                throw new InvalidOperationException(session.GetLabel("TrailEr1", "Trail not found"));
+                _log.Error($"Trial not found with ID {trialId}, update status: {status}"); 
+                throw new InvalidOperationException(session.GetLabel("TrialEr1", "Trial not found"));
             }
 
-            trail.Status = status;
-            VersionIncrement(trail);
+            trial.Status = status;
+            VersionIncrement(trial);
             await _context.SaveChangesAsync();
         }
 

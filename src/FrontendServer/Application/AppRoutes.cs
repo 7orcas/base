@@ -11,8 +11,8 @@ namespace FrontendServer.Application
         public const string MachinesRoute = "machines";
         public const string CodeTemplateRoute = "code-templates";
 
-        public const string TrailRoute = "trails";
-        public const string TrailGroupRoute = "trailGroups";
+        public const string TrialRoute = "trials";
+        public const string TrialGroupRoute = "trialGroups";
         //INSERT_GENERATED_ROUTE_HERE
 
 
@@ -20,8 +20,8 @@ namespace FrontendServer.Application
         public const string MachinesPageCode = "mac001";
         public const string CodeTemplatePageCode = "cod001";
 
-        public const string TrailPageCode = "tra001";
-        public const string TrailGroupPageCode = "trg001";
+        public const string TrialPageCode = "tri001";
+        public const string TrialGroupPageCode = "trg001";
         //INSERT_GENERATED_PAGE_CODE_HERE
 
         private static readonly object[] PageCodeRoutes = {
@@ -30,8 +30,8 @@ namespace FrontendServer.Application
 
             CodeTemplatePageCode,   CodeTemplateRoute, GC.PerCodeTemplate,
 
-            TrailPageCode, TrailRoute,  GC.PerTrail,
-            TrailGroupPageCode, TrailGroupRoute,  GC.PerTrailGroup,
+            TrialPageCode, TrialRoute,  GC.PerTrial,
+            TrialGroupPageCode, TrialGroupRoute,  GC.PerTrialGroup,
             //INSERT_GENERATED_PAGE_CODE_ROUTE_HERE
         };
 

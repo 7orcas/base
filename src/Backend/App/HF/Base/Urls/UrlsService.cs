@@ -42,44 +42,44 @@ namespace Backend.App.HF.Base.Urls
                 Add(urls, "CodeTemplateNew", "CodeTemplate/new");
             }
             
-            if (session.IsUserPermission(GC.PerTrail))
+            if (session.IsUserPermission(GC.PerTrial))
             {
-                Add(urls, "TrailSearch", "Trail/search");
-                Add(urls, "TrailList", "Trail/list");
-                Add(urls, "TrailGet", "Trail/get");
-                Add(urls, "TrailConfig", "Trail/config");
+                Add(urls, "TrialSearch", "Trial/search");
+                Add(urls, "TrialList", "Trial/list");
+                Add(urls, "TrialGet", "Trial/get");
+                Add(urls, "TrialConfig", "Trial/config");
             }
 
-            if (session.IsUserPermissionUpdate(GC.PerTrail))
+            if (session.IsUserPermissionUpdate(GC.PerTrial))
             {
-                Add(urls, "TrailDef", "Trail/def");
-                Add(urls, "TrailUpdate", "Trail/update");
+                Add(urls, "TrialDef", "Trial/def");
+                Add(urls, "TrialUpdate", "Trial/update");
             }
 
-            if (session.IsUserPermissionCreate(GC.PerTrail))
+            if (session.IsUserPermissionCreate(GC.PerTrial))
             {
-                Add(urls, "TrailDef", "Trail/def");
-                Add(urls, "TrailNew", "Trail/new");
-                Add(urls, "StartTrail", "Trail/starttrail");
+                Add(urls, "TrialDef", "Trial/def");
+                Add(urls, "TrialNew", "Trial/new");
+                Add(urls, "StartTrial", "Trial/starttrial");
             }
 
-            if (session.IsUserPermission(GC.PerTrailGroup))
+            if (session.IsUserPermission(GC.PerTrialGroup))
             {
-                Add(urls, "TrailGroupSearch", "TrailGroup/search");
-                Add(urls, "TrailGroupList", "TrailGroup/list");
-                Add(urls, "TrailGroupGet", "TrailGroup/get");
+                Add(urls, "TrialGroupSearch", "TrialGroup/search");
+                Add(urls, "TrialGroupList", "TrialGroup/list");
+                Add(urls, "TrialGroupGet", "TrialGroup/get");
             }
 
-            if (session.IsUserPermissionUpdate(GC.PerTrailGroup))
+            if (session.IsUserPermissionUpdate(GC.PerTrialGroup))
             {
-                Add(urls, "TrailGroupDef", "TrailGroup/def");
-                Add(urls, "TrailGroupUpdate", "TrailGroup/update");
+                Add(urls, "TrialGroupDef", "TrialGroup/def");
+                Add(urls, "TrialGroupUpdate", "TrialGroup/update");
             }
 
-            if (session.IsUserPermissionCreate(GC.PerTrailGroup))
+            if (session.IsUserPermissionCreate(GC.PerTrialGroup))
             {
-                Add(urls, "TrailGroupDef", "TrailGroup/def");
-                Add(urls, "TrailGroupNew", "TrailGroup/new");
+                Add(urls, "TrialGroupDef", "TrialGroup/def");
+                Add(urls, "TrialGroupNew", "TrialGroup/new");
             }
 
             //INSERT_GENERATED_CODE_HERE

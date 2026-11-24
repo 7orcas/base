@@ -1,7 +1,7 @@
 
 namespace Common.DTO.App
 {
-    public class TrailDto : _BaseDto
+    public class TrialDto : _BaseDto
     {
         public int Status { get; set; }
         public string StatusDescription { get; set; }

@@ -1,13 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-public class TrailConfig : IEntityTypeConfiguration<TrailEnt>
+public class TrialGroupConfig : IEntityTypeConfiguration<TrialGroupEnt>
 {
-    public void Configure(EntityTypeBuilder<TrailEnt> entity)
+    public void Configure(EntityTypeBuilder<TrialGroupEnt> entity)
     {
-        entity.ToTable("trail", "hf");
+        entity.ToTable("trialgroup", "hf");
         entity.Property(e => e.Id).HasColumnName("id");
-        entity.Property(e => e.Status).HasColumnName("status");
         entity.Property(e => e.OrgNr).HasColumnName("orgnr");
         entity.Property(e => e.Code).HasColumnName("code");
         entity.Property(e => e.Description).HasColumnName("descr");

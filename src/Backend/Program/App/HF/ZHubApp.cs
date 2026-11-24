@@ -7,7 +7,7 @@ namespace Backend.Program.App.HF
     {
         static public void Configure(WebApplication app)
         {
-            app.MapHub<hf.Trail.TrailHub>("/" + GC.TrailProgressHub);
+            app.MapHub<hf.Trial.TrialHub>("/" + GC.TrialProgressHub);
         }
 
     }

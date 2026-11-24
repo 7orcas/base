@@ -27,7 +27,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Application\HF\Trail\" />
     <Folder Include="Logs\" />
   </ItemGroup>
 

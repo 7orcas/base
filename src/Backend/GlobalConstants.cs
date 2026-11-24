@@ -29,7 +29,7 @@ namespace Backend
         public const string CacheKeyPermDic         = "PS_dic";
 
         //HF keys
-        public const string CacheKeyTrailPrefix     = "hfT_";
+        public const string CacheKeyTrialPrefix     = "hfT_";
 
         //API Testing
         public const string ApiTestKey              = "Blue-Api-Key";
@@ -66,8 +66,8 @@ namespace Backend
 
         public const int EntityTypeTemplate         = 10000;
         public const int EntityTypeMachine          = 10001;
-        public const int EntityTypeTrail = 20001;
-        public const int EntityTypeTrailGroup = 20002;
+        public const int EntityTypeTrial = 20001;
+        public const int EntityTypeTrialGroup = 20002;
         //INSERT_GENERATED_CODE_HERE:ENT_TYPE
 
         public static readonly object[] EntityTypes = {
@@ -87,8 +87,8 @@ namespace Backend
             EntityTypeOrg,              "Org",
 
             EntityTypeMachine,          "Machine",
-            EntityTypeTrail, "Trail",
-            EntityTypeTrailGroup, "TrailGrp",
+            EntityTypeTrial, "Trial",
+            EntityTypeTrialGroup, "TrialGrp",
             //INSERT_GENERATED_CODE_HERE:ENT_OBJECT
         };
 

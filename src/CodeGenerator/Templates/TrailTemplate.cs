@@ -6,40 +6,40 @@ using GC = CodeGenerator.GlobalConstants;
 
 namespace CodeGenerator.Templates
 {
-    public class TrailTemplate : BaseTemplate
+    public class TrialTemplate : BaseTemplate
     {
    
         private string[] Changes = {
-            "GC.EntityTypeTemplate", "GC.EntityTypeTrail",
-            "GC.PerCodeTemplate", "GC.PerTrail",
-            "namespace Backend.CodeTemplate.Generic", "namespace Backend.App.HF.Trail",
-            "base.zcodetemplate", "hf.trail",
-            "entity.ToTable(\"zcodetemplate\", \"base\")", "entity.ToTable(\"trail\", \"hf\")",
-            "CodeTemplateTitle", "Trails",
-            "CodeTemplateSub", "TrailSb",
-            "CodeTemplates", "Trails",
-            "CodeTemplate", "Trail",
-            "codeTemplate", "trail",
-            "codetemplates", "trails",
-            "codetemplate", "trail",
+            "GC.EntityTypeTemplate", "GC.EntityTypeTrial",
+            "GC.PerCodeTemplate", "GC.PerTrial",
+            "namespace Backend.CodeTemplate.Generic", "namespace Backend.App.HF.Trial",
+            "base.zcodetemplate", "hf.trial",
+            "entity.ToTable(\"zcodetemplate\", \"base\")", "entity.ToTable(\"trial\", \"hf\")",
+            "CodeTemplateTitle", "Trials",
+            "CodeTemplateSub", "TrialSb",
+            "CodeTemplates", "Trials",
+            "CodeTemplate", "Trial",
+            "codeTemplate", "trial",
+            "codetemplates", "trials",
+            "codetemplate", "trial",
         };
 
         private string[] Remove = {  };
 
-        public TrailTemplate()
+        public TrialTemplate()
         {
             Application = GC.BackendAppHf;
-            LangKey = "Trail";
+            LangKey = "Trial";
             FromEntity = "CodeTemplate";
             FromPermission = "PerCodeTemplate";
-            ToEntity = "Trail";
-            ToPermission = "PerTrail";
+            ToEntity = "Trial";
+            ToPermission = "PerTrial";
             ToPermissionValue = 20001;
             EntityTypeValue = 20001;
-            Route = "trails";
+            Route = "trials";
             PageCode = "tra001";
-            MenuItem = "Trail";
-            MenuItemLangKey = "Trails";
+            MenuItem = "Trial";
+            MenuItemLangKey = "Trials";
         }
 
         public override BaseTemplate ConfigureTemplate()
