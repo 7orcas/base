@@ -2,6 +2,7 @@ namespace Backend.Data
 {
     using Backend.App.DS.Base.Org.Ent;
     using Backend.App.HF.Base.Org.Ent;
+    using Backend.App.HF.Trial.TrialGroup.Ent;
     using Microsoft.EntityFrameworkCore;
 
     public class AppDbContext : DbContext

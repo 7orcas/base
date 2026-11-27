@@ -68,6 +68,7 @@ namespace Backend.App.HF.Base.Urls
                 Add(urls, "TrialGroupSearch", "TrialGroup/search");
                 Add(urls, "TrialGroupList", "TrialGroup/list");
                 Add(urls, "TrialGroupGet", "TrialGroup/get");
+                Add(urls, "TrialGroupMemberGet", "TrialGroup/getmembers");
             }
 
             if (session.IsUserPermissionUpdate(GC.PerTrialGroup))

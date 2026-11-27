@@ -3,7 +3,7 @@ using Common.Validator.Base;
 using Microsoft.AspNetCore.Mvc;
 using GC = Backend.GlobalConstants;
 
-namespace Backend.App.HF.TrialGroup
+namespace Backend.App.HF.Trial.TrialGroup
 {
     //[Authorize]
     [PermissionAtt(GC.PerTrialGroup)]
@@ -102,6 +102,27 @@ namespace Backend.App.HF.TrialGroup
             {
                 SuccessMessage = "Ok",
                 Result = dto
+            });
+        }
+
+        /// <summary>
+        /// Get members in the trialgroup
+        /// </summary>
+        /// <param name="search"></param>
+        /// <returns></returns>
+        [CrudAtt(GC.CrudRead)]
+        [AuditListAtt(GC.CrudReadList)]
+        [HttpGet("getmembers/{id}")]
+        public async Task<IActionResult> GetTrialGroupMembers(long id)
+        {
+            var session = HttpContext.Items["session"] as SessionEnt;
+            var entities = await _trialGroupService.GetTrialGroupMembers(session, id);
+            var list = _trialGroupService.Populate(session, entities);
+
+            return Ok(new _ResponseDto
+            {
+                SuccessMessage = "Ok",
+                Result = list
             });
         }
 

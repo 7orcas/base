@@ -50,6 +50,6 @@ global using Dapper;
 
 global using Backend.App.HF.Trial;
 global using Backend.App.HF.Trial.Ent;
-global using Backend.App.HF.TrialGroup;
-global using Backend.App.HF.TrialGroup.Ent;
+global using Backend.App.HF.Trial.TrialGroup;
+global using Backend.App.HF.Trial.TrialGroup.Ent;
 //INSERT_GENERATED_CODE_HERE

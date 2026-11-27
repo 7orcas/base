@@ -1,3 +1,4 @@
+using Backend.App.HF.Trial.TrialGroup.Ent;
 using Common.Validator;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.AspNetCore.Cors.Infrastructure;
@@ -9,7 +10,7 @@ using System.Text;
 using System.Transactions;
 using GC = Backend.GlobalConstants;
 
-namespace Backend.App.HF.TrialGroup
+namespace Backend.App.HF.Trial.TrialGroup
 {
     /// <summary>
     /// Manage loading and processing trialgroups
@@ -56,6 +57,49 @@ namespace Backend.App.HF.TrialGroup
             return list;
         }
 
+        /// <summary>
+        /// Return a list of trialgroup members
+        /// </summary>
+        /// <param name="session"></param>
+        /// <param name="trialGroupId"></param>
+        /// <returns></returns>
+        public async Task<List<TrialGroupMemberEnt>> GetTrialGroupMembers(SessionEnt session, long trialGroupId)
+        {
+            return await _trialGroupRepo.GetMembers(session, trialGroupId);
+        }
+
+        /// <summary>
+        /// Populate the dto's for a list of trialgroup memebers
+        /// </summary>
+        /// <param name="session"></param>
+        /// <param name="entities"></param>
+        /// <returns></returns>
+        public List<TrialGroupMemberDto> Populate(SessionEnt session, List<TrialGroupMemberEnt> entities)
+        {
+            var list = new List<TrialGroupMemberDto>();
+            foreach (var entity in entities)
+                list.Add(Populate(session, entity));
+
+            return list;
+        }
+
+        /// <summary>
+        /// Populate a dto for a trialgroup member
+        /// </summary>
+        /// <param name="session"></param>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public TrialGroupMemberDto Populate(SessionEnt session, TrialGroupMemberEnt entity)
+        {
+            return new TrialGroupMemberDto
+            {
+                Id = entity.Id,
+                TrialGroupId = entity.TrialGroupId,
+                UserName = entity.UserName,
+                Email = entity.Email,
+                IsAdmin = entity.IsAdmin
+            };
+        }
 
         /// <summary>
         /// Return the specific trialgroup for the passed in id

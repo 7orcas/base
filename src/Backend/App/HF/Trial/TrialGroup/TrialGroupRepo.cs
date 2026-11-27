@@ -1,9 +1,12 @@
 
+using Backend.App.HF.Trial.TrialGroup.Ent;
+using Backend.Data;
+using DocumentFormat.OpenXml.Drawing.Charts;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Backend.Data;
 
-namespace Backend.App.HF.TrialGroup
+namespace Backend.App.HF.Trial.TrialGroup
 {
     /// <summary>
     /// Manage trialgroup database activities
@@ -33,15 +36,38 @@ namespace Backend.App.HF.TrialGroup
             var parameters = new DynamicParameters();
             var includeCode = !string.IsNullOrWhiteSpace(search.Code);
 
-            var sql = "SELECT DISTINCT c.id, c.code, c.descr AS Description, c.updated, c.version, c.isactive " +
-                       "FROM hf.trialGroup AS c " +
-                       "WHERE c.id > 0 ";
+            var sql = "SELECT DISTINCT r.id, r.code, r.descr AS Description, r.updated, r.version, r.isactive " +
+                       "FROM hf.trialGroup AS r " +
+                       "WHERE r.id > 0 ";
 
             if (includeCode)
-                sql += GetSqlAndClause(search.Code, "Code", parameters, "c.code", search);
+                sql += GetSqlAndClause(search.Code, "Code", parameters, "r.code", search);
 
             sql += " ORDER BY code";
             return await GetList<TrialGroupEnt>(sql, parameters);
+        }
+
+        /// <summary>
+        /// Return a list of members in the trialgroup
+        /// </summary>
+        /// <param name="session"></param>
+        /// <param name="search"></param>
+        /// <returns></returns>
+        public async Task<List<TrialGroupMemberEnt>> GetMembers(SessionEnt session, long trialGroupId)
+        {
+            var parameters = new DynamicParameters();
+            
+            var sql = "SELECT u.Id, g.Id AS TrialGroupId, a.Id AS UserAccId, z.xxx AS UserName, z.email, a.isActive, u.isAdmin " +
+                        "FROM hf.trialGroup g " +
+                        "LEFT JOIN hf.trialGroupUserAcc u ON u.trialGroupId = g.Id " +
+                        "LEFT JOIN base.userAcc a ON a.Id = u.userAccId " +
+                        "LEFT JOIN base.zzz z ON z.Id = a.zzzId " +
+                        "WHERE g.Id = @TrailGroupId " +
+                        "ORDER BY z.xxx ASC ";
+
+            parameters.Add("@TrailGroupId", trialGroupId);
+
+            return await GetList<TrialGroupMemberEnt>(sql, parameters);
         }
 
         /// <summary>

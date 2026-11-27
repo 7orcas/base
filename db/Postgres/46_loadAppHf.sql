@@ -11,8 +11,10 @@ INSERT INTO hf.trialGroupUserAcc (id, trialGroupId, userAccId, isadmin) VALUES
  (20, 2, 111, true);
 
 INSERT INTO hf.trial (id, orgnr, trialGroupid, code, descr, status) VALUES
-(1,   1, 1, 'Trail1',  'Trail 1 desc', 0),
-(2,   1, 1, 'Trail2',  'Trail 2 desc', 0);
+(1,   1, 1, 'Trail 11',  'Grp 1, Trail 1', 0),
+(2,   1, 1, 'Trail 12',  'Grp 1, Trail 2', 0),
+(101, 1, 2, 'Trail 21',  'Grp 2, Trail 1', 0),
+(102, 1, 2, 'Trail 22',  'Grp 2, Trail 2', 0);
 
 
 -- -------------------------------------------------

@@ -1,22 +1,9 @@
 @inherits BasePage
-@attribute [Route(AppRoutes.TrialGroupRoute)]
-@attribute [PageCode(AppRoutes.TrialGroupPageCode)]
-@attribute [PagePermission(GC.PerTrialGroup)]
 @attribute [Authorize]
-
-
-<ConfirmNavigation List="list" />
+@inject IDialogService DialogService;
+@inject ConfigService ConfS
 
 <div style="height:100%; display:flex; flex-direction:column; @GetDebugBorder("yellow")">
-
-    <HeaderThin @key=pageStatus.pageCode
-            TitleKey="TrialsGrp"
-            PageCode=@pageStatus.pageCode
-            PageStatus="@pageStatus"
-            ToolBarButtonsLeft="toolBarButtonsLeft"
-            ToolBarButtonsRight="toolBarButtonsRight" />
-
-    <div style="margin-top:10px; border-bottom: 1px solid #ccc; margin-bottom:2px;"></div>
 
     @if (loadStatus.IsError)
     {
@@ -35,7 +22,7 @@
                 <!-- Left Side List -->
                 <MudItem xs="2" Style="height:100%; display:flex; flex-direction:column; min-height:0; max-width:300px;">
                     <MudPaper Elevation="0" Outlined="true" Style="flex:1; min-height:0; display:flex; flex-direction:column;">
-                        <ListPanel TDto="TrialGroupDto"
+                        <ListPanel TDto="TrialDto"
                                    List="@list" 
                                    CodeKey="Code"
                                    OnItemSelected="@OnItemSelected" />
@@ -45,10 +32,10 @@
             <!-- Right Side Details -->
             <MudItem xs="10" Style="height:100%; display:flex; flex-direction:column; min-height:0;">
                 <MudPaper Elevation="0" Outlined="false" Style="flex:1; min-height:0; overflow:auto; padding-right:20px;">
-                    <TrialGroupDetailPanel Selections="listUtil.Selections"
-                                      Refresh="@Refresh"
-                                      PageStatus="@pageStatus" 
-                                      FieldDefinitionUtil="@fieldDefinitionUtil" />
+                    <TrialGroup21T21Detail Selections="listUtil.Selections"
+                                          Refresh="@Refresh"
+                                          PageStatus="@pageStatus" 
+                                          FieldDefinitionUtil="@fieldDefinitionUtil"/>
                 </MudPaper>
             </MudItem>
 
@@ -63,19 +50,25 @@
 @using GC = FrontendServer.GlobalConstants;
 @using FrontendServer.Base._Base;
 @using Newtonsoft.Json;
-@inject IDialogService DialogService;
+@using Microsoft.AspNetCore.SignalR.Client;
 
 @code {
-    private List<ListModel<TrialGroupDto>> list = new List<ListModel<TrialGroupDto>>();
-    private ListUtil<TrialGroupDto> listUtil = new ListUtil<TrialGroupDto>();
-    private MudTable<ListModel<TrialGroupDto>> _listTable;
+    private List<ListModel<TrialDto>> list = new List<ListModel<TrialDto>>();
+    private ListUtil<TrialDto> listUtil = new ListUtil<TrialDto>();
+    private MudTable<ListModel<TrialDto>> _listTable;
     private FieldDefinitionUtil fieldDefinitionUtil;
+    private TrialConfigDto _configDto;
+    private HubConnection? _connection;
 
+
+    [Parameter] public ListModel<TrialGroupDto> Selection { get; set; } = new ListModel<TrialGroupDto>(new TrialGroupDto());
+    [Parameter] public EventCallback Refresh { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        var defs = await GetDefinition(GetUrl("TrialGroupDef"));
+        var defs = await GetDefinition(GetUrl("TrialDef"));
         fieldDefinitionUtil = new FieldDefinitionUtil(defs);
+        _configDto = await GetAsync<TrialConfigDto>(GetUrl("TrialConfig"), false);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -92,7 +85,7 @@
             if (pageStatus.isCrudC)
                 AddToolbarAddNew(AddRecord);
 
-            // AddToolbarExport(Export);
+           // AddToolbarExport(Export);
 
             if (pageStatus.isCrudU || pageStatus.isCrudC)
                 AddToolbarSave(SaveAsync);
@@ -104,7 +97,7 @@
 
     private async Task Search()
     {
-        bool confirmed = true;
+        bool confirmed = true; 
         var ok = await ConfirmNavigationIsOk();
         if (!ok)
         {
@@ -114,32 +107,28 @@
 
         if (confirmed)
         {
-            var search = null as TrialGroupSearch;
+            var search = await GetAsync<TrialSearch>(GetUrl("TrialSearch"), false);
+            search.TrailGroupId = Selection.Id;
+            listUtil.Clear();
+            await LoadList(search);
 
-            if (false) //FIX ME Have search config
-            {
-                var result = await OpenSearchDialog<TrialGroupSearchDialog>();
-                if (!result.Canceled)
-                {
-                    listUtil.Clear();
-                    search = (TrialGroupSearch)result.Data;
-                }
-            }
-            else
-                search = new TrialGroupSearch();
-
-            if (search != null)
-                await LoadList(search);
+ //           var result = await OpenSearchDialog<TrialSearchDialog>();
+ //           if (!result.Canceled)
+ //           {
+ //               listUtil.Clear();
+ //               var data = (TrialSearch)result.Data;
+ //               await LoadList(data);
+ //           }
         }
     }
 
     
-    private async Task LoadList(TrialGroupSearch search)
+    private async Task LoadList(TrialSearch search)
     {
-        var response = await PostAsync<_ResponseDto, TrialGroupSearch>(GetUrl("TrialGroupList"), search);
+        var response = await PostAsync<_ResponseDto, TrialSearch>(GetUrl("TrialList"), search);
 
         list.Clear();
-        List<TrialGroupDto> listX = null;
+        List<TrialDto> listX = null;
 
         if (response.StatusCode == HttpStatusCode.OK)
         {
@@ -147,7 +136,7 @@
             var dto = JsonConvert.DeserializeObject<_ResponseDto>(r);
 
             if (dto.Valid)
-                listX = JsonConvert.DeserializeObject<List<TrialGroupDto>>(dto.Result.ToString());
+                listX = JsonConvert.DeserializeObject<List<TrialDto>>(dto.Result.ToString());
 
         }
 
@@ -158,7 +147,7 @@
             listUtil.ShowList = true;
             foreach (var u in listX)
             {
-                list.Add(new ListModel<TrialGroupDto>(u));
+                list.Add(new ListModel<TrialDto>(u));
             }
         }
 
@@ -171,29 +160,68 @@
         StateHasChanged();
     }
 
-    private void Refresh() => StateHasChanged();
-
-    private async Task OnItemSelected(ListModel<TrialGroupDto> r)
+    private async Task OnItemSelected(ListModel<TrialDto> r)
     {
         await LoadRecord(r);
     }
 
-    private async Task LoadRecord(ListModel<TrialGroupDto> dto)
+    private async Task LoadRecord(ListModel<TrialDto> dto)
     {
         if (!dto.IsLoaded)
         {
-            var record = await GetAsync<TrialGroupDto>(GetUrlSlash("TrialGroupGet") + dto.Id, false);
+            var record = await GetAsync<TrialDto>(GetUrlSlash("TrialGet") + dto.Id, false);
             dto.Load(record);
+            await GetSingalRConnection(dto);
         }
 
         listUtil.Select(dto);
         StateHasChanged();
     }
 
+    private async Task GetSingalRConnection(ListModel<TrialDto> sel)
+    {
+        try
+        {
+            var url = _configDto.TrialProgressHubUrl;
+            var token = await ConfS.GetToken();
+
+            _connection = new HubConnectionBuilder()
+                .WithUrl(url, options =>
+                {
+                    options.AccessTokenProvider = () =>
+                        Task.FromResult(token);
+                })
+                .WithAutomaticReconnect()
+                .Build();
+
+       
+            _connection.On<TrialDto>(
+                _configDto.TrialProgressChanged,
+               dto =>
+                {
+                    sel.dto = dto;
+                    InvokeAsync(StateHasChanged);
+                });
+
+            await _connection.StartAsync();
+
+            await _connection.InvokeAsync(
+                "Subscribe",
+                sel.dto.Id.ToString());
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+
+    }
+
+
     private async Task SaveAsync()
     {
         //Get records to be updated
-        var updates = new List<ListModel<TrialGroupDto>>();
+        var updates = new List<ListModel<TrialDto>>();
         for (int i = 0; i < list.Count; i++)
         {
             var rec = list[i];
@@ -205,11 +233,11 @@
 
         loadStatus.SetSaving();
 
-        var updatesX = new UpdateRequest<List<TrialGroupDto>>()
+        var updatesX = new UpdateRequest<List<TrialDto>>()
         {
             Updates = updates.Select(x => x.dto).ToList()
         };
-        var response = await PostAsync<List<TrialGroupDto>>(GetUrl("TrialGroupUpdate"), updatesX);
+        var response = await PostAsync<List<TrialDto>>(GetUrl("TrialUpdate"), updatesX);
 
         var r2 = null as _ResponseDto;
 
@@ -228,9 +256,9 @@
 
         if (r2.Valid)
         {
-            List<TrialGroupDto> dtos = JsonConvert.DeserializeObject<List<TrialGroupDto>>(r2.Result.ToString());
+            List<TrialDto> dtos = JsonConvert.DeserializeObject<List<TrialDto>>(r2.Result.ToString());
 
-            var deletes = new List<ListModel<TrialGroupDto>>();
+            var deletes = new List<ListModel<TrialDto>>();
             for (int i = 0; i < list.Count; i++)
             {
                 var rec = list[i];
@@ -244,7 +272,7 @@
                     continue;
                 }
 
-                var dto = null as TrialGroupDto;
+                var dto = null as TrialDto;
                 if (rec.IsNew())
                     dto = dtos.FirstOrDefault(x => x.Code == rec.dto.Code);
                 else
@@ -304,8 +332,8 @@
 
     private async Task AddRecord()
     {
-        var dto = await GetAsync<TrialGroupDto>(GetUrl("TrialGroupNew"), false);
-        var rec = new ListModel<TrialGroupDto>(dto);
+        var dto = await GetAsync<TrialDto>(GetUrl("TrialNew"), false);
+        var rec = new ListModel<TrialDto>(dto);
         rec.IsLoaded = true;
         list.Insert(0, rec);
         OnItemSelected(rec);

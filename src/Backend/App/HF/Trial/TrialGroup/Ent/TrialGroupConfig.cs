@@ -1,3 +1,4 @@
+using Backend.App.HF.Trial.TrialGroup.Ent;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

@@ -1,0 +1,130 @@
+@inherits BasePage
+@inject NavigationManager NavigationManager
+
+<div style="height:100%; overflow:auto;">
+
+    <table style="flex:1; min-height:0; table-layout:fixed; width:100%;@GetDebugBorder("pink")">
+
+        <tbody class="mud-table-body">
+            <tr class="XXmud-table-row">
+
+                <td style="vertical-align: top; padding: 1px; background-color:white">
+
+
+                    <MudExpansionPanel Text=@GetLabel("ConfigG") Expanded="true">
+                        <TitleContent>
+                            <div class="expansion-title">
+                                <div style="display:flex; justify-content:space-between; align-items:center;">
+                                    <Label Size="GC.TextSize.Normal" Key="ConfigG"></Label>
+                                </div>
+                            </div>
+                        </TitleContent>
+                        <ChildContent>
+                            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+
+                                <TextField Width=GC.TextFieldWidth.TextShort
+                                           LangCode="Code"
+                                           ReadOnly="!dto.IsNew()"
+                                           PageStatus=@PageStatus
+                                           MaxLength="@GetMaxLength(nameof(dto.Code))"
+                                           Required="@IsRequired(nameof(dto.Code))"
+                                           Immediate="true"
+                                           @bind-Value="@dto.Code" />
+
+
+
+                                <TextField Width=GC.TextFieldWidth.TextLong
+                                           LangCode="Desc"
+                                           PageStatus=@PageStatus
+                                           MaxLength="@GetMaxLength(nameof(dto.Description))"
+                                           Required="@IsRequired(nameof(dto.Description))"
+                                           Immediate="true"
+                                           @bind-Value="@dto.Description" />
+
+
+                                <MudText>@dto.StatusDescription</MudText>
+                                <MudText>@dto.Count</MudText>
+
+                                <MudButton OnClick="@(() => StartTrial())">
+                                    <div class=" label label-no-link">
+                                        <Label Key="StartTrialX"
+                                               Size="GC.TextSize.ButtonText"
+                                               HideTooltip=true>
+                                        </Label>
+                                    </div>
+                                </MudButton>
+
+
+                            </div>
+                        </ChildContent>
+                    </MudExpansionPanel>
+
+                </td>
+            
+            </tr>
+        </tbody>
+
+    </table>
+</div>
+
+@using System.Net
+@using MudBlazor
+@using FrontendServer.Base.Util
+@using GC = FrontendServer.GlobalConstants;
+@using FrontendServer.Base._Base;
+@using Newtonsoft.Json;
+
+@code {
+    [Parameter] public ListModel<TrialGroupDto> Selection { get; set; } = new ListModel<TrialGroupDto>(new TrialGroupDto());
+    [Parameter] public EventCallback Refresh { get; set; }
+
+    private TrialDto dto;
+    private string GetAttemptsClass() => "error-row" + DarkModeSuffix();
+
+    protected override async Task OnInitializedAsync()
+    {
+        dto = new TrialDto
+            {
+                TrialGroupId = Selection.dto.Id
+            };
+    }
+
+
+    private async Task StartTrial()
+    {
+        loadStatus.SetSaving();
+
+        var response = await PostAsync<TrialDto>(GetUrl("StartTrial"), dto);
+        var r2 = null as _ResponseDto;
+
+        if (response.StatusCode == HttpStatusCode.OK)
+        {
+            var r1 = await response.Content.ReadAsStringAsync();
+            r2 = JsonConvert.DeserializeObject<_ResponseDto>(r1);
+        }
+        else
+        {
+            //ToDo error response
+            return;
+        }
+
+        if (r2.Valid)
+        {
+            TrialDto dtoX = JsonConvert.DeserializeObject<TrialDto>(r2.Result.ToString());
+
+          //  selected.dto = dtoX;
+
+        }
+        else
+        {
+            //   loadStatus.SetError();
+            List<ValidationDto> vals = r2?.Validations;
+                    
+        }
+
+        loadStatus.ResetSaving();
+        StateHasChanged();
+    }
+
+
+}

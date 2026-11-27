@@ -1,8 +1,9 @@
+using Backend.App.HF.Trial.TrialGroup;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Reflection.Emit;
 
-namespace Backend.App.HF.TrialGroup.Ent
+namespace Backend.App.HF.Trial.TrialGroup.Ent
 {
     public class TrialGroupVal : BaseValidation <TrialGroupDto>
     {

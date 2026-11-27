@@ -1,0 +1,140 @@
+﻿@inherits BasePage
+@using MudBlazor
+@using GC = FrontendServer.GlobalConstants;
+@using FrontendServer.Base._Base;
+
+<div style="height:100%; display:flex; flex-direction:column; min-height:0;">
+
+    <MudTable Style="@($"flex:1; min-height:0; table-layout:fixed; width:100%; {@GetDebugBorder("blue")}")"
+              T="ListModel<TrialGroupDto>"
+              @ref="_tableRef"
+              Items="@List"
+              Filter="FilterCode"
+              Height="100%"
+              FixedHeader="true"
+              Hover="true"
+              Bordered="true"
+              Striped="true"
+              RowClassFunc="GetRowClass">
+
+
+        <ColGroup>
+            <col style="width:1%;" />
+            <col style="width:69%;" />
+            <col style="width:30%;" />
+        </ColGroup>
+        <HeaderContent>
+            <MudTh></MudTh>
+            <MudTh>
+                <div style="display:flex; flex-direction:column;">
+                    <div style="display:flex; align-items:center;">
+                        <Label Key="@CodeKey" />
+                        <MudIconButton Icon="@Icons.Material.Filled.FilterList"
+                                       Size="Size.Small"
+                                       Color="@(_showCodeFilter ? Color.Primary : Color.Default)"
+                                       OnClick="ToggleCodeFilter" />
+                    </div>
+                    @if (_showCodeFilter)
+                    {
+                        <MudTextField T="string"
+                                      @bind-Value="_codeFilter"
+                                      Immediate="true"
+                                      Placeholder="@GetLabel("FilterX")"
+                                      Margin="Margin.Dense"
+                                      Variant="Variant.Text" />
+                    }
+                </div>
+            </MudTh>
+            <MudTh><Label Key="TrialSt1" /></MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd Style="padding:0px; border-right: none;"
+                   @key="context.Id"
+                   DataLabel="Error"
+                   Class="@GetListColumnErrorClass(context)"
+                   @onclick="() => OnItemSelected.InvokeAsync(context)">
+                @GetListSelectRowPointer(context.IsSelected)
+            </MudTd>
+            <MudTd DataLabel="CodeKey"
+                   Class="@GetListRowClass(context)"
+                   @onclick="() => OnItemSelected.InvokeAsync(context)">
+                @if (IsEditCode || IsEditCodeNew)
+                {
+                    <MudTextField T="string"
+                                  @bind-Value="context.dto.Code"
+                                  Immediate="true"
+                                  MaxLength="@GC.LenCode"
+                                  Margin="Margin.Dense"
+                                  Variant="Variant.Text" />
+                }
+                else
+                {
+                    @GetCode(context)
+                }
+            </MudTd>
+            <MudTd DataLabel="TrialSt1">
+                <MudCheckBox T="bool" ReadOnly="true" @bind-Value="context.dto.IsRunning" />
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
+
+</div>
+@code {
+    [Parameter] public List<ListModel<TrialGroupDto>> List { get; set; } = new List<ListModel<TrialGroupDto>>();
+    [Parameter] public EventCallback<ListModel<TrialGroupDto>> OnItemSelected { get; set; }
+    [Parameter] public string CodeKey { get; set; } = "Group";
+    [Parameter] public bool IsEditCode { get; set; } = false;
+    [Parameter] public bool IsEditCodeNew { get; set; } = false;
+    [Parameter] public EventCallback<MudTable<ListModel<TrialGroupDto>>> TableRefChanged { get; set; }
+
+
+    private MudTable<ListModel<TrialGroupDto>> _tableRef;
+    private bool _showCodeFilter;
+    private string _codeFilter = string.Empty;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await TableRefChanged.InvokeAsync(_tableRef);
+    }
+
+    private string GetCode(ListModel<TrialGroupDto> item)
+    {
+        var code = item.Code;
+
+        if (item.IsValidationError())
+            code += " (" + GetLabel("Error") + ")";
+
+        else if (item.IsValidationWarning())
+            code += " (" + GetLabel("Warning") + ")";
+
+        return code;
+    }
+
+    private string GetRowClass(ListModel<TrialGroupDto> item, int index)
+    {
+        if (item.IsValidationError())
+            return "error-row" + GetLightDarkClassSuffix();
+
+        else if (item.IsValidationWarning())
+            return "warning-row" + GetLightDarkClassSuffix();
+
+        return string.Empty;
+    }
+
+    private void ToggleCodeFilter()
+    {
+        _showCodeFilter = !_showCodeFilter;
+    }
+
+    private bool FilterCode(ListModel<TrialGroupDto> item)
+    {
+        if (string.IsNullOrWhiteSpace(_codeFilter))
+            return true;
+
+        return item.Code?.Contains(
+            _codeFilter,
+            StringComparison.OrdinalIgnoreCase) == true;
+    }
+
+}

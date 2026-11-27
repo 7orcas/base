@@ -33,12 +33,14 @@ namespace Backend.App.HF.Trial
             var parameters = new DynamicParameters();
             var includeCode = !string.IsNullOrWhiteSpace(search.Code);
 
-            var sql = "SELECT DISTINCT c.id, c.status, c.code, c.descr AS Description, c.updated, c.version, c.isactive " +
-                       "FROM hf.trial AS c " +
-                       "WHERE c.id > 0 ";
+            var sql = "SELECT DISTINCT r.id, r.status, r.code, r.descr AS Description, r.updated, r.version, r.isactive " +
+                       "FROM hf.trial AS r " +
+                       "WHERE r.trialgroupid = @TrailGroupId ";
+
+            sql += GetSqlAndClause(search.TrailGroupId, "TrailGroupId", parameters, "r.trialgroupid");
 
             if (includeCode)
-                sql += GetSqlAndClause(search.Code, "Code", parameters, "c.code", search);
+                sql += GetSqlAndClause(search.Code, "Code", parameters, "r.code", search);
 
             sql += " ORDER BY code";
             return await GetList<TrialEnt>(sql, parameters);

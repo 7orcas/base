@@ -1,0 +1,109 @@
+@inherits BasePage
+@attribute [Authorize]
+@inject IDialogService DialogService;
+@inject ConfigService ConfS
+
+<div style="height:100%; display:flex; flex-direction:column; @GetDebugBorder("yellow")">
+
+    @if (loadStatus.IsError)
+    {
+        <Error LoadStatus=@loadStatus>
+            @loadStatus.Exception
+        </Error>
+    }
+    else
+    {
+        <Loading LoadStatus=@loadStatus />
+        
+        <MudGrid Class="no-wrap-grid" Spacing="0" Style="@($"flex:1; min-height:0; height:0;{GetDebugBorder("orange")}")">
+
+            @for (int i = 0; list != null && i < list.Count; i++)
+            {
+                var record = list[i];
+                <br>@record.UserName
+            }
+            
+
+        </MudGrid>
+    }
+</div>
+
+
+@using System.Net
+@using MudBlazor
+@using FrontendServer.Base.Util
+@using GC = FrontendServer.GlobalConstants;
+@using FrontendServer.Base._Base;
+@using Newtonsoft.Json;
+@using Microsoft.AspNetCore.SignalR.Client;
+
+@code {
+    private List<TrialGroupMemberDto> list = new List<TrialGroupMemberDto>();
+    private MudTable<ListModel<TrialDto>> _listTable;
+
+
+    [Parameter] public ListModel<TrialGroupDto> Selection { get; set; } = new ListModel<TrialGroupDto>(new TrialGroupDto());
+    [Parameter] public EventCallback Refresh { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var defs = await GetDefinition(GetUrl("TrialDef"));
+        
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await InitialiseBasePage();
+
+            //Always make edit mode
+            pageStatus.IsEditMode = pageStatus.orCrudCUD();
+
+            //Add standard toolbar
+          //  AddToolbarSearch(Search);
+            if (pageStatus.isCrudC)
+                AddToolbarAddNew(AddRecord);
+
+           // AddToolbarExport(Export);
+
+            if (pageStatus.isCrudU || pageStatus.isCrudC)
+                AddToolbarSave(SaveAsync);
+
+            LoadList();
+            StateHasChanged();
+        }
+    }
+
+   
+
+    
+    private async Task LoadList()
+    {
+        list = await GetAsync<List<TrialGroupMemberDto>>(GetUrlSlash("TrialGroupMemberGet") + Selection.Id, false);
+        StateHasChanged();
+    }
+
+   
+  
+
+
+    private async Task SaveAsync()
+    {
+       
+    }
+
+  
+
+    private async Task AddRecord()
+    {
+       
+    }
+
+    //ToDo
+    private async Task Export()
+    {
+
+    }
+
+}

@@ -26,13 +26,25 @@
                             </MudExpansionPanel>
                         }
 
-                        <MudTabs @bind-ActivePanelIndex="_selectedTab">
+                        <MudTabs ActivePanelIndex="@GetSelectedTab(record.Id)"
+                                 ActivePanelIndexChanged="@(i => _selectedTabs[record.Id] = i)">
+                            
+                            <MudTabPanel Text="@GetLabel("TrialSt")">
+                                <TrialGroup21T1Start Selection="record" 
+                                                     Refresh="@Refresh"
+                                                     PageStatus="@pageStatus" />
+                            </MudTabPanel>
+
                             <MudTabPanel Text="@GetLabel("Trials")">
-                                <MudText>Details content</MudText>
+                                <TrialGroup21T20Trails Selection="record"
+                                                  Refresh="@Refresh"
+                                                  PageStatus="@pageStatus" />
                             </MudTabPanel>
 
                             <MudTabPanel Text="@GetLabel("TrialGrpSb")">
-                                <MudText>Progress content</MudText>
+                                <TrialGroup21T22Members Selection="record"
+                                                  Refresh="@Refresh"
+                                                  PageStatus="@pageStatus" />   
                             </MudTabPanel>
                         </MudTabs>
 
@@ -52,7 +64,15 @@
     [Parameter] public EventCallback Refresh { get; set; }
     
     private string GetAttemptsClass() => "error-row" + DarkModeSuffix();
-    private int _selectedTab = 0;
+    private Dictionary<long, int> _selectedTabs = new();
 
+
+    private int GetSelectedTab(long id)
+    {
+        if (!_selectedTabs.ContainsKey(id))
+            _selectedTabs[id] = 0;
+
+        return _selectedTabs[id];
+    }
 
 }

@@ -1,0 +1,309 @@
+@inherits BasePage
+@attribute [Route(AppRoutes.TrialGroupRoute)]
+@attribute [PageCode(AppRoutes.TrialGroupPageCode)]
+@attribute [PagePermission(GC.PerTrialGroup)]
+@attribute [Authorize]
+
+
+<ConfirmNavigation List="list" />
+
+<div style="height:100%; display:flex; flex-direction:column; @GetDebugBorder("yellow")">
+
+    @if (loadStatus.IsError)
+    {
+        <Error LoadStatus=@loadStatus>
+            @loadStatus.Exception
+        </Error>
+    }
+    else
+    {
+        <Loading LoadStatus=@loadStatus />
+        
+        <MudGrid Class="no-wrap-grid" Spacing="0" Style="@($"flex:1; min-height:0; height:0;{GetDebugBorder("orange")}")">
+
+            @if (listUtil.ShowList)
+            {
+                <!-- Left Side List -->
+                <MudItem xs="2" Style="height:100%; display:flex; flex-direction:column; min-height:0; max-width:300px;">
+                    <MudPaper Elevation="0" Outlined="true" Style="flex:1; min-height:0; display:flex; flex-direction:column;">
+                        <TrialGroup1List List="@list" 
+                                         OnItemSelected="@OnItemSelected" />
+                    </MudPaper>
+                </MudItem>
+            }
+            <!-- Right Side Details -->
+            <MudItem xs="10" Style="height:100%; display:flex; flex-direction:column; min-height:0;">
+                <MudPaper Elevation="0" Outlined="false" Style="flex:1; min-height:0; overflow:auto; padding-right:20px;">
+                    <TrialGroup20Panel Selections="listUtil.Selections"
+                                      Refresh="@Refresh"
+                                      PageStatus="@pageStatus" 
+                                      FieldDefinitionUtil="@fieldDefinitionUtil" />
+                </MudPaper>
+            </MudItem>
+
+        </MudGrid>
+    }
+</div>
+
+
+@using System.Net
+@using MudBlazor
+@using FrontendServer.Base.Util
+@using GC = FrontendServer.GlobalConstants;
+@using FrontendServer.Base._Base;
+@using Newtonsoft.Json;
+@inject IDialogService DialogService;
+
+@code {
+    private List<ListModel<TrialGroupDto>> list = new List<ListModel<TrialGroupDto>>();
+    private ListUtil<TrialGroupDto> listUtil = new ListUtil<TrialGroupDto>();
+    private MudTable<ListModel<TrialGroupDto>> _listTable;
+    private FieldDefinitionUtil fieldDefinitionUtil;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var defs = await GetDefinition(GetUrl("TrialGroupDef"));
+        fieldDefinitionUtil = new FieldDefinitionUtil(defs);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await InitialiseBasePage();
+
+            //Always make edit mode
+            pageStatus.IsEditMode = pageStatus.orCrudCUD();
+
+            //Add standard toolbar
+            AddToolbarSearch(Search);
+            if (pageStatus.isCrudC)
+                AddToolbarAddNew(AddRecord);
+
+            // AddToolbarExport(Export);
+
+            if (pageStatus.isCrudU || pageStatus.isCrudC)
+                AddToolbarSave(SaveAsync);
+
+            Search();
+            StateHasChanged();
+        }
+    }
+
+    private async Task Search()
+    {
+        bool confirmed = true;
+        var ok = await ConfirmNavigationIsOk();
+        if (!ok)
+        {
+            var result = await OpenConfirmYesNoDialog();
+            confirmed = !result.Canceled;
+        }
+
+        if (confirmed)
+        {
+            var search = null as TrialGroupSearch;
+
+            if (false) //FIX ME Have search config
+            {
+                var result = await OpenSearchDialog<TrialGroup0SearchDialog>();
+                if (!result.Canceled)
+                {
+                    listUtil.Clear();
+                    search = (TrialGroupSearch)result.Data;
+                }
+            }
+            else
+                search = new TrialGroupSearch();
+
+            if (search != null)
+                await LoadList(search);
+        }
+    }
+
+    
+    private async Task LoadList(TrialGroupSearch search)
+    {
+        var response = await PostAsync<_ResponseDto, TrialGroupSearch>(GetUrl("TrialGroupList"), search);
+
+        list.Clear();
+        List<TrialGroupDto> listX = null;
+
+        if (response.StatusCode == HttpStatusCode.OK)
+        {
+            var r = await response.Content.ReadAsStringAsync();
+            var dto = JsonConvert.DeserializeObject<_ResponseDto>(r);
+
+            if (dto.Valid)
+                listX = JsonConvert.DeserializeObject<List<TrialGroupDto>>(dto.Result.ToString());
+
+        }
+
+        if (listX == null)
+            loadStatus.SetError();
+        else
+        {
+            listUtil.ShowList = true;
+            foreach (var u in listX)
+            {
+                list.Add(new ListModel<TrialGroupDto>(u));
+            }
+        }
+
+        if (list == null) { } //ToDo probably expired login
+        else
+        {
+            if (list.Count > 0)
+                LoadRecord(list[0]);
+        }
+        StateHasChanged();
+    }
+
+    private void Refresh() => StateHasChanged();
+
+    private async Task OnItemSelected(ListModel<TrialGroupDto> r)
+    {
+        await LoadRecord(r);
+    }
+
+    private async Task LoadRecord(ListModel<TrialGroupDto> dto)
+    {
+        if (!dto.IsLoaded)
+        {
+            var record = await GetAsync<TrialGroupDto>(GetUrlSlash("TrialGroupGet") + dto.Id, false);
+            dto.Load(record);
+        }
+
+        listUtil.Select(dto);
+        StateHasChanged();
+    }
+
+    private async Task SaveAsync()
+    {
+        //Get records to be updated
+        var updates = new List<ListModel<TrialGroupDto>>();
+        for (int i = 0; i < list.Count; i++)
+        {
+            var rec = list[i];
+            rec.ResetValidation();
+            if (rec.IsUpdateable())
+                updates.Add(rec);
+        }
+        if (updates.Count == 0) return;
+
+        loadStatus.SetSaving();
+
+        var updatesX = new UpdateRequest<List<TrialGroupDto>>()
+        {
+            Updates = updates.Select(x => x.dto).ToList()
+        };
+        var response = await PostAsync<List<TrialGroupDto>>(GetUrl("TrialGroupUpdate"), updatesX);
+
+        var r2 = null as _ResponseDto;
+
+        if (response.StatusCode == HttpStatusCode.OK)
+        {
+            var r1 = await response.Content.ReadAsStringAsync();
+            r2 = JsonConvert.DeserializeObject<_ResponseDto>(r1);
+        }
+        else
+        {
+            //ToDo error response
+            return;
+        }
+
+
+
+        if (r2.Valid)
+        {
+            List<TrialGroupDto> dtos = JsonConvert.DeserializeObject<List<TrialGroupDto>>(r2.Result.ToString());
+
+            var deletes = new List<ListModel<TrialGroupDto>>();
+            for (int i = 0; i < list.Count; i++)
+            {
+                var rec = list[i];
+                var recU = updates.FirstOrDefault(x => x.Id == rec.Id);
+
+                if (recU == null) continue; 
+
+                if (rec.IsDelete)
+                {
+                    deletes.Add(rec);
+                    continue;
+                }
+
+                var dto = null as TrialGroupDto;
+                if (rec.IsNew())
+                    dto = dtos.FirstOrDefault(x => x.Code == rec.dto.Code);
+                else
+                    dto = dtos.FirstOrDefault(x => x.Id == rec.Id);
+
+
+                if (dto == null) continue;
+
+                rec.ClearHash();
+                rec.Load(dto);
+            }
+
+            foreach (var rec in deletes)
+            {
+                listUtil.Remove(rec);
+                list.Remove(rec);
+            }
+
+        }
+        else if (!string.IsNullOrEmpty(r2?.ErrorMessage))
+        {
+            loadStatus.ResetSaving();
+            StateHasChanged();
+            await OpenOkDialog(GetLabel("Error"), r2?.ErrorMessage);
+        }
+        else
+        {
+            List<ValidationDto> vals = r2?.Validations;
+            for (int i = 0; i < updates.Count; i++)
+            {
+                var rec = updates[i];
+                var val = vals != null ? vals.FirstOrDefault(x => x.Id == rec.Id) : null;
+                if (val != null)
+                {
+                    rec.Validation = new ValidationModel
+                    {
+                        Validation = val
+                    };
+                }
+            }
+        }
+
+        loadStatus.ResetSaving();
+        StateHasChanged();
+    }
+
+    public async Task<bool> ConfirmNavigationIsOk()
+    {
+        for (int i = 0; list != null && i < list.Count; i++)
+        {
+            var dto = list[i];
+            if (dto.IsLoaded && dto.HasChanged())
+                return false;
+        }
+        return true;
+    }
+
+    private async Task AddRecord()
+    {
+        var dto = await GetAsync<TrialGroupDto>(GetUrl("TrialGroupNew"), false);
+        var rec = new ListModel<TrialGroupDto>(dto);
+        rec.IsLoaded = true;
+        list.Insert(0, rec);
+        OnItemSelected(rec);
+    }
+
+    //ToDo
+    private async Task Export()
+    {
+
+    }
+
+}

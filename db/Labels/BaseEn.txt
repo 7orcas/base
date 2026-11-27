@@ -236,10 +236,12 @@ TextDN,None
 TextDO,Comma (OR)
 Unaccent,Accent Insensitive Search
 Diffs,Differences
+Group,Group
 Trial,Trial
 Trials,Trials
 TrialSb,Random Number Trials
 TrialSr,Trial Search
+TrialSt,Start a Trial
 TrialGrp,Trial Group
 TrialsGrp,Trial Groups
 TrialGrpSb,People in this group
